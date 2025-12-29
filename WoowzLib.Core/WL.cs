@@ -24,6 +24,8 @@ public static class WL{
 
             foreach(Type Module in Modules){
                 Console.WriteLine("Модуль: " + Module);
+                
+                RuntimeHelpers.RunClassConstructor(Module.TypeHandle);
             }
         }
     }
