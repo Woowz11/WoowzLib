@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.Core", "WoowzLib.Core.csproj", "{D1B43E26-BB59-4C07-8D7B-86DE939612BD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLibTest.Core", "..\Test\WoowzLibTest.Core\WoowzLibTest.Core.csproj", "{747C3CDA-0608-409A-90CC-4506654FFC1D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{D1B43E26-BB59-4C07-8D7B-86DE939612BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1B43E26-BB59-4C07-8D7B-86DE939612BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1B43E26-BB59-4C07-8D7B-86DE939612BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{747C3CDA-0608-409A-90CC-4506654FFC1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{747C3CDA-0608-409A-90CC-4506654FFC1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{747C3CDA-0608-409A-90CC-4506654FFC1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{747C3CDA-0608-409A-90CC-4506654FFC1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
