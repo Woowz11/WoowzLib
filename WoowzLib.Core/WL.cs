@@ -1,5 +1,5 @@
 ﻿namespace WoowzLib.Core;
 
-public static class WL{
+public static partial class WL{
     // тут что-то будет...
 }
