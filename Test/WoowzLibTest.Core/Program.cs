@@ -4,11 +4,10 @@ namespace WoowzLibTest.Core;
 
 class Program{
     static void Main(){
-        Console.WriteLine("RUN");
+        Console.WriteLine("PROGRAM");
         
         WL.Install();
         
-        Console.WriteLine("test");
-        Console.WriteLine(WL.M.Math.Add(5,3));
+        Console.WriteLine("END PROGRAM");
     }
 }
