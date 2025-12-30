@@ -15,18 +15,18 @@ public static class WL{
             Assembly.LoadFrom(DLL);
         }
         
-        IEnumerable<Assembly> WLModules = AppDomain.CurrentDomain.GetAssemblies().Where(A => A.FullName != null && A.FullName.Contains("WoowzLib"));
+        var Modules = AppDomain.CurrentDomain.GetAssemblies()
+                                                   .Where(A => A.FullName != null && A.FullName.Contains("WoowzLib"))
+                                                   .SelectMany(A => A.GetTypes().Select(T => new{
+                                                       Type = T,
+                                                       Attribute = T.GetCustomAttribute<WLModule>()
+                                                   }))
+                                                   .Where(A => A.Attribute != null)
+                                                   .ToList().OrderBy(A => A.Attribute!.Order);
 
-        foreach(Assembly WLModule in WLModules){
-            Console.WriteLine("Нашёл: " + WLModule);
-
-            IEnumerable<Type> Modules = WLModule.GetTypes().Where(M => M.GetCustomAttribute<WLModule>() != null);
-
-            foreach(Type Module in Modules){
-                Console.WriteLine("Модуль: " + Module);
-                
-                RuntimeHelpers.RunClassConstructor(Module.TypeHandle);
-            }
+        foreach(var Module in Modules){
+            Console.WriteLine("Модуль: " + Module);
+            RuntimeHelpers.RunClassConstructor(Module.Type.TypeHandle);
         }
     }
 }
