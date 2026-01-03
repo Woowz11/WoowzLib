@@ -9,5 +9,7 @@ class Program{
         WL.Install();
         
         Console.WriteLine("END PROGRAM");
+        
+        Console.WriteLine("VERSION " + WL_Core.Version);
     }
 }

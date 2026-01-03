@@ -1,8 +1,10 @@
-﻿namespace WoowzLib.Core;
+﻿using System.Reflection;
 
-[WLModule(int.MinValue)]
-public class WL_Core{
+namespace WoowzLib.Core;
+
+[WLModuleA(int.MinValue)]
+public class WL_Core : WLModule {
     static WL_Core(){
-        Console.WriteLine("CORE INIT");
+        
     }
 }

@@ -8,7 +8,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2af94700-17bc-421d-87e9-c2a6dce05d32" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../Test/WoowzLibTest.Core/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Test/WoowzLibTest.Core/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.WoowzLib.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.WoowzLib.Core/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WL.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WL.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WLModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WLModuleA.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WL_Core.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WL_Core.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WoowzLib.Math/WL_Math.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../WoowzLib.Math/WL_Math.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,6 +30,7 @@
     <setting file="file://$PROJECT_DIR$/../Test/WoowzLibTest.Core/Program.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/WL.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/WLModule.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/WLModuleA.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../WoowzLib.Math/WL_Math.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
@@ -88,7 +94,7 @@
       <workItem from="1767029840741" duration="222000" />
       <workItem from="1767030390526" duration="369000" />
       <workItem from="1767030827304" duration="4265000" />
-      <workItem from="1767051817693" duration="1022000" />
+      <workItem from="1767051817693" duration="2552000" />
     </task>
     <servers />
   </component>

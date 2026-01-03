@@ -16,13 +16,13 @@ public static class WL{
         }
         
         var Modules = AppDomain.CurrentDomain.GetAssemblies()
-                                                   .Where(A => A.FullName != null && A.FullName.Contains("WoowzLib"))
-                                                   .SelectMany(A => A.GetTypes().Select(T => new{
-                                                       Type = T,
-                                                       Attribute = T.GetCustomAttribute<WLModule>()
-                                                   }))
-                                                   .Where(A => A.Attribute != null)
-                                                   .ToList().OrderBy(A => A.Attribute!.Order);
+           .Where(A => A.FullName != null && A.FullName.Contains("WoowzLib"))
+           .SelectMany(A => A.GetTypes().Select(T => new{
+               Type = T,
+               Attribute = T.GetCustomAttribute<WLModuleA>()
+           }))
+           .Where(A => A.Attribute != null)
+           .ToList().OrderBy(A => A.Attribute!.Order);
 
         foreach(var Module in Modules){
             Console.WriteLine("Модуль: " + Module);
