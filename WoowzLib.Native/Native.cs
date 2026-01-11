@@ -4,10 +4,14 @@ using File = WLO.File;
 namespace WL{
     [WoowzLibModule(10)]
     public static class Native{
+        public const string Error_DLLNotExist = "Не найден DLL!";
+        
         [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
         private static extern IntPtr LoadLibrary(string lpFileName);
         [DllImport("kernel32", SetLastError = true)]
         private static extern bool FreeLibrary(IntPtr hModule);
+        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Ansi)]
+        private static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
 
         private static readonly Dictionary<string, IntPtr> LoadedDLL = new Dictionary<string, IntPtr>(StringComparer.OrdinalIgnoreCase);
 
@@ -27,7 +31,7 @@ namespace WL{
         /// <returns>Ссылка на загруженный DLL файл</returns>
         public static IntPtr Load(File DLL){
             try{
-                if(!DLL.Exist){ throw new Exception("DLL файл не найден!"); }
+                if(!DLL.Exist){ throw new Exception(Error_DLLNotExist); }
                 if(LoadedDLL.TryGetValue(DLL.Path, out IntPtr Handle) && Handle != IntPtr.Zero){
                     throw new Exception("Этот DLL уже был загружен! Handle: " + Handle);
                 }
@@ -51,7 +55,7 @@ namespace WL{
         public static void Unload(File DLL){
             try{
                 if(!LoadedDLL.TryGetValue(DLL.Path, out IntPtr Handle) || Handle == IntPtr.Zero){
-                    throw new Exception("Не найден DLL!");
+                    throw new Exception(Error_DLLNotExist);
                 }
                 
                 bool Result = FreeLibrary(Handle);
@@ -62,6 +66,25 @@ namespace WL{
                 }
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при разгрузке DLL [" + DLL + "]!", e);
+            }
+        }
+
+        /// <summary>
+        /// Получает ссылку на функцию из DLL
+        /// </summary>
+        /// <param name="DLL">Указанный DLL</param>
+        /// <param name="Name">Функция из DLL [<c>"glfwCreateWindow"</c>]</param>
+        /// <returns>Ссылка на функцию</returns>
+        public static IntPtr Function(File DLL, string Name){
+            try{
+                if(!LoadedDLL.TryGetValue(DLL.Path, out IntPtr Handle)){
+                    throw new Exception(Error_DLLNotExist);
+                }
+
+                IntPtr Proc = GetProcAddress(Handle, Name);
+                return Proc == IntPtr.Zero ? throw new Exception("Функция не найдена!") : Proc;
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при загрузке функции из DLL [" + DLL + "]!\nФункция: " + Name);
             }
         }
     }

@@ -4,6 +4,25 @@ using System.Runtime.CompilerServices;
 namespace WL{
     [WoowzLibModule(int.MinValue)]
     public static class WoowzLib{
+        static WoowzLib(){
+            AppDomain    .CurrentDomain.ProcessExit        += (_, _) => Stop();
+            AppDomain    .CurrentDomain.UnhandledException += (_, _) => Stop();
+            TaskScheduler.UnobservedTaskException          += (_, e) => { Stop(); e.SetObserved(); };
+            Console      .CancelKeyPress                   += (_, e) => { Stop(); e.Cancel = false; };
+        }
+        private static void Stop(){
+            for(int i = 0; i < StopEvents.Count; i++){
+                try{
+                    StopEvents[i]();
+                }catch(Exception e){
+                    Console.WriteLine("Произошла ошибка при вызове остаточного ивента [" + i + "]!", e);
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Запуск WoowzLib и его модулей
+        /// </summary>
         public static void Start(){
             try{
                 Console.WriteLine("Установка WL:");
@@ -32,5 +51,14 @@ namespace WL{
                 throw new Exception("Произошла ошибка при запуске WoowzLib!");
             }
         }
+
+        /// <summary>
+        /// Добавляет ивент на закрытие/вылет приложения
+        /// </summary>
+        /// <param name="StopEvent">Ивент [<c>() => ...</c>]</param>
+        public static void StopEvent(Action StopEvent){
+            StopEvents.Add(StopEvent);
+        }
+        private static readonly List<Action> StopEvents = [];
     }
 }

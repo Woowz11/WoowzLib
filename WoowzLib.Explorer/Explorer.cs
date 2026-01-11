@@ -20,7 +20,7 @@ namespace WL{
             /// <param name="Path">Путь [<c>"test/file.json"</c>]</param>
             public static void Delete(string Path){
                 try{
-                    if(!Exist(Path)){ throw new Exception(WLO.File.Error_FileNotExist); }
+                    if(!Exist(Path)){ throw new Exception(WLO.File.Error_FileAlreadyDeleted); }
                     System.IO.File.Delete(Path);
                 }catch(Exception e){
                     throw new Exception("Не получилось удалить файл по пути [" + Path + "]!");
@@ -92,8 +92,7 @@ namespace WL{
 
                 WL.Explorer.Folder.Create(TempFolder);
 
-                AppDomain.CurrentDomain.ProcessExit        += (_, _) => Destroy();
-                AppDomain.CurrentDomain.UnhandledException += (_, _) => Destroy();
+                WL.WoowzLib.StopEvent(Destroy);
             }
 
             private static void Destroy(){

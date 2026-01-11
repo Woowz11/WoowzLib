@@ -97,7 +97,7 @@ public class File{
     /// <summary>
     /// Добавляет в содержимое файла, текст
     /// </summary>
-    /// <param name="Content">Текст [<c>"\nДобавленый текст!"</c>]</param>
+    /// <param name="Content">Текст [<c>"\nДобавленный текст!"</c>]</param>
     /// <param name="Encoding">Кодировка [<c>Encoding.UTF8</c>]</param>
     public File AddString(string Content, Encoding? Encoding = null){
         try{
