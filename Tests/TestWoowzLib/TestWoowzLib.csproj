@@ -7,5 +7,9 @@
         <Nullable>enable</Nullable>
         <OutputType>Exe</OutputType>
     </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\WoowzLib.Core\WoowzLib.Core.csproj" />
+    </ItemGroup>
     
 </Project>
