@@ -1,7 +1,8 @@
 ﻿ public static class Program{
     public static int Main(string[] Args){
-
-        WL.Explorer.Resources.Load("WoowzLib.GLFW.Native.win-x64.glfw3.dll", typeof(WL.GLSL).Assembly);
+        WL.WoowzLib.Start();
+        
+        WL.GLSL.Start();
         
         while (!Console.KeyAvailable)
         {
@@ -9,6 +10,8 @@
         }
 
         Console.ReadKey(true);
+        
+        WL.GLSL.Stop();
         return 0;
     }
 }

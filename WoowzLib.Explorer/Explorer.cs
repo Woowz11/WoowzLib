@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 
 namespace WL{
+    [WoowzLibModule(5)]
     public static class Explorer{
         /// <summary>
         /// Для работы с файлами
