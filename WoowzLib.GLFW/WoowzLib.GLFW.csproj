@@ -9,5 +9,10 @@
     <ItemGroup>
         <EmbeddedResource Include="Native\win-x64\glfw3.dll" LogicalName="WoowzLib.GLFW.Native.win-x64.glfw3.dll" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\WoowzLib.Core\WoowzLib.Core.csproj" />
+      <ProjectReference Include="..\WoowzLib.Native\WoowzLib.Native.csproj" />
+    </ItemGroup>
     
 </Project>

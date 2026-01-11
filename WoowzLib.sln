@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.Math", "WoowzLib.M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.Native", "WoowzLib.Native\WoowzLib.Native.csproj", "{4746E564-D66C-4503-94AE-6158F5BF8B65}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.Explorer", "WoowzLib.Explorer\WoowzLib.Explorer.csproj", "{F5B4845D-45B2-4886-BC41-4A78E3918CA1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|Any CPU = Release|Any CPU
@@ -25,5 +27,7 @@ Global
 		{47978918-9CA0-433B-B85D-CA6FA29522A8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4746E564-D66C-4503-94AE-6158F5BF8B65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4746E564-D66C-4503-94AE-6158F5BF8B65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5B4845D-45B2-4886-BC41-4A78E3918CA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5B4845D-45B2-4886-BC41-4A78E3918CA1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
