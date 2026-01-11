@@ -4,7 +4,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.Core", "WoowzLib.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWoowzLib", "Tests\TestWoowzLib\TestWoowzLib.csproj", "{5323AB76-CA1B-4B3E-904D-333F5369EA85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.GLSL", "WoowzLib.GLSL\WoowzLib.GLSL.csproj", "{D6F63FB0-D182-42CC-9960-0372230DCEB6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.GLFW", "WoowzLib.GLFW\WoowzLib.GLFW.csproj", "{D6F63FB0-D182-42CC-9960-0372230DCEB6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.Math", "WoowzLib.Math\WoowzLib.Math.csproj", "{47978918-9CA0-433B-B85D-CA6FA29522A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,5 +19,7 @@ Global
 		{5323AB76-CA1B-4B3E-904D-333F5369EA85}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D6F63FB0-D182-42CC-9960-0372230DCEB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6F63FB0-D182-42CC-9960-0372230DCEB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47978918-9CA0-433B-B85D-CA6FA29522A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47978918-9CA0-433B-B85D-CA6FA29522A8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
