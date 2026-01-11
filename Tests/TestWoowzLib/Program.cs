@@ -1,9 +1,13 @@
 ﻿public static class Program{
     public static int Main(string[] Args){
         
-        WL.Native.LoadDLL();
+        string folder = "W:\\Woowz11\\Desktop\\TESTS\\";
+
+        File f = new File(folder + "test.txt");
+
+        f.AddString("\nHELLO!!!)))");
         
-        
+        Console.WriteLine(f.ReadString());
         
         while (!Console.KeyAvailable)
         {

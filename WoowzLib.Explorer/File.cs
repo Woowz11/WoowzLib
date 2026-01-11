@@ -1,0 +1,232 @@
+﻿using System.Text;
+
+/// <summary>
+/// Файл
+/// </summary>
+public class File{
+    public const string Error_FileNotExist       = "Файл не найден!";
+    public const string Error_FileAlreadyDeleted = "Файл уже удалён!";
+    public const string Error_FileAlreadyCreated = "Файл уже создан!";
+
+    /// <summary>
+    /// Получение или создание пустого файла
+    /// </summary>
+    /// <param name="Path">Путь [<c>"../example/file.txt"</c>]</param>
+    public File(string Path){
+        if(string.IsNullOrWhiteSpace(Path)){ throw new Exception("Указан пустой путь для создания файла!"); }
+        __Path = Path;
+
+        if(!Exist){ Create(); }
+    }
+
+    /// <summary>
+    /// Путь до файла [<c>"../example/file.txt"</c>]
+    /// <br />(Заглавные и прописные буквы считаются одинаково, т.е <c>"test.png"</c> == <c>"TEst.pnG"</c>)
+    /// </summary>
+    public string Path => __Path;
+
+    private string __Path;
+
+    /// <summary>
+    /// Имя файла (с расширением) [<c>"file.txt"</c>]
+    /// </summary>
+    public string FullName => System.IO.Path.GetFileName(Path);
+
+    /// <summary>
+    /// Имя файла [<c>"file"</c>]
+    /// </summary>
+    public string Name => System.IO.Path.GetFileNameWithoutExtension(Path);
+
+    /// <summary>
+    /// Расширение файла [<c>"txt"</c>]
+    /// </summary>
+    public string Extension => System.IO.Path.GetExtension(Path)?.TrimStart('.') ?? "";
+
+    /// <summary>
+    /// Файл существует?
+    /// </summary>
+    public bool Exist => WL.Explorer.File.Exist(Path);
+
+    /// <summary>
+    /// Узнать размер файла в байтах
+    /// </summary>
+    public long Size => Exist ? new FileInfo(Path).Length : throw new Exception("Невозможно узнать размер файла [" + this + "], потому-что он не существует!");
+
+    /// <summary>
+    /// Последнее время изменения файла
+    /// </summary>
+    public DateTime LastModified => Exist ? System.IO.File.GetLastWriteTime(Path) : throw new Exception("Невозможно узнать дату последнего изменения у файла [" + this + "], потому-что он не существует!");
+
+    /// <summary>
+    /// Чтение содержимого файла, текстовое
+    /// </summary>
+    /// <param name="Encoding">Кодировка [<c>Encoding.UTF8</c>]</param>
+    /// <returns>Текстовое содержимое файла</returns>
+    public string ReadString(Encoding? Encoding = null){
+        try{
+            return Exist ? System.IO.File.ReadAllText(Path, Encoding ?? Encoding.UTF8) : throw new Exception(Error_FileNotExist);
+        }
+        catch(Exception e){
+            throw new Exception("Неполучилось прочитать файл [" + this + "]!\nТип: Текст\nКодировка: " + Encoding, e);
+        }
+    }
+
+    /// <summary>
+    /// Заменяет содержимое файла, на текст
+    /// </summary>
+    /// <param name="Content">Текст [<c>"Какой-то текст\nА это на новой строке типо..."</c>]</param>
+    /// <param name="Encoding">Кодировка [<c>Encoding.UTF8</c>]</param>
+    public File WriteString(string Content, Encoding? Encoding = null){
+        try{
+            System.IO.File.WriteAllText(Path, Content ?? "", Encoding ?? Encoding.UTF8);
+        }
+        catch(Exception e){
+            throw new Exception("Произошла ошибка при записи в файл [" + this + "]!\nТип: Текст\nКодировка: " + Encoding + "\nСодержимое: \"" + Content + "\"", e);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Добавляет в содержимое файла, текст
+    /// </summary>
+    /// <param name="Content">Текст [<c>"\nДобавленый текст!"</c>]</param>
+    /// <param name="Encoding">Кодировка [<c>Encoding.UTF8</c>]</param>
+    public File AddString(string Content, Encoding? Encoding = null){
+        try{
+            System.IO.File.AppendAllText(Path, Content ?? "", Encoding ?? Encoding.UTF8);
+        }
+        catch(Exception e){
+            throw new Exception("Произошла ошибка при добавлении в файл [" + this + "]!\nТип: Текст\nКодировка: " + Encoding + "\nСодержимое: \"" + Content + "\"", e);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Чтение содержимого файла, байтовое
+    /// </summary>
+    /// <returns>Байтовое содержимое файла</returns>
+    public byte[] ReadByte(){
+        try{
+            return Exist ? System.IO.File.ReadAllBytes(Path) : throw new Exception(Error_FileNotExist);
+        }catch(Exception e){
+            throw new Exception("Неполучилось прочитать файл [" + this + "]!\nТип: Байт", e);
+        }
+    }
+    
+    /// <summary>
+    /// Заменяет содержимое файла, на байты
+    /// </summary>
+    /// <param name="Content">Байты</param>
+    public File WriteByte(byte[] Content){
+        try{
+            System.IO.File.WriteAllBytes(Path, Content ?? []);   
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при записи в файл [" + this + "]!\nТип: Байт\nСодержимое: byte[" + Content.Length + "]", e);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Очищает содержимое файла
+    /// </summary>
+    public File Clear(){
+        try{
+            using(FileStream FS = new FileStream(Path, FileMode.Truncate, FileAccess.Write)){}
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при очистке файла [" + this + "]!");
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Перемещает файл в новое место
+    /// </summary>
+    /// <param name="NewPath">Новый путь для файла [<c>"newfolder/file.txt"</c>]</param>
+    /// <param name="Overwrite">Перезаписать существующий файл если есть, иначе ошибка</param>
+    public File Move(string NewPath, bool Overwrite = false){
+        try{
+            if(string.IsNullOrWhiteSpace(NewPath)){ throw new Exception("Новый путь не может быть пустым!"); }
+            if(!Exist){ throw new Exception(Error_FileNotExist); }
+
+            string? ParentPath = System.IO.Path.GetDirectoryName(NewPath);
+            if(!string.IsNullOrEmpty(ParentPath) && !Directory.Exists(ParentPath)){
+                Directory.CreateDirectory(ParentPath);
+            }
+
+            if(WL.Explorer.File.Exist(NewPath)){
+                if(Overwrite){
+                    WL.Explorer.File.Delete(NewPath);
+                }else{
+                    throw new Exception("Файл уже существует по новому пути!");
+                }
+            }
+            
+            System.IO.File.Move(Path, NewPath);
+            __Path = NewPath;
+        }catch(Exception e){
+            throw new Exception("Не получилось переместить файл [" + this + "]!\nНовый путь: \"" + NewPath + "\"\nЗаменить: " + Overwrite, e);
+        }
+
+        return this;
+    }
+    
+    /// <summary>
+    /// Создаёт файл, если он не существует (Вызывается при создании <c>new File(...)</c>)
+    /// </summary>
+    public File Create(){
+        try{
+            if(Exist){ throw new Exception(Error_FileAlreadyCreated); }
+
+            string? ParentPath = System.IO.Path.GetDirectoryName(Path);
+            if(!string.IsNullOrEmpty(ParentPath) && !Directory.Exists(ParentPath)){
+                Directory.CreateDirectory(ParentPath);
+            }
+
+            using(FileStream FS = System.IO.File.Create(Path)){}
+        }catch(Exception e){
+            throw new Exception("Не получилось создать файл [" + this + "]!");
+        }
+
+        return this;
+    }
+    
+    /// <summary>
+    /// Удаляет файл
+    /// </summary>
+    public void Delete(){
+        try{
+            WL.Explorer.File.Delete(Path);
+        }catch(Exception e){
+            throw new Exception("Не получилось удалить файл [" + this + "]!", e);
+        }
+    }
+
+    #region Overwrite
+
+        public override string ToString(){
+            return "File(\"" + Path + "\", " + Size + ")";
+        }
+
+        public override bool Equals(object? Obj){
+            if(Obj is File F){
+                return string.Equals(Path, F.Path, StringComparison.OrdinalIgnoreCase);
+            }
+            return false;
+        }
+
+        public override int GetHashCode() => Path.GetHashCode(StringComparison.OrdinalIgnoreCase);
+
+        public static bool operator ==(File? A, File? B){
+            if(ReferenceEquals(A, B)){ return true; }
+            if(A is null || B is null){ return false; }
+            return A.Equals(B);
+        }
+
+        public static bool operator !=(File? A, File? B) => !(A == B);
+
+    #endregion
+}

@@ -5,7 +5,25 @@
         }
         
         public static class File{
+            /// <summary>
+            /// Проверяет, существует ли файл по указаному пути
+            /// </summary>
+            /// <param name="Path">Путь [<c>"test/file.json"</c>]</param>
+            /// <returns>Файл существует</returns>
+            public static bool Exist(string Path) => System.IO.File.Exists(Path);
             
+            /// <summary>
+            /// Удаляет файл по указаному пути
+            /// </summary>
+            /// <param name="Path">Путь [<c>"test/file.json"</c>]</param>
+            public static void Delete(string Path){
+                try{
+                    if(!Exist(Path)){ throw new Exception(global::File.Error_FileNotExist); }
+                    System.IO.File.Delete(Path);
+                }catch(Exception e){
+                    throw new Exception("Не получилось удалить файл по пути [" + Path + "]!");
+                }
+            }
         }
         
         public static class Temp{
@@ -37,7 +55,7 @@
             /// <summary>
             /// Создание временного файла
             /// </summary>
-            /// <param name="Path">Путь до файла (с поддержкой папок (WIP)) [<c>test/file.txt</c>]</param>
+            /// <param name="Path">Путь до файла (с поддержкой папок (WIP)) [<c>"test/file.txt"</c>]</param>
             /// <returns>Файл</returns>
             public static FileStream Create(string Path){
                 Path = System.IO.Path.Combine(TempFolder, Path);
