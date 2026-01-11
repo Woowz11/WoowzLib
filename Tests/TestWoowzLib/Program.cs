@@ -1,7 +1,8 @@
-﻿using System;
+﻿namespace TestWoowzLib;
 
-public static class Program{
-    public static void Main(){
-        Console.WriteLine("HELLO РУССКИЙ");
+public class Program{
+    public static int Main(string[] Args){
+        Console.WriteLine("РУССКИЙ ENGLISH");
+        return 0;
     }
 }
