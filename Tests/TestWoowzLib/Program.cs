@@ -1,7 +1,7 @@
 ﻿ public static class Program{
     public static int Main(string[] Args){
 
-        WL.Explorer.Temp.Create("pokpok/gaga.txt").WriteString("HELLO!!!!");
+        WL.Explorer.Resources.Load("WoowzLib.GLFW.Native.win-x64.glfw3.dll", typeof(WL.GLSL).Assembly);
         
         while (!Console.KeyAvailable)
         {

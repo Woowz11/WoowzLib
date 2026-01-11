@@ -1,5 +1,10 @@
-﻿namespace WL{
+﻿using System.Reflection;
+
+namespace WL{
     public static class Explorer{
+        /// <summary>
+        /// Для работы с файлами
+        /// </summary>
         public static class File{
             /// <summary>
             /// Проверяет, существует ли файл по указанному пути
@@ -32,6 +37,9 @@
             }
         }
         
+        /// <summary>
+        /// Для работы с папками
+        /// </summary>
         public static class Folder{
             /// <summary>
             /// Проверяет, существует ли папка по указанному пути
@@ -68,6 +76,9 @@
             }
         }
         
+        /// <summary>
+        /// Для создания временных файлов
+        /// </summary>
         public static class Temp{
             public  static readonly string         TempFolder;
             private static readonly List<WLO.File> TempFiles = [];
@@ -105,6 +116,43 @@
                 TempFiles.Add(TempFile);
                 
                 return TempFile;
+            }
+        }
+        
+        /// <summary>
+        /// Для работы с ресурсами проекта
+        /// </summary>
+        public static class Resources{
+            /// <summary>
+            /// Загружает ресурс из проекта
+            /// </summary>
+            /// <param name="ID">ID ресурса [<c>"WoowzLib.GLFW.Native.win-x64.glfw3.dll"</c>]</param>
+            /// <param name="Assembly">Сборка, где искать ресурс (если null, значит в текущей)</param>
+            /// <returns>Ресурс (сохранённый во временной папке)</returns>
+            public static WLO.File Load(string ID, Assembly? Assembly = null){
+                Assembly Assembly__ = Assembly ?? System.Reflection.Assembly.GetExecutingAssembly();
+
+                string? ProjectName = Assembly__.GetName().Name;
+                
+                try{
+                    using Stream? Stream = Assembly__.GetManifestResourceStream(ID);
+                    if(Stream == null){ throw new Exception("Ресурс не найден в сборке!"); }
+                    
+                    string ResourceName = ID.Split('.').Last();
+                    if(ID.Contains('.')){
+                        string[] Parts__ = ID.Split('.');
+                        ResourceName = Parts__[^2] + "." + Parts__[^1];
+                    }
+
+                    WLO.File File = WL.Explorer.Temp.Create("WL\\Explorer.Resources\\" + (ProjectName ?? "Unknown") + "\\" + ResourceName);
+
+                    using FileStream FS = new FileStream(File.Path, FileMode.Create, FileAccess.Write, FileShare.None);
+                    Stream.CopyTo(FS);
+
+                    return File;
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при загрузке ресурса [" + ID + "]!\nСборка: " + (ProjectName ?? "Неизвестная сборка"), e);
+                }
             }
         }
     }
