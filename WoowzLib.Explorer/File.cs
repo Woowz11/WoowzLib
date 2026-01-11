@@ -1,5 +1,7 @@
 ﻿using System.Text;
 
+namespace WLO;
+
 /// <summary>
 /// Файл
 /// </summary>
@@ -27,6 +29,11 @@ public class File{
 
     private string __Path;
 
+    /// <summary>
+    /// Путь до родительской папки [<c>"../example/"</c>]
+    /// </summary>
+    public string ParentPath => WL.Explorer.File.OnlyFolder(Path);
+    
     /// <summary>
     /// Имя файла (с расширением) [<c>"file.txt"</c>]
     /// </summary>
@@ -67,7 +74,7 @@ public class File{
             return Exist ? System.IO.File.ReadAllText(Path, Encoding ?? Encoding.UTF8) : throw new Exception(Error_FileNotExist);
         }
         catch(Exception e){
-            throw new Exception("Неполучилось прочитать файл [" + this + "]!\nТип: Текст\nКодировка: " + Encoding, e);
+            throw new Exception("Не получилось прочитать файл [" + this + "]!\nТип: Текст\nКодировка: " + Encoding, e);
         }
     }
 
@@ -111,7 +118,7 @@ public class File{
         try{
             return Exist ? System.IO.File.ReadAllBytes(Path) : throw new Exception(Error_FileNotExist);
         }catch(Exception e){
-            throw new Exception("Неполучилось прочитать файл [" + this + "]!\nТип: Байт", e);
+            throw new Exception("Не получилось прочитать файл [" + this + "]!\nТип: Байт", e);
         }
     }
     
@@ -152,10 +159,7 @@ public class File{
             if(string.IsNullOrWhiteSpace(NewPath)){ throw new Exception("Новый путь не может быть пустым!"); }
             if(!Exist){ throw new Exception(Error_FileNotExist); }
 
-            string? ParentPath = System.IO.Path.GetDirectoryName(NewPath);
-            if(!string.IsNullOrEmpty(ParentPath) && !Directory.Exists(ParentPath)){
-                Directory.CreateDirectory(ParentPath);
-            }
+            WL.Explorer.Folder.Create(WL.Explorer.File.OnlyFolder(NewPath));
 
             if(WL.Explorer.File.Exist(NewPath)){
                 if(Overwrite){
@@ -175,16 +179,56 @@ public class File{
     }
     
     /// <summary>
+    /// Клонирует файл в новое место
+    /// </summary>
+    /// <param name="NewPath">Новый путь для файла [<c>"newfolder/file.txt"</c>]</param>
+    /// <param name="Overwrite">Перезаписать существующий файл если есть, иначе ошибка</param>
+    public File Clone(string NewPath, bool Overwrite = false){
+        try{
+            if(string.IsNullOrWhiteSpace(NewPath)){ throw new Exception("Новый путь не может быть пустым!"); }
+            if(!Exist){ throw new Exception(Error_FileNotExist); }
+
+            WL.Explorer.Folder.Create(WL.Explorer.File.OnlyFolder(NewPath));
+
+            if(WL.Explorer.File.Exist(NewPath)){
+                if(Overwrite){
+                    WL.Explorer.File.Delete(NewPath);
+                }else{
+                    throw new Exception("Файл уже существует по новому пути!");
+                }
+            }
+
+            return new File(NewPath).WriteByte(ReadByte());
+        }catch(Exception e){
+            throw new Exception("Не получилось клонировать файл [" + this + "]!\nНовый путь: \"" + NewPath + "\"\nЗаменить: " + Overwrite, e);
+        }
+    }
+
+    /// <summary>
+    /// Получает FileStream для работы с файлом
+    /// </summary>
+    /// <param name="Mode">Режим открытия файла</param>
+    /// <param name="Access">Доступ к файлу</param>
+    /// <param name="Share">Режим совместного доступа</param>
+    /// <returns>FileStream для чтения/записи</returns>
+    public FileStream Stream(FileMode Mode = FileMode.OpenOrCreate, FileAccess Access = FileAccess.ReadWrite, FileShare Share = FileShare.None){
+        try{
+            if(!Exist){ throw new Exception(Error_FileNotExist); }
+            WL.Explorer.Folder.Create(ParentPath);
+            return new FileStream(Path, Mode, Access, Share);
+        }catch(Exception e){
+            throw new Exception("Не удалось открыть FileStream для файла [" + this + "]!\nРежим открытия: " + Mode + "\nДоступ: " + Access + "\nРежим совместного доступа: " + Share, e);
+        }
+    }
+    
+    /// <summary>
     /// Создаёт файл, если он не существует (Вызывается при создании <c>new File(...)</c>)
     /// </summary>
     public File Create(){
         try{
             if(Exist){ throw new Exception(Error_FileAlreadyCreated); }
 
-            string? ParentPath = System.IO.Path.GetDirectoryName(Path);
-            if(!string.IsNullOrEmpty(ParentPath) && !Directory.Exists(ParentPath)){
-                Directory.CreateDirectory(ParentPath);
-            }
+            WL.Explorer.Folder.Create(ParentPath);
 
             using(FileStream FS = System.IO.File.Create(Path)){}
         }catch(Exception e){
@@ -208,7 +252,7 @@ public class File{
     #region Overwrite
 
         public override string ToString(){
-            return "File(\"" + Path + "\", " + Size + ")";
+            return "File(\"" + Path + "\", " + (Exist ? Size : "Не существует") + ")";
         }
 
         public override bool Equals(object? Obj){

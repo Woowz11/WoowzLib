@@ -1,13 +1,7 @@
-﻿public static class Program{
+﻿ public static class Program{
     public static int Main(string[] Args){
-        
-        string folder = "W:\\Woowz11\\Desktop\\TESTS\\";
 
-        File f = new File(folder + "test.txt");
-
-        f.AddString("\nHELLO!!!)))");
-        
-        Console.WriteLine(f.ReadString());
+        WL.Explorer.Temp.Create("pokpok/gaga.txt").WriteString("HELLO!!!!");
         
         while (!Console.KeyAvailable)
         {
