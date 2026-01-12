@@ -3,7 +3,7 @@ using WL.WLO;
 
 namespace WLO.GLFW;
 
-public abstract class WindowBase : IDisposable{
+public abstract class WindowBase : WindowContext, IDisposable{
     public abstract void Destroy();
     public abstract void Dispose();
     
@@ -108,8 +108,13 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
                 
             };
             WL.GLFW.Native.glfwSetWindowMaximizeCallback(Handle, __MaximizeCallback);
-            
-            this.Render = Render ?? new TRender();
+
+            if(Render == null){
+                this.Render = new TRender();
+                this.Render.__ConnectWindow(this);
+            }else{
+                this.Render = Render;
+            }
 
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании окна [" + this + "]!", e);
@@ -127,12 +132,10 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     /// </summary>
     public IntPtr Handle{ get; private set; }
 
-    public TRender Render{ get; private set; }
-
     /// <summary>
-    /// Уникальный ID окна (основан на Handle)
+    /// Рендер окна
     /// </summary>
-    public long ID{ get; private set; }
+    public TRender Render{ get; private set; }
 
     /// <summary>
     /// Уничтожено окно?
@@ -144,6 +147,11 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     /// </summary>
     public Window<TRender> CheckDestroyed(){ if(Destroyed){ throw new Exception("Окно [" + this + "] уничтожено!"); } return this; }
 
+    /// <summary>
+    /// Завершает рендер (меняет буфер рендера с буфером экрана местами)
+    /// </summary>
+    public Window<TRender> FinishRender(){ WL.GLFW.Native.glfwSwapBuffers(Handle); return this; }
+    
     #region Events
 
         /// <summary>
@@ -342,8 +350,12 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             }catch{ /**/ }
         }
         
+        public override void __UpdateContext(){
+            WL.GLFW.Native.glfwMakeContextCurrent(Handle);
+        }
+        
         public override string ToString(){
-            return "GLFW.Window(" + (Destroyed ? "Уничтожено" : ID) + ", \"" + Title + "\", " + Width + "x" + Height + ")";
+            return "GLFW.Window<" + Render + ">(" + (Destroyed ? "Уничтожено" : ID) + ", \"" + Title + "\", " + Width + "x" + Height + ")";
         }
 
         public override bool Equals(object? obj){

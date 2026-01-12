@@ -9,14 +9,28 @@ public static class Program{
             WL.GLFW.Start();
 
             Window<GL> W1 = new Window<GL>();
-
-            WL.GLFW.Native.glfwMakeContextCurrent(W1.Handle);
+            Window<GL> W2 = new Window<GL>();
+            Window<GL> W3 = new Window<GL>(Render: W1.Render);
             
-            while(!W1.ShouldDestroy){
-                W1.Title = DateTime.Now.ToString("T");
-                
-                UPD(W1);
-                
+            while(!W1.ShouldDestroy || !W2.ShouldDestroy || !W3.ShouldDestroy){
+                if(!W1.Destroyed){
+                    W1.Title = DateTime.Now.ToString("T");
+                    
+                    W1.Render.Test(1,0,0);
+                    
+                    W1.FinishRender();
+                }
+
+                if(!W2.Destroyed){
+                    W2.Render.Test(0,0,1);
+                    
+                    W2.FinishRender();
+                }
+
+                if(!W3.Destroyed){
+                    W3.FinishRender();
+                }
+
                 WL.GLFW.Tick();
             }
             
@@ -26,9 +40,5 @@ public static class Program{
         }
         
         return 0;
-    }
-
-    private static void UPD(Window<GL> W1){
-        W1.Render.Test();
     }
 }
