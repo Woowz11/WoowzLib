@@ -24,8 +24,8 @@ public class Window : IDisposable{
 
             if(Handle == IntPtr.Zero){ throw new Exception("Не получилось создать окно внутри glfwCreateWindow!"); }
             
-            __Width  = Width;
-            __Height = Height;
+            __Width  = (uint)Width;
+            __Height = (uint)Height;
             __Title  = Title;
             
             ID = Handle.ToInt64();
@@ -44,8 +44,8 @@ public class Window : IDisposable{
             WL.GLFW.Native.glfwSetWindowCloseCallback(Handle, __CloseCallback);
 
             __SizeCallback = (W, Width, Height) => {
-                __Width  = Width;
-                __Height = Height;
+                __Width  = (uint)Width;
+                __Height = (uint)Height;
 
                 try{
                     OnResize?.Invoke(this, Width, Height);   
@@ -61,7 +61,7 @@ public class Window : IDisposable{
                 __Y = Y;
 
                 try{
-                    OnPosition?.Invoke(this, X, Y);   
+                    OnMove?.Invoke(this, X, Y);   
                 }catch(Exception e){
                     Console.WriteLine("Произошла ошибка при вызове ивентов на изменение позиции окна [" + this + "]!\nX: " + X + "\nY: " + Y);
                     Console.WriteLine(e);
@@ -150,7 +150,7 @@ public class Window : IDisposable{
         /// <summary>
         /// Вызывается при изменении позиции окна
         /// </summary>
-        public event WindowEvent_Position? OnPosition;
+        public event WindowEvent_Position? OnMove;
         
         /// <summary>
         /// Вызывается при изменении фокуса окна
@@ -194,26 +194,28 @@ public class Window : IDisposable{
     /// <summary>
     /// Ширина окна
     /// </summary>
-    public int Width{
+    public uint Width{
         get => __Width;
         set{
             try{
                 if(__Width == value){ return; }
+                //if(value < ) ДОБАВИТЬ ЛИМИТЫ РАЗМЕРА ОКНА glfwSetWindowSizeLimits
+                
                 __Width = value;
                 
                 CheckDestroyed();
-                WL.GLFW.Native.glfwSetWindowSize(Handle, __Width, __Height);
+                WL.GLFW.Native.glfwSetWindowSize(Handle, (int)__Width, (int)__Height);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при установке ширины окну [" + this + "]!\nШирина: " + value, e);
             }
         }
     }
-    private int __Width;
+    private uint __Width;
     
     /// <summary>
     /// Высота окна
     /// </summary>
-    public int Height{
+    public uint Height{
         get => __Height;
         set{
             try{
@@ -221,13 +223,13 @@ public class Window : IDisposable{
                 __Height = value;
             
                 CheckDestroyed();
-                WL.GLFW.Native.glfwSetWindowSize(Handle, __Width, __Height);
+                WL.GLFW.Native.glfwSetWindowSize(Handle, (int)__Width, (int)__Height);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при установке высоты окну [" + this + "]!\nВысота: " + value, e);
             }
         }
     }
-    private int __Height;
+    private uint __Height;
     
     /// <summary>
     /// Позиция окна по X
