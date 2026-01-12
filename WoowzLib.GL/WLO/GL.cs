@@ -1,6 +1,4 @@
-﻿using WL.WLO;
-
-namespace WLO;
+﻿namespace WLO;
 
 public class GL : RenderContext{
     public void Test(float r, float g, float b){

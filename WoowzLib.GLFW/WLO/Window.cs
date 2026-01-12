@@ -1,5 +1,4 @@
 ﻿using System.Runtime.InteropServices;
-using WL.WLO;
 
 namespace WLO.GLFW;
 

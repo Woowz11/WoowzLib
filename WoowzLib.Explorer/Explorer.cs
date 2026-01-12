@@ -75,6 +75,27 @@ namespace WL{
                     throw new Exception("Не получилось уничтожить папку по пути [" + Path + "]!");
                 }
             }
+
+            /// <summary>
+            /// Уничтожает содержимое папки (с файлами и папками внутри)
+            /// </summary>
+            /// <param name="Path">Путь [<c>"test/folder/"</c>]</param>
+            public static void Clear(string Path){
+                try{
+                    if(!Exist(Path)){ throw new Exception("Папка не найдена!"); }
+
+                    foreach(string File in Directory.GetFiles(Path)){
+                        System.IO.File.SetAttributes(File, FileAttributes.Normal);
+                        System.IO.File.Delete(File);
+                    }
+
+                    foreach(string Folder in Directory.GetDirectories(Path)){
+                        Directory.Delete(Folder, true);
+                    }
+                }catch(Exception e){
+                    throw new Exception("Не получилось уничтожить файлы внутри папки по пути [" + Path + "]!");
+                }
+            }
         }
         
         /// <summary>

@@ -1,6 +1,4 @@
-﻿using WLO;
-
-namespace WL.WLO;
+﻿namespace WLO;
 
 public class RenderContext{
     private static long CurrentContext;
