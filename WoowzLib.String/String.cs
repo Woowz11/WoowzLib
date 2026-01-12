@@ -95,5 +95,29 @@ namespace WL{
         public static string Join(object[] Values){
             return string.Join(", ", Values);
         }
+        
+        /// <summary>
+        /// Объединяет массив объектов с ключами в строку с пользовательской функцией
+        /// </summary>
+        /// <param name="Func">Функция (Индекс текущего элемента в массиве, Текущий элемент в массиве с ключом, Это последний элемент?, Возвращаемый результат)</param>
+        /// <param name="Values">Элементы с ключами</param>
+        public static string Join<TKey, TValue>(Func<int, KeyValuePair<TKey, TValue>, bool, string> Func, Dictionary<TKey, TValue> Values){
+            try{
+                if(Values.Count == 0){ return Func(0, default, true); }
+
+                StringBuilder SB = new StringBuilder();
+                int Index = 0;
+                int LastIndex = Values.Count - 1;
+
+                foreach(KeyValuePair<TKey, TValue> Pair in Values){
+                    SB.Append(Func(Index, Pair, Index == LastIndex));
+                    Index++;
+                }
+
+                return SB.ToString();
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при объединении объектов с ключами в строку!\nФункция: " + Func+ "\nЭлементы: " + Values + "");
+            }
+        }
     }
 }

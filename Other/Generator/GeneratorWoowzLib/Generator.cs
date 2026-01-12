@@ -201,23 +201,46 @@ public static class Generator{
 
                 // Тип (int, float, byte, double)
                 string Type = ColorType.ToString().ToLower();
-                
-                string Full = ColorType is ColorType.Byte or ColorType.Int ? "255" : "1";
 
-                bool ByteLimit = ColorType is ColorType.Byte;
+                const string V_0 = "0";
+                string       V05 = ColorType is ColorType.Byte or ColorType.Int ? "127" : ("0.5" + (ColorType is ColorType.Float ? "f" : ""));
+                string       V_1  = ColorType is ColorType.Byte or ColorType.Int ? "255" : "1";
+
+                Dictionary<string, string[]> Constants = new Dictionary<string, string[]>{
+                    {"Red"        , [ V_1, V_0, V_0, V_1 ]},
+                    {"Orange"     , [ V_1, V05, V_0, V_1 ]},
+                    {"Yellow"     , [ V_1, V_1, V_0, V_1 ]},
+                    {"Green"      , [ V_0, V_1, V_0, V_1 ]},
+                    {"Aqua"       , [ V_0, V_1, V_1, V_1 ]},
+                    {"Blue"       , [ V_0, V_0, V_1, V_1 ]},
+                    {"Purple"     , [ V05, V_0, V_1, V_1 ]},
+                    {"Magenta"    , [ V_1, V_0, V_1, V_1 ]},
+                    {"Pink"       , [ V_1, V05, V_1, V_1 ]},
+                    {"White"      , [ V_1, V_1, V_1, V_1 ]},
+                    {"Gray"       , [ V05, V05, V05, V_1 ]},
+                    {"Black"      , [ V_0, V_0, V_0, V_1 ]},
+                    {"Transparent", [ V_0, V_0, V_0, V_0 ]}
+                };
                 
                 string Result = Pre() + "\n";
 
-                Result += "public struct " + Name + "(" + WL.String.Join(Type + " $0 = 0, ", Type + " $0 = " + Full, Components) + "){\n";
+                Result += "public struct " + Name + "(" + WL.String.Join(Type + " $0 = 0, ", Type + " $0 = " + V_1, Components) + "){\n";
 
                 Result += $$"""
                                 public readonly Type T = typeof({{Type}});
                             
                             {{WL.String.Join("\tpublic " + Type + " $0;\n", Components)}}
+                                public {{Name}} Set({{WL.String.Join(Type + " $0, ", Type + " $0", Components)}}){ {{WL.String.Join("this.$0 = $0; ", Components)}}return this; }
+                                
+                            {{WL.String.Join((i, Obj, Last) => {
+                                return "\tpublic " + Name + " To" + Obj.Key + "(){ return Set(" + WL.String.Join(Obj.Value) + "); }\n" +
+                                       "\tpublic static readonly " + Name + " " + Obj.Key + " = new " + Name + "().To" + Obj.Key + "();\n";
+                            }, Constants)}}
+                            
                                 #region Override
                             
                                     public override string ToString(){
-                                        return "{{Name}}(" + {{WL.String.Join("$0 + \", \" + ", "($0 == " + Full + " ? \"\" : $0)", Components)}} + ")";
+                                        return "{{Name}}(" + {{WL.String.Join("$0 + \", \" + ", "($0 == " + V_1 + " ? \"\" : $0)", Components)}} + ")";
                                     }
                                     
                                     public override bool Equals(object? obj){

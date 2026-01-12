@@ -25,8 +25,9 @@ public static class Program{
             while(!AAA.ShouldDestroy || !BBB.ShouldDestroy || !CCC.ShouldDestroy){
                 if(!AAA.Destroyed){
                     AAA.Title = DateTime.Now.ToString("T");
-                    
-                    AAA.Render.Test(1,0,0);
+
+                    AAA.Render.BackgroundColor = ColorF.Red;
+                    AAA.Render.Test();
                     
                     AAA.FinishRender();
                 }
@@ -34,13 +35,15 @@ public static class Program{
                 if(!BBB.Destroyed){
                     BBB.Title = CCC.ToString();
                     
-                    BBB.Render.Test(0,0,1);
+                    BBB.Render.BackgroundColor = ColorF.Green;
+                    BBB.Render.Test();
                     
                     BBB.FinishRender();
                 }
 
                 if(!CCC.Destroyed){
-                    CCC.Render.Test(0,WL.Math.Random.Fast_0_1(),0);
+                    CCC.Render.BackgroundColor = ColorF.Blue;
+                    CCC.Render.Test();
                     
                     CCC.FinishRender();
                 }
