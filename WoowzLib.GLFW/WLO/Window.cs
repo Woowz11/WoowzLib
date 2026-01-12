@@ -114,8 +114,9 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             };
             WL.GLFW.Native.glfwSetWindowMaximizeCallback(Handle, __MaximizeCallback);
             
-            this.Render = new TRender();
-            this.Render.__ConnectWindow(this);
+            Render = new TRender();
+            Render.__ConnectWindow(this);
+            Render.__Start();
 
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании окна [" + this + "]!", e);
@@ -352,7 +353,13 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
         }
         
         public override void __UpdateContext(){
-            WL.GLFW.Native.glfwMakeContextCurrent(Handle);
+            try{
+                CheckDestroyed();
+                
+                WL.GLFW.Native.glfwMakeContextCurrent(Handle);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке GLFW контекста у окна [" + this + "]!", e);
+            }
         }
         
         public override string ToString(){

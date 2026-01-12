@@ -1,15 +1,21 @@
 ﻿namespace WLO;
 
-public class RenderContext{
+public abstract class RenderContext{
     private static long CurrentContext;
     
     protected void MakeContext(){
-        if(CurrentContext == ConnectedWindow.ID){ return; }
+        try{
+            if(CurrentContext == ConnectedWindow.ID){ return; }
 
-        ConnectedWindow.__UpdateContext();
+            ConnectedWindow.__UpdateContext();
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при установке контекста!", e);
+        }
     }
 
     private WindowContext ConnectedWindow;
 
     public void __ConnectWindow(WindowContext Window){ ConnectedWindow = Window; }
+
+    public abstract void __Start();
 }

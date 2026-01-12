@@ -3,8 +3,12 @@
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
 /// </summary>
-public struct ColorI(int R = 0, int G = 0, int B = 0, int A = 255){
+public struct ColorI{
 	public readonly Type T = typeof(int);
+
+	public ColorI(int R = 0, int G = 0, int B = 0, int A = 255){
+		this.R = R; this.G = G; this.B = B; this.A = A; 
+	}
 
 	public int R;
 	public int G;
@@ -14,31 +18,31 @@ public struct ColorI(int R = 0, int G = 0, int B = 0, int A = 255){
 	public ColorI Set(int R, int G, int B, int A){ this.R = R; this.G = G; this.B = B; this.A = A; return this; }
 	
 	public ColorI ToRed(){ return Set(255, 0, 0, 255); }
-	public static readonly ColorI Red = new ColorI().ToRed();
+	public static ColorI Red => new ColorI().ToRed();
 	public ColorI ToOrange(){ return Set(255, 127, 0, 255); }
-	public static readonly ColorI Orange = new ColorI().ToOrange();
+	public static ColorI Orange => new ColorI().ToOrange();
 	public ColorI ToYellow(){ return Set(255, 255, 0, 255); }
-	public static readonly ColorI Yellow = new ColorI().ToYellow();
+	public static ColorI Yellow => new ColorI().ToYellow();
 	public ColorI ToGreen(){ return Set(0, 255, 0, 255); }
-	public static readonly ColorI Green = new ColorI().ToGreen();
+	public static ColorI Green => new ColorI().ToGreen();
 	public ColorI ToAqua(){ return Set(0, 255, 255, 255); }
-	public static readonly ColorI Aqua = new ColorI().ToAqua();
+	public static ColorI Aqua => new ColorI().ToAqua();
 	public ColorI ToBlue(){ return Set(0, 0, 255, 255); }
-	public static readonly ColorI Blue = new ColorI().ToBlue();
+	public static ColorI Blue => new ColorI().ToBlue();
 	public ColorI ToPurple(){ return Set(127, 0, 255, 255); }
-	public static readonly ColorI Purple = new ColorI().ToPurple();
+	public static ColorI Purple => new ColorI().ToPurple();
 	public ColorI ToMagenta(){ return Set(255, 0, 255, 255); }
-	public static readonly ColorI Magenta = new ColorI().ToMagenta();
+	public static ColorI Magenta => new ColorI().ToMagenta();
 	public ColorI ToPink(){ return Set(255, 127, 255, 255); }
-	public static readonly ColorI Pink = new ColorI().ToPink();
+	public static ColorI Pink => new ColorI().ToPink();
 	public ColorI ToWhite(){ return Set(255, 255, 255, 255); }
-	public static readonly ColorI White = new ColorI().ToWhite();
+	public static ColorI White => new ColorI().ToWhite();
 	public ColorI ToGray(){ return Set(127, 127, 127, 255); }
-	public static readonly ColorI Gray = new ColorI().ToGray();
+	public static ColorI Gray => new ColorI().ToGray();
 	public ColorI ToBlack(){ return Set(0, 0, 0, 255); }
-	public static readonly ColorI Black = new ColorI().ToBlack();
+	public static ColorI Black => new ColorI().ToBlack();
 	public ColorI ToTransparent(){ return Set(0, 0, 0, 0); }
-	public static readonly ColorI Transparent = new ColorI().ToTransparent();
+	public static ColorI Transparent => new ColorI().ToTransparent();
 
 
 	#region Override

@@ -67,7 +67,7 @@ public static class Generator{
             }
         }
         
-        private enum VectorType{ Int, UInt, Float, Double }
+        private enum VectorType{ Int, Float, Double }
         private static readonly char[] VectorComponents = ['X', 'Y', 'Z', 'W'];
         private static void CreateVector(string OutputFolder, VectorType VectorType, int N){
             try{
@@ -76,24 +76,58 @@ public static class Generator{
                 // VectorComponents но сокращённый под N
                 object[] Components = VectorComponents.Take(N).Cast<object>().ToArray();
                 
-                // Первая буква типа (I, F, U, D)
+                // Первая буква типа (I, F, D)
                 string TypeChar = VectorType.ToString()[0].ToString();
 
                 // Название (Vector3F, Vector2U)
                 string Name = "Vector" + N + TypeChar;
 
-                // Тип (int, float, uint, double)
+                // Тип (int, float, double)
                 string Type = VectorType.ToString().ToLower();
+                
+                const string V_0 =  "0";
+                const string V_1 =  "1";
+                const string VM1 = "-1";
+
+                Dictionary<string, string[]> Constants2 = new Dictionary<string, string[]>{
+                    {"Zero"       , [ V_0, V_0, V_0, V_0 ]},
+                    {"One"        , [ V_1, V_1, V_1, V_1 ]},
+                    {"MOne"       , [ VM1, VM1, VM1, VM1 ]},
+                    {"Right"      , [ V_1, V_0, V_0, V_0 ]},
+                    {"Left"       , [ VM1, V_0, V_0, V_0 ]},
+                    {"Up"         , [ V_0, V_1, V_0, V_0 ]},
+                    {"Down"       , [ V_0, VM1, V_0, V_0 ]}
+                };
+                Dictionary<string, string[]> Constants3 = new Dictionary<string, string[]>{
+                    {"Front"       , [ V_0, V_0, V_1, V_0 ]},
+                    {"Back"        , [ V_0, V_0, VM1, V_0 ]}
+                };
+                Dictionary<string, string[]> Constants4 = new Dictionary<string, string[]>{
+                    {"Ana"       , [ V_0, V_0, V_0, V_1 ]},
+                    {"Kata"      , [ V_0, V_0, V_0, VM1 ]}
+                };
+
+                Dictionary<string, string[]> AllConstants = new[]{ Constants2, Constants3, Constants4 }.Take(Math.Max(0, N - 1)).SelectMany(D => D).ToDictionary(P => P.Key, P => P.Value.Take(N).ToArray());
                 
                 string Result = Pre() + "\n";
 
-                Result += "public struct " + Name + "(" + WL.String.Join(Type + " $0 = 0, ", Type + " $0 = 0", Components) + "){\n";
+                Result += "public struct " + Name + "{\n";
 
                 Result += $$"""
                                 public readonly int  N = {{N}};
                                 public readonly Type T = typeof({{Type}});
                             
+                                public {{Name}}({{WL.String.Join(Type + " $0 = 0, ", Type + " $0 = 0", Components)}}){
+                                    {{WL.String.Join("this.$0 = $0; ", Components)}}
+                                }
+                            
                             {{WL.String.Join("\tpublic " + Type + " $0;\n", Components)}}
+                                public {{Name}} Set({{WL.String.Join(Type + " $0, ", Type + " $0", Components)}}){ {{WL.String.Join("this.$0 = $0; ", Components)}}return this; }
+                                    
+                            {{WL.String.Join((i, Obj, Last) => {
+                                return "\tpublic " + Name + " To" + Obj.Key + "(){ return Set(" + WL.String.Join(Obj.Value) + "); }\n" +
+                                       "\tpublic static " + Name + " " + Obj.Key + " => new " + Name + "().To" + Obj.Key + "();\n";
+                            }, AllConstants)}}
                                 #region Override
                             
                                     public override string ToString(){
@@ -224,17 +258,21 @@ public static class Generator{
                 
                 string Result = Pre() + "\n";
 
-                Result += "public struct " + Name + "(" + WL.String.Join(Type + " $0 = 0, ", Type + " $0 = " + V_1, Components) + "){\n";
+                Result += "public struct " + Name + "{\n";
 
                 Result += $$"""
                                 public readonly Type T = typeof({{Type}});
+                            
+                                public {{Name}}({{WL.String.Join(Type + " $0 = 0, ", Type + " $0 = " + V_1, Components)}}){
+                                    {{WL.String.Join("this.$0 = $0; ", Components)}}
+                                }
                             
                             {{WL.String.Join("\tpublic " + Type + " $0;\n", Components)}}
                                 public {{Name}} Set({{WL.String.Join(Type + " $0, ", Type + " $0", Components)}}){ {{WL.String.Join("this.$0 = $0; ", Components)}}return this; }
                                 
                             {{WL.String.Join((i, Obj, Last) => {
                                 return "\tpublic " + Name + " To" + Obj.Key + "(){ return Set(" + WL.String.Join(Obj.Value) + "); }\n" +
-                                       "\tpublic static readonly " + Name + " " + Obj.Key + " = new " + Name + "().To" + Obj.Key + "();\n";
+                                       "\tpublic static " + Name + " " + Obj.Key + " => new " + Name + "().To" + Obj.Key + "();\n";
                             }, Constants)}}
                             
                                 #region Override

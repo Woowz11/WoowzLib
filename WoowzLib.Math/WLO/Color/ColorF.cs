@@ -3,8 +3,12 @@
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
 /// </summary>
-public struct ColorF(float R = 0, float G = 0, float B = 0, float A = 1){
+public struct ColorF{
 	public readonly Type T = typeof(float);
+
+	public ColorF(float R = 0, float G = 0, float B = 0, float A = 1){
+		this.R = R; this.G = G; this.B = B; this.A = A; 
+	}
 
 	public float R;
 	public float G;
@@ -14,31 +18,31 @@ public struct ColorF(float R = 0, float G = 0, float B = 0, float A = 1){
 	public ColorF Set(float R, float G, float B, float A){ this.R = R; this.G = G; this.B = B; this.A = A; return this; }
 	
 	public ColorF ToRed(){ return Set(1, 0, 0, 1); }
-	public static readonly ColorF Red = new ColorF().ToRed();
+	public static ColorF Red => new ColorF().ToRed();
 	public ColorF ToOrange(){ return Set(1, 0.5f, 0, 1); }
-	public static readonly ColorF Orange = new ColorF().ToOrange();
+	public static ColorF Orange => new ColorF().ToOrange();
 	public ColorF ToYellow(){ return Set(1, 1, 0, 1); }
-	public static readonly ColorF Yellow = new ColorF().ToYellow();
+	public static ColorF Yellow => new ColorF().ToYellow();
 	public ColorF ToGreen(){ return Set(0, 1, 0, 1); }
-	public static readonly ColorF Green = new ColorF().ToGreen();
+	public static ColorF Green => new ColorF().ToGreen();
 	public ColorF ToAqua(){ return Set(0, 1, 1, 1); }
-	public static readonly ColorF Aqua = new ColorF().ToAqua();
+	public static ColorF Aqua => new ColorF().ToAqua();
 	public ColorF ToBlue(){ return Set(0, 0, 1, 1); }
-	public static readonly ColorF Blue = new ColorF().ToBlue();
+	public static ColorF Blue => new ColorF().ToBlue();
 	public ColorF ToPurple(){ return Set(0.5f, 0, 1, 1); }
-	public static readonly ColorF Purple = new ColorF().ToPurple();
+	public static ColorF Purple => new ColorF().ToPurple();
 	public ColorF ToMagenta(){ return Set(1, 0, 1, 1); }
-	public static readonly ColorF Magenta = new ColorF().ToMagenta();
+	public static ColorF Magenta => new ColorF().ToMagenta();
 	public ColorF ToPink(){ return Set(1, 0.5f, 1, 1); }
-	public static readonly ColorF Pink = new ColorF().ToPink();
+	public static ColorF Pink => new ColorF().ToPink();
 	public ColorF ToWhite(){ return Set(1, 1, 1, 1); }
-	public static readonly ColorF White = new ColorF().ToWhite();
+	public static ColorF White => new ColorF().ToWhite();
 	public ColorF ToGray(){ return Set(0.5f, 0.5f, 0.5f, 1); }
-	public static readonly ColorF Gray = new ColorF().ToGray();
+	public static ColorF Gray => new ColorF().ToGray();
 	public ColorF ToBlack(){ return Set(0, 0, 0, 1); }
-	public static readonly ColorF Black = new ColorF().ToBlack();
+	public static ColorF Black => new ColorF().ToBlack();
 	public ColorF ToTransparent(){ return Set(0, 0, 0, 0); }
-	public static readonly ColorF Transparent = new ColorF().ToTransparent();
+	public static ColorF Transparent => new ColorF().ToTransparent();
 
 
 	#region Override

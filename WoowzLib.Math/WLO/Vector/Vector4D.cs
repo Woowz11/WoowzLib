@@ -3,14 +3,43 @@
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
 /// </summary>
-public struct Vector4D(double X = 0, double Y = 0, double Z = 0, double W = 0){
+public struct Vector4D{
 	public readonly int  N = 4;
 	public readonly Type T = typeof(double);
+
+	public Vector4D(double X = 0, double Y = 0, double Z = 0, double W = 0){
+		this.X = X; this.Y = Y; this.Z = Z; this.W = W; 
+	}
 
 	public double X;
 	public double Y;
 	public double Z;
 	public double W;
+
+	public Vector4D Set(double X, double Y, double Z, double W){ this.X = X; this.Y = Y; this.Z = Z; this.W = W; return this; }
+		
+	public Vector4D ToZero(){ return Set(0, 0, 0, 0); }
+	public static Vector4D Zero => new Vector4D().ToZero();
+	public Vector4D ToOne(){ return Set(1, 1, 1, 1); }
+	public static Vector4D One => new Vector4D().ToOne();
+	public Vector4D ToMOne(){ return Set(-1, -1, -1, -1); }
+	public static Vector4D MOne => new Vector4D().ToMOne();
+	public Vector4D ToRight(){ return Set(1, 0, 0, 0); }
+	public static Vector4D Right => new Vector4D().ToRight();
+	public Vector4D ToLeft(){ return Set(-1, 0, 0, 0); }
+	public static Vector4D Left => new Vector4D().ToLeft();
+	public Vector4D ToUp(){ return Set(0, 1, 0, 0); }
+	public static Vector4D Up => new Vector4D().ToUp();
+	public Vector4D ToDown(){ return Set(0, -1, 0, 0); }
+	public static Vector4D Down => new Vector4D().ToDown();
+	public Vector4D ToFront(){ return Set(0, 0, 1, 0); }
+	public static Vector4D Front => new Vector4D().ToFront();
+	public Vector4D ToBack(){ return Set(0, 0, -1, 0); }
+	public static Vector4D Back => new Vector4D().ToBack();
+	public Vector4D ToAna(){ return Set(0, 0, 0, 1); }
+	public static Vector4D Ana => new Vector4D().ToAna();
+	public Vector4D ToKata(){ return Set(0, 0, 0, -1); }
+	public static Vector4D Kata => new Vector4D().ToKata();
 
 	#region Override
 

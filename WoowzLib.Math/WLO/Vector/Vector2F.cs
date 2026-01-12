@@ -3,12 +3,33 @@
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
 /// </summary>
-public struct Vector2F(float X = 0, float Y = 0){
+public struct Vector2F{
 	public readonly int  N = 2;
 	public readonly Type T = typeof(float);
 
+	public Vector2F(float X = 0, float Y = 0){
+		this.X = X; this.Y = Y; 
+	}
+
 	public float X;
 	public float Y;
+
+	public Vector2F Set(float X, float Y){ this.X = X; this.Y = Y; return this; }
+		
+	public Vector2F ToZero(){ return Set(0, 0); }
+	public static Vector2F Zero => new Vector2F().ToZero();
+	public Vector2F ToOne(){ return Set(1, 1); }
+	public static Vector2F One => new Vector2F().ToOne();
+	public Vector2F ToMOne(){ return Set(-1, -1); }
+	public static Vector2F MOne => new Vector2F().ToMOne();
+	public Vector2F ToRight(){ return Set(1, 0); }
+	public static Vector2F Right => new Vector2F().ToRight();
+	public Vector2F ToLeft(){ return Set(-1, 0); }
+	public static Vector2F Left => new Vector2F().ToLeft();
+	public Vector2F ToUp(){ return Set(0, 1); }
+	public static Vector2F Up => new Vector2F().ToUp();
+	public Vector2F ToDown(){ return Set(0, -1); }
+	public static Vector2F Down => new Vector2F().ToDown();
 
 	#region Override
 

@@ -3,14 +3,43 @@
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
 /// </summary>
-public struct Vector4I(int X = 0, int Y = 0, int Z = 0, int W = 0){
+public struct Vector4I{
 	public readonly int  N = 4;
 	public readonly Type T = typeof(int);
+
+	public Vector4I(int X = 0, int Y = 0, int Z = 0, int W = 0){
+		this.X = X; this.Y = Y; this.Z = Z; this.W = W; 
+	}
 
 	public int X;
 	public int Y;
 	public int Z;
 	public int W;
+
+	public Vector4I Set(int X, int Y, int Z, int W){ this.X = X; this.Y = Y; this.Z = Z; this.W = W; return this; }
+		
+	public Vector4I ToZero(){ return Set(0, 0, 0, 0); }
+	public static Vector4I Zero => new Vector4I().ToZero();
+	public Vector4I ToOne(){ return Set(1, 1, 1, 1); }
+	public static Vector4I One => new Vector4I().ToOne();
+	public Vector4I ToMOne(){ return Set(-1, -1, -1, -1); }
+	public static Vector4I MOne => new Vector4I().ToMOne();
+	public Vector4I ToRight(){ return Set(1, 0, 0, 0); }
+	public static Vector4I Right => new Vector4I().ToRight();
+	public Vector4I ToLeft(){ return Set(-1, 0, 0, 0); }
+	public static Vector4I Left => new Vector4I().ToLeft();
+	public Vector4I ToUp(){ return Set(0, 1, 0, 0); }
+	public static Vector4I Up => new Vector4I().ToUp();
+	public Vector4I ToDown(){ return Set(0, -1, 0, 0); }
+	public static Vector4I Down => new Vector4I().ToDown();
+	public Vector4I ToFront(){ return Set(0, 0, 1, 0); }
+	public static Vector4I Front => new Vector4I().ToFront();
+	public Vector4I ToBack(){ return Set(0, 0, -1, 0); }
+	public static Vector4I Back => new Vector4I().ToBack();
+	public Vector4I ToAna(){ return Set(0, 0, 0, 1); }
+	public static Vector4I Ana => new Vector4I().ToAna();
+	public Vector4I ToKata(){ return Set(0, 0, 0, -1); }
+	public static Vector4I Kata => new Vector4I().ToKata();
 
 	#region Override
 

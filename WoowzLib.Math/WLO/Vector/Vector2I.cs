@@ -3,12 +3,33 @@
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
 /// </summary>
-public struct Vector2I(int X = 0, int Y = 0){
+public struct Vector2I{
 	public readonly int  N = 2;
 	public readonly Type T = typeof(int);
 
+	public Vector2I(int X = 0, int Y = 0){
+		this.X = X; this.Y = Y; 
+	}
+
 	public int X;
 	public int Y;
+
+	public Vector2I Set(int X, int Y){ this.X = X; this.Y = Y; return this; }
+		
+	public Vector2I ToZero(){ return Set(0, 0); }
+	public static Vector2I Zero => new Vector2I().ToZero();
+	public Vector2I ToOne(){ return Set(1, 1); }
+	public static Vector2I One => new Vector2I().ToOne();
+	public Vector2I ToMOne(){ return Set(-1, -1); }
+	public static Vector2I MOne => new Vector2I().ToMOne();
+	public Vector2I ToRight(){ return Set(1, 0); }
+	public static Vector2I Right => new Vector2I().ToRight();
+	public Vector2I ToLeft(){ return Set(-1, 0); }
+	public static Vector2I Left => new Vector2I().ToLeft();
+	public Vector2I ToUp(){ return Set(0, 1); }
+	public static Vector2I Up => new Vector2I().ToUp();
+	public Vector2I ToDown(){ return Set(0, -1); }
+	public static Vector2I Down => new Vector2I().ToDown();
 
 	#region Override
 

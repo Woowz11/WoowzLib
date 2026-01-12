@@ -24,7 +24,9 @@ namespace WL{
             public delegate void D_glClear(uint mask);
             public static D_glClear glClear = null!;
 
-            public const uint GL_COLOR_BUFFER_BIT = 0x00004000;
+            public const uint GL_COLOR_BUFFER_BIT   = 0x00004000;
+            public const uint GL_DEPTH_BUFFER_BIT   = 0x00000100;
+            public const uint GL_STENCIL_BUFFER_BIT = 0x00000400;
         }
     }
 }

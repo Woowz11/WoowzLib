@@ -12,22 +12,19 @@ public static class Program{
             Window<GL> BBB = new Window<GL>();
             Window<GL> CCC = new Window<GL>();
 
-
-
             Vector3F vec = new Vector3F(0, 10);
 
             vec++;
             
             Console.WriteLine(vec + new Vector3F(5));
             
-            
-            
             while(!AAA.ShouldDestroy || !BBB.ShouldDestroy || !CCC.ShouldDestroy){
                 if(!AAA.Destroyed){
                     AAA.Title = DateTime.Now.ToString("T");
 
                     AAA.Render.BackgroundColor = ColorF.Red;
-                    AAA.Render.Test();
+
+                    AAA.Render.Clear();
                     
                     AAA.FinishRender();
                 }
@@ -36,14 +33,14 @@ public static class Program{
                     BBB.Title = CCC.ToString();
                     
                     BBB.Render.BackgroundColor = ColorF.Green;
-                    BBB.Render.Test();
+                    
+                    BBB.Render.Clear();
                     
                     BBB.FinishRender();
                 }
 
                 if(!CCC.Destroyed){
-                    CCC.Render.BackgroundColor = ColorF.Blue;
-                    CCC.Render.Test();
+                    CCC.Render.Clear();
                     
                     CCC.FinishRender();
                 }
