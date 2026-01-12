@@ -27,7 +27,13 @@ public class Window : IDisposable{
             WL.GLFW.Windows.Add(this);
 
             __CloseCallback = (W) => {
-                if(!ShouldDestroy){ WaitDestroy(); }
+                try{
+                    OnClose?.Invoke(this);
+                    
+                    if(!DisableOnClose){ if(!ShouldDestroy){ WaitDestroy(); } }
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при закрытии окна [" + this + "], через крестик!", e);
+                }
             };
 
             WL.GLFW.Native.glfwSetWindowCloseCallback(Handle, __CloseCallback);
@@ -62,6 +68,30 @@ public class Window : IDisposable{
     /// </summary>
     public Window CheckDestroyed(){ if(Destroyed){ throw new Exception("Окно [" + this + "] уничтожено!"); } return this; }
 
+    #region Events
+
+        /// <summary>
+        /// Вызывается перед уничтожением окна
+        /// </summary>
+        public event WindowEvent? OnDestroy;
+        
+        /// <summary>
+        /// Вызывается перед закрытием окна (на крестик)
+        /// </summary>
+        public event WindowEvent? OnClose;
+        /// <summary>
+        /// Отключает дефолтный ивент OnClose
+        /// </summary>
+        public bool DisableOnClose;
+
+        #region Delegates
+
+            public delegate void WindowEvent(Window Window);
+
+        #endregion
+        
+    #endregion
+        
     /// <summary>
     /// Ширина окна
     /// </summary>
@@ -129,6 +159,13 @@ public class Window : IDisposable{
         try{
             CheckDestroyed();
 
+            try{
+                OnDestroy?.Invoke(this);   
+            }catch(Exception e){
+                Console.WriteLine("Произошла ошибка при вызове ивентов уничтожения окна [" + this + "]!");
+                Console.WriteLine(e);
+            }
+            
             WL.GLFW.Native.glfwDestroyWindow(Handle);
             WL.GLFW.Windows.Remove(this);
             

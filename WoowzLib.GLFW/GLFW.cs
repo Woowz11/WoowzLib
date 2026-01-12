@@ -76,9 +76,8 @@ namespace WL{
         public static void Tick(){
             try{
                 Native.glfwPollEvents();
-
-                foreach(Window Window in Windows){
-                    if(Window.ShouldDestroy){ Window.Destroy(); }
+                foreach(Window window in Windows.ToArray()){
+                    if(window.ShouldDestroy){ window.Destroy(); }
                 }
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при обновлении GLFW!", e);
