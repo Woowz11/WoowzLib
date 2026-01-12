@@ -55,14 +55,7 @@ public class Window : IDisposable{
     /// <summary>
     /// Окно должно уничтожиться? (При получении уничтожает окно если должно)
     /// </summary>
-    public bool ShouldDestroy{
-        get{
-            if(__ShouldDestroy){ Destroy(); }
-            return __ShouldDestroy;
-        }
-        private set => __ShouldDestroy = value;
-    }
-    private bool __ShouldDestroy;
+    public bool ShouldDestroy{ get; private set; }
     
     /// <summary>
     /// Проверяет, уничтожено окно или нет? (Выдаёт ошибку)

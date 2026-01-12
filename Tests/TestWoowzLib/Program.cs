@@ -9,12 +9,13 @@
         
             WL.GLFW.Start();
 
-            Window W = new Window();
+            Window W1 = new Window();
+            Window W2 = new Window(Title: "window 2");
         
-            while(!W.ShouldDestroy){
-                WL.GLFW.Native.glfwPollEvents();
-            
-                W.Title = DateTime.Now.ToString("T");
+            while(!W1.ShouldDestroy || !W2.ShouldDestroy){
+                if(!W1.Destroyed){ W1.Title = DateTime.Now.ToString("T"); }
+
+                WL.GLFW.Tick();
             }
             
             WL.GLFW.Stop();

@@ -69,10 +69,27 @@ namespace WL{
                 throw new Exception("Произошла ошибка при остановке GLFW!", e);
             }
         }
+
+        /// <summary>
+        /// Обновление GLFW (Нужно вызывать каждый кадр (внутри while))
+        /// </summary>
+        public static void Tick(){
+            try{
+                Native.glfwPollEvents();
+
+                foreach(Window Window in Windows){
+                    if(Window.ShouldDestroy){ Window.Destroy(); }
+                }
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при обновлении GLFW!", e);
+            }
+        }
         
         private static void __Destroy(bool Warn){
             try{
                 if(Destroyed){ return; }
+
+                if(Windows.Count > 0){ Console.WriteLine("Оставшиеся окна были закрыты через WL.GLFW.Stop()!"); }
 
                 foreach(Window Window in Windows.ToArray()){
                     Window.Destroy();
