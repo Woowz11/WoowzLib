@@ -12,8 +12,11 @@
             Window W1 = new Window();
             Window W2 = new Window(Title: "window 2");
 
-            W2.OnDestroy += (w) => {
-                W2 = new Window(Title: "HELLO!!!!!");
+            W2.OnResize += (w, W, H) => {
+                w.Title = W + "x" + H + " | " + w.X + ":" + w.Y;
+            };
+            W2.OnPosition += (w, X, Y) => {
+                w.Title = w.Width + "x" + w.Height + " | " + X + ":" + Y;
             };
         
             while(!W1.ShouldDestroy || !W2.ShouldDestroy){

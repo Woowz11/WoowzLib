@@ -35,13 +35,58 @@ public class Window : IDisposable{
                     throw new Exception("Произошла ошибка при закрытии окна [" + this + "], через крестик!", e);
                 }
             };
-
             WL.GLFW.Native.glfwSetWindowCloseCallback(Handle, __CloseCallback);
+
+            __SizeCallback = (W, Width, Height) => {
+                __Width  = Width;
+                __Height = Height;
+
+                try{
+                    OnResize?.Invoke(this, Width, Height);   
+                }catch(Exception e){
+                    Console.WriteLine("Произошла ошибка при вызове ивентов на изменение размера окна [" + this + "]!\nШирина: " + Width + "\nВысота: " + Height);
+                    Console.WriteLine(e);
+                }
+            };
+            WL.GLFW.Native.glfwSetWindowSizeCallback(Handle, __SizeCallback);
+
+            __PositionCallback = (W, X, Y) => {
+                __X = X;
+                __Y = Y;
+
+                try{
+                    OnPosition?.Invoke(this, X, Y);   
+                }catch(Exception e){
+                    Console.WriteLine("Произошла ошибка при вызове ивентов на изменение позиции окна [" + this + "]!\nX: " + X + "\nY: " + Y);
+                    Console.WriteLine(e);
+                }
+            };
+            WL.GLFW.Native.glfwSetWindowPosCallback(Handle, __PositionCallback);
+
+            __FocusCallback = (W, Focused) => {
+                
+            };
+            WL.GLFW.Native.glfwSetWindowFocusCallback(Handle, __FocusCallback);
+
+            __IconifyCallback = (W, Iconify) => {
+                
+            };
+            WL.GLFW.Native.glfwSetWindowIconifyCallback(Handle, __IconifyCallback);
+
+            __MaximizeCallback = (W, Maximized) => {
+                
+            };
+            WL.GLFW.Native.glfwSetWindowMaximizeCallback(Handle, __MaximizeCallback);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании окна [" + this + "]!", e);
         }
     }
-    private readonly WL.GLFW.Native.WindowCloseCallback? __CloseCallback;
+    private readonly WL.GLFW.Native.WindowCloseCallback   ? __CloseCallback   ;
+    private readonly WL.GLFW.Native.WindowSizeCallback    ? __SizeCallback    ;
+    private readonly WL.GLFW.Native.WindowPosCallback     ? __PositionCallback;
+    private readonly WL.GLFW.Native.WindowFocusCallback   ? __FocusCallback   ;
+    private readonly WL.GLFW.Native.WindowIconifyCallback ? __IconifyCallback ;
+    private readonly WL.GLFW.Native.WindowMaximizeCallback? __MaximizeCallback;
 
     /// <summary>
     /// Ссылка на окно (<c>GLFWwindow*</c>)
@@ -84,10 +129,22 @@ public class Window : IDisposable{
         /// </summary>
         public bool DisableOnClose;
 
+        /// <summary>
+        /// Вызывается при изменении размера окна
+        /// </summary>
+        public event WindowEvent_Size? OnResize;
+        
+        /// <summary>
+        /// Вызывается при изменении позиции окна
+        /// </summary>
+        public event WindowEvent_Position? OnPosition;
+
         #region Delegates
 
             public delegate void WindowEvent(Window Window);
-
+            public delegate void WindowEvent_Size(Window Window, int Width, int Height);
+            public delegate void WindowEvent_Position(Window Window, int X, int Y);
+            
         #endregion
         
     #endregion
@@ -129,6 +186,44 @@ public class Window : IDisposable{
         }
     }
     private int __Height;
+    
+    /// <summary>
+    /// Позиция окна по X
+    /// </summary>
+    public int X{
+        get => __X;
+        set{
+            try{
+                if(__X == value){ return; }
+                __X = value;
+                
+                CheckDestroyed();
+                WL.GLFW.Native.glfwSetWindowPos(Handle, __X, __Y);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке позиции по X у окна [" + this + "]!\nX: " + value, e);
+            }
+        }
+    }
+    private int __X;
+    
+    /// <summary>
+    /// Позиция окна по Y
+    /// </summary>
+    public int Y{
+        get => __Y;
+        set{
+            try{
+                if(__Y == value){ return; }
+                __Y = value;
+            
+                CheckDestroyed();
+                WL.GLFW.Native.glfwSetWindowPos(Handle, __X, __Y);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке позиции по Y у окна [" + this + "]!\nY: " + value, e);
+            }
+        }
+    }
+    private int __Y;
 
     /// <summary>
     /// Название окна

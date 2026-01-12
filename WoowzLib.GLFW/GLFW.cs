@@ -39,17 +39,23 @@ namespace WL{
                 DLL = WL.Explorer.Resources.Load("WoowzLib.glfw3.dll", typeof(WL.GLFW).Assembly);
                 WL.Native.Load(DLL);
 
-                Native.glfwInit                   = WL.Native.DelegateFunction<Native.D_glfwInit                  >("glfwInit"                  , DLL);
-                Native.glfwTerminate              = WL.Native.DelegateFunction<Native.D_glfwTerminate             >("glfwTerminate"             , DLL);
-                Native.glfwCreateWindow           = WL.Native.DelegateFunction<Native.D_glfwCreateWindow          >("glfwCreateWindow"          , DLL);
-                Native.glfwMakeContextCurrent     = WL.Native.DelegateFunction<Native.D_glfwMakeContextCurrent    >("glfwMakeContextCurrent"    , DLL);
-                Native.glfwShowWindow             = WL.Native.DelegateFunction<Native.D_glfwShowWindow            >("glfwShowWindow"            , DLL);
-                Native.glfwPollEvents             = WL.Native.DelegateFunction<Native.D_glfwPollEvents            >("glfwPollEvents"            , DLL);
-                Native.glfwWindowShouldClose      = WL.Native.DelegateFunction<Native.D_glfwWindowShouldClose     >("glfwWindowShouldClose"     , DLL);
-                Native.glfwSetWindowSize          = WL.Native.DelegateFunction<Native.D_glfwSetWindowSize         >("glfwSetWindowSize"         , DLL);
-                Native.glfwSetWindowTitle         = WL.Native.DelegateFunction<Native.D_glfwSetWindowTitle        >("glfwSetWindowTitle"        , DLL);
-                Native.glfwDestroyWindow          = WL.Native.DelegateFunction<Native.D_glfwDestroyWindow         >("glfwDestroyWindow"         , DLL);
-                Native.glfwSetWindowCloseCallback = WL.Native.DelegateFunction<Native.D_glfwSetWindowCloseCallback>("glfwSetWindowCloseCallback", DLL);
+                Native.glfwInit                      = WL.Native.DelegateFunction<Native.D_glfwInit                     >("glfwInit"                     ,DLL);
+                Native.glfwTerminate                 = WL.Native.DelegateFunction<Native.D_glfwTerminate                >("glfwTerminate"                ,DLL);
+                Native.glfwShowWindow                = WL.Native.DelegateFunction<Native.D_glfwShowWindow               >("glfwShowWindow"               ,DLL);
+                Native.glfwPollEvents                = WL.Native.DelegateFunction<Native.D_glfwPollEvents               >("glfwPollEvents"               ,DLL);
+                Native.glfwCreateWindow              = WL.Native.DelegateFunction<Native.D_glfwCreateWindow             >("glfwCreateWindow"             ,DLL);
+                Native.glfwSetWindowPos              = WL.Native.DelegateFunction<Native.D_glfwSetWindowPos             >("glfwSetWindowPos"             ,DLL);
+                Native.glfwSetWindowSize             = WL.Native.DelegateFunction<Native.D_glfwSetWindowSize            >("glfwSetWindowSize"            ,DLL);
+                Native.glfwDestroyWindow             = WL.Native.DelegateFunction<Native.D_glfwDestroyWindow            >("glfwDestroyWindow"            ,DLL);
+                Native.glfwSetWindowTitle            = WL.Native.DelegateFunction<Native.D_glfwSetWindowTitle           >("glfwSetWindowTitle"           ,DLL);
+                Native.glfwWindowShouldClose         = WL.Native.DelegateFunction<Native.D_glfwWindowShouldClose        >("glfwWindowShouldClose"        ,DLL);
+                Native.glfwMakeContextCurrent        = WL.Native.DelegateFunction<Native.D_glfwMakeContextCurrent       >("glfwMakeContextCurrent"       ,DLL);
+                Native.glfwSetWindowPosCallback      = WL.Native.DelegateFunction<Native.D_glfwSetWindowPosCallback     >("glfwSetWindowPosCallback"     ,DLL);
+                Native.glfwSetWindowSizeCallback     = WL.Native.DelegateFunction<Native.D_glfwSetWindowSizeCallback    >("glfwSetWindowSizeCallback"    ,DLL);
+                Native.glfwSetWindowCloseCallback    = WL.Native.DelegateFunction<Native.D_glfwSetWindowCloseCallback   >("glfwSetWindowCloseCallback"   ,DLL);
+                Native.glfwSetWindowFocusCallback    = WL.Native.DelegateFunction<Native.D_glfwSetWindowFocusCallback   >("glfwSetWindowFocusCallback"   ,DLL);
+                Native.glfwSetWindowIconifyCallback  = WL.Native.DelegateFunction<Native.D_glfwSetWindowIconifyCallback >("glfwSetWindowIconifyCallback" ,DLL);
+                Native.glfwSetWindowMaximizeCallback = WL.Native.DelegateFunction<Native.D_glfwSetWindowMaximizeCallback>("glfwSetWindowMaximizeCallback",DLL);
                 
                 int Result = Native.glfwInit();
                 if(Result == 0){ throw new Exception("glfwInit вернул 0!"); }
@@ -138,6 +144,10 @@ namespace WL{
             [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
             public delegate void D_glfwSetWindowSize(IntPtr window, int width, int height);
             public static D_glfwSetWindowSize glfwSetWindowSize = null!;
+            
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glfwSetWindowPos(IntPtr window, int x, int y);
+            public static D_glfwSetWindowPos glfwSetWindowPos = null!;
 
             [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
             public delegate void D_glfwSetWindowTitle(IntPtr window, IntPtr title);
@@ -152,6 +162,36 @@ namespace WL{
             [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
             public delegate void D_glfwSetWindowCloseCallback(IntPtr window, WindowCloseCallback cb);
             public static D_glfwSetWindowCloseCallback glfwSetWindowCloseCallback = null!;
+            
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void WindowSizeCallback(IntPtr window, int width, int height);
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glfwSetWindowSizeCallback(IntPtr window, WindowSizeCallback cb);
+            public static D_glfwSetWindowSizeCallback glfwSetWindowSizeCallback = null!;
+            
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void WindowPosCallback(IntPtr window, int xpos, int ypos);
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glfwSetWindowPosCallback(IntPtr window, WindowPosCallback cb);
+            public static D_glfwSetWindowPosCallback glfwSetWindowPosCallback = null!;
+            
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void WindowFocusCallback(IntPtr window, int focused);
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glfwSetWindowFocusCallback(IntPtr window, WindowFocusCallback cb);
+            public static D_glfwSetWindowFocusCallback glfwSetWindowFocusCallback = null!;
+            
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void WindowIconifyCallback(IntPtr window, int iconified);
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glfwSetWindowIconifyCallback(IntPtr window, WindowIconifyCallback cb);
+            public static D_glfwSetWindowIconifyCallback glfwSetWindowIconifyCallback = null!;
+            
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void WindowMaximizeCallback(IntPtr window, int maximized);
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glfwSetWindowMaximizeCallback(IntPtr window, WindowMaximizeCallback cb);
+            public static D_glfwSetWindowMaximizeCallback glfwSetWindowMaximizeCallback = null!;
         }
     }
 }
