@@ -8,8 +8,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\WoowzLib.Core\WoowzLib.Core.csproj" />
-
-        <ProjectReference Include="..\Other\Generator\GeneratorWoowzLib\GeneratorWoowzLib.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
 </Project>
