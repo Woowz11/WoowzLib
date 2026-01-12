@@ -37,9 +37,10 @@ namespace WL{
                 if(Started){ throw new Exception("WoowzLib уже был запущен!"); }
                 Started = true;
 
-                Console.WriteLine("Установка WL:");
-
                 string RunFolder = AppContext.BaseDirectory;
+                
+                Console.WriteLine("Установка WL [" + RunFolder + "]:");
+                
                 foreach(string DLL in Directory.GetFiles(RunFolder, "WoowzLib.*.dll")){
                     Assembly.LoadFrom(DLL);
                 }
