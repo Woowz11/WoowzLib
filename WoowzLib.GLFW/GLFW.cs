@@ -3,7 +3,7 @@ using WLO.GLFW;
 using File = WLO.File;
 
 namespace WL{
-    [WoowzLibModule(30)]
+    [WLModule(30)]
     public static class GLFW{
         static GLFW(){
             WL.WoowzLib.StopEvent(() => __Destroy(true));

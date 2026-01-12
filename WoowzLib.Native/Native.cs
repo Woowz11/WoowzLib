@@ -2,7 +2,7 @@
 using File = WLO.File;
 
 namespace WL{
-    [WoowzLibModule(10)]
+    [WLModule(10)]
     public static class Native{
         public const string Error_DLLNotExist = "Не найден DLL!";
         

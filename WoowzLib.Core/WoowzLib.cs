@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 
 namespace WL{
-    [WoowzLibModule(int.MinValue)]
+    [WLModule(int.MinValue)]
     public static class WoowzLib{
         static WoowzLib(){
             AppDomain    .CurrentDomain.ProcessExit        += (_, _) => Stop();
@@ -37,7 +37,7 @@ namespace WL{
                        .Where(A => A.FullName != null && A.FullName.Contains("WoowzLib"))
                        .SelectMany(A => A.GetTypes().Select(T => new{
                            Type = T,
-                           Attribute = T.GetCustomAttribute<WoowzLibModule>()
+                           Attribute = T.GetCustomAttribute<WLModule>()
                        }))
                        .Where(A => A.Attribute != null)
                        .ToList().OrderBy(A => A.Attribute!.Order);

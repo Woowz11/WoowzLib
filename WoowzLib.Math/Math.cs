@@ -1,5 +1,5 @@
 ﻿namespace WL{
-    [WoowzLibModule(0)]
+    [WLModule(0)]
     public static class Math{
         
     }
