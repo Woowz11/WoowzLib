@@ -59,10 +59,10 @@ public static class Generator{
                 File F__ = new File(Path.Combine(OutputFolder, "Vector.cs")).WriteString($$"""
                    {{Pre()}}
                    public interface Vector{
-                        public int  N{ get; }
-                        public Type T{ get; }
+                       public int  N{ get; }
+                       public Type T{ get; }
                    }
-                   """);
+                   """.Replace("    ", "\t"));
 
                 for(int i = 2; i <= 4; i++){
                     F__ = new File(Path.Combine(OutputFolder, "Vector" + i + ".cs")).WriteString($$"""
@@ -70,16 +70,16 @@ public static class Generator{
                         public interface Vector{{i}} : Vector{
                             public int N => {{i}};
                         }
-                        """);
+                        """.Replace("    ", "\t"));
                 }
 
                 foreach(VectorType Type in Enum.GetValues(typeof(VectorType))){
                     F__ = new File(Path.Combine(OutputFolder, "Vector" + Type.ToString()[0] + ".cs")).WriteString($$"""
                        {{Pre()}}
                        public interface Vector{{Type.ToString()[0]}} : Vector{
-                            public new Type T => typeof({{Type.ToString().ToLower()}});
+                           public new Type T => typeof({{Type.ToString().ToLower()}});
                        }
-                       """);
+                       """.Replace("    ", "\t"));
                     
                     for(int i = 2; i <= 4; i++){
                         CreateVector(OutputFolder, Type, i);
@@ -97,6 +97,9 @@ public static class Generator{
             try{
                 Console.WriteLine("\tСоздание вектора [" + VectorType + ", " + N + "]");
 
+                // VectorComponents но сокращённый под N
+                object[] Components = VectorComponents.Take(N).Cast<object>().ToArray();
+                
                 // Первая буква типа (I, F, U, D)
                 string TypeChar = VectorType.ToString()[0].ToString();
 
@@ -113,11 +116,20 @@ public static class Generator{
                 Result += $$"""
                                 public int  N{ get; }
                                 public Type T{ get; }
+                                
+                            {{WL.String.Join("\tpublic " + Type + " $0 = 0;\n", Components)}}
+                                #region Override
+                            
+                                    public override string ToString(){
+                                        return "{{Name}}(" + {{WL.String.Join("$0 + \", \" + ", "$0", Components)}} + ")";
+                                    }
+                                
+                                #endregion
                             """;
                 
                 Result += "\n}";
 
-                File F = new File(Path.Combine(OutputFolder, Name + ".cs")).WriteString(Result);
+                File F = new File(Path.Combine(OutputFolder, Name + ".cs")).WriteString(Result.Replace("    ", "\t"));
             }catch(Exception e){
                 throw new Exception("Произошла ошибка во время генерации вектора [" + VectorType + ", " + N + "]!", e);
             }

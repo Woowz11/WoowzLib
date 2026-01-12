@@ -249,7 +249,7 @@ public class File{
         }
     }
 
-    #region Overwrite
+    #region Override
 
         public override string ToString(){
             return "File(\"" + Path + "\", " + (Exist ? Size : "Не существует") + ")";

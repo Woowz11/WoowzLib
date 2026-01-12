@@ -342,7 +342,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
         }
     }
     
-    #region Overwrite
+    #region Overwride
 
         public override void Dispose(){
             try{
