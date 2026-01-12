@@ -6,6 +6,12 @@ namespace WLO.GLFW;
 /// GLFW окно
 /// </summary>
 public class Window : IDisposable{
+    /// <summary>
+    /// Создаёт окно
+    /// </summary>
+    /// <param name="Width">Ширина окна</param>
+    /// <param name="Height">Высота окна</param>
+    /// <param name="Title">Название окна</param>
     public Window(int Width = 800, int Height = 600, string Title = "WL Window"){
         try{
             if(!WL.GLFW.Stared){ throw new Exception("GLFW не запущен!"); }
@@ -64,7 +70,14 @@ public class Window : IDisposable{
             WL.GLFW.Native.glfwSetWindowPosCallback(Handle, __PositionCallback);
 
             __FocusCallback = (W, Focused) => {
+                __Focused = Focused == 1;
                 
+                try{
+                    OnFocus?.Invoke(this, __Focused);   
+                }catch(Exception e){
+                    Console.WriteLine("Произошла ошибка при вызове ивентов на изменение фокуса окна [" + this + "]!\nФокус: " + __Focused);
+                    Console.WriteLine(e);
+                }
             };
             WL.GLFW.Native.glfwSetWindowFocusCallback(Handle, __FocusCallback);
 
@@ -138,17 +151,46 @@ public class Window : IDisposable{
         /// Вызывается при изменении позиции окна
         /// </summary>
         public event WindowEvent_Position? OnPosition;
+        
+        /// <summary>
+        /// Вызывается при изменении фокуса окна
+        /// </summary>
+        public event WindowEvent_Focus? OnFocus;
 
         #region Delegates
 
             public delegate void WindowEvent(Window Window);
             public delegate void WindowEvent_Size(Window Window, int Width, int Height);
             public delegate void WindowEvent_Position(Window Window, int X, int Y);
+            public delegate void WindowEvent_Focus(Window Window, bool Focus);
             
         #endregion
         
     #endregion
-        
+
+    /// <summary>
+    /// Окно в фокусе?
+    /// </summary>
+    public bool Focused{ get => __Focused; }
+    private bool __Focused;
+
+    /// <summary>
+    /// Установить окно в фокус
+    /// </summary>
+    public Window Focus(){
+        try{
+            if(Focused){ return this; }
+            __Focused = true;
+
+            CheckDestroyed();
+            WL.GLFW.Native.glfwFocusWindow(Handle);
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при установке фокуса на окно [" + this + "]!", e);
+        }
+
+        return this;
+    }
+    
     /// <summary>
     /// Ширина окна
     /// </summary>

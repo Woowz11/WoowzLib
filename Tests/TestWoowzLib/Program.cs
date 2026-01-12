@@ -13,10 +13,13 @@
             Window W2 = new Window(Title: "window 2");
 
             W2.OnResize += (w, W, H) => {
-                w.Title = W + "x" + H + " | " + w.X + ":" + w.Y;
+                w.Title = W + "x" + H + " | " + w.X + ":" + w.Y + " | " + w.Focused;
             };
             W2.OnPosition += (w, X, Y) => {
-                w.Title = w.Width + "x" + w.Height + " | " + X + ":" + Y;
+                w.Title = w.Width + "x" + w.Height + " | " + X + ":" + Y + " | " + w.Focused;
+            };
+            W2.OnFocus += (w, Focused) => {
+                w.Title = w.Width + "x" + w.Height + " | " + w.X + ":" + w.Y + " | " + Focused;
             };
         
             while(!W1.ShouldDestroy || !W2.ShouldDestroy){
