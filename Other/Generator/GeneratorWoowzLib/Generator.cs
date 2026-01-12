@@ -91,7 +91,8 @@ public static class Generator{
             }
         }
         
-        public enum VectorType{ Int, UInt, Float, Double }
+        private enum VectorType{ Int, UInt, Float, Double }
+        private static readonly char[] VectorComponents = ['X', 'Y', 'Z', 'W'];
         private static void CreateVector(string OutputFolder, VectorType VectorType, int N){
             try{
                 Console.WriteLine("\tСоздание вектора [" + VectorType + ", " + N + "]");
