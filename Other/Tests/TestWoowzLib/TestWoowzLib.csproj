@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\WoowzLib.Core\WoowzLib.Core.csproj" />
+      <ProjectReference Include="..\..\..\WoowzLib.Explorer\WoowzLib.Explorer.csproj" />
+      <ProjectReference Include="..\..\..\WoowzLib.GLFW\WoowzLib.GLFW.csproj" />
+      <ProjectReference Include="..\..\..\WoowzLib.GL\WoowzLib.GL.csproj" />
+      <ProjectReference Include="..\..\..\WoowzLib.Math\WoowzLib.Math.csproj" />
+      <ProjectReference Include="..\..\..\WoowzLib.Native\WoowzLib.Native.csproj" />
+    </ItemGroup>
+    
+</Project>
