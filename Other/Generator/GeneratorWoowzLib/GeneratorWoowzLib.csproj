@@ -1,15 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
+
+        <IsRoslynAnalyzer>true</IsRoslynAnalyzer>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+        <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+        <NoWarn>RS2008</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\WoowzLib.Core\WoowzLib.Core.csproj" />
-      <ProjectReference Include="..\..\..\WoowzLib.Explorer\WoowzLib.Explorer.csproj" />
-      <ProjectReference Include="..\..\..\WoowzLib.Math\WoowzLib.Math.csproj" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" PrivateAssets="all"/>
     </ItemGroup>
 
 </Project>
