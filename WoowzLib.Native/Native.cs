@@ -102,14 +102,42 @@ namespace WL{
         /// <returns>Ссылка на функцию</returns>
         public static IntPtr Function(File DLL, string Name){
             try{
-                if(!LoadedDLL.TryGetValue(DLL.Path, out IntPtr Handle)){
+                return FunctionSystem(DLL.Path, Name);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при загрузке функции из DLL [" + DLL + "]!\nФункция: " + Name);
+            }
+        }
+        
+        /// <summary>
+        /// Получает ссылку на функцию из системного DLL
+        /// </summary>
+        /// <param name="DLLName">Название системного DLL файла</param>
+        /// <param name="Name">Функция из DLL [<c>"glfwCreateWindow"</c>]</param>
+        /// <returns>Ссылка на функцию</returns>
+        public static IntPtr FunctionSystem(string DLLName, string Name){
+            try{
+                if(!LoadedDLL.TryGetValue(DLLName, out IntPtr Handle)){
                     throw new Exception(Error_DLLNotExist);
                 }
 
-                IntPtr Proc = GetProcAddress(Handle, Name);
+                return FunctionSystem(Handle, Name);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при загрузке функции из системного DLL [" + DLLName + "]!\nФункция: " + Name);
+            }
+        }
+        
+        /// <summary>
+        /// Получает ссылку на функцию из системного DLL (по ссылке)
+        /// </summary>
+        /// <param name="DLL">Ссылка на DLL</param>
+        /// <param name="Name">Функция из DLL [<c>"glfwCreateWindow"</c>]</param>
+        /// <returns>Ссылка на функцию</returns>
+        public static IntPtr FunctionSystem(IntPtr DLL, string Name){
+            try{
+                IntPtr Proc = GetProcAddress(DLL, Name);
                 return Proc == IntPtr.Zero ? throw new Exception("Функция не найдена!") : Proc;
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при загрузке функции из DLL [" + DLL + "]!\nФункция: " + Name);
+                throw new Exception("Произошла ошибка при загрузке функции из системного DLL (IntPtr) [" + DLL.ToInt64() + "]!\nФункция: " + Name);
             }
         }
 
@@ -122,6 +150,17 @@ namespace WL{
         /// <returns>Функция которую можно вызвать как C# функцию</returns>
         public static D DelegateFunction<D>(string Name, File DLL) where D : Delegate{
             return Marshal.GetDelegateForFunctionPointer<D>(Function(DLL, Name));
+        }
+        
+        /// <summary>
+        /// Получает функцию из ссылки на DLL и возвращает её в виде C# функции
+        /// </summary>
+        /// <param name="Name">Функция из DLL [<c>"glfwCreateWindow"</c>]</param>
+        /// <param name="DLL">Ссылка на DLL</param>
+        /// <typeparam name="D">Тип функции (точно совпадает с её параметрами и возвращаемым значением)</typeparam>
+        /// <returns>Функция которую можно вызвать как C# функцию</returns>
+        public static D DelegateFunction<D>(string Name, IntPtr DLL) where D : Delegate{
+            return Marshal.GetDelegateForFunctionPointer<D>(FunctionSystem(DLL, Name));
         }
     }
 }

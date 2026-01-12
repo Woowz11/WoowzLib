@@ -44,6 +44,7 @@ namespace WL{
                 Native.glfwShowWindow                = WL.Native.DelegateFunction<Native.D_glfwShowWindow               >("glfwShowWindow"               ,DLL);
                 Native.glfwPollEvents                = WL.Native.DelegateFunction<Native.D_glfwPollEvents               >("glfwPollEvents"               ,DLL);
                 Native.glfwFocusWindow               = WL.Native.DelegateFunction<Native.D_glfwFocusWindow              >("glfwFocusWindow"              ,DLL);
+                Native.glfwSwapBuffers               = WL.Native.DelegateFunction<Native.D_glfwSwapBuffers              >("glfwSwapBuffers"              ,DLL);
                 Native.glfwCreateWindow              = WL.Native.DelegateFunction<Native.D_glfwCreateWindow             >("glfwCreateWindow"             ,DLL);
                 Native.glfwSetWindowPos              = WL.Native.DelegateFunction<Native.D_glfwSetWindowPos             >("glfwSetWindowPos"             ,DLL);
                 Native.glfwSetWindowSize             = WL.Native.DelegateFunction<Native.D_glfwSetWindowSize            >("glfwSetWindowSize"            ,DLL);
@@ -197,6 +198,10 @@ namespace WL{
             [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
             public delegate void D_glfwFocusWindow(IntPtr window);
             public static D_glfwFocusWindow glfwFocusWindow = null!;
+            
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glfwSwapBuffers(IntPtr window);
+            public static D_glfwSwapBuffers glfwSwapBuffers = null!;
         }
     }
 }
