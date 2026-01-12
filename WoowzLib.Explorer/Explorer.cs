@@ -92,7 +92,7 @@ namespace WL{
 
                 WL.Explorer.Folder.Create(TempFolder);
 
-                WL.WoowzLib.StopEvent(__Destroy);
+                WL.WoowzLib.OnStop += __Destroy;
             }
 
             private static void __Destroy(){

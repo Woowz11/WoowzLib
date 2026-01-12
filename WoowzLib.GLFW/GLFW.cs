@@ -6,7 +6,7 @@ namespace WL{
     [WLModule(30)]
     public static class GLFW{
         static GLFW(){
-            WL.WoowzLib.StopEvent(() => __Destroy(true));
+            WL.WoowzLib.OnStop += () => __Destroy(true);
         }
 
         /// <summary>

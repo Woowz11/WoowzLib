@@ -10,6 +10,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\WoowzLib.Core\WoowzLib.Core.csproj" />
       <ProjectReference Include="..\..\WoowzLib.GLFW\WoowzLib.GLFW.csproj" />
+      <ProjectReference Include="..\..\WoowzLib.GL\WoowzLib.GL.csproj" />
       <ProjectReference Include="..\..\WoowzLib.Math\WoowzLib.Math.csproj" />
     </ItemGroup>
     

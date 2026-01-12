@@ -11,21 +11,32 @@ namespace WL{
             Console      .CancelKeyPress                   += (_, e) => { Stop(); e.Cancel = false; };
         }
         private static void Stop(){
-            for(int i = 0; i < StopEvents.Count; i++){
-                try{
-                    StopEvents[i]();
-                }catch(Exception e){
-                    Console.WriteLine("Произошла ошибка при вызове остаточного ивента [" + i + "]!");
-                    Console.WriteLine(e);
-                }
+            if(!Started){ return; }
+            Started = false;
+
+            try{
+                OnStop?.Invoke();
+            }catch(Exception e){
+                Console.WriteLine("Произошла ошибка при вызове ивентов на остановку приложения!");
+                Console.WriteLine(e);
             }
+            
+            Console.WriteLine("Остановлен WL!");
         }
-        
+
+        /// <summary>
+        /// WoowzLib запущен?
+        /// </summary>
+        public static bool Started{ get; private set; }
+
         /// <summary>
         /// Запуск WoowzLib и его модулей
         /// </summary>
         public static void Start(){
             try{
+                if(Started){ throw new Exception("WoowzLib уже был запущен!"); }
+                Started = true;
+
                 Console.WriteLine("Установка WL:");
 
                 string RunFolder = AppContext.BaseDirectory;
@@ -54,12 +65,8 @@ namespace WL{
         }
 
         /// <summary>
-        /// Добавляет ивент на закрытие/вылет приложения
+        /// Ивент вызывается при остановке всего приложения
         /// </summary>
-        /// <param name="StopEvent">Ивент [<c>() => ...</c>]</param>
-        public static void StopEvent(Action StopEvent){
-            StopEvents.Add(StopEvent);
-        }
-        private static readonly List<Action> StopEvents = [];
+        public static event Action? OnStop;
     }
 }

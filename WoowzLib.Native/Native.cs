@@ -31,18 +31,7 @@ namespace WL{
         /// <returns>Ссылка на загруженный DLL файл</returns>
         public static IntPtr Load(File DLL){
             try{
-                if(!DLL.Exist){ throw new Exception(Error_DLLNotExist); }
-                if(LoadedDLL.TryGetValue(DLL.Path, out IntPtr Handle) && Handle != IntPtr.Zero){
-                    throw new Exception("Этот DLL уже был загружен! Handle: " + Handle);
-                }
-
-                Handle = LoadLibrary(DLL.Path);
-                if(Handle == IntPtr.Zero){
-                    throw new Exception("Не получилось загрузить DLL внутри kernel32! Ошибка: " + Marshal.GetLastWin32Error());
-                }
-
-                LoadedDLL[DLL.Path] = Handle;
-                return Handle;
+                return !DLL.Exist ? throw new Exception(Error_DLLNotExist) : LoadSystem(DLL.Path);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при загрузке DLL [" + DLL + "]!", e);
             }
@@ -54,18 +43,54 @@ namespace WL{
         /// <param name="DLL">DLL файл</param>
         public static void Unload(File DLL){
             try{
-                if(!LoadedDLL.TryGetValue(DLL.Path, out IntPtr Handle) || Handle == IntPtr.Zero){
+                UnloadSystem(DLL.Path);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при разгрузке DLL [" + DLL + "]!", e);
+            }
+        }
+        
+        /// <summary>
+        /// Загрузка системного DLL файла
+        /// </summary>
+        /// <param name="DLLName">Название системного DLL файла</param>
+        /// <returns>Ссылка на загруженный DLL файл</returns>
+        public static IntPtr LoadSystem(string DLLName){
+            try{
+                if(string.IsNullOrWhiteSpace(DLLName)){ throw new Exception("Имя DLL файла пустое!"); }
+                if(LoadedDLL.TryGetValue(DLLName, out IntPtr Handle) && Handle != IntPtr.Zero){
+                    throw new Exception("Этот DLL уже был загружен! Handle: " + Handle);
+                }
+
+                Handle = LoadLibrary(DLLName);
+                if(Handle == IntPtr.Zero){
+                    throw new Exception("Не получилось загрузить DLL внутри kernel32! Ошибка: " + Marshal.GetLastWin32Error());
+                }
+
+                LoadedDLL[DLLName] = Handle;
+                return Handle;
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при загрузке системного DLL [" + DLLName + "]!", e);
+            }
+        }
+        
+        /// <summary>
+        /// Разгрузка системного DLL файла
+        /// </summary>
+        /// <param name="DLLName">Название системного DLL файла</param>
+        public static void UnloadSystem(string DLLName){
+            try{
+                if(!LoadedDLL.TryGetValue(DLLName, out IntPtr Handle) || Handle == IntPtr.Zero){
                     throw new Exception(Error_DLLNotExist);
                 }
                 
                 bool Result = FreeLibrary(Handle);
                 if(Result){
-                    LoadedDLL.Remove(DLL.Path);
+                    LoadedDLL.Remove(DLLName);
                 }else{
                     throw new Exception("Не получилось выгрузить DLL внутри kernel32! Ошибка: " + Marshal.GetLastWin32Error());
                 }
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при разгрузке DLL [" + DLL + "]!", e);
+                throw new Exception("Произошла ошибка при разгрузке системного DLL [" + DLLName + "]!", e);
             }
         }
 
