@@ -3,10 +3,14 @@
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
 /// </summary>
-public class Vector4I : Vector4, VectorI{
-	public int  N{ get; }
-	public Type T{ get; }
+public struct Vector4I{
+	public readonly int  N = 4;
+	public readonly Type T = typeof(int);
 	
+	public Vector4I(int X = 0, int Y = 0, int Z = 0, int W = 0){
+		this.X = X; this.Y = Y; this.Z = Z; this.W = W; 
+	}
+
 	public int X = 0;
 	public int Y = 0;
 	public int Z = 0;
@@ -16,6 +20,59 @@ public class Vector4I : Vector4, VectorI{
 
 		public override string ToString(){
 			return "Vector4I(" + X + ", " + Y + ", " + Z + ", " + W + ")";
+		}
+		
+		public override bool Equals(object? obj){
+			if(obj is not Vector4I other){ return false; }
+			return X == other.X && Y == other.Y && Z == other.Z && W == other.W;
+		}
+		
+		public override int GetHashCode(){
+			return HashCode.Combine(X, Y, Z, W);
+		}
+		
+		public static bool operator ==(Vector4I A, Vector4I B){
+			return A.X == B.X && A.Y == B.Y && A.Z == B.Z && A.W == B.W;
+		}
+		
+		public static bool operator !=(Vector4I A, Vector4I B){
+			return !(A == B);
+		}
+	
+		public static Vector4I operator +(Vector4I A, Vector4I B){
+			return new Vector4I(A.X + B.X, A.Y + B.Y, A.Z + B.Z, A.W + B.W);
+		}
+		
+		public static Vector4I operator +(Vector4I A, int B){
+			return new Vector4I(A.X + B, A.Y + B, A.Z + B, A.W + B);
+		}
+		
+		public static Vector4I operator ++(Vector4I A){
+			return A + 1;
+		}
+	
+		public static Vector4I operator -(Vector4I A, Vector4I B){
+			return new Vector4I(A.X - B.X, A.Y - B.Y, A.Z - B.Z, A.W - B.W);
+		}
+		
+		public static Vector4I operator -(Vector4I A, int B){
+			return new Vector4I(A.X - B, A.Y - B, A.Z - B, A.W - B);
+		}
+		
+		public static Vector4I operator --(Vector4I A){
+			return A - 1;
+		}
+		
+		public static Vector4I operator *(Vector4I A, Vector4I B){
+			return new Vector4I(A.X * B.X, A.Y * B.Y, A.Z * B.Z, A.W * B.W);
+		}
+		
+		public static Vector4I operator *(Vector4I A, int B){
+			return new Vector4I(A.X * B, A.Y * B, A.Z * B, A.W * B);
+		}
+		
+		public static Vector4I operator *(int A, Vector4I B){
+			return B * A;
 		}
 	
 	#endregion

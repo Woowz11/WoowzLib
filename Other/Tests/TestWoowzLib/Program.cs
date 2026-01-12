@@ -11,6 +11,16 @@ public static class Program{
             Window<GL> AAA = new Window<GL>();
             Window<GL> BBB = new Window<GL>();
             Window<GL> CCC = new Window<GL>();
+
+
+
+            Vector3F vec = new Vector3F(0, 10);
+
+            vec++;
+            
+            Console.WriteLine(vec + new Vector3F(5));
+            
+            
             
             while(!AAA.ShouldDestroy || !BBB.ShouldDestroy || !CCC.ShouldDestroy){
                 if(!AAA.Destroyed){

@@ -54,33 +54,8 @@ public static class Generator{
                 if(!WL.Explorer.Folder.Exist(OutputFolder)){ throw new Exception("Не найдена Output папка!"); }
 
                 WL.Explorer.Folder.Clear(OutputFolder);
-                
-                
-                File F__ = new File(Path.Combine(OutputFolder, "Vector.cs")).WriteString($$"""
-                   {{Pre()}}
-                   public interface Vector{
-                       public int  N{ get; }
-                       public Type T{ get; }
-                   }
-                   """.Replace("    ", "\t"));
-
-                for(int i = 2; i <= 4; i++){
-                    F__ = new File(Path.Combine(OutputFolder, "Vector" + i + ".cs")).WriteString($$"""
-                        {{Pre()}}
-                        public interface Vector{{i}} : Vector{
-                            public int N => {{i}};
-                        }
-                        """.Replace("    ", "\t"));
-                }
 
                 foreach(VectorType Type in Enum.GetValues(typeof(VectorType))){
-                    F__ = new File(Path.Combine(OutputFolder, "Vector" + Type.ToString()[0] + ".cs")).WriteString($$"""
-                       {{Pre()}}
-                       public interface Vector{{Type.ToString()[0]}} : Vector{
-                           public new Type T => typeof({{Type.ToString().ToLower()}});
-                       }
-                       """.Replace("    ", "\t"));
-                    
                     for(int i = 2; i <= 4; i++){
                         CreateVector(OutputFolder, Type, i);
                     }
@@ -111,17 +86,74 @@ public static class Generator{
                 
                 string Result = Pre() + "\n";
 
-                Result += "public class " + Name + " : Vector" + N + ", Vector" + TypeChar + "{\n";
+                Result += "public struct " + Name + "{\n";
 
                 Result += $$"""
-                                public int  N{ get; }
-                                public Type T{ get; }
+                                public readonly int  N = {{N}};
+                                public readonly Type T = typeof({{Type}});
                                 
+                                public {{Name}}({{WL.String.Join(Type + " $0 = 0, ", Type + " $0 = 0", Components)}}){
+                                    {{WL.String.Join("this.$0 = $0; ", Components)}}
+                                }
+                            
                             {{WL.String.Join("\tpublic " + Type + " $0 = 0;\n", Components)}}
                                 #region Override
                             
                                     public override string ToString(){
                                         return "{{Name}}(" + {{WL.String.Join("$0 + \", \" + ", "$0", Components)}} + ")";
+                                    }
+                                    
+                                    public override bool Equals(object? obj){
+                                        if(obj is not {{Name}} other){ return false; }
+                                        return {{WL.String.Join("$0 == other.$0 && ", "$0 == other.$0", Components)}};
+                                    }
+                                    
+                                    public override int GetHashCode(){
+                                        return HashCode.Combine({{WL.String.Join(Components)}});
+                                    }
+                                    
+                                    public static bool operator ==({{Name}} A, {{Name}} B){
+                                        return {{WL.String.Join("A.$0 == B.$0 && ", "A.$0 == B.$0", Components)}};
+                                    }
+                                    
+                                    public static bool operator !=({{Name}} A, {{Name}} B){
+                                        return !(A == B);
+                                    }
+                                
+                                    public static {{Name}} operator +({{Name}} A, {{Name}} B){
+                                        return new {{Name}}({{WL.String.Join("A.$0 + B.$0, ", "A.$0 + B.$0", Components)}});
+                                    }
+                                    
+                                    public static {{Name}} operator +({{Name}} A, {{Type}} B){
+                                        return new {{Name}}({{WL.String.Join("A.$0 + B, ", "A.$0 + B", Components)}});
+                                    }
+                                    
+                                    public static {{Name}} operator ++({{Name}} A){
+                                        return A + 1;
+                                    }
+                                
+                                    public static {{Name}} operator -({{Name}} A, {{Name}} B){
+                                        return new {{Name}}({{WL.String.Join("A.$0 - B.$0, ", "A.$0 - B.$0", Components)}});
+                                    }
+                                    
+                                    public static {{Name}} operator -({{Name}} A, {{Type}} B){
+                                        return new {{Name}}({{WL.String.Join("A.$0 - B, ", "A.$0 - B", Components)}});
+                                    }
+                                    
+                                    public static {{Name}} operator --({{Name}} A){
+                                        return A - 1;
+                                    }
+                                    
+                                    public static {{Name}} operator *({{Name}} A, {{Name}} B){
+                                        return new {{Name}}({{WL.String.Join("A.$0 * B.$0, ", "A.$0 * B.$0", Components)}});
+                                    }
+                                    
+                                    public static {{Name}} operator *({{Name}} A, {{Type}} B){
+                                        return new {{Name}}({{WL.String.Join("A.$0 * B, ", "A.$0 * B", Components)}});
+                                    }
+                                    
+                                    public static {{Name}} operator *({{Type}} A, {{Name}} B){
+                                        return B * A;
                                     }
                                 
                                 #endregion
