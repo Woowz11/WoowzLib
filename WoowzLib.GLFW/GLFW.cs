@@ -41,7 +41,9 @@ namespace WL{
 
                 Native.glfwInit                      = WL.Native.DelegateFunction<Native.D_glfwInit                     >("glfwInit"                     ,DLL);
                 Native.glfwTerminate                 = WL.Native.DelegateFunction<Native.D_glfwTerminate                >("glfwTerminate"                ,DLL);
+                Native.glfwWindowHint                = WL.Native.DelegateFunction<Native.D_glfwWindowHint               >("glfwWindowHint"               ,DLL);
                 Native.glfwShowWindow                = WL.Native.DelegateFunction<Native.D_glfwShowWindow               >("glfwShowWindow"               ,DLL);
+                Native.glfwHideWindow                = WL.Native.DelegateFunction<Native.D_glfwHideWindow               >("glfwHideWindow"               ,DLL);
                 Native.glfwPollEvents                = WL.Native.DelegateFunction<Native.D_glfwPollEvents               >("glfwPollEvents"               ,DLL);
                 Native.glfwFocusWindow               = WL.Native.DelegateFunction<Native.D_glfwFocusWindow              >("glfwFocusWindow"              ,DLL);
                 Native.glfwSwapBuffers               = WL.Native.DelegateFunction<Native.D_glfwSwapBuffers              >("glfwSwapBuffers"              ,DLL);
@@ -51,6 +53,7 @@ namespace WL{
                 Native.glfwSetWindowSize             = WL.Native.DelegateFunction<Native.D_glfwSetWindowSize            >("glfwSetWindowSize"            ,DLL);
                 Native.glfwDestroyWindow             = WL.Native.DelegateFunction<Native.D_glfwDestroyWindow            >("glfwDestroyWindow"            ,DLL);
                 Native.glfwSetWindowTitle            = WL.Native.DelegateFunction<Native.D_glfwSetWindowTitle           >("glfwSetWindowTitle"           ,DLL);
+                Native.glfwSetWindowAttrib           = WL.Native.DelegateFunction<Native.D_glfwSetWindowAttrib          >("glfwSetWindowAttrib"          ,DLL);
                 Native.glfwGetWindowAttrib           = WL.Native.DelegateFunction<Native.D_glfwGetWindowAttrib          >("glfwGetWindowAttrib"          ,DLL);
                 Native.glfwWindowShouldClose         = WL.Native.DelegateFunction<Native.D_glfwWindowShouldClose        >("glfwWindowShouldClose"        ,DLL);
                 Native.glfwMakeContextCurrent        = WL.Native.DelegateFunction<Native.D_glfwMakeContextCurrent       >("glfwMakeContextCurrent"       ,DLL);
@@ -213,7 +216,38 @@ namespace WL{
             public delegate int D_glfwGetWindowAttrib(IntPtr window, int attrib);
             public static D_glfwGetWindowAttrib glfwGetWindowAttrib = null!;
             
-            public const int GLFW_FOCUSED = 0x00020001;
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glfwSetWindowAttrib(IntPtr window, int attrib, int value);
+            public static D_glfwSetWindowAttrib glfwSetWindowAttrib = null!;
+            
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glfwWindowHint(int hint, int value);
+            public static D_glfwWindowHint glfwWindowHint = null!;
+
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glfwHideWindow(IntPtr window);
+            public static D_glfwHideWindow glfwHideWindow = null!;
+            
+            public const int GLFW_FOCUSED                 = 0x00020001;
+            public const int GLFW_RESIZABLE               = 0x00020003;
+            public const int GLFW_DECORATED               = 0x00020005;
+            public const int GLFW_VISIBLE                 = 0x00020004;
+            public const int GLFW_FLOATING                = 0x00020007;
+            public const int GLFW_TRANSPARENT_FRAMEBUFFER = 0x0002000A;
+            public const int GLFW_RED_BITS                = 0x00021001;
+            public const int GLFW_GREEN_BITS              = 0x00021002;
+            public const int GLFW_BLUE_BITS               = 0x00021003;
+            public const int GLFW_ALPHA_BITS              = 0x00021004;
+            public const int GLFW_DEPTH_BITS              = 0x00021005;
+            public const int GLFW_STENCIL_BITS            = 0x00021006;
+            public const int GLFW_SAMPLES                 = 0x0002100D;
+            public const int GLFW_DOUBLEBUFFER            = 0x0002100A;
+            public const int GLFW_CONTEXT_VERSION_MAJOR   = 0x00022002;
+            public const int GLFW_CONTEXT_VERSION_MINOR   = 0x00022003;
+            public const int GLFW_OPENGL_PROFILE          = 0x00022008;
+            public const int GLFW_OPENGL_FORWARD_COMPAT   = 0x00022006;
+            public const int GLFW_OPENGL_CORE_PROFILE     = 0x00032001;
+            public const int GLFW_OPENGL_COMPAT_PROFILE   = 0x00032002;
         }
     }
 }

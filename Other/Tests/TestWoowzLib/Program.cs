@@ -8,7 +8,7 @@ public static class Program{
         
             WL.GLFW.Start();
 
-            Window<GL> AAA = new Window<GL>();
+            Window<GL> AAA = new Window<GL>(Resizable: false);
             Window<GL> BBB = new Window<GL>();
             Window<GL> CCC = new Window<GL>();
 
@@ -32,7 +32,7 @@ public static class Program{
                 if(!BBB.Destroyed){
                     BBB.Title = CCC.ToString();
                     
-                    BBB.Render.BackgroundColor = ColorF.Green;
+                    BBB.Render.BackgroundColor = ColorF.Transparent;
                     
                     BBB.Render.Clear();
                     
@@ -41,8 +41,10 @@ public static class Program{
 
                 if(!CCC.Destroyed){
                     CCC.Render.Clear();
-                    
-                    CCC.FinishRender();
+
+                    if(!BBB.Destroyed){ BBB.Visible = CCC.Y > 100; }
+
+                CCC.FinishRender();
                 }
 
                 WL.GLFW.Tick();

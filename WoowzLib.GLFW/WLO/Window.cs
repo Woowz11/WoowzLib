@@ -29,11 +29,19 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     /// <param name="Width">Ширина окна</param>
     /// <param name="Height">Высота окна</param>
     /// <param name="Title">Название окна</param>
-    public Window(int Width = 800, int Height = 600, string Title = "WL Window"){
+    /// <param name="TransparentBuffer">Поддержка прозрачности (прозрачный фон)</param>
+    /// <param name="Resizable">Можно изменять размер окна курсором?</param>
+    public Window(int Width = 800, int Height = 600, string Title = "WL Window", bool TransparentBuffer = true, bool Resizable = true){
         try{
             if(!WL.GLFW.Stared){ throw new Exception("GLFW не запущен!"); }
 
             IntPtr Title__ = Marshal.StringToHGlobalAnsi(Title);
+
+            HasTransparentBuffer = TransparentBuffer;
+            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_TRANSPARENT_FRAMEBUFFER, TransparentBuffer ? 1 : 0);
+
+            this.Resizable = Resizable;
+            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_RESIZABLE, Resizable ? 1 : 0);
             
             Handle = WL.GLFW.Native.glfwCreateWindow(Width, Height, Title__, IntPtr.Zero, IntPtr.Zero);
             
@@ -54,6 +62,8 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             ID = Handle.ToInt64();
 
             WL.GLFW.Windows.Add(this);
+
+            Visible = true;
 
             __CloseCallback = (W) => {
                 try{
@@ -153,7 +163,17 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     /// Завершает рендер (меняет буфер рендера с буфером экрана местами)
     /// </summary>
     public Window<TRender> FinishRender(){ WL.GLFW.Native.glfwSwapBuffers(Handle); return this; }
-    
+
+    /// <summary>
+    /// Есть поддержка прозрачности?
+    /// </summary>
+    public bool HasTransparentBuffer{ get; private set; }
+
+    /// <summary>
+    /// Можно изменять размер курсором?
+    /// </summary>
+    public bool Resizable{ get; private set; }
+
     #region Events
 
         /// <summary>
@@ -313,11 +333,35 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
                 WL.GLFW.Native.glfwSetWindowTitle(Handle, Title__);
                 Marshal.FreeHGlobal(Title__);
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при установке названия окну [" + this + "]!\nНазвание: \"" + value + "\"");
+                throw new Exception("Произошла ошибка при установке названия окну [" + this + "]!\nНазвание: \"" + value + "\"", e);
             }
         }
     }
     private string __Title;
+
+    /// <summary>
+    /// Видно окно?
+    /// </summary>
+    public bool Visible{
+        get => __Visible;
+        set{
+            try{
+                if(__Visible == value){ return; }
+                __Visible = value;
+
+                CheckDestroyed();
+
+                if(__Visible){
+                    WL.GLFW.Native.glfwShowWindow(Handle);
+                }else{
+                    WL.GLFW.Native.glfwHideWindow(Handle);
+                }
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке видимости у окна [" + this + "]!\nВидимость: " + value, e);
+            }
+        }
+    }
+    private bool __Visible;
     
     /// <summary>
     /// Уничтожает окно
@@ -339,7 +383,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             Handle = IntPtr.Zero;
             ID     = -1;
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при уничтожении окна [" + this + "]!");
+            throw new Exception("Произошла ошибка при уничтожении окна [" + this + "]!", e);
         }
     }
     
