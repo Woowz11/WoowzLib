@@ -22,6 +22,8 @@ public static class Program{
                 }
 
                 if(!W2.Destroyed){
+                    W2.Title = W3.ToString();
+                    
                     W2.Render.Test(0,0,1);
                     
                     W2.FinishRender();

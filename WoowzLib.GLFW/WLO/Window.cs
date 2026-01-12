@@ -45,6 +45,12 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             __Width  = (uint)Width;
             __Height = (uint)Height;
             __Title  = Title;
+
+            WL.GLFW.Native.glfwGetWindowPos(Handle, out int X, out int Y);
+            __X = X;
+            __Y = Y;
+
+            __Focused = WL.GLFW.Native.glfwGetWindowAttrib(Handle, WL.GLFW.Native.GLFW_FOCUSED) == 1;
             
             ID = Handle.ToInt64();
 
@@ -351,7 +357,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
         }
         
         public override string ToString(){
-            return "GLFW.Window<" + Render + ">(" + (Destroyed ? "Уничтожено" : ID) + ", \"" + Title + "\", " + Width + "x" + Height + ")";
+            return "GLFW.Window<" + Render + ">(" + (Destroyed ? "Уничтожено" : ID) + ", \"" + Title + "\", " + X + ":" + Y + ", " + Width + "x" + Height + ")";
         }
 
         public override bool Equals(object? obj){

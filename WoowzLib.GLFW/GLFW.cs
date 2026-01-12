@@ -48,9 +48,11 @@ namespace WL{
                 Native.glfwSwapBuffers               = WL.Native.DelegateFunction<Native.D_glfwSwapBuffers              >("glfwSwapBuffers"              ,DLL);
                 Native.glfwCreateWindow              = WL.Native.DelegateFunction<Native.D_glfwCreateWindow             >("glfwCreateWindow"             ,DLL);
                 Native.glfwSetWindowPos              = WL.Native.DelegateFunction<Native.D_glfwSetWindowPos             >("glfwSetWindowPos"             ,DLL);
+                Native.glfwGetWindowPos              = WL.Native.DelegateFunction<Native.D_glfwGetWindowPos             >("glfwGetWindowPos"             ,DLL);
                 Native.glfwSetWindowSize             = WL.Native.DelegateFunction<Native.D_glfwSetWindowSize            >("glfwSetWindowSize"            ,DLL);
                 Native.glfwDestroyWindow             = WL.Native.DelegateFunction<Native.D_glfwDestroyWindow            >("glfwDestroyWindow"            ,DLL);
                 Native.glfwSetWindowTitle            = WL.Native.DelegateFunction<Native.D_glfwSetWindowTitle           >("glfwSetWindowTitle"           ,DLL);
+                Native.glfwGetWindowAttrib           = WL.Native.DelegateFunction<Native.D_glfwGetWindowAttrib          >("glfwGetWindowAttrib"          ,DLL);
                 Native.glfwWindowShouldClose         = WL.Native.DelegateFunction<Native.D_glfwWindowShouldClose        >("glfwWindowShouldClose"        ,DLL);
                 Native.glfwMakeContextCurrent        = WL.Native.DelegateFunction<Native.D_glfwMakeContextCurrent       >("glfwMakeContextCurrent"       ,DLL);
                 Native.glfwSetWindowPosCallback      = WL.Native.DelegateFunction<Native.D_glfwSetWindowPosCallback     >("glfwSetWindowPosCallback"     ,DLL);
@@ -203,6 +205,16 @@ namespace WL{
             [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
             public delegate void D_glfwSwapBuffers(IntPtr window);
             public static D_glfwSwapBuffers glfwSwapBuffers = null!;
+            
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glfwGetWindowPos(IntPtr window, out int xpos, out int ypos);
+            public static D_glfwGetWindowPos glfwGetWindowPos = null!;
+
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate int D_glfwGetWindowAttrib(IntPtr window, int attrib);
+            public static D_glfwGetWindowAttrib glfwGetWindowAttrib = null!;
+            
+            public const int GLFW_FOCUSED = 0x00020001;
         }
     }
 }
