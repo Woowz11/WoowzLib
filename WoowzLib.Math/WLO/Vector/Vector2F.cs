@@ -3,16 +3,12 @@
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
 /// </summary>
-public struct Vector2F{
+public struct Vector2F(float X = 0, float Y = 0){
 	public readonly int  N = 2;
 	public readonly Type T = typeof(float);
-	
-	public Vector2F(float X = 0, float Y = 0){
-		this.X = X; this.Y = Y; 
-	}
 
-	public float X = 0;
-	public float Y = 0;
+	public float X;
+	public float Y;
 
 	#region Override
 

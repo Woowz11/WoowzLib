@@ -3,18 +3,14 @@
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
 /// </summary>
-public struct Vector4F{
+public struct Vector4F(float X = 0, float Y = 0, float Z = 0, float W = 0){
 	public readonly int  N = 4;
 	public readonly Type T = typeof(float);
-	
-	public Vector4F(float X = 0, float Y = 0, float Z = 0, float W = 0){
-		this.X = X; this.Y = Y; this.Z = Z; this.W = W; 
-	}
 
-	public float X = 0;
-	public float Y = 0;
-	public float Z = 0;
-	public float W = 0;
+	public float X;
+	public float Y;
+	public float Z;
+	public float W;
 
 	#region Override
 

@@ -3,17 +3,13 @@
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
 /// </summary>
-public struct Vector3U{
+public struct Vector3U(uint X = 0, uint Y = 0, uint Z = 0){
 	public readonly int  N = 3;
 	public readonly Type T = typeof(uint);
-	
-	public Vector3U(uint X = 0, uint Y = 0, uint Z = 0){
-		this.X = X; this.Y = Y; this.Z = Z; 
-	}
 
-	public uint X = 0;
-	public uint Y = 0;
-	public uint Z = 0;
+	public uint X;
+	public uint Y;
+	public uint Z;
 
 	#region Override
 

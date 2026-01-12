@@ -3,18 +3,14 @@
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
 /// </summary>
-public struct Vector4D{
+public struct Vector4D(double X = 0, double Y = 0, double Z = 0, double W = 0){
 	public readonly int  N = 4;
 	public readonly Type T = typeof(double);
-	
-	public Vector4D(double X = 0, double Y = 0, double Z = 0, double W = 0){
-		this.X = X; this.Y = Y; this.Z = Z; this.W = W; 
-	}
 
-	public double X = 0;
-	public double Y = 0;
-	public double Z = 0;
-	public double W = 0;
+	public double X;
+	public double Y;
+	public double Z;
+	public double W;
 
 	#region Override
 

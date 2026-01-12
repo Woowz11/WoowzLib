@@ -3,17 +3,13 @@
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
 /// </summary>
-public struct Vector3D{
+public struct Vector3D(double X = 0, double Y = 0, double Z = 0){
 	public readonly int  N = 3;
 	public readonly Type T = typeof(double);
-	
-	public Vector3D(double X = 0, double Y = 0, double Z = 0){
-		this.X = X; this.Y = Y; this.Z = Z; 
-	}
 
-	public double X = 0;
-	public double Y = 0;
-	public double Z = 0;
+	public double X;
+	public double Y;
+	public double Z;
 
 	#region Override
 
