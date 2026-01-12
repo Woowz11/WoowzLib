@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using WL.WLO;
 using WLO.GLFW;
 using File = WLO.File;
 
@@ -12,7 +13,7 @@ namespace WL{
         /// <summary>
         /// Открытые окна
         /// </summary>
-        internal static readonly HashSet<Window> Windows = [];
+        internal static readonly HashSet<WindowBase> Windows = [];
         
         /// <summary>
         /// Текущий glfw3.dll
@@ -84,7 +85,7 @@ namespace WL{
         public static void Tick(){
             try{
                 Native.glfwPollEvents();
-                foreach(Window window in Windows.ToArray()){
+                foreach(WindowBase window in Windows.ToArray()){
                     if(window.ShouldDestroy){ window.Destroy(); }
                 }
             }catch(Exception e){
@@ -98,7 +99,7 @@ namespace WL{
 
                 if(Windows.Count > 0){ Console.WriteLine("Оставшиеся окна были закрыты через WL.GLFW.Stop()!"); }
 
-                foreach(Window Window in Windows.ToArray()){
+                foreach(WindowBase Window in Windows.ToArray()){
                     Window.Destroy();
                 }
                 Windows.Clear();

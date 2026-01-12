@@ -1,18 +1,36 @@
 ﻿using System.Runtime.InteropServices;
+using WL.WLO;
 
 namespace WLO.GLFW;
+
+public abstract class WindowBase : IDisposable{
+    public abstract void Destroy();
+    public abstract void Dispose();
+    
+    /// <summary>
+    /// Окно должно уничтожиться? (При получении уничтожает окно если должно)
+    /// </summary>
+    public bool ShouldDestroy{ get; private set; }
+    
+    /// <summary>
+    /// Добавляет окно в очередь на уничтожение
+    /// </summary>
+    public void WaitDestroy(){
+        ShouldDestroy = true;
+    }
+}
 
 /// <summary>
 /// GLFW окно
 /// </summary>
-public class Window : IDisposable{
+public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     /// <summary>
     /// Создаёт окно
     /// </summary>
     /// <param name="Width">Ширина окна</param>
     /// <param name="Height">Высота окна</param>
     /// <param name="Title">Название окна</param>
-    public Window(int Width = 800, int Height = 600, string Title = "WL Window"){
+    public Window(int Width = 800, int Height = 600, string Title = "WL Window", TRender? Render = null){
         try{
             if(!WL.GLFW.Stared){ throw new Exception("GLFW не запущен!"); }
 
@@ -90,6 +108,9 @@ public class Window : IDisposable{
                 
             };
             WL.GLFW.Native.glfwSetWindowMaximizeCallback(Handle, __MaximizeCallback);
+            
+            this.Render = Render ?? new TRender();
+
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании окна [" + this + "]!", e);
         }
@@ -106,6 +127,8 @@ public class Window : IDisposable{
     /// </summary>
     public IntPtr Handle{ get; private set; }
 
+    public TRender Render{ get; private set; }
+
     /// <summary>
     /// Уникальный ID окна (основан на Handle)
     /// </summary>
@@ -115,16 +138,11 @@ public class Window : IDisposable{
     /// Уничтожено окно?
     /// </summary>
     public bool Destroyed => Handle == IntPtr.Zero;
-
-    /// <summary>
-    /// Окно должно уничтожиться? (При получении уничтожает окно если должно)
-    /// </summary>
-    public bool ShouldDestroy{ get; private set; }
     
     /// <summary>
     /// Проверяет, уничтожено окно или нет? (Выдаёт ошибку)
     /// </summary>
-    public Window CheckDestroyed(){ if(Destroyed){ throw new Exception("Окно [" + this + "] уничтожено!"); } return this; }
+    public Window<TRender> CheckDestroyed(){ if(Destroyed){ throw new Exception("Окно [" + this + "] уничтожено!"); } return this; }
 
     #region Events
 
@@ -159,10 +177,10 @@ public class Window : IDisposable{
 
         #region Delegates
 
-            public delegate void WindowEvent(Window Window);
-            public delegate void WindowEvent_Size(Window Window, int Width, int Height);
-            public delegate void WindowEvent_Position(Window Window, int X, int Y);
-            public delegate void WindowEvent_Focus(Window Window, bool Focus);
+            public delegate void WindowEvent(Window<TRender> Window);
+            public delegate void WindowEvent_Size(Window<TRender> Window, int Width, int Height);
+            public delegate void WindowEvent_Position(Window<TRender> Window, int X, int Y);
+            public delegate void WindowEvent_Focus(Window<TRender> Window, bool Focus);
             
         #endregion
         
@@ -177,7 +195,7 @@ public class Window : IDisposable{
     /// <summary>
     /// Установить окно в фокус
     /// </summary>
-    public Window Focus(){
+    public Window<TRender> Focus(){
         try{
             if(Focused){ return this; }
             __Focused = true;
@@ -294,7 +312,7 @@ public class Window : IDisposable{
     /// <summary>
     /// Уничтожает окно
     /// </summary>
-    public void Destroy(){
+    public override void Destroy(){
         try{
             CheckDestroyed();
 
@@ -314,17 +332,10 @@ public class Window : IDisposable{
             throw new Exception("Произошла ошибка при уничтожении окна [" + this + "]!");
         }
     }
-
-    /// <summary>
-    /// Добавляет окно в очередь на уничтожение
-    /// </summary>
-    public void WaitDestroy(){
-        ShouldDestroy = true;
-    }
     
     #region Overwrite
 
-        public void Dispose(){
+        public override void Dispose(){
             try{
                 if(Destroyed){ return; }
                 Destroy();
@@ -336,7 +347,7 @@ public class Window : IDisposable{
         }
 
         public override bool Equals(object? obj){
-            if(obj is not Window other){ return false; }
+            if(obj is not Window<TRender> other){ return false; }
             return ID == other.ID;
         }
 
@@ -344,13 +355,13 @@ public class Window : IDisposable{
             return ID.GetHashCode();
         }
 
-        public static bool operator ==(Window? A, Window? B){
+        public static bool operator ==(Window<TRender>? A, Window<TRender>? B){
             if(ReferenceEquals(A, B)){ return true; }
             if(A is null || B is null){ return false; }
             return A.ID == B.ID;
         }
 
-        public static bool operator !=(Window? A, Window? B){
+        public static bool operator !=(Window<TRender>? A, Window<TRender>? B){
             return !(A == B);
         }
 

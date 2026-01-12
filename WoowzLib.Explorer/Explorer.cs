@@ -20,7 +20,7 @@ namespace WL{
             /// <param name="Path">Путь [<c>"test/file.json"</c>]</param>
             public static void Destroy(string Path){
                 try{
-                    if(!Exist(Path)){ throw new Exception(WLO.File.Error_FileAlreadyDestroyed); }
+                    if(!Exist(Path)){ throw new Exception(global::WLO.File.Error_FileAlreadyDestroyed); }
                     System.IO.File.Delete(Path);
                 }catch(Exception e){
                     throw new Exception("Не получилось уничтожить файл по пути [" + Path + "]!");
@@ -81,8 +81,8 @@ namespace WL{
         /// Для создания временных файлов
         /// </summary>
         public static class Temp{
-            public  static readonly string         TempFolder;
-            private static readonly List<WLO.File> TempFiles = [];
+            public  static readonly string                 TempFolder;
+            private static readonly List<global::WLO.File> TempFiles = [];
             
             static Temp(){
                 TempFolder = Path.Combine(
@@ -99,7 +99,7 @@ namespace WL{
                 try{
                     Exception? e__ = null;
                     
-                    foreach(WLO.File TempFile in TempFiles){
+                    foreach(global::WLO.File TempFile in TempFiles){
                         try{ TempFile.Destroy(); }catch(Exception e){ e__ = e; }
                     }
 
@@ -115,8 +115,8 @@ namespace WL{
             /// </summary>
             /// <param name="Path">Путь до файла (с поддержкой папок) [<c>"test/file.txt"</c>]</param>
             /// <returns>Файл</returns>
-            public static WLO.File Create(string Path){
-                WLO.File TempFile = new WLO.File(System.IO.Path.Combine(TempFolder, Path));
+            public static global::WLO.File Create(string Path){
+                global::WLO.File TempFile = new global::WLO.File(System.IO.Path.Combine(TempFolder, Path));
 
                 TempFiles.Add(TempFile);
                 
@@ -134,7 +134,7 @@ namespace WL{
             /// <param name="ID">ID ресурса [<c>"WoowzLib.GLFW.Native.win-x64.glfw3.dll"</c>]</param>
             /// <param name="Assembly">Сборка, где искать ресурс (если null, значит в текущей)</param>
             /// <returns>Ресурс (сохранённый во временной папке)</returns>
-            public static WLO.File Load(string ID, Assembly? Assembly = null){
+            public static global::WLO.File Load(string ID, Assembly? Assembly = null){
                 Assembly Assembly__ = Assembly ?? System.Reflection.Assembly.GetExecutingAssembly();
 
                 string? ProjectName = Assembly__.GetName().Name;
@@ -149,7 +149,7 @@ namespace WL{
                         ResourceName = Parts__[^2] + "." + Parts__[^1];
                     }
 
-                    WLO.File File = WL.Explorer.Temp.Create("WL\\Explorer.Resources\\" + (ProjectName ?? "Unknown") + "\\" + ResourceName);
+                    global::WLO.File File = WL.Explorer.Temp.Create("WL\\Explorer.Resources\\" + (ProjectName ?? "Unknown") + "\\" + ResourceName);
 
                     using FileStream FS = new FileStream(File.Path, FileMode.Create, FileAccess.Write, FileShare.None);
                     Stream.CopyTo(FS);
