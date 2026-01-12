@@ -15,7 +15,7 @@ namespace WL{
             public static bool Exist(string Path) => System.IO.File.Exists(Path);
             
             /// <summary>
-            /// Удаляет файл по указанному пути
+            /// Уничтожает файл по указанному пути
             /// </summary>
             /// <param name="Path">Путь [<c>"test/file.json"</c>]</param>
             public static void Destroy(string Path){
@@ -23,7 +23,7 @@ namespace WL{
                     if(!Exist(Path)){ throw new Exception(WLO.File.Error_FileAlreadyDestroyed); }
                     System.IO.File.Delete(Path);
                 }catch(Exception e){
-                    throw new Exception("Не получилось удалить файл по пути [" + Path + "]!");
+                    throw new Exception("Не получилось уничтожить файл по пути [" + Path + "]!");
                 }
             }
 
@@ -64,7 +64,7 @@ namespace WL{
             }
             
             /// <summary>
-            /// Удаляет папку по указанному пути (с файлами и папками внутри)
+            /// Уничтожает папку по указанному пути (с файлами и папками внутри)
             /// </summary>
             /// <param name="Path">Путь [<c>"test/folder/"</c>]</param>
             public static void Destroy(string Path){
@@ -72,7 +72,7 @@ namespace WL{
                     if(!Exist(Path)){ throw new Exception("Папка не найдена!"); }
                     System.IO.Directory.Delete(Path, true);
                 }catch(Exception e){
-                    throw new Exception("Не получилось удалить папку по пути [" + Path + "]!");
+                    throw new Exception("Не получилось уничтожить папку по пути [" + Path + "]!");
                 }
             }
         }
@@ -105,7 +105,7 @@ namespace WL{
 
                     if(WL.Explorer.Folder.Exist(TempFolder)){ WL.Explorer.Folder.Destroy(TempFolder); }
 
-                    if(e__ != null){ throw new Exception("Не получилось удалить все файлы!", e__); }
+                    if(e__ != null){ throw new Exception("Не получилось уничтожить все файлы!", e__); }
                 }
                 catch(Exception e){ throw new Exception("Произошла ошибка при очистке временных файлов!", e); }
             }

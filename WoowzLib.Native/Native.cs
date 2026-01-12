@@ -87,5 +87,16 @@ namespace WL{
                 throw new Exception("Произошла ошибка при загрузке функции из DLL [" + DLL + "]!\nФункция: " + Name);
             }
         }
+
+        /// <summary>
+        /// Получает функцию из DLL и возвращает её в виде C# функции
+        /// </summary>
+        /// <param name="Name">Функция из DLL [<c>"glfwCreateWindow"</c>]</param>
+        /// <param name="DLL">Указанный DLL</param>
+        /// <typeparam name="D">Тип функции (точно совпадает с её параметрами и возвращаемым значением)</typeparam>
+        /// <returns>Функция которую можно вызвать как C# функцию</returns>
+        public static D DelegateFunction<D>(string Name, File DLL) where D : Delegate{
+            return Marshal.GetDelegateForFunctionPointer<D>(Function(DLL, Name));
+        }
     }
 }

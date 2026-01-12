@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="Native\glfw3.dll" LogicalName="WoowzLib.GLFW.glfw3.dll" />
+        <EmbeddedResource Include="Native\glfw3.dll" LogicalName="WoowzLib.glfw3.dll" />
     </ItemGroup>
 
     <ItemGroup>

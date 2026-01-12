@@ -7,7 +7,7 @@ namespace WLO;
 /// </summary>
 public class File{
     public const string Error_FileNotExist         = "Файл не найден!";
-    public const string Error_FileAlreadyDestroyed = "Файл уже удалён!";
+    public const string Error_FileAlreadyDestroyed = "Файл уже уничтожен!";
     public const string Error_FileAlreadyCreated   = "Файл уже создан!";
 
     /// <summary>
@@ -239,13 +239,13 @@ public class File{
     }
     
     /// <summary>
-    /// Удаляет файл
+    /// Уничтожает файл
     /// </summary>
     public void Destroy(){
         try{
             WL.Explorer.File.Destroy(Path);
         }catch(Exception e){
-            throw new Exception("Не получилось удалить файл [" + this + "]!", e);
+            throw new Exception("Не получилось уничтожить файл [" + this + "]!", e);
         }
     }
 

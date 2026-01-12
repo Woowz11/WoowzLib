@@ -15,7 +15,8 @@ namespace WL{
                 try{
                     StopEvents[i]();
                 }catch(Exception e){
-                    Console.WriteLine("Произошла ошибка при вызове остаточного ивента [" + i + "]!", e);
+                    Console.WriteLine("Произошла ошибка при вызове остаточного ивента [" + i + "]!");
+                    Console.WriteLine(e);
                 }
             }
         }

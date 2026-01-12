@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using WLO.GLFW;
 using File = WLO.File;
 
 namespace WL{
@@ -7,6 +8,11 @@ namespace WL{
         static GLFW(){
             WL.WoowzLib.StopEvent(() => __Destroy(true));
         }
+
+        /// <summary>
+        /// Открытые окна
+        /// </summary>
+        internal static readonly HashSet<Window> Windows = [];
         
         /// <summary>
         /// Текущий glfw3.dll
@@ -17,6 +23,11 @@ namespace WL{
         /// Установлен GLFW?
         /// </summary>
         public static bool Stared => DLL != null;
+
+        /// <summary>
+        /// Уничтожен GLFW?
+        /// </summary>
+        public static bool Destroyed => !Stared;
         
         /// <summary>
         /// Запуск GLFW
@@ -25,18 +36,20 @@ namespace WL{
             try{
                 if(Stared){ throw new Exception("GLFW уже был загружен!"); }
 
-                DLL = WL.Explorer.Resources.Load("WoowzLib.GLFW.glfw3.dll", typeof(WL.GLFW).Assembly);
+                DLL = WL.Explorer.Resources.Load("WoowzLib.glfw3.dll", typeof(WL.GLFW).Assembly);
                 WL.Native.Load(DLL);
 
-                Native.glfwInit               = Marshal.GetDelegateForFunctionPointer<Native.D_glfwInit              >(WL.Native.Function(DLL, "glfwInit"              ));
-                Native.glfwTerminate          = Marshal.GetDelegateForFunctionPointer<Native.D_glfwTerminate         >(WL.Native.Function(DLL, "glfwTerminate"         ));
-                Native.glfwCreateWindow       = Marshal.GetDelegateForFunctionPointer<Native.D_glfwCreateWindow      >(WL.Native.Function(DLL, "glfwCreateWindow"      ));
-                Native.glfwMakeContextCurrent = Marshal.GetDelegateForFunctionPointer<Native.D_glfwMakeContextCurrent>(WL.Native.Function(DLL, "glfwMakeContextCurrent"));
-                Native.glfwShowWindow         = Marshal.GetDelegateForFunctionPointer<Native.D_glfwShowWindow        >(WL.Native.Function(DLL, "glfwShowWindow"        ));
-                Native.glfwPollEvents         = Marshal.GetDelegateForFunctionPointer<Native.D_glfwPollEvents        >(WL.Native.Function(DLL, "glfwPollEvents"        ));
-                Native.glfwWindowShouldClose  = Marshal.GetDelegateForFunctionPointer<Native.D_glfwWindowShouldClose >(WL.Native.Function(DLL, "glfwWindowShouldClose" ));
-                Native.glfwSetWindowSize      = Marshal.GetDelegateForFunctionPointer<Native.D_glfwSetWindowSize     >(WL.Native.Function(DLL, "glfwSetWindowSize"     ));
-                Native.glfwSetWindowTitle     = Marshal.GetDelegateForFunctionPointer<Native.D_glfwSetWindowTitle    >(WL.Native.Function(DLL, "glfwSetWindowTitle"    ));
+                Native.glfwInit                   = WL.Native.DelegateFunction<Native.D_glfwInit                  >("glfwInit"                  , DLL);
+                Native.glfwTerminate              = WL.Native.DelegateFunction<Native.D_glfwTerminate             >("glfwTerminate"             , DLL);
+                Native.glfwCreateWindow           = WL.Native.DelegateFunction<Native.D_glfwCreateWindow          >("glfwCreateWindow"          , DLL);
+                Native.glfwMakeContextCurrent     = WL.Native.DelegateFunction<Native.D_glfwMakeContextCurrent    >("glfwMakeContextCurrent"    , DLL);
+                Native.glfwShowWindow             = WL.Native.DelegateFunction<Native.D_glfwShowWindow            >("glfwShowWindow"            , DLL);
+                Native.glfwPollEvents             = WL.Native.DelegateFunction<Native.D_glfwPollEvents            >("glfwPollEvents"            , DLL);
+                Native.glfwWindowShouldClose      = WL.Native.DelegateFunction<Native.D_glfwWindowShouldClose     >("glfwWindowShouldClose"     , DLL);
+                Native.glfwSetWindowSize          = WL.Native.DelegateFunction<Native.D_glfwSetWindowSize         >("glfwSetWindowSize"         , DLL);
+                Native.glfwSetWindowTitle         = WL.Native.DelegateFunction<Native.D_glfwSetWindowTitle        >("glfwSetWindowTitle"        , DLL);
+                Native.glfwDestroyWindow          = WL.Native.DelegateFunction<Native.D_glfwDestroyWindow         >("glfwDestroyWindow"         , DLL);
+                Native.glfwSetWindowCloseCallback = WL.Native.DelegateFunction<Native.D_glfwSetWindowCloseCallback>("glfwSetWindowCloseCallback", DLL);
                 
                 int Result = Native.glfwInit();
                 if(Result == 0){ throw new Exception("glfwInit вернул 0!"); }
@@ -50,21 +63,27 @@ namespace WL{
         /// </summary>
         public static void Stop(){
             try{
-                if(!Stared){ throw new Exception("GLFW и не был загружен!"); }
+                if(Destroyed){ throw new Exception("GLFW и не был загружен!"); }
                 __Destroy(false);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при остановке GLFW!", e);
             }
         }
-
+        
         private static void __Destroy(bool Warn){
             try{
-                if(!Stared){ return; }
+                if(Destroyed){ return; }
+
+                foreach(Window Window in Windows.ToArray()){
+                    Window.Destroy();
+                }
+                Windows.Clear();
                 
-                Native.glfwTerminate?.Invoke();
+                Native.glfwTerminate.Invoke();
                 
                 WL.Native.Unload(DLL);
                 DLL = null;
+                
                 if(Warn){ Console.WriteLine("Авто-остановка GLFW!"); }
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при базовой остановке GLFW!", e);
@@ -107,6 +126,16 @@ namespace WL{
             [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
             public delegate void D_glfwSetWindowTitle(IntPtr window, IntPtr title);
             public static D_glfwSetWindowTitle glfwSetWindowTitle = null!;
+            
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glfwDestroyWindow(IntPtr window);
+            public static D_glfwDestroyWindow glfwDestroyWindow = null!;
+            
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void WindowCloseCallback(IntPtr window);
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glfwSetWindowCloseCallback(IntPtr window, WindowCloseCallback cb);
+            public static D_glfwSetWindowCloseCallback glfwSetWindowCloseCallback = null!;
         }
     }
 }
