@@ -6,9 +6,9 @@ namespace WLO;
 /// Файл
 /// </summary>
 public class File{
-    public const string Error_FileNotExist       = "Файл не найден!";
-    public const string Error_FileAlreadyDeleted = "Файл уже удалён!";
-    public const string Error_FileAlreadyCreated = "Файл уже создан!";
+    public const string Error_FileNotExist         = "Файл не найден!";
+    public const string Error_FileAlreadyDestroyed = "Файл уже удалён!";
+    public const string Error_FileAlreadyCreated   = "Файл уже создан!";
 
     /// <summary>
     /// Получение или создание пустого файла
@@ -163,7 +163,7 @@ public class File{
 
             if(WL.Explorer.File.Exist(NewPath)){
                 if(Overwrite){
-                    WL.Explorer.File.Delete(NewPath);
+                    WL.Explorer.File.Destroy(NewPath);
                 }else{
                     throw new Exception("Файл уже существует по новому пути!");
                 }
@@ -192,7 +192,7 @@ public class File{
 
             if(WL.Explorer.File.Exist(NewPath)){
                 if(Overwrite){
-                    WL.Explorer.File.Delete(NewPath);
+                    WL.Explorer.File.Destroy(NewPath);
                 }else{
                     throw new Exception("Файл уже существует по новому пути!");
                 }
@@ -241,9 +241,9 @@ public class File{
     /// <summary>
     /// Удаляет файл
     /// </summary>
-    public void Delete(){
+    public void Destroy(){
         try{
-            WL.Explorer.File.Delete(Path);
+            WL.Explorer.File.Destroy(Path);
         }catch(Exception e){
             throw new Exception("Не получилось удалить файл [" + this + "]!", e);
         }

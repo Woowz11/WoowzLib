@@ -18,9 +18,9 @@ namespace WL{
             /// Удаляет файл по указанному пути
             /// </summary>
             /// <param name="Path">Путь [<c>"test/file.json"</c>]</param>
-            public static void Delete(string Path){
+            public static void Destroy(string Path){
                 try{
-                    if(!Exist(Path)){ throw new Exception(WLO.File.Error_FileAlreadyDeleted); }
+                    if(!Exist(Path)){ throw new Exception(WLO.File.Error_FileAlreadyDestroyed); }
                     System.IO.File.Delete(Path);
                 }catch(Exception e){
                     throw new Exception("Не получилось удалить файл по пути [" + Path + "]!");
@@ -67,7 +67,7 @@ namespace WL{
             /// Удаляет папку по указанному пути (с файлами и папками внутри)
             /// </summary>
             /// <param name="Path">Путь [<c>"test/folder/"</c>]</param>
-            public static void Delete(string Path){
+            public static void Destroy(string Path){
                 try{
                     if(!Exist(Path)){ throw new Exception("Папка не найдена!"); }
                     System.IO.Directory.Delete(Path, true);
@@ -92,17 +92,22 @@ namespace WL{
 
                 WL.Explorer.Folder.Create(TempFolder);
 
-                WL.WoowzLib.StopEvent(Destroy);
+                WL.WoowzLib.StopEvent(__Destroy);
             }
 
-            private static void Destroy(){
+            private static void __Destroy(){
                 try{
-                    foreach(WLO.File TempFile in TempFiles){
-                        try{ TempFile.Delete(); }catch{ /**/ }
-                    }
+                    Exception? e__ = null;
                     
-                    if(WL.Explorer.Folder.Exist(TempFolder)){ WL.Explorer.Folder.Delete(TempFolder); }
-                }catch{ /**/ }
+                    foreach(WLO.File TempFile in TempFiles){
+                        try{ TempFile.Destroy(); }catch(Exception e){ e__ = e; }
+                    }
+
+                    if(WL.Explorer.Folder.Exist(TempFolder)){ WL.Explorer.Folder.Destroy(TempFolder); }
+
+                    if(e__ != null){ throw new Exception("Не получилось удалить все файлы!", e__); }
+                }
+                catch(Exception e){ throw new Exception("Произошла ошибка при очистке временных файлов!", e); }
             }
 
             /// <summary>
