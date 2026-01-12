@@ -30,7 +30,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     /// <param name="Width">Ширина окна</param>
     /// <param name="Height">Высота окна</param>
     /// <param name="Title">Название окна</param>
-    public Window(int Width = 800, int Height = 600, string Title = "WL Window", TRender? Render = null){
+    public Window(int Width = 800, int Height = 600, string Title = "WL Window"){
         try{
             if(!WL.GLFW.Stared){ throw new Exception("GLFW не запущен!"); }
 
@@ -108,13 +108,9 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
                 
             };
             WL.GLFW.Native.glfwSetWindowMaximizeCallback(Handle, __MaximizeCallback);
-
-            if(Render == null){
-                this.Render = new TRender();
-                this.Render.__ConnectWindow(this);
-            }else{
-                this.Render = Render;
-            }
+            
+            this.Render = new TRender();
+            this.Render.__ConnectWindow(this);
 
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании окна [" + this + "]!", e);

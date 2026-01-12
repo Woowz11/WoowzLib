@@ -10,7 +10,7 @@ public static class Program{
 
             Window<GL> W1 = new Window<GL>();
             Window<GL> W2 = new Window<GL>();
-            Window<GL> W3 = new Window<GL>(Render: W1.Render);
+            Window<GL> W3 = new Window<GL>();
             
             while(!W1.ShouldDestroy || !W2.ShouldDestroy || !W3.ShouldDestroy){
                 if(!W1.Destroyed){
@@ -28,6 +28,8 @@ public static class Program{
                 }
 
                 if(!W3.Destroyed){
+                    W3.Render.Test(0,WL.Math.Random.Fast_0_1(),0);
+                    
                     W3.FinishRender();
                 }
 
