@@ -280,6 +280,25 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     private uint __Height;
     
     /// <summary>
+    /// Размер окна
+    /// </summary>
+    public Vector2U Size{
+        get => new Vector2U(__Width, __Height);
+        set{
+            try{
+                if(__Width == value.X && __Height == value.Y){ return; }
+                __Width  = value.X;
+                __Height = value.Y;
+            
+                CheckDestroyed();
+                WL.GLFW.Native.glfwSetWindowSize(Handle, (int)__Width, (int)__Height);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке размера окну [" + this + "]!\nРазмер: " + value, e);
+            }
+        }
+    }
+    
+    /// <summary>
     /// Позиция окна по X
     /// </summary>
     public int X{
@@ -316,6 +335,25 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
         }
     }
     private int __Y;
+
+    /// <summary>
+    /// Позиция окна
+    /// </summary>
+    public Vector2I Position{
+        get => new Vector2I(__X, __Y);
+        set{
+            try{
+                if(__X == value.X && __Y == value.Y){ return; }
+                __X = value.X;
+                __Y = value.Y;
+                
+                CheckDestroyed();
+                WL.GLFW.Native.glfwSetWindowPos(Handle, __X, __Y);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке позиции у окна [" + this + "]!\nПозиция: " + value, e);
+            }
+        }
+    }
 
     /// <summary>
     /// Название окна

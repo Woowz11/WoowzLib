@@ -67,7 +67,7 @@ public static class Generator{
             }
         }
         
-        private enum VectorType{ Int, Float, Double }
+        private enum VectorType{ Int, UInt, Float, Double }
         private static readonly char[] VectorComponents = ['X', 'Y', 'Z', 'W'];
         private static void CreateVector(string OutputFolder, VectorType VectorType, int N){
             try{
@@ -84,6 +84,8 @@ public static class Generator{
 
                 // Тип (int, float, double)
                 string Type = VectorType.ToString().ToLower();
+                
+                bool NoMinus = VectorType is VectorType.UInt;
                 
                 const string V_0 =  "0";
                 const string V_1 =  "1";
@@ -107,15 +109,19 @@ public static class Generator{
                     {"Kata"      , [ V_0, V_0, V_0, VM1 ]}
                 };
 
-                Dictionary<string, string[]> AllConstants = new[]{ Constants2, Constants3, Constants4 }.Take(Math.Max(0, N - 1)).SelectMany(D => D).ToDictionary(P => P.Key, P => P.Value.Take(N).ToArray());
+                Dictionary<string, string[]> AllConstants = new[]{ Constants2, Constants3, Constants4 }
+                                                            .Take(Math.Max(0, N - 1))
+                                                            .SelectMany(D => D)
+                                                            .Where(P => !NoMinus || !P.Value.Contains(VM1))
+                                                            .ToDictionary(P => P.Key, P => P.Value.Take(N).ToArray());
                 
                 string Result = Pre() + "\n";
 
                 Result += "public struct " + Name + "{\n";
 
                 Result += $$"""
-                                public readonly int  N = {{N}};
-                                public readonly Type T = typeof({{Type}});
+                                public readonly int  Numbers = {{N}};
+                                public readonly Type Type····= typeof({{Type}});
                             
                                 public {{Name}}({{WL.String.Join(Type + " $0 = 0, ", Type + " $0 = 0", Components)}}){
                                     {{WL.String.Join("this.$0 = $0; ", Components)}}
@@ -192,7 +198,7 @@ public static class Generator{
                 
                 Result += "\n}";
 
-                File F = new File(Path.Combine(OutputFolder, Name + ".cs")).WriteString(Result.Replace("    ", "\t"));
+                File F = new File(Path.Combine(OutputFolder, Name + ".cs")).WriteString(Result.Replace("    ", "\t").Replace('·',' '));
             }catch(Exception e){
                 throw new Exception("Произошла ошибка во время генерации вектора [" + VectorType + ", " + N + "]!", e);
             }

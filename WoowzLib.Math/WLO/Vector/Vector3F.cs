@@ -4,8 +4,8 @@
 /// Сгенерировано через GeneratorWoowzLib!
 /// </summary>
 public struct Vector3F{
-	public readonly int  N = 3;
-	public readonly Type T = typeof(float);
+	public readonly int  Numbers = 3;
+	public readonly Type Type    = typeof(float);
 
 	public Vector3F(float X = 0, float Y = 0, float Z = 0){
 		this.X = X; this.Y = Y; this.Z = Z; 

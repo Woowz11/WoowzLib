@@ -4,8 +4,8 @@
 /// Сгенерировано через GeneratorWoowzLib!
 /// </summary>
 public struct Vector2D{
-	public readonly int  N = 2;
-	public readonly Type T = typeof(double);
+	public readonly int  Numbers = 2;
+	public readonly Type Type    = typeof(double);
 
 	public Vector2D(double X = 0, double Y = 0){
 		this.X = X; this.Y = Y; 

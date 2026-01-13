@@ -4,8 +4,8 @@
 /// Сгенерировано через GeneratorWoowzLib!
 /// </summary>
 public struct Vector4F{
-	public readonly int  N = 4;
-	public readonly Type T = typeof(float);
+	public readonly int  Numbers = 4;
+	public readonly Type Type    = typeof(float);
 
 	public Vector4F(float X = 0, float Y = 0, float Z = 0, float W = 0){
 		this.X = X; this.Y = Y; this.Z = Z; this.W = W; 
