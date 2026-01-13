@@ -108,7 +108,7 @@ namespace WL{
             static Temp(){
                 TempFolder = Path.Combine(
                     Path.GetTempPath(),
-                    "WoowzLib_" + DateTime.UtcNow.ToString("yyyyMMddHHmmss")
+                    "WoowzLib_" + WL.Math.Time.Format("yyyyMMddHHmmss")
                 );
 
                 WL.Explorer.Folder.Create(TempFolder);

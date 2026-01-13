@@ -20,7 +20,7 @@ public static class Program{
             
             while(!AAA.ShouldDestroy || !BBB.ShouldDestroy || !CCC.ShouldDestroy){
                 if(!AAA.Destroyed){
-                    AAA.Title = DateTime.Now.ToString("T");
+                    AAA.Title = WL.Math.Time.Format("T");
 
                     AAA.Render.BackgroundColor = ColorF.Red;
 
