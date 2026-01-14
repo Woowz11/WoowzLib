@@ -21,6 +21,7 @@ public static class Generator{
             
             GenerateVector(Path.GetFullPath(Path.Combine(MathFolder, "WLO", "Vector")));
             GenerateColor (Path.GetFullPath(Path.Combine(MathFolder, "WLO", "Color" )));
+            GenerateRect  (Path.GetFullPath(Path.Combine(MathFolder, "WLO", "Rect"  )));
         }catch(Exception e){
             throw new Exception("Произошла ошибка во время генерации!", e);
         }
@@ -120,8 +121,8 @@ public static class Generator{
                 Result += "public struct " + Name + "{\n";
 
                 Result += $$"""
-                                public readonly int  Numbers = {{N}};
-                                public readonly Type Type····= typeof({{Type}});
+                                public static readonly int  Numbers = {{N}};
+                                public static readonly Type Type····= typeof({{Type}});
                             
                                 public {{Name}}({{WL.String.Join(Type + " $0 = 0, ", Type + " $0 = 0", Components)}}){
                                     {{WL.String.Join("this.$0 = $0; ", Components)}}
@@ -267,7 +268,7 @@ public static class Generator{
                 Result += "public struct " + Name + "{\n";
 
                 Result += $$"""
-                                public readonly Type T = typeof({{Type}});
+                                public static readonly Type Type = typeof({{Type}});
                             
                                 public {{Name}}({{WL.String.Join(Type + " $0 = 0, ", Type + " $0 = " + V_1, Components)}}){
                                     {{WL.String.Join("this.$0 = $0; ", Components)}}
@@ -312,6 +313,111 @@ public static class Generator{
                 File F = new File(Path.Combine(OutputFolder, Name + ".cs")).WriteString(Result.Replace("    ", "\t"));
             }catch(Exception e){
                 throw new Exception("Произошла ошибка во время генерации цвета [" + ColorType + "]!", e);
+            }
+        }
+
+    #endregion
+    
+    #region Rect
+
+        private static void GenerateRect(string OutputFolder){
+            try{
+                Console.WriteLine("Генерация Rect в [" + OutputFolder + "]:");
+
+                if(!WL.Explorer.Folder.Exist(OutputFolder)){ throw new Exception("Не найдена Output папка!"); }
+
+                WL.Explorer.Folder.Clear(OutputFolder);
+
+                foreach(RectType Type in Enum.GetValues(typeof(RectType))){
+                    CreateRect(OutputFolder, Type);
+                }
+                Console.WriteLine("Завершение генерации Rect");
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка во время генерации Rect!", e);
+            }
+        }
+        
+        private enum RectType{ Int, Float, Double }
+        private static void CreateRect(string OutputFolder, RectType RectType){
+            try{
+                Console.WriteLine("\tСоздание Rect [" + RectType + "]");
+                
+                // Первая буква типа (I, F, D)
+                string TypeChar = RectType.ToString()[0].ToString();
+
+                // Название (RectF, RectI)
+                string Name = "Rect" + TypeChar;
+
+                // Тип (int, float, double)
+                string Type = RectType.ToString().ToLower();
+                
+                string Result = Pre() + "\n";
+
+                Result += "public struct " + Name + "{\n";
+
+                Result += $$"""
+                                public static readonly Type Type = typeof({{Type}});
+                            
+                                public {{Name}}({{Type}} X, {{Type}} Y, {{Type}} Width, {{Type}} Height){
+                                    this.X = X; this.Y = Y; this.Width = Width; this.Height = Height;
+                                }
+                                public {{Name}}({{Type}} Width, {{Type}} Height) : this(0, 0, Width, Height){}
+                            
+                                public {{Type}} X;
+                                public {{Type}} Y;
+                                
+                                public {{Type}} Width {
+                                    get => __Width;
+                                    set{
+                                        if(__Width == value){ return; }
+                                    
+                                        if(value <= 0){ throw new Exception("Ширина не может быть <= 0 у [" + this + "]!"); }
+                                        __Width = value;
+                                    }
+                                }
+                                private {{Type}} __Width;
+                                
+                                public {{Type}} Height {
+                                    get => __Height;
+                                    set{
+                                        if(__Height == value){ return; }
+                                    
+                                        if(value <= 0){ throw new Exception("Высота не может быть <= 0 у [" + this + "]!"); }
+                                        __Height = value;
+                                    }
+                                }
+                                private {{Type}} __Height;
+                            
+                                #region Override
+                            
+                                    public override string ToString(){
+                                        return "{{Name}}(" + X + ":" + Y + ", " + Width + "x" + Height + ")";
+                                    }
+                                    
+                                    public override bool Equals(object? obj){
+                                        if(obj is not {{Name}} other){ return false; }
+                                        return X == other.X && Y == other.Y && Width == other.Width && Height == other.Height;
+                                    }
+                                    
+                                    public override int GetHashCode(){
+                                        return HashCode.Combine(X, Y, Width, Height);
+                                    }
+                                    
+                                    public static bool operator ==({{Name}} A, {{Name}} B){
+                                        return A.X == B.X && A.Y == B.Y && A.Width == B.Width && A.Height == B.Height;
+                                    }
+                                    
+                                    public static bool operator !=({{Name}} A, {{Name}} B){
+                                        return !(A == B);
+                                    }
+                                #endregion
+                            """;
+                
+                Result += "\n}";
+
+                File F = new File(Path.Combine(OutputFolder, Name + ".cs")).WriteString(Result.Replace("    ", "\t").Replace('·',' '));
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка во время генерации Rect [" + RectType + "]!", e);
             }
         }
 

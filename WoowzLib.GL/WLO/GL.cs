@@ -4,6 +4,8 @@ public class GL : RenderContext{
     public override void __Start(){
         try{
             BackgroundColor = ColorF.Orange;
+            
+            Viewport = new RectI(0, 0, (int)ConnectedWindow.__Width, (int)ConnectedWindow.__Height);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при инициализации стартовых значений GL [" + this + "]!", e);
         }
@@ -29,7 +31,7 @@ public class GL : RenderContext{
     private ColorF __BackgroundColor;
 
     /// <summary>
-    /// Очищает рендер
+    /// Очищает рендер (Viewport не влияет, очищает всю область)
     /// <param name="Color">Буфер цвета</param>
     /// <param name="Depth">Буфер глубины</param>
     /// <param name="Stencil">Буфер трафарета</param>
@@ -51,4 +53,23 @@ public class GL : RenderContext{
 
         return this;
     }
+
+    /// <summary>
+    /// Текущая область рендера
+    /// </summary>
+    public RectI Viewport{
+        get => __Viewport;
+        set{
+            try{
+                if(__Viewport == value){ return; }
+                __Viewport = value;
+                
+                MakeContext();
+                WL.GL.Native.glViewport(__Viewport.X, __Viewport.Y, __Viewport.Width, __Viewport.Height);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при изменении области рендера GL [" + this + "]!\nОбласть: " + value, e);
+            }
+        }
+    }
+    private RectI __Viewport;
 }

@@ -4,8 +4,8 @@
 /// Сгенерировано через GeneratorWoowzLib!
 /// </summary>
 public struct Vector2I{
-	public readonly int  Numbers = 2;
-	public readonly Type Type    = typeof(int);
+	public static readonly int  Numbers = 2;
+	public static readonly Type Type    = typeof(int);
 
 	public Vector2I(int X = 0, int Y = 0){
 		this.X = X; this.Y = Y; 

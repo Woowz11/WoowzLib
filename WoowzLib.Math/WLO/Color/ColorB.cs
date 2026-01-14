@@ -4,7 +4,7 @@
 /// Сгенерировано через GeneratorWoowzLib!
 /// </summary>
 public struct ColorB{
-	public readonly Type T = typeof(byte);
+	public static readonly Type Type = typeof(byte);
 
 	public ColorB(byte R = 0, byte G = 0, byte B = 0, byte A = 255){
 		this.R = R; this.G = G; this.B = B; this.A = A; 

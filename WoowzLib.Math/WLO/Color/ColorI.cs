@@ -4,7 +4,7 @@
 /// Сгенерировано через GeneratorWoowzLib!
 /// </summary>
 public struct ColorI{
-	public readonly Type T = typeof(int);
+	public static readonly Type Type = typeof(int);
 
 	public ColorI(int R = 0, int G = 0, int B = 0, int A = 255){
 		this.R = R; this.G = G; this.B = B; this.A = A; 

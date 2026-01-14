@@ -31,7 +31,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     /// <param name="Title">Название окна</param>
     /// <param name="TransparentBuffer">Поддержка прозрачности (прозрачный фон)</param>
     /// <param name="Resizable">Можно изменять размер окна курсором?</param>
-    public Window(int Width = 800, int Height = 600, string Title = "WL Window", bool TransparentBuffer = true, bool Resizable = true){
+    public Window(uint Width = 800, uint Height = 600, string Title = "WL Window", bool TransparentBuffer = true, bool Resizable = true){
         try{
             if(!WL.GLFW.Stared){ throw new Exception("GLFW не запущен!"); }
 
@@ -43,14 +43,15 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             this.Resizable = Resizable;
             WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_RESIZABLE, Resizable ? 1 : 0);
             
-            Handle = WL.GLFW.Native.glfwCreateWindow(Width, Height, Title__, IntPtr.Zero, IntPtr.Zero);
+            Handle = WL.GLFW.Native.glfwCreateWindow((int)Width, (int)Height, Title__, IntPtr.Zero, IntPtr.Zero);
             
             Marshal.FreeHGlobal(Title__);
 
             if(Handle == IntPtr.Zero){ throw new Exception("Не получилось создать окно внутри glfwCreateWindow!"); }
             
-            __Width  = (uint)Width;
-            __Height = (uint)Height;
+            __Width  = Width;
+            __Height = Height;
+            
             __Title  = Title;
 
             WL.GLFW.Native.glfwGetWindowPos(Handle, out int X, out int Y);
@@ -258,7 +259,6 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             }
         }
     }
-    private uint __Width;
     
     /// <summary>
     /// Высота окна
@@ -277,7 +277,6 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             }
         }
     }
-    private uint __Height;
     
     /// <summary>
     /// Размер окна

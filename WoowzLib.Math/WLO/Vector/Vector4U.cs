@@ -4,8 +4,8 @@
 /// Сгенерировано через GeneratorWoowzLib!
 /// </summary>
 public struct Vector4U{
-	public readonly int  Numbers = 4;
-	public readonly Type Type    = typeof(uint);
+	public static readonly int  Numbers = 4;
+	public static readonly Type Type    = typeof(uint);
 
 	public Vector4U(uint X = 0, uint Y = 0, uint Z = 0, uint W = 0){
 		this.X = X; this.Y = Y; this.Z = Z; this.W = W; 

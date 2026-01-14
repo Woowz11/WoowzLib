@@ -13,6 +13,7 @@
     <ItemGroup>
       <Folder Include="WLO\Color\" />
       <Folder Include="WLO\Matrix\" />
+      <Folder Include="WLO\Rect\" />
       <Folder Include="WLO\Vector\" />
     </ItemGroup>
 

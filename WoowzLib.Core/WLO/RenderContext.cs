@@ -13,7 +13,7 @@ public abstract class RenderContext{
         }
     }
 
-    private WindowContext ConnectedWindow;
+    public WindowContext ConnectedWindow{ get; private set; }
 
     public void __ConnectWindow(WindowContext Window){ ConnectedWindow = Window; }
 

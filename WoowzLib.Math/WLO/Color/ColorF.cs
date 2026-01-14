@@ -4,7 +4,7 @@
 /// Сгенерировано через GeneratorWoowzLib!
 /// </summary>
 public struct ColorF{
-	public readonly Type T = typeof(float);
+	public static readonly Type Type = typeof(float);
 
 	public ColorF(float R = 0, float G = 0, float B = 0, float A = 1){
 		this.R = R; this.G = G; this.B = B; this.A = A; 

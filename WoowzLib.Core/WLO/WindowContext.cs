@@ -7,4 +7,7 @@ public abstract class WindowContext{
     public long ID{ get; protected set; }
     
     public abstract void __UpdateContext();
+
+    public uint __Width { get; protected set; }
+    public uint __Height{ get; protected set; }
 }

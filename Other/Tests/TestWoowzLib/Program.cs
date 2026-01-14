@@ -13,6 +13,10 @@ public static class Program{
             Window<GL> BBB = new Window<GL>();
             Window<GL> CCC = new Window<GL>();
 
+            CCC.Render.Viewport = new RectI(0, 0, 32, 32);
+
+            Console.WriteLine(AAA.Render.Viewport);
+            
             int i = 5125;
             
             Vector2I v = new Vector2I() + new Vector2I();
