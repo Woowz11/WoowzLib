@@ -6,10 +6,10 @@ namespace WL{
     [WLModule(int.MinValue)]
     public static class WoowzLib{
         static WoowzLib(){
-            AppDomain    .CurrentDomain.ProcessExit        += (_, _) => Stop();
-            AppDomain    .CurrentDomain.UnhandledException += (_, _) => Stop();
-            TaskScheduler.UnobservedTaskException          += (_, e) => { Stop(); e.SetObserved(); };
-            Console      .CancelKeyPress                   += (_, e) => { Stop(); e.Cancel = false; };
+            AppDomain     .CurrentDomain.ProcessExit        += (_, _) => Stop();
+            AppDomain     .CurrentDomain.UnhandledException += (_, _) => Stop();
+            TaskScheduler .UnobservedTaskException          += (_, e) => { Stop(); e.SetObserved(); };
+            System.Console.CancelKeyPress                   += (_, e) => { Stop(); e.Cancel = false; };
 
             OnMessage += (Type, Message) => {
                 string Prefix = Type switch{
@@ -20,10 +20,10 @@ namespace WL{
                                     _ => "",
                 };
 
-                Console.WriteLine(Prefix + Message[0]);
+                System.Console.WriteLine(Prefix + Message[0]);
 
                 for(int i = 1; i < Message.Length; i++){
-                    Console.WriteLine(Message[i]?.ToString() ?? "NULL");
+                    System.Console.WriteLine(Message[i]?.ToString() ?? "NULL");
                 }
             };
         }
@@ -54,6 +54,8 @@ namespace WL{
                 Started = true;
 
                 string RunFolder = AppContext.BaseDirectory;
+                
+                Console.Title = "WoowzLib Program";
                 
                 Logger.Info("Установка WL [\"" + RunFolder + "\"]:");
                 
@@ -116,6 +118,26 @@ namespace WL{
         /// </summary>
         public static void __RemoveOnMessage(){
             OnMessage = null;
+        }
+        
+        public static class Console{
+            /// <summary>
+            /// Название окна консоли
+            /// </summary>
+            public static string Title{
+                get => __Title;
+                set{
+                    try{
+                        if(__Title == value){ return; }
+                        __Title = value;
+
+                        System.Console.Title = value;
+                    }catch(Exception e){
+                        throw new Exception("Произошла ошибка при установке названия окну консоли!\nНазвание: \"" + value + "\"", e);
+                    }
+                }
+            }
+            private static string __Title;
         }
     }
 }

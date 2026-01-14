@@ -54,6 +54,8 @@ public static class Program{
             ref float test = ref M[5];
             test = -666;
             Logger.Debug(M[5]);
+
+            M.Set(VERTICES);
             
             Logger.Debug(M);
             

@@ -480,6 +480,8 @@ public static class Generator{
                 Result += "public struct " + Name + (Custom ? " where T : unmanaged" : "") + "{\n";
 
                 Result += $$"""
+                                // надо добавить sha256...
+                            
                                 public {{NameWithoutT}}(){
                                     Data = [];
                                     AutoSize = true;
@@ -513,6 +515,58 @@ public static class Generator{
                                             }
                                         }
                                         return ref Data[Index];
+                                    }
+                                }
+                                
+                                public {{Name}} Set({{Type}}[] Data){
+                                    try{
+                                        this.Data = new {{Type}}[Data.Length];
+                                        Array.Copy(Data, this.Data, Data.Length);
+                                        
+                                        return this;
+                                    }catch(Exception e){
+                                        throw new Exception("Произошла ошибка при установке контента в массив [" + this + "]!\nКонтент: " + Data, e);
+                                    }
+                                }
+                                
+                                public {{Name}} SetSlice(int Index, {{Type}}[] Data){
+                                    try{
+                                        if(Index < 0){ throw new Exception("Индекс < 0!"); }
+                            
+                                        int EndIndex = Index + Data.Length - 1;
+                                        
+                                        if(EndIndex >= Size){
+                                            if(AutoSize){
+                                                EnsureSize(EndIndex);
+                                            }else{
+                                                throw new Exception("Индекс выходит за пределы!");
+                                            }
+                                        }
+                                        
+                                        Array.Copy(Data, 0, this.Data, Index, Data.Length);
+                                        return this;
+                                    }catch(Exception e){
+                                        throw new Exception("Произошла ошибка при установке части в массив [" + this + "]!\nИндекс: " + Index + "\nКонтент: " + Data, e);
+                                    }
+                                }
+                                
+                                public {{Type}}[] GetSlice(int Index, int EndIndex){
+                                    try{
+                                        if(Index < 0 || EndIndex < Index){ throw new Exception("Неверный диапазон! Index < 0 || EndIndex < Index"); }
+                                        if(EndIndex >= Size){
+                                            if(AutoSize){
+                                                EnsureSize(EndIndex);
+                                            }else{
+                                                throw new Exception("Диапазон выходит за границы! EndIndex >= Size");
+                                            }
+                                        }
+                                        
+                                        int L = EndIndex - Index + 1;
+                                        {{Type}}[] Slice = new {{Type}}[L];
+                                        Array.Copy(Data, Index, Slice, 0, L);
+                                        return Slice;
+                                    }catch(Exception e){
+                                        throw new Exception("Произошла ошибка при получении части от массива [" + this + "]!\nДиапазон: " + Index + "-" + EndIndex, e);
                                     }
                                 }
                                 

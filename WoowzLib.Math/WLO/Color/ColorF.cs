@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 15.01.2026 1:12
+/// Сгенерирован: 15.01.2026 1:35
 /// </summary>
 public struct ColorF{
 	public static readonly Type Type = typeof(float);

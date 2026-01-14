@@ -57,22 +57,44 @@ public class Logger{
         try{
             ConsoleColor PreviousColor = Console.ForegroundColor;
 
-            Console.ForegroundColor = Type switch{
-                MessageType.Info  => ConsoleColor.White,
-                MessageType.Warn  => ConsoleColor.Yellow,
-                MessageType.Error => ConsoleColor.Red,
-                MessageType.Fatal => ConsoleColor.Magenta,
-                MessageType.Debug => ConsoleColor.Green,
-                                _ => PreviousColor
-            };
+            string FullMessage = WL.String.Join(Message);
+            string[] Lines = FullMessage.Split('\n');
 
-            string Result = WL.String.Join(Message).Split('\n').Select((Line, Index) => (Line, Index)).Aggregate("", (Current, Item) => Current + (MessagePrefix(Type, Item.Index == 0) + Item.Line + "\n"));
+            ConsoleColor Color;
 
-            OriginalOut.Write(Result);
+            if(__Eval){
+                Color = Type switch{
+                    MessageType.Info  => ConsoleColor.Gray,
+                    MessageType.Warn  => ConsoleColor.DarkYellow,
+                    MessageType.Error => ConsoleColor.DarkRed,
+                    MessageType.Fatal => ConsoleColor.DarkMagenta,
+                    MessageType.Debug => ConsoleColor.DarkGreen,
+                    _ => PreviousColor
+                };
+            }else{
+                Color = Type switch{
+                    MessageType.Info  => ConsoleColor.White,
+                    MessageType.Warn  => ConsoleColor.Yellow,
+                    MessageType.Error => ConsoleColor.Red,
+                    MessageType.Fatal => ConsoleColor.Magenta,
+                    MessageType.Debug => ConsoleColor.Green,
+                    _ => PreviousColor
+                };
+            }
+
+            for(int i = 0; i < Lines.Length; i++){
+                Console.ForegroundColor = Color;
+
+                string Prefix = MessagePrefix(Type, i == 0);
+                OriginalOut.WriteLine(Prefix + Lines[i]);
+
+                __Eval = !__Eval;
+            }
             
             Console.ForegroundColor = PreviousColor;
         }catch(Exception e){
             throw new Exception("Произошла ошибка при отправке сообщения типа [" + Type + "]!\nСообщение: (" + WL.String.Join(Message) + ")");
         }
     }
+    private static bool __Eval;
 }

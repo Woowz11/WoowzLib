@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 15.01.2026 1:12
+/// Сгенерирован: 15.01.2026 1:35
 /// </summary>
 public struct MassiveD{
 	public MassiveD(){
@@ -38,6 +38,58 @@ public struct MassiveD{
 				}
 			}
 			return ref Data[Index];
+		}
+	}
+	
+	public MassiveD Set(double[] Data){
+		try{
+			this.Data = new double[Data.Length];
+			Array.Copy(Data, this.Data, Data.Length);
+			
+			return this;
+		}catch(Exception e){
+			throw new Exception("Произошла ошибка при установке контента в массив [" + this + "]!\nКонтент: " + Data, e);
+		}
+	}
+	
+	public MassiveD SetSlice(int Index, double[] Data){
+		try{
+			if(Index < 0){ throw new Exception("Индекс < 0!"); }
+
+			int EndIndex = Index + Data.Length - 1;
+			
+			if(EndIndex >= Size){
+				if(AutoSize){
+					EnsureSize(EndIndex);
+				}else{
+					throw new Exception("Индекс выходит за пределы!");
+				}
+			}
+			
+			Array.Copy(Data, 0, this.Data, Index, Data.Length);
+			return this;
+		}catch(Exception e){
+			throw new Exception("Произошла ошибка при установке части в массив [" + this + "]!\nИндекс: " + Index + "\nКонтент: " + Data, e);
+		}
+	}
+	
+	public double[] GetSlice(int Index, int EndIndex){
+		try{
+			if(Index < 0 || EndIndex < Index){ throw new Exception("Неверный диапазон! Index < 0 || EndIndex < Index"); }
+			if(EndIndex >= Size){
+				if(AutoSize){
+					EnsureSize(EndIndex);
+				}else{
+					throw new Exception("Диапазон выходит за границы! EndIndex >= Size");
+				}
+			}
+			
+			int L = EndIndex - Index + 1;
+			double[] Slice = new double[L];
+			Array.Copy(Data, Index, Slice, 0, L);
+			return Slice;
+		}catch(Exception e){
+			throw new Exception("Произошла ошибка при получении части от массива [" + this + "]!\nДиапазон: " + Index + "-" + EndIndex, e);
 		}
 	}
 	
