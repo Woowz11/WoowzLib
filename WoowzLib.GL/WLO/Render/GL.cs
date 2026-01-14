@@ -10,9 +10,10 @@ public class GL : RenderContext{
         try{
             IntPtr VersionLink = WL.GL.Native.glGetString(WL.GL.Native.GL_VERSION);
             string? __Version = WL.Native.FromMemoryString(VersionLink);
+            
+            FullVersion = __Version ?? "Unknown";
+            
             if(string.IsNullOrWhiteSpace(__Version)){ throw new Exception("Не получилось определить версию GL!"); }
-
-            FullVersion = __Version;
             
             int Major = -1, Minor = -1;
             string[] Parts = FullVersion.Split('.', ' ');
@@ -59,6 +60,39 @@ public class GL : RenderContext{
     /// </summary>
     public Vector2I Version{ get; private set; }
 
+    /// <summary>
+    /// Проверяет, что контексты ресурса совпадают
+    /// </summary>
+    private void CheckGLResourceContext(GLResource? Resource){ if(Resource == null){ return; } if(Resource.Context != this){ throw new Exception("Контекст ресурса [" + Resource + "] и указанного GL [" + this + "] не совпадают!"); } }
+
+    #region Uses
+    
+        /// <summary>
+        /// Текущая программа в контексте
+        /// </summary>
+        public Program? CurrentProgram{ get; private set; }
+
+        public GL UseProgram(Program? Program){
+            try{
+                if(CurrentProgram == Program){ return this; }
+                CheckGLResourceContext(Program);
+                if(Program != null && !Program.Created){ throw new Exception("Программа не создана!"); }
+
+                __MakeContext();
+
+                CurrentProgram = Program;
+                WL.GL.Native.glUseProgram(Program?.ID ?? 0);
+
+                if(WL.GL.Debug.LogUse){ Logger.Info("Программа [" + (Program?.ToString() ?? "НИКАКАЯ") + "] используется!"); }
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при использовании программы [" + (Program?.ToString() ?? "НИКАКАЯ") + "] у GL [" + this + "]!", e);
+            }
+
+            return this;
+        }
+
+        #endregion
+    
     /// <summary>
     /// ID контекста
     /// </summary>

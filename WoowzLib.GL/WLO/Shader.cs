@@ -61,11 +61,14 @@ public class Shader : GLResource{
             WL.GL.Native.glGetShaderiv(ID, WL.GL.Native.GL_COMPILE_STATUS, out int Status__);
             Status = Status__;
             if(Status == 0){
-                const int LogSize = 512;
-                IntPtr LogLink = WL.Native.Memory(LogSize);
-                WL.GL.Native.glGetShaderInfoLog(ID, LogSize, out int _, LogLink);
-                string Log = WL.Native.FromMemoryString(LogLink) ?? "";
-                WL.Native.Free(LogLink);
+                WL.GL.Native.glGetShaderiv(ID, WL.GL.Native.GL_INFO_LOG_LENGTH, out int LogSize);
+                string Log = "Лог пустой!";
+                if(LogSize > 0){
+                    IntPtr LogLink = WL.Native.Memory(LogSize);
+                    WL.GL.Native.glGetShaderInfoLog(ID, LogSize, out _, LogLink);
+                    Log = WL.Native.FromMemoryString(LogLink) ?? "Не найден лог!";
+                    WL.Native.Free(LogLink);   
+                }
 
                 throw new Exception("Произошла ошибка при компиляции! Лог: " + Log);
             }

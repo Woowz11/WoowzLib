@@ -86,7 +86,7 @@ namespace WL{
             /// </summary>
             /// <param name="Time">Время</param>
             /// <param name="Format">Формат</param>
-            public static string Format(DateTime Time,[StringSyntax(StringSyntaxAttribute.DateTimeFormat)] string Format){ return Time.ToString(Format); }
+            public static string Format(DateTime Time, [StringSyntax(StringSyntaxAttribute.DateTimeFormat)] string Format){ return Time.ToString(Format); }
 
             /// <summary>
             /// Форматирует строку времени (от текущего времени)

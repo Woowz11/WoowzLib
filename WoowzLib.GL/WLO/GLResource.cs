@@ -70,6 +70,34 @@ public abstract class GLResource{
     public readonly Render.GL Context;
 
     /// <summary>
+    /// Родительский ресурс (пока он есть, ресурс не может очиститься)
+    /// </summary>
+    private readonly List<GLResource> __Parent = [];
+
+    /// <summary>
+    /// Дети ресурса (уничтожает все эти ресурсы при собственном уничтожении)
+    /// </summary>
+    private readonly List<GLResource> __Children = [];
+
+    /// <summary>
+    /// Добавляет родителя
+    /// </summary>
+    /// <param name="Parent"></param>
+    public void __AddParent(GLResource Parent){
+        __Parent.Add(Parent);
+        Parent.__Children.Add(this);
+    }
+
+    /// <summary>
+    /// Убирает родителя
+    /// </summary>
+    /// <param name="Parent"></param>
+    public void __RemoveParent(GLResource Parent){
+        __Parent.Remove(Parent);
+        Parent.__Children.Remove(this);
+    }
+    
+    /// <summary>
     /// Вызывается при уничтожении ресурса
     /// </summary>
     protected abstract void __Destroy();
@@ -79,11 +107,10 @@ public abstract class GLResource{
     /// </summary>
     public void Destroy(){
         try{
-            if(Created){
-                TryDestroy();
-            }else{
-                throw new Exception("Ресурс уже уничтоженный!");
-            }
+            if(!Created        ){ throw new Exception("Ресурс уже уничтоженный!"); }
+            if(__Parent.Count > 0){ throw new Exception("Невозможно уничтожить, есть родитель!"); }
+
+            TryDestroy();
         }catch(Exception e){
             throw new Exception("Произошла ошибка при уничтожении GL ресурса [" + this + "]!", e);
         }
@@ -94,10 +121,16 @@ public abstract class GLResource{
     /// </summary>
     public void TryDestroy(){
         try{
-            if(Created){
+            if(Created && __Parent.Count == 0){
                 if(WL.GL.Debug.LogDestroy){ Logger.Info("Уничтожение GL ресурса [" + this + "]!"); }
                 
                 Context.__MakeContext();
+
+                foreach(GLResource Child in __Children){
+                    Child.TryDestroy();
+                }
+                __Children.Clear();
+                __Parent  .Clear();
                 
                 __Destroy();
                 

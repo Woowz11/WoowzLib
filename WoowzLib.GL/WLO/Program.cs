@@ -77,7 +77,7 @@ public class Program : GLResource{
             Context.__MakeContext();
             WL.GL.Native.glDetachShader(ID, Shader.ID);
             ConnectedShaders.Remove(Shader);
-
+            
             Dirty = true;
             
             if(WL.GL.Debug.LogProgram){ Logger.Info("Отсоединён шейдер [" + Shader + "] у программы [" + this + "]!"); }
@@ -124,16 +124,20 @@ public class Program : GLResource{
             }
             
             Context.__MakeContext();
+
             WL.GL.Native.glLinkProgram(ID);
             WL.GL.Native.glGetProgramiv(ID, WL.GL.Native.GL_LINK_STATUS, out int Status__);
             Status = Status__;
 
             if(Status == 0){
-                const int LogSize = 1024;
-                IntPtr LogLink = WL.Native.Memory(LogSize);
-                WL.GL.Native.glGetProgramInfoLog(ID, LogSize, out _, LogLink);
-                string Log = WL.Native.FromMemoryString(LogLink) ?? "";
-                WL.Native.Free(LogLink);
+                WL.GL.Native.glGetProgramiv(ID, WL.GL.Native.GL_INFO_LOG_LENGTH, out int LogSize);
+                string Log = "Лог пустой!";
+                if(LogSize > 0){
+                    IntPtr LogLink = WL.Native.Memory(LogSize);
+                    WL.GL.Native.glGetProgramInfoLog(ID, LogSize, out _, LogLink);
+                    Log = WL.Native.FromMemoryString(LogLink) ?? "Не найден лог!";
+                    WL.Native.Free(LogLink);   
+                }
 
                 throw new Exception("Произошла ошибка при компиляции! Лог: " + Log);
             }
@@ -160,4 +164,13 @@ public class Program : GLResource{
     /// Скомпилирован?
     /// </summary>
     public bool Compiled => Created && Status != 0;
+
+    /// <summary>
+    /// Использовать эту программу
+    /// </summary>
+    /// <returns></returns>
+    public Program Use(){
+        Context.UseProgram(this);
+        return this;
+    }
 }

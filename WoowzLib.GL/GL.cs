@@ -87,6 +87,11 @@ namespace WL{
             /// Выводить сообщения по поводу программы!
             /// </summary>
             public static bool LogProgram;
+
+            /// <summary>
+            /// Выводить сообщения по поводу использования!
+            /// </summary>
+            public static bool LogUse;
         }
         
         public static class Native{

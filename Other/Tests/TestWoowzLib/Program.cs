@@ -12,9 +12,18 @@ public static class Program{
             WL.GL.Debug.LogCreate = true;
             WL.GL.Debug.LogDestroy = true;
             WL.GL.Debug.LogProgram = true;
+            WL.GL.Debug.LogUse = true;
             
             WL.GLFW.Start();
 
+            Logger.Info("info");
+            Logger.Warn("warn");
+            Logger.Error("error");
+            Logger.Fatal("fatal");
+            Logger.Debug("debug");
+            
+            Logger.Warn("1\n2\n3\n4\n5\n");
+            
             Window<GL> AAA = new Window<GL>(Title: "привет hello");
 
             Shader VShader = new Shader(AAA.Render, ShaderType.Vertex, """
@@ -37,6 +46,8 @@ public static class Program{
                                                                          """);
 
             WLO.GL.Program Prog = new WLO.GL.Program(AAA.Render, VShader, FShader);
+
+            throw new Exception("ERROR MEGA PROHOR"); 
             
             while(!AAA.ShouldDestroy){
                 AAA.Render.BackgroundColor = ColorF.Red;
@@ -50,7 +61,7 @@ public static class Program{
             
             WL.GLFW.Stop();
         }catch(Exception e){
-            throw new Exception("ОШИБКА ВНУТРИ ПРИЛОЖЕНИЯ!", e);
+            Logger.Fatal("ОШИБКА ВНУТРИ ПРИЛОЖЕНИЯ", e);
         }
         
         return 0;

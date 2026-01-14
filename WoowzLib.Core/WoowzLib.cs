@@ -55,7 +55,7 @@ namespace WL{
 
                 string RunFolder = AppContext.BaseDirectory;
                 
-                Logger.Info("Установка WL [" + RunFolder + "]:");
+                Logger.Info("Установка WL [\"" + RunFolder + "\"]:");
                 
                 foreach(string DLL in Directory.GetFiles(RunFolder, "WoowzLib.*.dll")){
                     Assembly.LoadFrom(DLL);
@@ -76,6 +76,12 @@ namespace WL{
                 }
             
                 Logger.Info("Установка WL завершена!");
+
+                try{
+                    OnStarted?.Invoke();   
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при вызове ивентов после запуска всех модулей WoowzLib!", e);
+                }
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при запуске WoowzLib!", e);
             }
@@ -86,6 +92,11 @@ namespace WL{
         /// </summary>
         public static event Action? OnStop;
 
+        /// <summary>
+        /// Ивент вызывается после запуска всех модулей
+        /// </summary>
+        public static event Action? OnStarted; 
+        
         /// <summary>
         /// Ивент вызывается при отправке сообщений через Logger
         /// </summary>
@@ -98,6 +109,13 @@ namespace WL{
         /// <param name="Message">Сообщение</param>
         public static void __Print(MessageType Type, object[] Message){
             OnMessage?.Invoke(Type, Message);
+        }
+
+        /// <summary>
+        /// Очистка <c>OnMessage</c> ивента
+        /// </summary>
+        public static void __RemoveOnMessage(){
+            OnMessage = null;
         }
     }
 }
