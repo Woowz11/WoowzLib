@@ -15,14 +15,6 @@ public static class Program{
             WL.GL.Debug.LogUse = true;
             
             WL.GLFW.Start();
-
-            Logger.Info("info");
-            Logger.Warn("warn");
-            Logger.Error("error");
-            Logger.Fatal("fatal");
-            Logger.Debug("debug");
-            
-            Logger.Warn("1\n2\n3\n4\n5\n");
             
             Window<GL> AAA = new Window<GL>(Title: "привет hello");
 
@@ -47,7 +39,11 @@ public static class Program{
 
             WLO.GL.Program Prog = new WLO.GL.Program(AAA.Render, VShader, FShader);
 
-            throw new Exception("ERROR MEGA PROHOR"); 
+            float[] VERTICES = [
+                 0   ,  0.5f, 0,
+                 0.5f, -0.5f, 0, 
+                -0.5f, -0.5f, 0
+            ];
             
             while(!AAA.ShouldDestroy){
                 AAA.Render.BackgroundColor = ColorF.Red;
