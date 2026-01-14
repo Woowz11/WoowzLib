@@ -4,30 +4,30 @@
 /// Сгенерировано через GeneratorWoowzLib!
 /// Сгенерирован: 15.01.2026 1:12
 /// </summary>
-public struct MassiveI{
-	public MassiveI(){
+public struct Massive<T> where T : unmanaged{
+	public Massive(){
 		Data = [];
 		AutoSize = true;
 	}
 
-	public MassiveI(int Size, bool AutoSize = true){
+	public Massive(int Size, bool AutoSize = true){
 		if(Size < 0){ throw new Exception("Размер не может быть < 0!"); }
-		Data = new int[Size];
+		Data = new T[Size];
 		this.AutoSize = AutoSize;
 	}
 	
-	public MassiveI(int[] Data, bool AutoSize = true){
+	public Massive(T[] Data, bool AutoSize = true){
 		this.Data = Data ?? throw new Exception("Задан пустой массив!");
 		this.AutoSize = AutoSize;
 	}
 
-	private int[] Data;
+	private T[] Data;
 	
 	public int Size => Data.Length;
 	
 	public bool AutoSize;
 	
-	public ref int this[int Index]{
+	public ref T this[int Index]{
 		get{
 			if(Index < 0){ throw new Exception("Индекс < 0!"); }
 			if(Index >= Size){
@@ -41,7 +41,7 @@ public struct MassiveI{
 		}
 	}
 	
-	public MassiveI Resize(int NewSize){
+	public Massive<T> Resize(int NewSize){
 		try{
 			Array.Resize(ref Data, NewSize);
 		}catch(Exception e){
@@ -54,7 +54,7 @@ public struct MassiveI{
 	/// <summary>
 	/// Увеличивает размер массива, если индекс выходит за края (в указанное кол-во раз)
 	/// </summary>
-	public MassiveI EnsureSize(int Index, int HowMuch = 2){
+	public Massive<T> EnsureSize(int Index, int HowMuch = 2){
 		try{
 			int Required = Index + 1;
 			Resize(Size == 0 ? Required : Math.Max(Size * HowMuch, Required));
@@ -65,7 +65,7 @@ public struct MassiveI{
 		return this;
 	}
 
-	public Span<int> AsSpan{
+	public Span<T> AsSpan{
 		get => Data;
 		set {
 			if(value.Length != Size){
@@ -83,7 +83,7 @@ public struct MassiveI{
 	#region Override
 
 	   public override string ToString(){
-		   return "MassiveI(0-" + (Size - 1) + ", " + AutoSize + ")";
+		   return "Massive<T>(0-" + (Size - 1) + ", " + AutoSize + ")";
 	   }
 
 	#endregion

@@ -46,6 +46,16 @@ public static class Program{
             ];
 
             FloatBuffer VBuffer = new FloatBuffer(AAA.Render);
+
+            MassiveF M = new MassiveF();
+
+            M[5] = 125;
+            Logger.Debug(M[5]);
+            ref float test = ref M[5];
+            test = -666;
+            Logger.Debug(M[5]);
+            
+            Logger.Debug(M);
             
             while(!AAA.ShouldDestroy){
                 AAA.Render.BackgroundColor = ColorF.Red;

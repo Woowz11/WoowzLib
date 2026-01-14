@@ -465,27 +465,108 @@ public static class Generator{
                                      _ => MassiveType.ToString()[0].ToString()
                 };
 
+                bool Custom = MassiveType is MassiveType.T;
+                
                 // Название (MassiveF, MassiveU)
-                string Name = "Massive" + TypeChar;
+                string Name = "Massive" + (Custom ? "<T>" : TypeChar);
 
+                string NameWithoutT = Custom ? "Massive" : Name;
+                
                 // Тип (int, float, double)
-                string Type = MassiveType is MassiveType.T ? "T" : MassiveType.ToString().ToLower();
+                string Type = Custom ? "T" : MassiveType.ToString().ToLower();
                 
                 string Result = Pre() + "\n";
 
-                Result += "public struct " + Name + "{\n";
+                Result += "public struct " + Name + (Custom ? " where T : unmanaged" : "") + "{\n";
 
                 Result += $$"""
+                                public {{NameWithoutT}}(){
+                                    Data = [];
+                                    AutoSize = true;
+                                }
+                            
+                                public {{NameWithoutT}}(int Size, bool AutoSize = true){
+                                    if(Size < 0){ throw new Exception("Размер не может быть < 0!"); }
+                                    Data = new {{Type}}[Size];
+                                    this.AutoSize = AutoSize;
+                                }
+                                
+                                public {{NameWithoutT}}({{Type}}[] Data, bool AutoSize = true){
+                                    this.Data = Data ?? throw new Exception("Задан пустой массив!");
+                                    this.AutoSize = AutoSize;
+                                }
+                            
+                                private {{Type}}[] Data;
+                                
+                                public int Size => Data.Length;
+                                
+                                public bool AutoSize;
+                                
+                                public ref {{Type}} this[int Index]{
+                                    get{
+                                        if(Index < 0){ throw new Exception("Индекс < 0!"); }
+                                        if(Index >= Size){
+                                            if(AutoSize){
+                                                EnsureSize(Index);
+                                            }else{
+                                                throw new Exception("Индекс выходит за пределы у таблицы [" + this + "]! Индекс: " + Index);
+                                            }
+                                        }
+                                        return ref Data[Index];
+                                    }
+                                }
+                                
+                                public {{Name}} Resize(int NewSize){
+                                    try{
+                                        Array.Resize(ref Data, NewSize);
+                                    }catch(Exception e){
+                                        throw new Exception("Произошла ошибка при изменении размера у массива [" + this + "]!\nНовый размер: " + NewSize, e);
+                                    }
+                                    
+                                    return this;
+                                }
+                                
+                                /// <summary>
+                                /// Увеличивает размер массива, если индекс выходит за края (в указанное кол-во раз)
+                                /// </summary>
+                                public {{Name}} EnsureSize(int Index, int HowMuch = 2){
+                                    try{
+                                        int Required = Index + 1;
+                                        Resize(Size == 0 ? Required : Math.Max(Size * HowMuch, Required));
+                                    }catch(Exception e){
+                                        throw new Exception("Произошла ошибка при увеличении размера у массива [" + this + "]!\nИндекс: " + Index + "\nНа сколько?: " + HowMuch, e);
+                                    }
+                                    
+                                    return this;
+                                }
+                            
+                                public Span<{{Type}}> AsSpan{
+                                    get => Data;
+                                    set {
+                                        if(value.Length != Size){
+                                            if(AutoSize){
+                                                Resize(value.Length);
+                                            }else{
+                                                throw new Exception("Размеры Span и массива различаются!");
+                                            }
+                                        }
+                                        
+                                        value.CopyTo(Data);
+                                    }
+                                }
+                            
                                 #region Override
                             
-                                   
+                                   public override string ToString(){
+                                       return "{{Name}}(0-" + (Size - 1) + ", " + AutoSize + ")";
+                                   }
                             
                                 #endregion
                             """;
                 
                 Result += "\n}";
 
-                File F = new File(Path.Combine(OutputFolder, Name + ".cs")).WriteString(Result.Replace("    ", "\t").Replace('·',' '));
+                File F = new File(Path.Combine(OutputFolder, NameWithoutT + ".cs")).WriteString(Result.Replace("    ", "\t").Replace('·',' '));
             }catch(Exception e){
                 throw new Exception("Произошла ошибка во время генерации массива [" + MassiveType + "]!", e);
             }

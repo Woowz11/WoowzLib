@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 14.01.2026 23:52
+/// Сгенерирован: 15.01.2026 1:12
 /// </summary>
 public struct Vector3D{
 	public static readonly int  Numbers = 3;
