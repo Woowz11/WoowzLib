@@ -33,6 +33,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     /// <param name="Resizable">Можно изменять размер окна курсором?</param>
     public Window(uint Width = 800, uint Height = 600, string Title = "WL Window", bool TransparentBuffer = true, bool Resizable = true){
         try{
+            // Я ХЗ, как реализовывать общие ресурсы между контекстами рендера, нужно будет придумать
             if(!WL.GLFW.Stared){ throw new Exception("GLFW не запущен!"); }
 
             IntPtr Title__ = Marshal.StringToHGlobalAnsi(Title);
@@ -417,6 +418,8 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
                 Console.WriteLine("Произошла ошибка при вызове ивентов уничтожения окна [" + this + "]!");
                 Console.WriteLine(e);
             }
+
+            Render.__UnconnectWindow();
             
             WL.GLFW.Native.glfwDestroyWindow(Handle);
             WL.GLFW.Windows.Remove(this);

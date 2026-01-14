@@ -29,6 +29,14 @@ public class GL : RenderContext{
         }
     }
 
+    public override void __Stop(){
+        try{
+            Console.WriteLine("ОЧИСТКА РЕНДЕРА GL..............");
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при очистке GL [" + this + "]!", e);
+        }
+    }
+
     /// <summary>
     /// Полная версия GL [<c>"4.6.0 NVIDIA 572.70"</c>]
     /// </summary>

@@ -10,37 +10,17 @@ public static class Program{
         
             WL.GLFW.Start();
 
-            Window<GL> AAA = new Window<GL>(Resizable: false);
-            Window<GL> BBB = new Window<GL>();
-            Window<GL> CCC = new Window<GL>();
+            Window<GL> AAA = new Window<GL>();
             
-            while(!AAA.ShouldDestroy || !BBB.ShouldDestroy || !CCC.ShouldDestroy){
+            while(!AAA.ShouldDestroy){
                 if(!AAA.Destroyed){
-                    AAA.Title = WL.Math.Time.Format("T");
-
-                    AAA.Size = new Vector2U((uint)Math.Abs(800 * Math.Sin(WL.Math.Time.Ticks / 10000000.0)), 600);
+                    //AAA.Title = WL.Math.Time.Format("T");
                     
-                    AAA.Render.BackgroundColor = new ColorF(WL.Math.Random.Fast_0_1());
+                    AAA.Render.BackgroundColor = ColorF.Red;
                     
                     AAA.Render.Clear();
                     
                     AAA.FinishRender();
-                }
-
-                if(!BBB.Destroyed){
-                    BBB.Title = CCC.ToString();
-                    
-                    BBB.Render.BackgroundColor = ColorF.Transparent;
-                    
-                    BBB.Render.Clear();
-                    
-                    BBB.FinishRender();
-                }
-
-                if(!CCC.Destroyed){
-                    CCC.Render.Clear();
-
-                    CCC.FinishRender();
                 }
 
                 WL.GLFW.Tick();

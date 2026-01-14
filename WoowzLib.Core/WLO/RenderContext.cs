@@ -17,9 +17,31 @@ public abstract class RenderContext{
 
     public WindowContext? ConnectedWindow{ get; private set; }
 
-    public void __ConnectWindow(WindowContext Window){ ConnectedWindow = Window; MakeContext(); __Start(); }
+    public void __ConnectWindow(WindowContext Window){
+        try{
+            if(ConnectedWindow != null){ throw new Exception("Присоединённое окно уже есть!"); }
+
+            ConnectedWindow = Window;
+            MakeContext();
+            __Start();
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при присоединении окна [" + Window + "] рендеру [" + this + "]!", e);
+        }
+    }
+    
+    public void __UnconnectWindow(){
+        try{
+            if(ConnectedWindow == null){ throw new Exception("Нету окна!"); }
+            
+            __Stop();
+            ConnectedWindow = null;
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при отсоединении окна у рендера [" + this + "]!", e);
+        }
+    }
 
     public abstract void __Start();
+    public abstract void __Stop ();
 
     public const int __OpenGLMajor = 4;
     public const int __OpenGLMinor = 6;
