@@ -2,6 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
+/// Сгенерирован: 14.01.2026 14:31
 /// </summary>
 public struct RectI{
 	public static readonly Type Type = typeof(int);
@@ -9,7 +10,12 @@ public struct RectI{
 	public RectI(int X, int Y, int Width, int Height){
 		this.X = X; this.Y = Y; this.Width = Width; this.Height = Height;
 	}
-	public RectI(int Width, int Height) : this(0, 0, Width, Height){}
+	public RectI(int Width, int Height){
+		this.Width = Width; this.Height = Height;
+	}
+	public RectI(){
+		Width = 128; Height = 128;
+	}
 
 	public int X;
 	public int Y;

@@ -2,6 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
+/// Сгенерирован: 14.01.2026 14:31
 /// </summary>
 public struct ColorD{
 	public static readonly Type Type = typeof(double);

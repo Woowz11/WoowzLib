@@ -15,7 +15,10 @@ public static class Generator{
             string BaseFolder = Path.GetFullPath(Path.Combine(GeneratorFolder, "..", "..", ".."));
             if(Path.GetFileName(BaseFolder) != "WoowzLib"){ throw new Exception("Я тебя спас от страшной ошибки... BaseFolder [" + GeneratorFolder + "] неверный!"); }
 
-            GlobalInfo = "Сгенерировано через GeneratorWoowzLib!";
+            GlobalInfo = $$"""
+                           /// Сгенерировано через GeneratorWoowzLib!
+                           /// Сгенерирован: {{WL.Math.Time.Format("g")}}
+                           """;
             
             string MathFolder = Path.GetFullPath(Path.Combine(BaseFolder, "WoowzLib.Math"));
             
@@ -34,7 +37,7 @@ public static class Generator{
     private static string PreComment(){
         return $"""
                /// <summary>
-               /// {GlobalInfo}
+               {GlobalInfo}
                /// </summary>
                """;
     }
@@ -361,7 +364,12 @@ public static class Generator{
                                 public {{Name}}({{Type}} X, {{Type}} Y, {{Type}} Width, {{Type}} Height){
                                     this.X = X; this.Y = Y; this.Width = Width; this.Height = Height;
                                 }
-                                public {{Name}}({{Type}} Width, {{Type}} Height) : this(0, 0, Width, Height){}
+                                public {{Name}}({{Type}} Width, {{Type}} Height){
+                                    this.Width = Width; this.Height = Height;
+                                }
+                                public {{Name}}(){
+                                    Width = 128; Height = 128;
+                                }
                             
                                 public {{Type}} X;
                                 public {{Type}} Y;

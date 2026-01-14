@@ -2,6 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
+/// Сгенерирован: 14.01.2026 14:31
 /// </summary>
 public struct Vector3I{
 	public static readonly int  Numbers = 3;

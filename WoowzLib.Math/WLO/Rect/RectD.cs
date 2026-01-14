@@ -2,6 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
+/// Сгенерирован: 14.01.2026 14:31
 /// </summary>
 public struct RectD{
 	public static readonly Type Type = typeof(double);
@@ -9,7 +10,12 @@ public struct RectD{
 	public RectD(double X, double Y, double Width, double Height){
 		this.X = X; this.Y = Y; this.Width = Width; this.Height = Height;
 	}
-	public RectD(double Width, double Height) : this(0, 0, Width, Height){}
+	public RectD(double Width, double Height){
+		this.Width = Width; this.Height = Height;
+	}
+	public RectD(){
+		Width = 128; Height = 128;
+	}
 
 	public double X;
 	public double Y;

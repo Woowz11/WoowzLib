@@ -14,7 +14,7 @@ public static class Program{
             Window<GL> CCC = new Window<GL>();
 
             CCC.Render.Viewport = new RectI(0, 0, 32, 32);
-
+            
             Console.WriteLine(AAA.Render.Viewport);
             
             int i = 5125;

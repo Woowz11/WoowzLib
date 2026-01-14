@@ -2,6 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
+/// Сгенерирован: 14.01.2026 14:31
 /// </summary>
 public struct RectF{
 	public static readonly Type Type = typeof(float);
@@ -9,7 +10,12 @@ public struct RectF{
 	public RectF(float X, float Y, float Width, float Height){
 		this.X = X; this.Y = Y; this.Width = Width; this.Height = Height;
 	}
-	public RectF(float Width, float Height) : this(0, 0, Width, Height){}
+	public RectF(float Width, float Height){
+		this.Width = Width; this.Height = Height;
+	}
+	public RectF(){
+		Width = 128; Height = 128;
+	}
 
 	public float X;
 	public float Y;

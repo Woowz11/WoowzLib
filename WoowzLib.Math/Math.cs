@@ -38,7 +38,7 @@ namespace WL{
             /// <summary>
             /// Текущий день
             /// </summary>
-            public static int Dat => Now.Day;
+            public static int Day => Now.Day;
 
             /// <summary>
             /// Текущий час
