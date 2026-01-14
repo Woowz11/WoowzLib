@@ -1,5 +1,6 @@
 ﻿using WLO;
 using WLO.GLFW;
+using File = WLO.File;
 
 public static class Program{
     public static int Main(string[] Args){
@@ -11,6 +12,10 @@ public static class Program{
             Window<GL> AAA = new Window<GL>(Resizable: false);
             Window<GL> BBB = new Window<GL>();
             Window<GL> CCC = new Window<GL>();
+
+            int i = 5125;
+            
+            Vector2I v = new Vector2I() + new Vector2I();
             
             while(!AAA.ShouldDestroy || !BBB.ShouldDestroy || !CCC.ShouldDestroy){
                 if(!AAA.Destroyed){
@@ -18,7 +23,7 @@ public static class Program{
 
                     AAA.Size = new Vector2U((uint)Math.Abs(800 * Math.Sin(WL.Math.Time.Ticks / 10000000.0)), 600);
                     
-                    AAA.Render.BackgroundColor = ColorF.Red;
+                    AAA.Render.BackgroundColor = new ColorF(WL.Math.Random.Fast_0_1());
                     
                     AAA.Render.Clear();
                     
@@ -38,9 +43,7 @@ public static class Program{
                 if(!CCC.Destroyed){
                     CCC.Render.Clear();
 
-                    if(!BBB.Destroyed){ BBB.Visible = CCC.Y > 100; }
-
-                CCC.FinishRender();
+                    CCC.FinishRender();
                 }
 
                 WL.GLFW.Tick();

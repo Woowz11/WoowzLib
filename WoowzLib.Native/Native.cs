@@ -162,5 +162,22 @@ namespace WL{
         public static D DelegateFunction<D>(string Name, IntPtr DLL) where D : Delegate{
             return Marshal.GetDelegateForFunctionPointer<D>(FunctionSystem(DLL, Name));
         }
+
+        /// <summary>
+        /// Сохраняет строку в память (Нужно очищать!)
+        /// </summary>
+        /// <param name="S">Строка</param>
+        /// <returns>Ссылка на строку</returns>
+        public static IntPtr MemoryString(string S){
+            return Marshal.StringToHGlobalAnsi(S);
+        }
+
+        /// <summary>
+        /// Освобождает память
+        /// </summary>
+        /// <param name="Link">Ссылка на занятую ячейку</param>
+        public static void Free(IntPtr Link){
+            Marshal.FreeHGlobal(Link);
+        }
     }
 }

@@ -367,9 +367,9 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
 
                 CheckDestroyed();
 
-                IntPtr Title__ = Marshal.StringToHGlobalAnsi(__Title);
+                IntPtr Title__ = WL.Native.MemoryString(__Title);
                 WL.GLFW.Native.glfwSetWindowTitle(Handle, Title__);
-                Marshal.FreeHGlobal(Title__);
+                WL.Native.Free(Title__);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при установке названия окну [" + this + "]!\nНазвание: \"" + value + "\"", e);
             }
