@@ -12,8 +12,6 @@ public static class Program{
             Window<GL> AAA = new Window<GL>(Resizable: false);
             Window<GL> BBB = new Window<GL>();
             Window<GL> CCC = new Window<GL>();
-
-            CCC.Render.Viewport = new RectI(0, 0, 32, 32);
             
             Console.WriteLine(AAA.Render.Viewport);
             

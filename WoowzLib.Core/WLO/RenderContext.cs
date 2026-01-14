@@ -15,7 +15,10 @@ public abstract class RenderContext{
 
     public WindowContext ConnectedWindow{ get; private set; }
 
-    public void __ConnectWindow(WindowContext Window){ ConnectedWindow = Window; }
+    public void __ConnectWindow(WindowContext Window){ ConnectedWindow = Window; MakeContext(); __Start(); }
 
     public abstract void __Start();
+
+    public static int __OpenGLMajor = 4;
+    public static int __OpenGLMinor = 6;
 }

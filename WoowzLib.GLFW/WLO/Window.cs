@@ -42,6 +42,11 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
 
             this.Resizable = Resizable;
             WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_RESIZABLE, Resizable ? 1 : 0);
+
+            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_CONTEXT_VERSION_MAJOR, RenderContext.__OpenGLMajor);
+            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_CONTEXT_VERSION_MINOR, RenderContext.__OpenGLMinor);
+            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_OPENGL_PROFILE, WL.GLFW.Native.GLFW_OPENGL_CORE_PROFILE);
+            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_OPENGL_FORWARD_COMPAT, 1);
             
             Handle = WL.GLFW.Native.glfwCreateWindow((int)Width, (int)Height, Title__, IntPtr.Zero, IntPtr.Zero);
             
@@ -127,7 +132,6 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             
             Render = new TRender();
             Render.__ConnectWindow(this);
-            Render.__Start();
 
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании окна [" + this + "]!", e);

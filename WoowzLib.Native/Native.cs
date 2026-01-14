@@ -4,7 +4,8 @@ using File = WLO.File;
 namespace WL{
     [WLModule(10)]
     public static class Native{
-        public const string Error_DLLNotExist = "Не найден DLL!";
+        public const string Error_DLLNotExist      = "Не найден DLL!";
+        public const string Error_FunctionNotFound = "Функция не найдена!";
         
         [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
         private static extern IntPtr LoadLibrary(string lpFileName);
@@ -135,7 +136,7 @@ namespace WL{
         public static IntPtr FunctionSystem(IntPtr DLL, string Name){
             try{
                 IntPtr Proc = GetProcAddress(DLL, Name);
-                return Proc == IntPtr.Zero ? throw new Exception("Функция не найдена!") : Proc;
+                return Proc == IntPtr.Zero ? throw new Exception(Error_FunctionNotFound) : Proc;
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при загрузке функции из системного DLL (IntPtr) [" + DLL.ToInt64() + "]!\nФункция: " + Name);
             }
@@ -178,6 +179,15 @@ namespace WL{
         /// <param name="Link">Ссылка на занятую ячейку</param>
         public static void Free(IntPtr Link){
             Marshal.FreeHGlobal(Link);
+        }
+
+        /// <summary>
+        /// Получает строку из памяти
+        /// </summary>
+        /// <param name="Link">Ссылка на строку</param>
+        /// <returns>Строка (если память пуста, то вернёт <c>null</c>)</returns>
+        public static string? FromMemoryString(IntPtr Link){
+            return Marshal.PtrToStringAnsi(Link);
         }
     }
 }
