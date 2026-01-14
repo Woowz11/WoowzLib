@@ -22,7 +22,7 @@ public class GL : RenderContext{
             }
             Version = new Vector2I(Major, Minor);
 
-            if(Version.X < __OpenGLMajor || Version.Y < __OpenGLMinor){ Console.WriteLine("Установлена не максимальная версия GL [" + Major + "." + Minor + "] < [" + RenderContext.__OpenGLMajor + "." + RenderContext.__OpenGLMinor + "], возможны ошибки!"); }
+            if(Version.X < __OpenGLMajor || Version.Y < __OpenGLMinor){ Logger.Warn("Установлена не максимальная версия GL [" + Major + "." + Minor + "] < [" + RenderContext.__OpenGLMajor + "." + RenderContext.__OpenGLMinor + "], возможны ошибки!"); }
 
             WL.GL.__StartWGL();
             
@@ -33,7 +33,7 @@ public class GL : RenderContext{
             
             Viewport = new RectI(0, 0, (int)ConnectedWindow.__Width, (int)ConnectedWindow.__Height);
 
-            if(WL.GL.Debug.LogMain){ Console.WriteLine("Создан GL контекст [" + this + "] окну [" + ConnectedWindow + "]!"); }
+            if(WL.GL.Debug.LogMain){ Logger.Info("Создан GL контекст [" + this + "] окну [" + ConnectedWindow + "]!"); }
         }catch(Exception e){
             throw new Exception("Произошла ошибка при инициализации стартовых значений GL [" + this + "]!", e);
         }
@@ -41,7 +41,7 @@ public class GL : RenderContext{
 
     public override void __Stop(){
         try{
-            if(WL.GL.Debug.LogMain){ Console.WriteLine("Авто-очистка GL [" + this + "]!"); }
+            if(WL.GL.Debug.LogMain){ Logger.Info("Авто-очистка GL [" + this + "]!"); }
 
             ClearALLResources();
         }catch(Exception e){
@@ -85,14 +85,14 @@ public class GL : RenderContext{
     /// </summary>
     public GL ClearALLResources(){
         try{
-            if(WL.GL.Debug.LogDestroy){ Console.WriteLine("Очистка всех ресурсов [" + this + "]!"); }
+            if(WL.GL.Debug.LogDestroy){ Logger.Info("Очистка всех ресурсов [" + this + "]!"); }
             
             foreach(GLResource Resource in Resources.ToArray()){
                 Resource.TryDestroy();
             }
             Resources.Clear();
             
-            if(WL.GL.Debug.LogDestroy){ Console.WriteLine("Завершена очистка всех ресурсов [" + this + "]!"); }
+            if(WL.GL.Debug.LogDestroy){ Logger.Info("Завершена очистка всех ресурсов [" + this + "]!"); }
         }catch(Exception e){
             throw new Exception("Произошла ошибка при очистке всех ресурсов GL [" + this + "]!", e);
         }

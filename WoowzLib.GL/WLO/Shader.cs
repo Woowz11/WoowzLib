@@ -72,7 +72,7 @@ public class Shader : GLResource{
 
             __Finish(WL.GL.Native.GL_SHADER, "Шейдер");
             
-            if(WL.GL.Debug.LogCreate){ Console.WriteLine("Создан шейдер [" + this + "]!"); }
+            if(WL.GL.Debug.LogCreate){ Logger.Info("Создан шейдер [" + this + "]!"); }
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании GL шейдера [" + this + "]!\nТип: " + Type + "\nКод:\n" + Source, e);
         }

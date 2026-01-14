@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using WLO;
 
 namespace WL{
     [WLModule(35)]
@@ -20,7 +21,7 @@ namespace WL{
             try{
                 if(WGLStarted){ return; } WGLStarted = true;
 
-                if(Debug.LogMain){ Console.WriteLine("Инициализация остальных GL функций через WGL!"); }
+                if(Debug.LogMain){ Logger.Info("Инициализация остальных GL функций через WGL!"); }
 
                 Native.glUniform1f          = Native.WGLFunction<Native.D_glUniform1f         >("glUniform1f"         );
                 Native.glUniform2f          = Native.WGLFunction<Native.D_glUniform2f         >("glUniform2f"         );

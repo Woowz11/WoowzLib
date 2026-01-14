@@ -95,7 +95,7 @@ public abstract class GLResource{
     public void TryDestroy(){
         try{
             if(Created){
-                if(WL.GL.Debug.LogDestroy){ Console.WriteLine("Уничтожение GL ресурса [" + this + "]!"); }
+                if(WL.GL.Debug.LogDestroy){ Logger.Info("Уничтожение GL ресурса [" + this + "]!"); }
                 
                 Context.__MakeContext();
                 

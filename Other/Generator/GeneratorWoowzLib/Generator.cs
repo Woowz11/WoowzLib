@@ -1,4 +1,5 @@
 ﻿using System;
+using WLO;
 using File = WLO.File;
 
 /// <summary>
@@ -54,7 +55,7 @@ public static class Generator{
 
         private static void GenerateVector(string OutputFolder){
             try{
-                Console.WriteLine("Генерация векторов в [" + OutputFolder + "]:");
+                Logger.Info("Генерация векторов в [" + OutputFolder + "]:");
 
                 if(!WL.Explorer.Folder.Exist(OutputFolder)){ throw new Exception("Не найдена Output папка!"); }
 
@@ -65,7 +66,7 @@ public static class Generator{
                         CreateVector(OutputFolder, Type, i);
                     }
                 }
-                Console.WriteLine("Завершение генерации векторов");
+                Logger.Info("Завершение генерации векторов");
             }catch(Exception e){
                 throw new Exception("Произошла ошибка во время генерации векторов!", e);
             }
@@ -75,7 +76,7 @@ public static class Generator{
         private static readonly char[] VectorComponents = ['X', 'Y', 'Z', 'W'];
         private static void CreateVector(string OutputFolder, VectorType VectorType, int N){
             try{
-                Console.WriteLine("\tСоздание вектора [" + VectorType + ", " + N + "]");
+                Logger.Info("\tСоздание вектора [" + VectorType + ", " + N + "]");
 
                 // VectorComponents но сокращённый под N
                 object[] Components = VectorComponents.Take(N).Cast<object>().ToArray();
@@ -214,7 +215,7 @@ public static class Generator{
 
         private static void GenerateColor(string OutputFolder){
             try{
-                Console.WriteLine("Генерация цветов в [" + OutputFolder + "]:");
+                Logger.Info("Генерация цветов в [" + OutputFolder + "]:");
 
                 if(!WL.Explorer.Folder.Exist(OutputFolder)){ throw new Exception("Не найдена Output папка!"); }
 
@@ -223,7 +224,7 @@ public static class Generator{
                 foreach(ColorType Type in Enum.GetValues(typeof(ColorType))){
                     CreateColor(OutputFolder, Type);
                 }
-                Console.WriteLine("Завершение генерации цветов");
+                Logger.Info("Завершение генерации цветов");
             }catch(Exception e){
                 throw new Exception("Произошла ошибка во время генерации цветов!", e);
             }
@@ -233,7 +234,7 @@ public static class Generator{
         private static readonly char[] ColorComponents = ['R', 'G', 'B', 'A'];
         private static void CreateColor(string OutputFolder, ColorType ColorType){
             try{
-                Console.WriteLine("\tСоздание цвета [" + ColorType + "]");
+                Logger.Info("\tСоздание цвета [" + ColorType + "]");
 
                 object[] Components = ColorComponents.Cast<object>().ToArray();
                 
@@ -325,7 +326,7 @@ public static class Generator{
 
         private static void GenerateRect(string OutputFolder){
             try{
-                Console.WriteLine("Генерация Rect в [" + OutputFolder + "]:");
+                Logger.Info("Генерация Rect в [" + OutputFolder + "]:");
 
                 if(!WL.Explorer.Folder.Exist(OutputFolder)){ throw new Exception("Не найдена Output папка!"); }
 
@@ -334,7 +335,7 @@ public static class Generator{
                 foreach(RectType Type in Enum.GetValues(typeof(RectType))){
                     CreateRect(OutputFolder, Type);
                 }
-                Console.WriteLine("Завершение генерации Rect");
+                Logger.Info("Завершение генерации Rect");
             }catch(Exception e){
                 throw new Exception("Произошла ошибка во время генерации Rect!", e);
             }
@@ -343,7 +344,7 @@ public static class Generator{
         private enum RectType{ Int, Float, Double }
         private static void CreateRect(string OutputFolder, RectType RectType){
             try{
-                Console.WriteLine("\tСоздание Rect [" + RectType + "]");
+                Logger.Info("\tСоздание Rect [" + RectType + "]");
                 
                 // Первая буква типа (I, F, D)
                 string TypeChar = RectType.ToString()[0].ToString();

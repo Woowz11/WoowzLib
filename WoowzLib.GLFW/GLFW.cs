@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using WLO;
 using WLO.GLFW;
 using File = WLO.File;
 
@@ -101,7 +102,7 @@ namespace WL{
             try{
                 if(Destroyed){ return; }
 
-                if(Windows.Count > 0){ Console.WriteLine("Оставшиеся окна были закрыты через WL.GLFW.Stop()!"); }
+                if(Windows.Count > 0){ Logger.Warn("Оставшиеся окна были закрыты через WL.GLFW.Stop()!"); }
 
                 foreach(WindowBase Window in Windows.ToArray()){
                     Window.Destroy();
@@ -113,7 +114,7 @@ namespace WL{
                 WL.Native.Unload(DLL);
                 DLL = null;
                 
-                if(Warn){ Console.WriteLine("Авто-остановка GLFW!"); }
+                if(Warn){ Logger.Warn("Авто-остановка GLFW!"); }
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при базовой остановке GLFW!", e);
             }

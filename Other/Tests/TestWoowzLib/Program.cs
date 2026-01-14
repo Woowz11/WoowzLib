@@ -36,7 +36,7 @@ public static class Program{
                                                                          }
                                                                          """);
 
-            WLO.GL.Program Prog = new WLO.GL.Program(AAA.Render).Connect(VShader).Connect(FShader).Compile();
+            WLO.GL.Program Prog = new WLO.GL.Program(AAA.Render, VShader, FShader);
             
             while(!AAA.ShouldDestroy){
                 AAA.Render.BackgroundColor = ColorF.Red;

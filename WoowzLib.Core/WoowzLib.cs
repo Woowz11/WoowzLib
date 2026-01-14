@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
+using WLO;
 
 namespace WL{
     [WLModule(int.MinValue)]
@@ -9,6 +10,22 @@ namespace WL{
             AppDomain    .CurrentDomain.UnhandledException += (_, _) => Stop();
             TaskScheduler.UnobservedTaskException          += (_, e) => { Stop(); e.SetObserved(); };
             Console      .CancelKeyPress                   += (_, e) => { Stop(); e.Cancel = false; };
+
+            OnMessage += (Type, Message) => {
+                string Prefix = Type switch{
+                    MessageType.Warn  => "[WARN] ",
+                    MessageType.Error => "[ERROR] ",
+                    MessageType.Fatal => "[FATAL] ",
+                    MessageType.Debug => "[DEBUG] ",
+                                    _ => "",
+                };
+
+                Console.WriteLine(Prefix + Message[0]);
+
+                for(int i = 1; i < Message.Length; i++){
+                    Console.WriteLine(Message[i]?.ToString() ?? "NULL");
+                }
+            };
         }
         private static void Stop(){
             if(!Started){ return; }
@@ -17,11 +34,10 @@ namespace WL{
             try{
                 OnStop?.Invoke();
             }catch(Exception e){
-                Console.WriteLine("Произошла ошибка при вызове ивентов на остановку приложения!");
-                Console.WriteLine(e);
+                Logger.Error("Произошла ошибка при вызове ивентов на остановку приложения!", e);
             }
             
-            Console.WriteLine("Остановлен WL!");
+            Logger.Info("Остановлен WL!");
         }
 
         /// <summary>
@@ -39,7 +55,7 @@ namespace WL{
 
                 string RunFolder = AppContext.BaseDirectory;
                 
-                Console.WriteLine("Установка WL [" + RunFolder + "]:");
+                Logger.Info("Установка WL [" + RunFolder + "]:");
                 
                 foreach(string DLL in Directory.GetFiles(RunFolder, "WoowzLib.*.dll")){
                     Assembly.LoadFrom(DLL);
@@ -55,11 +71,11 @@ namespace WL{
                        .ToList().OrderBy(A => A.Attribute!.Order);
 
                 foreach(var Module in Modules){
-                    Console.WriteLine("Загружен WL модуль: " + Module.Type.Name);
+                    Logger.Info("Загружен WL модуль: " + Module.Type.Name);
                     RuntimeHelpers.RunClassConstructor(Module.Type.TypeHandle);
                 }
             
-                Console.WriteLine("Установка WL завершена!");
+                Logger.Info("Установка WL завершена!");
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при запуске WoowzLib!", e);
             }
@@ -69,5 +85,19 @@ namespace WL{
         /// Ивент вызывается при остановке всего приложения
         /// </summary>
         public static event Action? OnStop;
+
+        /// <summary>
+        /// Ивент вызывается при отправке сообщений через Logger
+        /// </summary>
+        public static event Action<MessageType, object[]>? OnMessage;
+
+        /// <summary>
+        /// Отправляет сообщение в OnMessage
+        /// </summary>
+        /// <param name="Type">Тип сообщения</param>
+        /// <param name="Message">Сообщение</param>
+        public static void __Print(MessageType Type, object[] Message){
+            OnMessage?.Invoke(Type, Message);
+        }
     }
 }

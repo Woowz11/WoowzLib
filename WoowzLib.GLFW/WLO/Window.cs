@@ -90,8 +90,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
                 try{
                     OnResize?.Invoke(this, Width, Height);   
                 }catch(Exception e){
-                    Console.WriteLine("Произошла ошибка при вызове ивентов на изменение размера окна [" + this + "]!\nШирина: " + Width + "\nВысота: " + Height);
-                    Console.WriteLine(e);
+                    Logger.Error("Произошла ошибка при вызове ивентов на изменение размера окна [" + this + "]!\nШирина: " + Width + "\nВысота: " + Height, e);
                 }
             };
             WL.GLFW.Native.glfwSetWindowSizeCallback(Handle, __SizeCallback);
@@ -103,8 +102,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
                 try{
                     OnMove?.Invoke(this, X, Y);   
                 }catch(Exception e){
-                    Console.WriteLine("Произошла ошибка при вызове ивентов на изменение позиции окна [" + this + "]!\nX: " + X + "\nY: " + Y);
-                    Console.WriteLine(e);
+                    Logger.Error("Произошла ошибка при вызове ивентов на изменение позиции окна [" + this + "]!\nX: " + X + "\nY: " + Y, e);
                 }
             };
             WL.GLFW.Native.glfwSetWindowPosCallback(Handle, __PositionCallback);
@@ -115,8 +113,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
                 try{
                     OnFocus?.Invoke(this, this.Focused);   
                 }catch(Exception e){
-                    Console.WriteLine("Произошла ошибка при вызове ивентов на изменение фокуса окна [" + this + "]!\nФокус: " + this.Focused);
-                    Console.WriteLine(e);
+                    Logger.Error("Произошла ошибка при вызове ивентов на изменение фокуса окна [" + this + "]!\nФокус: " + this.Focused, e);
                 }
             };
             WL.GLFW.Native.glfwSetWindowFocusCallback(Handle, __FocusCallback);
@@ -437,8 +434,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             try{
                 OnDestroy?.Invoke(this);   
             }catch(Exception e){
-                Console.WriteLine("Произошла ошибка при вызове ивентов уничтожения окна [" + this + "]!");
-                Console.WriteLine(e);
+                Logger.Error("Произошла ошибка при вызове ивентов уничтожения окна [" + this + "]!", e);
             }
 
             Render.__UnconnectWindow();

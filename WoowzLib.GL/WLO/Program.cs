@@ -8,10 +8,18 @@ public class Program : GLResource{
             
             __Finish(WL.GL.Native.GL_PROGRAM, "Программа");
             
-            if(WL.GL.Debug.LogCreate){ Console.WriteLine("Создана программа [" + this + "]!"); }
+            if(WL.GL.Debug.LogCreate){ Logger.Info("Создана программа [" + this + "]!"); }
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании GL программы [" + this + "]!", e);
         }
+    }
+
+    public Program(Render.GL Context, params Shader[] Shaders) : this(Context){
+        foreach(Shader Shader in Shaders){
+            Connect(Shader);
+        }
+
+        Compile();
     }
     
     protected override void __Destroy(){
@@ -22,6 +30,16 @@ public class Program : GLResource{
     /// Присоединённые шейдеры
     /// </summary>
     private readonly List<Shader> ConnectedShaders = [];
+
+    /// <summary>
+    /// Скомпилированные шейдеры
+    /// </summary>
+    private readonly List<Shader> CompiledShaders = [];
+
+    /// <summary>
+    /// Произошли какие-то изменения?
+    /// </summary>
+    private bool Dirty = true;
     
     /// <summary>
     /// Присоединяет шейдер к программе
@@ -29,14 +47,16 @@ public class Program : GLResource{
     /// <param name="Shader"></param>
     public Program Connect(Shader Shader){
         try{
-            if(!Shader.Compiled){ throw new Exception("Шейдер не скомпилирован!"); }
+            if(!Shader.Created){ throw new Exception("Шейдер не создан!"); }
             if(ConnectedShaders.Contains(Shader)){ throw new Exception("Такой шейдер уже есть!"); }
             
             Context.__MakeContext();
             WL.GL.Native.glAttachShader(ID, Shader.ID);
             ConnectedShaders.Add(Shader);
 
-            if(WL.GL.Debug.LogProgram){ Console.WriteLine("Присоединён шейдер [" + Shader + "] программе [" + this + "]!"); }
+            Dirty = true;
+            
+            if(WL.GL.Debug.LogProgram){ Logger.Info("Присоединён шейдер [" + Shader + "] программе [" + this + "]!"); }
         }catch(Exception e){
             throw new Exception("Произошла ошибка при присоединении шейдера [" + Shader + "] программе [" + this + "]!", e);
         }
@@ -51,14 +71,16 @@ public class Program : GLResource{
     /// <returns></returns>
     public Program Disconnect(Shader Shader){
         try{
-            if(!Shader.Compiled){ throw new Exception("Шейдер не скомпилирован!"); }
+            if(!Shader.Created){ throw new Exception("Шейдер не создан!"); }
             if(!ConnectedShaders.Contains(Shader)){ throw new Exception("Шейдер не найден!"); }
             
             Context.__MakeContext();
             WL.GL.Native.glDetachShader(ID, Shader.ID);
             ConnectedShaders.Remove(Shader);
+
+            Dirty = true;
             
-            if(WL.GL.Debug.LogProgram){ Console.WriteLine("Отсоединён шейдер [" + Shader + "] у программы [" + this + "]!"); }
+            if(WL.GL.Debug.LogProgram){ Logger.Info("Отсоединён шейдер [" + Shader + "] у программы [" + this + "]!"); }
         }catch(Exception e){
             throw new Exception("Произошла ошибка при отсоединении шейдера [" + Shader + "] у программы [" + this + "]!", e);
         }
@@ -80,7 +102,9 @@ public class Program : GLResource{
             }
             ConnectedShaders.Clear();
             
-            if(WL.GL.Debug.LogProgram){ Console.WriteLine("Отсоединены все шейдеры у программы [" + this + "]!"); }
+            Dirty = true;
+            
+            if(WL.GL.Debug.LogProgram){ Logger.Info("Отсоединены все шейдеры у программы [" + this + "]!"); }
         }catch(Exception e){
             throw new Exception("Произошла ошибка при отсоединении всех шейдеров у программы [" + this + "]", e);
         }
@@ -93,6 +117,12 @@ public class Program : GLResource{
     /// </summary>
     public Program Compile(){
         try{
+            if(!Dirty){ return this; }
+
+            foreach(Shader Shader in ConnectedShaders){
+                if(!Shader.Compiled){ throw new Exception("Шейдер [" + Shader + "] не скомпилированный!"); }
+            }
+            
             Context.__MakeContext();
             WL.GL.Native.glLinkProgram(ID);
             WL.GL.Native.glGetProgramiv(ID, WL.GL.Native.GL_LINK_STATUS, out int Status__);
@@ -108,7 +138,12 @@ public class Program : GLResource{
                 throw new Exception("Произошла ошибка при компиляции! Лог: " + Log);
             }
             
-            if(WL.GL.Debug.LogProgram){ Console.WriteLine("Скомпилирована программа [" + this + "]!"); }
+            CompiledShaders.Clear();
+            CompiledShaders.AddRange(ConnectedShaders);
+
+            Dirty = false;
+            
+            if(WL.GL.Debug.LogProgram){ Logger.Info("Скомпилирована программа [" + this + "]!"); }
         }catch(Exception e){
             throw new Exception("Произошла ошибка при компиляции программы [" + this + "]!", e);
         }
