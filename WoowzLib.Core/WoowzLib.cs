@@ -61,7 +61,7 @@ namespace WL{
             
                 Console.WriteLine("Установка WL завершена!");
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при запуске WoowzLib!");
+                throw new Exception("Произошла ошибка при запуске WoowzLib!", e);
             }
         }
 

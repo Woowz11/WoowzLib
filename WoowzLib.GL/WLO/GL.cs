@@ -3,6 +3,8 @@
 public class GL : RenderContext{
     public override void __Start(){
         try{
+            WL.GL.__StartWGL();
+            
             IntPtr VersionLink = WL.GL.Native.glGetString(WL.GL.Native.GL_VERSION);
             string? __Version = WL.Native.FromMemoryString(VersionLink);
             if(string.IsNullOrWhiteSpace(__Version)){ throw new Exception("Не получилось определить версию GL!"); }
