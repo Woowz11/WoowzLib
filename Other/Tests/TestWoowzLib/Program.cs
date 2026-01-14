@@ -11,12 +11,32 @@ public static class Program{
             WL.GL.Debug.LogMain = true;
             WL.GL.Debug.LogCreate = true;
             WL.GL.Debug.LogDestroy = true;
+            WL.GL.Debug.LogProgram = true;
             
             WL.GLFW.Start();
 
             Window<GL> AAA = new Window<GL>(Title: "привет hello");
 
-            Shader TestShader = new Shader(AAA.Render, ShaderType.Vertex, "");
+            Shader VShader = new Shader(AAA.Render, ShaderType.Vertex, """
+                                                                       #version 330 core
+                                                                       
+                                                                       layout(location = 0) in vec3 InPosition;
+                                                                       
+                                                                       void main(){
+                                                                           gl_Position = vec4(InPosition, 1.0);
+                                                                       }
+                                                                       """);
+            Shader FShader = new Shader(AAA.Render, ShaderType.Fragment, """
+                                                                         #version 330 core
+                                                                         
+                                                                         out vec4 OutColor;
+                                                                         
+                                                                         void main(){
+                                                                             OutColor = vec4(1.0, 0.0, 1.0, 1.0); // фиолетовый
+                                                                         }
+                                                                         """);
+
+            WLO.GL.Program Prog = new WLO.GL.Program(AAA.Render).Connect(VShader).Connect(FShader).Compile();
             
             while(!AAA.ShouldDestroy){
                 AAA.Render.BackgroundColor = ColorF.Red;

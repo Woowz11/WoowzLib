@@ -10,29 +10,34 @@ public enum ShaderType : uint{
     /// </summary>
     Vertex = WL.GL.Native.GL_VERTEX_SHADER,
     /// <summary>
-    /// 
+    /// Фрагментный шейдер (FRAGMENT)<br/>
+    /// Обрабатывает пиксели на экране
     /// </summary>
     Fragment = WL.GL.Native.GL_FRAGMENT_SHADER,
     /// <summary>
-    /// 
+    /// Геометрический шейдер (GEOMETRY)<br/>
+    /// ?
     /// </summary>
-    Geometry,
+    Geometry = WL.GL.Native.GL_GEOMETRY_SHADER,
+    /// <summary>
+    /// (COMPUTE)<br/>
+    /// ?
+    /// </summary>
+    Compute = WL.GL.Native.GL_COMPUTE_SHADER,
+    /// <summary>
+    /// (TESS_CONTROL)<br/>
+    /// ?
+    /// </summary>
+    TessellationControl = WL.GL.Native.GL_TESS_CONTROL_SHADER,
+    /// <summary>
+    /// (TESS_EVALUATION)<br/>
+    /// ?
+    /// </summary>
+    TesselationEvaluation = WL.GL.Native.GL_TESS_EVALUATION_SHADER,
     /// <summary>
     /// 
     /// </summary>
-    Compute,
-    /// <summary>
-    /// 
-    /// </summary>
-    TessellationControl,
-    /// <summary>
-    /// 
-    /// </summary>
-    TesselationEvaluation,
-    /// <summary>
-    /// 
-    /// </summary>
-    Task,
+    Task, // что за NV?
     /// <summary>
     /// 
     /// </summary>
@@ -50,14 +55,15 @@ public class Shader : GLResource{
             if(ID <= 0){ throw new Exception("Не получилось создать шейдер в glCreateShader!"); }
 
             this.Source = Source;
-            WL.GL.Native.glShaderSource(ID, 1, [Source], [Source.Length]);
+            WL.GL.Native.glShaderSource(ID, 1, [Source], null);
 
             WL.GL.Native.glCompileShader(ID);
-            WL.GL.Native.glGetShaderiv(ID, WL.GL.Native.GL_COMPILE_STATUS, out int Status);
+            WL.GL.Native.glGetShaderiv(ID, WL.GL.Native.GL_COMPILE_STATUS, out int Status__);
+            Status = Status__;
             if(Status == 0){
                 const int LogSize = 512;
                 IntPtr LogLink = WL.Native.Memory(LogSize);
-                WL.GL.Native.glGetShaderInfoLog(ID, LogSize, out int Length, LogLink);
+                WL.GL.Native.glGetShaderInfoLog(ID, LogSize, out int _, LogLink);
                 string Log = WL.Native.FromMemoryString(LogLink) ?? "";
                 WL.Native.Free(LogLink);
 
@@ -85,4 +91,14 @@ public class Shader : GLResource{
     /// Код шейдера
     /// </summary>
     public readonly string Source;
+    
+    /// <summary>
+    /// Статус компиляции
+    /// </summary>
+    public int Status{ get; private set; }
+
+    /// <summary>
+    /// Скомпилирован?
+    /// </summary>
+    public bool Compiled => Created && Status != 0;
 }

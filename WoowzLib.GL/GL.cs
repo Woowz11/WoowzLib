@@ -33,11 +33,15 @@ namespace WL{
                 Native.glCreateShader       = Native.WGLFunction<Native.D_glCreateShader      >("glCreateShader"      );
                 Native.glShaderSource       = Native.WGLFunction<Native.D_glShaderSource      >("glShaderSource"      );
                 Native.glAttachShader       = Native.WGLFunction<Native.D_glAttachShader      >("glAttachShader"      );
+                Native.glDetachShader       = Native.WGLFunction<Native.D_glDetachShader      >("glDetachShader"      );
                 Native.glDeleteShader       = Native.WGLFunction<Native.D_glDeleteShader      >("glDeleteShader"      );
+                Native.glGetProgramiv       = Native.WGLFunction<Native.D_glGetProgramiv      >("glGetProgramiv"      );
                 Native.glCompileShader      = Native.WGLFunction<Native.D_glCompileShader     >("glCompileShader"     );
                 Native.glCreateProgram      = Native.WGLFunction<Native.D_glCreateProgram     >("glCreateProgram"     );
+                Native.glDeleteProgram      = Native.WGLFunction<Native.D_glDeleteProgram     >("glDeleteProgram"     );
                 Native.glGetShaderInfoLog   = Native.WGLFunction<Native.D_glGetShaderInfoLog  >("glGetShaderInfoLog"  );
                 Native.glUniformMatrix4fv   = Native.WGLFunction<Native.D_glUniformMatrix4fv  >("glUniformMatrix4fv"  );
+                Native.glGetProgramInfoLog  = Native.WGLFunction<Native.D_glGetProgramInfoLog >("glGetProgramInfoLog" );
                 Native.glGetUniformLocation = Native.WGLFunction<Native.D_glGetUniformLocation>("glGetUniformLocation");
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при загрузке OpenGL функций через WGL!", e);
@@ -77,6 +81,11 @@ namespace WL{
             /// Выводить сообщения об уничтожении GL ресурсов?
             /// </summary>
             public static bool LogDestroy;
+            
+            /// <summary>
+            /// Выводить сообщения по поводу программы!
+            /// </summary>
+            public static bool LogProgram;
         }
         
         public static class Native{
@@ -180,22 +189,39 @@ namespace WL{
             public delegate void D_glObjectLabel(uint identifier, uint name, int length, string label);
             public static D_glObjectLabel glObjectLabel = null!;
 
-            public const uint GL_COLOR_BUFFER_BIT   = 0x00004000;
-            public const uint GL_DEPTH_BUFFER_BIT   = 0x00000100;
-            public const uint GL_STENCIL_BUFFER_BIT = 0x00000400;
-            public const uint GL_DEPTH_TEST         = 0x0B71;
-            public const uint GL_LESS               = 0x0201;
-            public const uint GL_VERSION            = 0x1F02;
-            public const uint GL_VERTEX_SHADER      = 0x8B31;
-            public const uint GL_FRAGMENT_SHADER    = 0x8B30;
-            public const uint GL_COMPILE_STATUS     = 0x8B81;
-            public const uint GL_LINK_STATUS        = 0x8B82;
-            public const uint GL_INFO_LOG_LENGTH    = 0x8B84;
-            public const uint GL_BUFFER             = 0x82E0;
-            public const uint GL_SHADER             = 0x82E1;
-            public const uint GL_PROGRAM            = 0x82E2;
-            public const uint GL_VERTEX_ARRAY       = 0x9154;
-            public const uint GL_TEXTURE            = 0x1702;
+            public delegate void D_glGetProgramiv(uint program, uint pname, out int param);
+            public static D_glGetProgramiv glGetProgramiv = null!;
+
+            public delegate void D_glGetProgramInfoLog(uint program, int maxLength, out int length, IntPtr infoLog);
+            public static D_glGetProgramInfoLog glGetProgramInfoLog = null!;
+
+            public delegate void D_glDeleteProgram(uint program);
+            public static D_glDeleteProgram glDeleteProgram = null!;
+            
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glDetachShader(uint program, uint shader);
+            public static D_glDetachShader glDetachShader = null!;
+            
+            public const uint GL_COLOR_BUFFER_BIT       = 0x00004000;
+            public const uint GL_DEPTH_BUFFER_BIT       = 0x00000100;
+            public const uint GL_STENCIL_BUFFER_BIT     = 0x00000400;
+            public const uint GL_DEPTH_TEST             = 0x0B71;
+            public const uint GL_LESS                   = 0x0201;
+            public const uint GL_VERSION                = 0x1F02;
+            public const uint GL_VERTEX_SHADER          = 0x8B31;
+            public const uint GL_FRAGMENT_SHADER        = 0x8B30;
+            public const uint GL_COMPILE_STATUS         = 0x8B81;
+            public const uint GL_LINK_STATUS            = 0x8B82;
+            public const uint GL_INFO_LOG_LENGTH        = 0x8B84;
+            public const uint GL_BUFFER                 = 0x82E0;
+            public const uint GL_SHADER                 = 0x82E1;
+            public const uint GL_PROGRAM                = 0x82E2;
+            public const uint GL_VERTEX_ARRAY           = 0x9154;
+            public const uint GL_TEXTURE                = 0x1702;
+            public const uint GL_GEOMETRY_SHADER        = 0x8DD9;
+            public const uint GL_COMPUTE_SHADER         = 0x91B9;
+            public const uint GL_TESS_CONTROL_SHADER    = 0x8E88;
+            public const uint GL_TESS_EVALUATION_SHADER = 0x8E87;
 
             /// <summary>
             /// Получает функцию из OpenGL и возвращает её в виде C# функции (WGL)

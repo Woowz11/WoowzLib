@@ -190,7 +190,7 @@ namespace WL{
         /// </summary>
         /// <param name="ByteSize">Какого размера дать ссылку на память?</param>
         /// <returns></returns>
-        public static IntPtr Memory(int ByteSize = 512){
+        public static IntPtr Memory(int ByteSize){
             return Marshal.AllocHGlobal(ByteSize);
         }
 
