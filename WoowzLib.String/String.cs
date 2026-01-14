@@ -5,7 +5,7 @@ namespace WL{
     /// <summary>
     /// Работа со строками
     /// </summary>
-    [WLModule(2)]
+    [WLModule(-5000)]
     public static class String{
         private static readonly Regex Regex1 = new Regex(@"\$(\d+)", RegexOptions.Compiled);
         

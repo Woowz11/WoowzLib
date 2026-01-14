@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.Byte", "WoowzLib.B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.String", "WoowzLib.String\WoowzLib.String.csproj", "{7AA1A5B2-E889-4C12-A827-6DEF0A83175D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.Logger", "WoowzLib.Logger\WoowzLib.Logger.csproj", "{4FAD8323-50FC-4AC1-B752-793B559EB7FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|Any CPU = Release|Any CPU
@@ -45,5 +47,7 @@ Global
 		{4DD2810C-BD13-487C-A65F-0EDBA2B46343}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7AA1A5B2-E889-4C12-A827-6DEF0A83175D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AA1A5B2-E889-4C12-A827-6DEF0A83175D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FAD8323-50FC-4AC1-B752-793B559EB7FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FAD8323-50FC-4AC1-B752-793B559EB7FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

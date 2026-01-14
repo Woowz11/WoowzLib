@@ -2,7 +2,7 @@
     /// <summary>
     /// Работа с байтами
     /// </summary>
-    [WLModule(1)]
+    [WLModule(-7500)]
     public static class Byte{
        
     }

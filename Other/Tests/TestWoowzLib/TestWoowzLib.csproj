@@ -8,12 +8,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\WoowzLib.Byte\WoowzLib.Byte.csproj" />
       <ProjectReference Include="..\..\..\WoowzLib.Core\WoowzLib.Core.csproj" />
       <ProjectReference Include="..\..\..\WoowzLib.Explorer\WoowzLib.Explorer.csproj" />
       <ProjectReference Include="..\..\..\WoowzLib.GLFW\WoowzLib.GLFW.csproj" />
       <ProjectReference Include="..\..\..\WoowzLib.GL\WoowzLib.GL.csproj" />
+      <ProjectReference Include="..\..\..\WoowzLib.Logger\WoowzLib.Logger.csproj" />
       <ProjectReference Include="..\..\..\WoowzLib.Math\WoowzLib.Math.csproj" />
       <ProjectReference Include="..\..\..\WoowzLib.Native\WoowzLib.Native.csproj" />
+      <ProjectReference Include="..\..\..\WoowzLib.String\WoowzLib.String.csproj" />
     </ItemGroup>
     
 </Project>
