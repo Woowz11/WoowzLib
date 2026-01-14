@@ -1,4 +1,4 @@
-﻿namespace WLO;
+﻿namespace WLO.Render;
 
 public class GL : RenderContext{
     public override void __Start(){

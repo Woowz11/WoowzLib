@@ -14,6 +14,8 @@ namespace WL{
             Native.glGetString       = WL.Native.DelegateFunction<Native.D_glGetString      >("glGetString"       ,DLL);
             Native.glClearColor      = WL.Native.DelegateFunction<Native.D_glClearColor     >("glClearColor"      ,DLL);
             Native.wglGetProcAddress = WL.Native.DelegateFunction<Native.D_wglGetProcAddress>("wglGetProcAddress" ,DLL);
+            
+            WL.WoowzLib.OnStop += () => __Destroy(true);
         }
 
         public static void __StartWGL(){
@@ -41,6 +43,16 @@ namespace WL{
             }
         }
         private static bool WGLStarted;
+        
+        private static void __Destroy(bool Warn){
+            try{
+               
+                
+                if(Warn){ Console.WriteLine("Авто-остановка GL!"); }
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при базовой остановке GL!", e);
+            }
+        }
         
         // <summary>
         /// Текущий opengl32.dll

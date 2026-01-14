@@ -1,5 +1,5 @@
-﻿namespace WLO;
+﻿namespace WLO.GL;
 
-public class Program{
+public class Program : GLObject{
     
 }

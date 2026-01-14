@@ -1,6 +1,7 @@
 ﻿using WLO;
+using WLO.Render;
+using WLO.GL;
 using WLO.GLFW;
-using File = WLO.File;
 
 public static class Program{
     public static int Main(string[] Args){
@@ -12,12 +13,6 @@ public static class Program{
             Window<GL> AAA = new Window<GL>(Resizable: false);
             Window<GL> BBB = new Window<GL>();
             Window<GL> CCC = new Window<GL>();
-            
-            Console.WriteLine(AAA.Render.Viewport);
-            
-            int i = 5125;
-            
-            Vector2I v = new Vector2I() + new Vector2I();
             
             while(!AAA.ShouldDestroy || !BBB.ShouldDestroy || !CCC.ShouldDestroy){
                 if(!AAA.Destroyed){
