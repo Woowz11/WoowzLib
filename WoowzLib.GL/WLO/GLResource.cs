@@ -25,6 +25,9 @@ public abstract class GLResource{
     /// </summary>
     public readonly Render.GL Context;
 
+    /// <summary>
+    /// Вызывается при уничтожении ресурса
+    /// </summary>
     protected abstract void __Destroy();
 
     /// <summary>

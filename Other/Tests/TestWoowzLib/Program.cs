@@ -13,15 +13,13 @@ public static class Program{
             Window<GL> AAA = new Window<GL>();
             
             while(!AAA.ShouldDestroy){
-                if(!AAA.Destroyed){
-                    AAA.Title = WL.Math.Time.Format("T");
-                    
-                    AAA.Render.BackgroundColor = ColorF.Red;
-                    
-                    AAA.Render.Clear();
-                    
-                    AAA.FinishRender();
-                }
+                AAA.Title = WL.Math.Time.Format("T");
+                
+                AAA.Render.BackgroundColor = ColorF.Red;
+                
+                AAA.Render.Clear();
+                
+                AAA.FinishRender();
 
                 WL.GLFW.Tick();
             }

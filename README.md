@@ -1,1 +1,73 @@
-hi, that test
+<div align="center">
+
+![Typing SVG](https://readme-typing-svg.demolab.com?font=Science+Gothic+&weight=900&size=70&duration=1&pause=100000&color=E6E6E6&center=true&vCenter=true&width=500&height=60&lines=WoowzLib)
+
+[![License](https://img.shields.io/badge/License-CC_BY_SA_4.0-blue)](https://creativecommons.org/licenses/by-sa/4.0/)
+
+## Информация
+
+</div>
+
+``WoowzLib`` — Это модульная библиотека для C#
+
+Упрощает работу с GLFW, GL и т.д, добавляет кеширование, и предупреждает если где-то что-то не так, к примеру имеет авто-очистки, содержит комментарии и try/catch и всё на Русском языке
+
+<div align="center">
+
+## Модули
+
+|Название|Что делает?|
+|:------:|:---------|
+|Core    |Основа для всех модулей|
+|Math    |Математика, Random, время, вектора, цвета, и т.д|
+|String  |Работа со строками|
+|Explorer|Работа с файлами и папками|
+|Byte    |Пока-что ничего (будет работа с байтами)|
+|Native  |Загрузка DLL, работа с памятью|
+|GLFW    |Создание GLFW окна|
+|GL      |OpenGL рендер (> 4.6)|
+
+## Пример
+
+</div>
+
+В начале кода нужно написать ``WL.WoowzLib.Start();``, что-бы модули правильно инициализировались
+
+<div align="center">
+
+### Создание окна
+
+</div>
+
+```cs
+...
+public static class Program{
+	public static int Main(string[] Args){
+		WL.WoowzLib.Start();
+		
+		WL.GLFW.Start();
+		
+		Window<GL> W = new Window<GL>();
+		
+		while(!W.ShouldDestroy){
+			W.Render.BackgroundColor = ColorF.Red;
+			
+			W.Render.Clear();
+			
+			W.FinishRender();
+			
+			WL.GLFW.Tick();
+		}
+		
+		WL.GLFW.Stop();
+	}
+}
+```
+
+<div align="center">
+
+## Предупреждение
+
+</div>
+
+Библиотека находится в разработке
