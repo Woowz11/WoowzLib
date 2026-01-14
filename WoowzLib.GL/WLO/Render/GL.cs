@@ -1,4 +1,6 @@
-﻿namespace WLO.Render;
+﻿using WLO.GL;
+
+namespace WLO.Render;
 
 /// <summary>
 /// OpenGL рендер для окна
@@ -35,6 +37,8 @@ public class GL : RenderContext{
     public override void __Stop(){
         try{
             Console.WriteLine("ОЧИСТКА РЕНДЕРА GL..............");
+
+            ClearALLResources();
         }catch(Exception e){
             throw new Exception("Произошла ошибка при очистке GL [" + this + "]!", e);
         }
@@ -49,6 +53,29 @@ public class GL : RenderContext{
     /// Версия GL (Сначала Major, потом Minor)
     /// </summary>
     public Vector2I Version{ get; private set; }
+    
+    /// <summary>
+    /// Привязанные GL ресурсы к этому контексту
+    /// </summary>
+    private readonly List<GLResource> Resources = [];
+    public void __Register  (GLResource Resource) => Resources.Add   (Resource);
+    public void __Unregister(GLResource Resource) => Resources.Remove(Resource);
+
+    /// <summary>
+    /// Очищает все ресурсы внутри этого контекста!
+    /// </summary>
+    public GL ClearALLResources(){
+        try{
+            foreach(GLResource Resource in Resources.ToArray()){
+                Resource.TryDestroy();
+            }
+            Resources.Clear();
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при очистке всех ресурсов GL [" + this + "]!", e);
+        }
+
+        return this;
+    }
     
     /// <summary>
     /// Цвет заднего фона

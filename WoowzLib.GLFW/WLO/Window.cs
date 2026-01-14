@@ -64,7 +64,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             __X = X;
             __Y = Y;
 
-            __Focused = WL.GLFW.Native.glfwGetWindowAttrib(Handle, WL.GLFW.Native.GLFW_FOCUSED) == 1;
+            Focused = WL.GLFW.Native.glfwGetWindowAttrib(Handle, WL.GLFW.Native.GLFW_FOCUSED) == 1;
             
             ID = Handle.ToInt64();
 
@@ -110,12 +110,12 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             WL.GLFW.Native.glfwSetWindowPosCallback(Handle, __PositionCallback);
 
             __FocusCallback = (W, Focused) => {
-                __Focused = Focused == 1;
+                this.Focused = Focused == 1;
                 
                 try{
-                    OnFocus?.Invoke(this, __Focused);   
+                    OnFocus?.Invoke(this, this.Focused);   
                 }catch(Exception e){
-                    Console.WriteLine("Произошла ошибка при вызове ивентов на изменение фокуса окна [" + this + "]!\nФокус: " + __Focused);
+                    Console.WriteLine("Произошла ошибка при вызове ивентов на изменение фокуса окна [" + this + "]!\nФокус: " + this.Focused);
                     Console.WriteLine(e);
                 }
             };
@@ -168,7 +168,15 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     /// <summary>
     /// Завершает рендер (меняет буфер рендера с буфером экрана местами)
     /// </summary>
-    public Window<TRender> FinishRender(){ WL.GLFW.Native.glfwSwapBuffers(Handle); return this; }
+    public Window<TRender> FinishRender(){
+        try{
+            CheckDestroyed(); WL.GLFW.Native.glfwSwapBuffers(Handle);   
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при завершении рендера у окна [" + this + "]!", e);
+        }
+        
+        return this;
+    }
 
     /// <summary>
     /// Есть поддержка прозрачности?
@@ -225,8 +233,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     /// <summary>
     /// Окно в фокусе?
     /// </summary>
-    public bool Focused{ get => __Focused; }
-    private bool __Focused;
+    public bool Focused{ get; private set; }
 
     /// <summary>
     /// Установить окно в фокус
@@ -234,7 +241,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     public Window<TRender> Focus(){
         try{
             if(Focused){ return this; }
-            __Focused = true;
+            Focused = true;
 
             CheckDestroyed();
             WL.GLFW.Native.glfwFocusWindow(Handle);
@@ -355,6 +362,21 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
                 WL.GLFW.Native.glfwSetWindowPos(Handle, __X, __Y);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при установке позиции у окна [" + this + "]!\nПозиция: " + value, e);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Позиция и размер окна
+    /// </summary>
+    public RectI Rect{
+        get => new RectI(__X, __Y, (int)__Width, (int)__Height);
+        set{
+            try{
+                Position = new Vector2I(      value.X    ,       value.Y     );
+                Size     = new Vector2U((uint)value.Width, (uint)value.Height);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке позиции и размера у окна [" + this + "]!\nRect: " + value, e);
             }
         }
     }

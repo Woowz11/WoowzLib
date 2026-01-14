@@ -1,8 +1,12 @@
 ﻿namespace WLO.GL;
 
-public class Shader : GLObject{
-    protected override uint __Create(){
-        return 0;
+public class Shader : GLResource{
+    public Shader(Render.GL Context) : base(Context){
+        try{
+            
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при создании GL шейдера [" + this + "]!", e);
+        }
     }
     
     protected override void __Destroy(){

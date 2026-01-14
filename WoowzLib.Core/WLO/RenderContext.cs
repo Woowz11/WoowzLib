@@ -43,6 +43,11 @@ public abstract class RenderContext{
     public abstract void __Start();
     public abstract void __Stop ();
 
+    /// <summary>
+    /// Рендер существует?
+    /// </summary>
+    public bool Started => ConnectedWindow != null;
+    
     public const int __OpenGLMajor = 4;
     public const int __OpenGLMinor = 6;
 }
