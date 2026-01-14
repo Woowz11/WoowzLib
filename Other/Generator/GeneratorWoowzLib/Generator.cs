@@ -22,10 +22,12 @@ public static class Generator{
                            """;
             
             string MathFolder = Path.GetFullPath(Path.Combine(BaseFolder, "WoowzLib.Math"));
+            string ByteFolder = Path.GetFullPath(Path.Combine(BaseFolder, "WoowzLib.Byte"));
             
-            GenerateVector(Path.GetFullPath(Path.Combine(MathFolder, "WLO", "Vector")));
-            GenerateColor (Path.GetFullPath(Path.Combine(MathFolder, "WLO", "Color" )));
-            GenerateRect  (Path.GetFullPath(Path.Combine(MathFolder, "WLO", "Rect"  )));
+            GenerateVector (Path.GetFullPath(Path.Combine(MathFolder, "WLO", "Vector" )));
+            GenerateColor  (Path.GetFullPath(Path.Combine(MathFolder, "WLO", "Color"  )));
+            GenerateRect   (Path.GetFullPath(Path.Combine(MathFolder, "WLO", "Rect"   )));
+            GenerateMassive(Path.GetFullPath(Path.Combine(ByteFolder, "WLO", "Massive")));
         }catch(Exception e){
             throw new Exception("Произошла ошибка во время генерации!", e);
         }
@@ -427,6 +429,65 @@ public static class Generator{
                 File F = new File(Path.Combine(OutputFolder, Name + ".cs")).WriteString(Result.Replace("    ", "\t").Replace('·',' '));
             }catch(Exception e){
                 throw new Exception("Произошла ошибка во время генерации Rect [" + RectType + "]!", e);
+            }
+        }
+
+    #endregion
+    
+    #region Massive
+
+        private static void GenerateMassive(string OutputFolder){
+            try{
+                Logger.Info("Генерация массивов в [" + OutputFolder + "]:");
+
+                if(!WL.Explorer.Folder.Exist(OutputFolder)){ throw new Exception("Не найдена Output папка!"); }
+
+                WL.Explorer.Folder.Clear(OutputFolder);
+
+                foreach(MassiveType Type in Enum.GetValues(typeof(MassiveType))){
+                    CreateMassive(OutputFolder, Type);
+                }
+                Logger.Info("Завершение генерации массивов");
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка во время генерации массивов!", e);
+            }
+        }
+        
+        private enum MassiveType{ Byte, Short, UShort, Int, UInt, Long, ULong, Float, Double, Char, T }
+        private static void CreateMassive(string OutputFolder, MassiveType MassiveType){
+            try{
+                Logger.Info("\tСоздание массива [" + MassiveType + "]");
+                
+                // Первая буква типа (I, F, D)
+                string TypeChar = MassiveType switch{
+                    MassiveType.UShort => "US",
+                    MassiveType.ULong  => "UL",
+                                     _ => MassiveType.ToString()[0].ToString()
+                };
+
+                // Название (MassiveF, MassiveU)
+                string Name = "Massive" + TypeChar;
+
+                // Тип (int, float, double)
+                string Type = MassiveType is MassiveType.T ? "T" : MassiveType.ToString().ToLower();
+                
+                string Result = Pre() + "\n";
+
+                Result += "public struct " + Name + "{\n";
+
+                Result += $$"""
+                                #region Override
+                            
+                                   
+                            
+                                #endregion
+                            """;
+                
+                Result += "\n}";
+
+                File F = new File(Path.Combine(OutputFolder, Name + ".cs")).WriteString(Result.Replace("    ", "\t").Replace('·',' '));
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка во время генерации массива [" + MassiveType + "]!", e);
             }
         }
 

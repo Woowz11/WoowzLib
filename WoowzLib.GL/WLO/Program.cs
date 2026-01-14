@@ -168,9 +168,8 @@ public class Program : GLResource{
     /// <summary>
     /// Использовать эту программу
     /// </summary>
-    /// <returns></returns>
     public Program Use(){
-        Context.UseProgram(this);
+        Context.CurrentProgram = this;
         return this;
     }
 }

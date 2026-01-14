@@ -10,4 +10,8 @@
         <ProjectReference Include="..\WoowzLib.Core\WoowzLib.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="WLO\Massive\" />
+    </ItemGroup>
+
 </Project>

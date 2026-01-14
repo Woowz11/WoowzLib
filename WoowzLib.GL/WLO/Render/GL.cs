@@ -1,4 +1,5 @@
 ﻿using WLO.GL;
+using Buffer = WLO.GL.Buffer;
 
 namespace WLO.Render;
 
@@ -66,32 +67,80 @@ public class GL : RenderContext{
     private void CheckGLResourceContext(GLResource? Resource){ if(Resource == null){ return; } if(Resource.Context != this){ throw new Exception("Контекст ресурса [" + Resource + "] и указанного GL [" + this + "] не совпадают!"); } }
 
     #region Uses
-    
+
         /// <summary>
         /// Текущая программа в контексте
         /// </summary>
-        public Program? CurrentProgram{ get; private set; }
+        public Program? CurrentProgram{
+            get => __CurrentProgram;
+            set{
+                try{
+                    if(__CurrentProgram == value){ return; }
+                    CheckGLResourceContext(value);
+                    if(value != null && !value.Created){ throw new Exception("Программа не создана!"); }
 
-        public GL UseProgram(Program? Program){
-            try{
-                if(CurrentProgram == Program){ return this; }
-                CheckGLResourceContext(Program);
-                if(Program != null && !Program.Created){ throw new Exception("Программа не создана!"); }
+                    __MakeContext();
 
-                __MakeContext();
+                    __CurrentProgram = value;
+                    WL.GL.Native.glUseProgram(value?.ID ?? 0);
 
-                CurrentProgram = Program;
-                WL.GL.Native.glUseProgram(Program?.ID ?? 0);
-
-                if(WL.GL.Debug.LogUse){ Logger.Info("Программа [" + (Program?.ToString() ?? "НИКАКАЯ") + "] используется!"); }
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при использовании программы [" + (Program?.ToString() ?? "НИКАКАЯ") + "] у GL [" + this + "]!", e);
+                    if(WL.GL.Debug.LogUse){ Logger.Info("Программа [" + (value?.ToString() ?? "НИКАКАЯ") + "] используется!"); }
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при использовании программы [" + (value?.ToString() ?? "НИКАКАЯ") + "] у GL [" + this + "]!", e);
+                }
             }
-
-            return this;
         }
+        private Program? __CurrentProgram;
+        
+        /// <summary>
+        /// Текущий Float буфер в контексте
+        /// </summary>
+        public FloatBuffer? CurrentFloatBuffer{
+            get => __CurrentFloatBuffer;
+            set{
+                try{
+                    if(__CurrentFloatBuffer == value){ return; }
+                    CheckGLResourceContext(value);
+                    if(value != null && !value.Created){ throw new Exception("Буфер не создан!"); }
 
-        #endregion
+                    __MakeContext();
+
+                    __CurrentFloatBuffer = value;
+                    WL.GL.Native.glBindBuffer((uint)BufferType.Float, value?.ID ?? 0);
+
+                    if(WL.GL.Debug.LogUse){ Logger.Info("Float Буфер [" + (value?.ToString() ?? "НИКАКОЙ") + "] используется!"); }
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при использовании Float буфер [" + (value?.ToString() ?? "НИКАКОЙ") + "] у GL [" + this + "]!", e);
+                }
+            }
+        }
+        private FloatBuffer? __CurrentFloatBuffer;
+        
+        /// <summary>
+        /// Текущий Int буфер в контексте
+        /// </summary>
+        public IntBuffer? CurrentIntBuffer{
+            get => __CurrentIntBuffer;
+            set{
+                try{
+                    if(__CurrentIntBuffer == value){ return; }
+                    CheckGLResourceContext(value);
+                    if(value != null && !value.Created){ throw new Exception("Буфер не создан!"); }
+
+                    __MakeContext();
+
+                    __CurrentIntBuffer = value;
+                    WL.GL.Native.glBindBuffer((uint)BufferType.Int, value?.ID ?? 0);
+
+                    if(WL.GL.Debug.LogUse){ Logger.Info("Int Буфер [" + (value?.ToString() ?? "НИКАКОЙ") + "] используется!"); }
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при использовании Int буфер [" + (value?.ToString() ?? "НИКАКОЙ") + "] у GL [" + this + "]!", e);
+                }
+            }
+        }
+        private IntBuffer? __CurrentIntBuffer;
+
+    #endregion
     
     /// <summary>
     /// ID контекста

@@ -44,6 +44,8 @@ public static class Program{
                  0.5f, -0.5f, 0, 
                 -0.5f, -0.5f, 0
             ];
+
+            FloatBuffer VBuffer = new FloatBuffer(AAA.Render);
             
             while(!AAA.ShouldDestroy){
                 AAA.Render.BackgroundColor = ColorF.Red;
