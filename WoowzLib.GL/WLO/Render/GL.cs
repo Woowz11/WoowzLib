@@ -1,5 +1,8 @@
 ﻿namespace WLO.Render;
 
+/// <summary>
+/// OpenGL рендер для окна
+/// </summary>
 public class GL : RenderContext{
     public override void __Start(){
         try{

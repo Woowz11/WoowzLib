@@ -1,6 +1,6 @@
 ﻿using WLO;
 using WLO.Render;
-using WLO.GL;
+//using WLO.GL;
 using WLO.GLFW;
 
 public static class Program{
@@ -10,15 +10,15 @@ public static class Program{
         
             WL.GLFW.Start();
 
-            Window<GL> AAA = new Window<GL>();
+            Window<EmptyRender> AAA = new Window<EmptyRender>();
             
             while(!AAA.ShouldDestroy){
                 if(!AAA.Destroyed){
                     //AAA.Title = WL.Math.Time.Format("T");
                     
-                    AAA.Render.BackgroundColor = ColorF.Red;
+                    //AAA.Render.BackgroundColor = ColorF.Red;
                     
-                    AAA.Render.Clear();
+                    //AAA.Render.Clear();
                     
                     AAA.FinishRender();
                 }
