@@ -66,6 +66,14 @@ public static class Program{
 
 <div align="center">
 
+## Установка
+
+</div>
+
+пока-что не придумал...
+
+<div align="center">
+
 ## Предупреждение
 
 </div>

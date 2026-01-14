@@ -19,12 +19,15 @@ namespace WL{
         public static void __StartWGL(){
             try{
                 if(WGLStarted){ return; } WGLStarted = true;
-                
+
+                if(Debug.LogMain){ Console.WriteLine("Инициализация остальных GL функций через WGL!"); }
+
                 Native.glUniform1f          = Native.WGLFunction<Native.D_glUniform1f         >("glUniform1f"         );
                 Native.glUniform2f          = Native.WGLFunction<Native.D_glUniform2f         >("glUniform2f"         );
                 Native.glUniform3f          = Native.WGLFunction<Native.D_glUniform3f         >("glUniform3f"         );
                 Native.glUniform4f          = Native.WGLFunction<Native.D_glUniform4f         >("glUniform4f"         );
                 Native.glUseProgram         = Native.WGLFunction<Native.D_glUseProgram        >("glUseProgram"        );
+                Native.glObjectLabel        = Native.WGLFunction<Native.D_glObjectLabel       >("glObjectLabel"       );
                 Native.glGetShaderiv        = Native.WGLFunction<Native.D_glGetShaderiv       >("glGetShaderiv"       );
                 Native.glLinkProgram        = Native.WGLFunction<Native.D_glLinkProgram       >("glLinkProgram"       );
                 Native.glCreateShader       = Native.WGLFunction<Native.D_glCreateShader      >("glCreateShader"      );
@@ -47,6 +50,35 @@ namespace WL{
         /// </summary>
         private static IntPtr DLL;
 
+        /// <summary>
+        /// Всего созданных ресурсов во всех контекстах
+        /// </summary>
+        public static int TotalCreatedResources{ get; private set; }
+        public static void __AddToTotalCreatedResources(){ TotalCreatedResources++; }
+        
+        /// <summary>
+        /// Всего созданных контекстов
+        /// </summary>
+        public static int TotalCreatedGL{ get; private set; }
+        public static void __AddToTotalCreatedGL(){ TotalCreatedGL++; }
+
+        public static class Debug{
+            /// <summary>
+            /// Выводить сообщения об самом GL?
+            /// </summary>
+            public static bool LogMain;
+            
+            /// <summary>
+            /// Выводить сообщения об создании GL ресурсов?
+            /// </summary>
+            public static bool LogCreate;
+
+            /// <summary>
+            /// Выводить сообщения об уничтожении GL ресурсов?
+            /// </summary>
+            public static bool LogDestroy;
+        }
+        
         public static class Native{
             [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
             public delegate void D_glClearColor(float r, float g, float b, float a);
@@ -143,6 +175,10 @@ namespace WL{
             [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
             public delegate void D_glUniformMatrix4fv(int location, int count, bool transpose, float[] value);
             public static D_glUniformMatrix4fv glUniformMatrix4fv = null!;
+            
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glObjectLabel(uint identifier, uint name, int length, string label);
+            public static D_glObjectLabel glObjectLabel = null!;
 
             public const uint GL_COLOR_BUFFER_BIT   = 0x00004000;
             public const uint GL_DEPTH_BUFFER_BIT   = 0x00000100;
@@ -155,6 +191,11 @@ namespace WL{
             public const uint GL_COMPILE_STATUS     = 0x8B81;
             public const uint GL_LINK_STATUS        = 0x8B82;
             public const uint GL_INFO_LOG_LENGTH    = 0x8B84;
+            public const uint GL_BUFFER             = 0x82E0;
+            public const uint GL_SHADER             = 0x82E1;
+            public const uint GL_PROGRAM            = 0x82E2;
+            public const uint GL_VERTEX_ARRAY       = 0x9154;
+            public const uint GL_TEXTURE            = 0x1702;
 
             /// <summary>
             /// Получает функцию из OpenGL и возвращает её в виде C# функции (WGL)

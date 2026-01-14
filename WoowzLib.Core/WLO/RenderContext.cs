@@ -3,7 +3,7 @@
 public abstract class RenderContext{
     private static long CurrentContext;
     
-    protected void MakeContext(){
+    public void __MakeContext(){
         try{
             if(ConnectedWindow == null){ throw new Exception("Не установлено окно!"); }
             if(CurrentContext == ConnectedWindow.ID){ return; }
@@ -22,8 +22,8 @@ public abstract class RenderContext{
             if(ConnectedWindow != null){ throw new Exception("Присоединённое окно уже есть!"); }
 
             ConnectedWindow = Window;
-            MakeContext();
-            __Start();
+            __MakeContext();
+            __Start      ();
         }catch(Exception e){
             throw new Exception("Произошла ошибка при присоединении окна [" + Window + "] рендеру [" + this + "]!", e);
         }

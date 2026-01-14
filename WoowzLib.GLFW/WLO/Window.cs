@@ -36,8 +36,6 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             // Я ХЗ, как реализовывать общие ресурсы между контекстами рендера, нужно будет придумать
             if(!WL.GLFW.Stared){ throw new Exception("GLFW не запущен!"); }
 
-            IntPtr Title__ = Marshal.StringToHGlobalAnsi(Title);
-
             HasTransparentBuffer = TransparentBuffer;
             WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_TRANSPARENT_FRAMEBUFFER, TransparentBuffer ? 1 : 0);
 
@@ -49,9 +47,11 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_OPENGL_PROFILE, WL.GLFW.Native.GLFW_OPENGL_CORE_PROFILE);
             WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_OPENGL_FORWARD_COMPAT, 1);
             
+            IntPtr Title__ = WL.Native.MemoryStringUTF(Title);
+            
             Handle = WL.GLFW.Native.glfwCreateWindow((int)Width, (int)Height, Title__, IntPtr.Zero, IntPtr.Zero);
             
-            Marshal.FreeHGlobal(Title__);
+            WL.Native.Free(Title__);
 
             if(Handle == IntPtr.Zero){ throw new Exception("Не получилось создать окно внутри glfwCreateWindow!"); }
             
@@ -393,7 +393,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
 
                 CheckDestroyed();
 
-                IntPtr Title__ = WL.Native.MemoryString(__Title);
+                IntPtr Title__ = WL.Native.MemoryStringUTF(__Title);
                 WL.GLFW.Native.glfwSetWindowTitle(Handle, Title__);
                 WL.Native.Free(Title__);
             }catch(Exception e){
@@ -473,7 +473,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
         }
         
         public override string ToString(){
-            return "GLFW.Window<" + Render + ">(" + (Destroyed ? "Уничтожено" : ID) + ", \"" + Title + "\", " + X + ":" + Y + ", " + Width + "x" + Height + ")";
+            return "GLFW.Window<" + Render + ">(\"" + Title + "\", " + X + ":" + Y + ", " + Width + "x" + Height + ", " + (Destroyed ? "Уничтожено" : ID) + ")";
         }
 
         public override bool Equals(object? obj){

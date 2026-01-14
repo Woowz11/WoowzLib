@@ -7,14 +7,18 @@ public static class Program{
     public static int Main(string[] Args){
         try{
             WL.WoowzLib.Start();
-        
+
+            WL.GL.Debug.LogMain = true;
+            WL.GL.Debug.LogCreate = true;
+            WL.GL.Debug.LogDestroy = true;
+            
             WL.GLFW.Start();
 
-            Window<GL> AAA = new Window<GL>();
+            Window<GL> AAA = new Window<GL>(Title: "привет hello");
+
+            Shader TestShader = new Shader(AAA.Render, ShaderType.Vertex, "");
             
             while(!AAA.ShouldDestroy){
-                AAA.Title = WL.Math.Time.Format("T");
-                
                 AAA.Render.BackgroundColor = ColorF.Red;
                 
                 AAA.Render.Clear();

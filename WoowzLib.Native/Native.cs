@@ -174,6 +174,27 @@ namespace WL{
         }
 
         /// <summary>
+        /// Сохраняет строку в память (с поддержкой уникальных символов) (Нужно очищать!)
+        /// </summary>
+        /// <param name="S">Строка</param>
+        /// <returns>Ссылка на строку</returns>
+        public static IntPtr MemoryStringUTF(string S){
+            byte[] Bytes = System.Text.Encoding.UTF8.GetBytes(S + '\0');
+            IntPtr Link = Memory(Bytes.Length);
+            Marshal.Copy(Bytes, 0, Link, Bytes.Length);
+            return Link;
+        }
+
+        /// <summary>
+        /// Даёт ссылку на память указанного размера
+        /// </summary>
+        /// <param name="ByteSize">Какого размера дать ссылку на память?</param>
+        /// <returns></returns>
+        public static IntPtr Memory(int ByteSize = 512){
+            return Marshal.AllocHGlobal(ByteSize);
+        }
+
+        /// <summary>
         /// Освобождает память
         /// </summary>
         /// <param name="Link">Ссылка на занятую ячейку</param>
