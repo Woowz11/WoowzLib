@@ -45,9 +45,11 @@ namespace WL{
                 Native.glBindBuffer               = Native.WGLFunction<Native.D_glBindBuffer              >("glBindBuffer"              );
                 Native.glBufferData               = Native.WGLFunction<Native.D_glBufferData              >("glBufferData"              );
                 Native.glUseProgram               = Native.WGLFunction<Native.D_glUseProgram              >("glUseProgram"              );
+                Native.glDrawArrays               = Native.WGLFunction<Native.D_glDrawArrays              >("glDrawArrays"              );
                 Native.glObjectLabel              = Native.WGLFunction<Native.D_glObjectLabel             >("glObjectLabel"             );
                 Native.glGetShaderiv              = Native.WGLFunction<Native.D_glGetShaderiv             >("glGetShaderiv"             );
                 Native.glLinkProgram              = Native.WGLFunction<Native.D_glLinkProgram             >("glLinkProgram"             );
+                Native.glDrawElements             = Native.WGLFunction<Native.D_glDrawElements            >("glDrawElements"            );
                 Native.glCreateShader             = Native.WGLFunction<Native.D_glCreateShader            >("glCreateShader"            );
                 Native.glShaderSource             = Native.WGLFunction<Native.D_glShaderSource            >("glShaderSource"            );
                 Native.glAttachShader             = Native.WGLFunction<Native.D_glAttachShader            >("glAttachShader"            );
@@ -293,6 +295,14 @@ namespace WL{
             public delegate void D_glVertexAttribIPointer(uint index, int size, uint type, int stride, IntPtr pointer);
             public static D_glVertexAttribIPointer glVertexAttribIPointer = null!;
             
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glDrawArrays(uint mode, int first, int count);
+            public static D_glDrawArrays glDrawArrays = null!;
+
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glDrawElements(uint mode, int count, uint type, IntPtr indices);
+            public static D_glDrawElements glDrawElements = null!;
+            
             public const uint GL_COLOR_BUFFER_BIT            = 0x00004000;
             public const uint GL_DEPTH_BUFFER_BIT            = 0x00000100;
             public const uint GL_STENCIL_BUFFER_BIT          = 0x00000400;
@@ -353,9 +363,6 @@ namespace WL{
             public const uint GL_RENDERBUFFER                = 0x8D41;
             public const uint GL_R32F                        = 0x822E;
             public const uint GL_RGBA32F                     = 0x8814;
-            public const uint GL_LINES                       = 0x0001;
-            public const uint GL_TRIANGLES                   = 0x0004;
-            public const uint GL_TRIANGLE_STRIP              = 0x0005;
             public const uint GL_NO_ERROR                    = 0;
             public const uint GL_INVALID_ENUM                = 0x0500;
             public const uint GL_INVALID_VALUE               = 0x0501;
@@ -373,6 +380,16 @@ namespace WL{
             public const uint GL_INT_2_10_10_10_REV          = 0x8D9F;
             public const uint GL_UNSIGNED_INT_2_10_10_10_REV = 0x8368;
             public const uint GL_UNSIGNED_NORMALIZED         = 0x8C17;
+            public const uint GL_POINTS                      = 0x0000;
+            public const uint GL_LINES                       = 0x0001;
+            public const uint GL_LINE_LOOP                   = 0x0002;
+            public const uint GL_LINE_STRIP                  = 0x0003;
+            public const uint GL_TRIANGLES                   = 0x0004;
+            public const uint GL_TRIANGLE_STRIP              = 0x0005;
+            public const uint GL_TRIANGLE_FAN                = 0x0006;
+            public const uint GL_QUADS                       = 0x0007;
+            public const uint GL_QUAD_STRIP                  = 0x0008;
+            public const uint GL_POLYGON                     = 0x0009;
 
             /// <summary>
             /// Получает функцию из OpenGL и возвращает её в виде C# функции (WGL)

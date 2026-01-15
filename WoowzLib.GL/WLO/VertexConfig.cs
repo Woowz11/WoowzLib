@@ -21,6 +21,10 @@ public enum DataCount : int{
     Four = 4
 }
 
+public enum RenderMode : uint{
+    Triangles = WL.GL.Native.GL_TRIANGLES
+}
+
 /// <summary>
 /// (VERTEXARRAY)
 /// </summary>
@@ -96,12 +100,27 @@ public class VertexConfig : GLResource{
                     new IntPtr(Offset * Buffer.ElementBSize())
                 );
             }
+
+            WL.GL.Native.glEnableVertexAttribArray(Location);
             
             ConnectedBuffers[Location] = Buffer;
 
             if(WL.GL.Debug.LogVertexConfig){ Logger.Info("Присоединён буфер [" + Buffer + "] к VertexConfig [" + this + "]! Параметры: " + Location + ", " + Count + ", " + Stride + ", " + Offset + ", " + Normalized); }
         }catch(Exception e){
             throw new Exception("Произошла ошибка при присоединении буфера [" + Buffer + "] к VertexConfig [" + this + "]!\nЛокация: " + Location + "\nКол-во значений: " + Count + "\nДлина набора: " + Stride + "\nСмещение: " + Offset + "\nНормализация: " + Normalized, e);
+        }
+
+        return this;
+    }
+
+    public VertexConfig Render(Program Program, RenderMode RenderMode, int VertexCount, int Offset = 0){
+        try{
+            Use();
+            Program.Use();
+
+            WL.GL.Native.glDrawArrays((uint)RenderMode, Offset, VertexCount);
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при рендере VertexConfig [" + this + "]!\nПрограмма: " + Program + "\nРежим рендера: " + RenderMode + "\nКол-во вершин: " + VertexCount);
         }
 
         return this;

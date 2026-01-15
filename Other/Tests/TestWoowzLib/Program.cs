@@ -55,6 +55,8 @@ public static class Program{
                 AAA.Render.BackgroundColor = ColorF.Red;
                 
                 AAA.Render.Clear();
+
+                VC.Render(Prog, RenderMode.Triangles, 9);
                 
                 AAA.FinishRender();
 
