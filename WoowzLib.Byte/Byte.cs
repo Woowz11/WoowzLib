@@ -15,7 +15,7 @@ namespace WL{
                     case null:
                         return (int)ByteSize.Null;
                     case ByteObject BO:
-                        return BO.ByteSize();
+                        return BO.BSize();
                     case Array A:
                         return SizeArray(A);
                 }

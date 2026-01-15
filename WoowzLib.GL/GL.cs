@@ -2,6 +2,20 @@
 using WLO;
 
 namespace WL{
+    /// <summary>
+    /// Типы значений для GL
+    /// </summary>
+    public enum GLValue : uint{
+        Float         = WL.GL.Native.GL_FLOAT,
+        Double        = WL.GL.Native.GL_DOUBLE,
+        Byte          = WL.GL.Native.GL_BYTE,
+        UnsignedByte  = WL.GL.Native.GL_UNSIGNED_BYTE,
+        Short         = WL.GL.Native.GL_SHORT,
+        UnsignedShort = WL.GL.Native.GL_UNSIGNED_SHORT,
+        Int           = WL.GL.Native.GL_INT,
+        UnsignedInt   = WL.GL.Native.GL_UNSIGNED_INT
+    }
+    
     [WLModule(10, 0)]
     public static class GL{
         static GL(){
@@ -23,32 +37,40 @@ namespace WL{
 
                 if(Debug.LogMain){ Logger.Info("Инициализация остальных GL функций через WGL!"); }
 
-                Native.glUniform1f          = Native.WGLFunction<Native.D_glUniform1f         >("glUniform1f"         );
-                Native.glUniform2f          = Native.WGLFunction<Native.D_glUniform2f         >("glUniform2f"         );
-                Native.glUniform3f          = Native.WGLFunction<Native.D_glUniform3f         >("glUniform3f"         );
-                Native.glUniform4f          = Native.WGLFunction<Native.D_glUniform4f         >("glUniform4f"         );
-                Native.glGenBuffers         = Native.WGLFunction<Native.D_glGenBuffers        >("glGenBuffers"        );
-                Native.glBindBuffer         = Native.WGLFunction<Native.D_glBindBuffer        >("glBindBuffer"        );
-                Native.glBufferData         = Native.WGLFunction<Native.D_glBufferData        >("glBufferData"        );
-                Native.glUseProgram         = Native.WGLFunction<Native.D_glUseProgram        >("glUseProgram"        );
-                Native.glObjectLabel        = Native.WGLFunction<Native.D_glObjectLabel       >("glObjectLabel"       );
-                Native.glGetShaderiv        = Native.WGLFunction<Native.D_glGetShaderiv       >("glGetShaderiv"       );
-                Native.glLinkProgram        = Native.WGLFunction<Native.D_glLinkProgram       >("glLinkProgram"       );
-                Native.glCreateShader       = Native.WGLFunction<Native.D_glCreateShader      >("glCreateShader"      );
-                Native.glShaderSource       = Native.WGLFunction<Native.D_glShaderSource      >("glShaderSource"      );
-                Native.glAttachShader       = Native.WGLFunction<Native.D_glAttachShader      >("glAttachShader"      );
-                Native.glDetachShader       = Native.WGLFunction<Native.D_glDetachShader      >("glDetachShader"      );
-                Native.glDeleteShader       = Native.WGLFunction<Native.D_glDeleteShader      >("glDeleteShader"      );
-                Native.glGetProgramiv       = Native.WGLFunction<Native.D_glGetProgramiv      >("glGetProgramiv"      );
-                Native.glCompileShader      = Native.WGLFunction<Native.D_glCompileShader     >("glCompileShader"     );
-                Native.glCreateProgram      = Native.WGLFunction<Native.D_glCreateProgram     >("glCreateProgram"     );
-                Native.glDeleteProgram      = Native.WGLFunction<Native.D_glDeleteProgram     >("glDeleteProgram"     );
-                Native.glBufferSubData      = Native.WGLFunction<Native.D_glBufferSubData     >("glBufferSubData"     );
-                Native.glDeleteBuffers      = Native.WGLFunction<Native.D_glDeleteBuffers     >("glDeleteBuffers"     );
-                Native.glGetShaderInfoLog   = Native.WGLFunction<Native.D_glGetShaderInfoLog  >("glGetShaderInfoLog"  );
-                Native.glUniformMatrix4fv   = Native.WGLFunction<Native.D_glUniformMatrix4fv  >("glUniformMatrix4fv"  );
-                Native.glGetProgramInfoLog  = Native.WGLFunction<Native.D_glGetProgramInfoLog >("glGetProgramInfoLog" );
-                Native.glGetUniformLocation = Native.WGLFunction<Native.D_glGetUniformLocation>("glGetUniformLocation");
+                Native.glUniform1f                = Native.WGLFunction<Native.D_glUniform1f               >("glUniform1f"               );
+                Native.glUniform2f                = Native.WGLFunction<Native.D_glUniform2f               >("glUniform2f"               );
+                Native.glUniform3f                = Native.WGLFunction<Native.D_glUniform3f               >("glUniform3f"               );
+                Native.glUniform4f                = Native.WGLFunction<Native.D_glUniform4f               >("glUniform4f"               );
+                Native.glGenBuffers               = Native.WGLFunction<Native.D_glGenBuffers              >("glGenBuffers"              );
+                Native.glBindBuffer               = Native.WGLFunction<Native.D_glBindBuffer              >("glBindBuffer"              );
+                Native.glBufferData               = Native.WGLFunction<Native.D_glBufferData              >("glBufferData"              );
+                Native.glUseProgram               = Native.WGLFunction<Native.D_glUseProgram              >("glUseProgram"              );
+                Native.glObjectLabel              = Native.WGLFunction<Native.D_glObjectLabel             >("glObjectLabel"             );
+                Native.glGetShaderiv              = Native.WGLFunction<Native.D_glGetShaderiv             >("glGetShaderiv"             );
+                Native.glLinkProgram              = Native.WGLFunction<Native.D_glLinkProgram             >("glLinkProgram"             );
+                Native.glCreateShader             = Native.WGLFunction<Native.D_glCreateShader            >("glCreateShader"            );
+                Native.glShaderSource             = Native.WGLFunction<Native.D_glShaderSource            >("glShaderSource"            );
+                Native.glAttachShader             = Native.WGLFunction<Native.D_glAttachShader            >("glAttachShader"            );
+                Native.glDetachShader             = Native.WGLFunction<Native.D_glDetachShader            >("glDetachShader"            );
+                Native.glDeleteShader             = Native.WGLFunction<Native.D_glDeleteShader            >("glDeleteShader"            );
+                Native.glGetProgramiv             = Native.WGLFunction<Native.D_glGetProgramiv            >("glGetProgramiv"            );
+                Native.glCompileShader            = Native.WGLFunction<Native.D_glCompileShader           >("glCompileShader"           );
+                Native.glCreateProgram            = Native.WGLFunction<Native.D_glCreateProgram           >("glCreateProgram"           );
+                Native.glDeleteProgram            = Native.WGLFunction<Native.D_glDeleteProgram           >("glDeleteProgram"           );
+                Native.glBufferSubData            = Native.WGLFunction<Native.D_glBufferSubData           >("glBufferSubData"           );
+                Native.glDeleteBuffers            = Native.WGLFunction<Native.D_glDeleteBuffers           >("glDeleteBuffers"           );
+                Native.glGenVertexArrays          = Native.WGLFunction<Native.D_glGenVertexArrays         >("glGenVertexArrays"         );
+                Native.glBindVertexArray          = Native.WGLFunction<Native.D_glBindVertexArray         >("glBindVertexArray"         );
+                Native.glGetShaderInfoLog         = Native.WGLFunction<Native.D_glGetShaderInfoLog        >("glGetShaderInfoLog"        );
+                Native.glUniformMatrix4fv         = Native.WGLFunction<Native.D_glUniformMatrix4fv        >("glUniformMatrix4fv"        );
+                Native.glGetProgramInfoLog        = Native.WGLFunction<Native.D_glGetProgramInfoLog       >("glGetProgramInfoLog"       );
+                Native.glGetUniformLocation       = Native.WGLFunction<Native.D_glGetUniformLocation      >("glGetUniformLocation"      );
+                Native.glDeleteVertexArrays       = Native.WGLFunction<Native.D_glDeleteVertexArrays      >("glDeleteVertexArrays"      );
+                Native.glVertexAttribPointer      = Native.WGLFunction<Native.D_glVertexAttribPointer     >("glVertexAttribPointer"     );
+                Native.glVertexAttribIPointer     = Native.WGLFunction<Native.D_glVertexAttribIPointer    >("glVertexAttribIPointer"    );
+                Native.glEnableVertexAttribArray  = Native.WGLFunction<Native.D_glEnableVertexAttribArray >("glEnableVertexAttribArray" );
+                Native.glDisableVertexAttribArray = Native.WGLFunction<Native.D_glDisableVertexAttribArray>("glDisableVertexAttribArray");
+                
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при загрузке OpenGL функций через WGL!", e);
             }
@@ -102,6 +124,11 @@ namespace WL{
             /// Выводить сообщения по поводу буферов?
             /// </summary>
             public static bool LogBuffer;
+
+            /// <summary>
+            /// Выводить сообщения по поводу VertexConfig?
+            /// </summary>
+            public static bool LogVertexConfig;
         }
         
         public static class Native{
@@ -238,75 +265,114 @@ namespace WL{
             public delegate void D_glDeleteBuffers(int n, ref uint buffers);
             public static D_glDeleteBuffers glDeleteBuffers = null!;
             
-            public const uint GL_COLOR_BUFFER_BIT          = 0x00004000;
-            public const uint GL_DEPTH_BUFFER_BIT          = 0x00000100;
-            public const uint GL_STENCIL_BUFFER_BIT        = 0x00000400;
-            public const uint GL_DEPTH_TEST                = 0x0B71;
-            public const uint GL_STENCIL_TEST              = 0x0B90;
-            public const uint GL_BLEND                     = 0x0BE2;
-            public const uint GL_CULL_FACE                 = 0x0B44;
-            public const uint GL_SCISSOR_TEST              = 0x0C11;
-            public const uint GL_LESS                      = 0x0201;
-            public const uint GL_LEQUAL                    = 0x0203;
-            public const uint GL_GREATER                   = 0x0204;
-            public const uint GL_GEQUAL                    = 0x0206;
-            public const uint GL_EQUAL                     = 0x0202;
-            public const uint GL_NOTEQUAL                  = 0x0205;
-            public const uint GL_ALWAYS                    = 0x0207;
-            public const uint GL_NEVER                     = 0x0200;
-            public const uint GL_VERTEX_SHADER             = 0x8B31;
-            public const uint GL_FRAGMENT_SHADER           = 0x8B30;
-            public const uint GL_GEOMETRY_SHADER           = 0x8DD9;
-            public const uint GL_COMPUTE_SHADER            = 0x91B9;
-            public const uint GL_TESS_CONTROL_SHADER       = 0x8E88;
-            public const uint GL_TESS_EVALUATION_SHADER    = 0x8E87;
-            public const uint GL_COMPILE_STATUS            = 0x8B81;
-            public const uint GL_LINK_STATUS               = 0x8B82;
-            public const uint GL_INFO_LOG_LENGTH           = 0x8B84;
-            public const uint GL_PROGRAM                   = 0x82E2;
-            public const uint GL_SHADER                    = 0x82E1;
-            public const uint GL_BUFFER                    = 0x82E0;
-            public const uint GL_VERTEX_ARRAY              = 0x9154;
-            public const uint GL_TEXTURE                   = 0x1702;
-            public const uint GL_ARRAY_BUFFER              = 0x8892;
-            public const uint GL_ELEMENT_ARRAY_BUFFER      = 0x8893;
-            public const uint GL_UNIFORM_BUFFER            = 0x8A11;
-            public const uint GL_SHADER_STORAGE_BUFFER     = 0x90D2;
-            public const uint GL_PIXEL_PACK_BUFFER         = 0x88EB;
-            public const uint GL_PIXEL_UNPACK_BUFFER       = 0x88EC;
-            public const uint GL_COPY_READ_BUFFER          = 0x8F36;
-            public const uint GL_COPY_WRITE_BUFFER         = 0x8F37;
-            public const uint GL_TRANSFORM_FEEDBACK_BUFFER = 0x8C8E;
-            public const uint GL_STATIC_DRAW               = 0x88E4;
-            public const uint GL_DYNAMIC_DRAW              = 0x88E8;
-            public const uint GL_STREAM_DRAW               = 0x88E0;
-            public const uint GL_RGB                       = 0x1907;
-            public const uint GL_RGBA                      = 0x1908;
-            public const uint GL_DEPTH_COMPONENT           = 0x1902;
-            public const uint GL_TEXTURE_2D                = 0x0DE1;
-            public const uint GL_TEXTURE0                  = 0x84C0;
-            public const uint GL_TEXTURE_MIN_FILTER        = 0x2801;
-            public const uint GL_TEXTURE_MAG_FILTER        = 0x2800;
-            public const uint GL_NEAREST                   = 0x2600;
-            public const uint GL_LINEAR                    = 0x2601;
-            public const uint GL_REPEAT                    = 0x2901;
-            public const uint GL_CLAMP_TO_EDGE             = 0x812F;
-            public const uint GL_FRAMEBUFFER               = 0x8D40;
-            public const uint GL_COLOR_ATTACHMENT0         = 0x8CE0;
-            public const uint GL_DEPTH_ATTACHMENT          = 0x8D00;
-            public const uint GL_STENCIL_ATTACHMENT        = 0x8D20;
-            public const uint GL_RENDERBUFFER              = 0x8D41;
-            public const uint GL_R32F                      = 0x822E;
-            public const uint GL_RGBA32F                   = 0x8814;
-            public const uint GL_LINES                     = 0x0001;
-            public const uint GL_TRIANGLES                 = 0x0004;
-            public const uint GL_TRIANGLE_STRIP            = 0x0005;
-            public const uint GL_NO_ERROR                  = 0;
-            public const uint GL_INVALID_ENUM              = 0x0500;
-            public const uint GL_INVALID_VALUE             = 0x0501;
-            public const uint GL_INVALID_OPERATION         = 0x0502;
-            public const uint GL_OUT_OF_MEMORY             = 0x0505;
-            public const uint GL_VERSION                   = 0x1F02;
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glGenVertexArrays(int n, uint[] arrays);
+            public static D_glGenVertexArrays glGenVertexArrays = null!;
+
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glBindVertexArray(uint array);
+            public static D_glBindVertexArray glBindVertexArray = null!;
+
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glDeleteVertexArrays(int n, ref uint arrays);
+            public static D_glDeleteVertexArrays glDeleteVertexArrays = null!;
+
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glEnableVertexAttribArray(uint index);
+            public static D_glEnableVertexAttribArray glEnableVertexAttribArray = null!;
+
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glDisableVertexAttribArray(uint index);
+            public static D_glDisableVertexAttribArray glDisableVertexAttribArray = null!;
+
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glVertexAttribPointer(uint index, int size, uint type, bool normalized, int stride, IntPtr pointer);
+            public static D_glVertexAttribPointer glVertexAttribPointer = null!;
+            
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glVertexAttribIPointer(uint index, int size, uint type, int stride, IntPtr pointer);
+            public static D_glVertexAttribIPointer glVertexAttribIPointer = null!;
+            
+            public const uint GL_COLOR_BUFFER_BIT            = 0x00004000;
+            public const uint GL_DEPTH_BUFFER_BIT            = 0x00000100;
+            public const uint GL_STENCIL_BUFFER_BIT          = 0x00000400;
+            public const uint GL_DEPTH_TEST                  = 0x0B71;
+            public const uint GL_STENCIL_TEST                = 0x0B90;
+            public const uint GL_BLEND                       = 0x0BE2;
+            public const uint GL_CULL_FACE                   = 0x0B44;
+            public const uint GL_SCISSOR_TEST                = 0x0C11;
+            public const uint GL_LESS                        = 0x0201;
+            public const uint GL_LEQUAL                      = 0x0203;
+            public const uint GL_GREATER                     = 0x0204;
+            public const uint GL_GEQUAL                      = 0x0206;
+            public const uint GL_EQUAL                       = 0x0202;
+            public const uint GL_NOTEQUAL                    = 0x0205;
+            public const uint GL_ALWAYS                      = 0x0207;
+            public const uint GL_NEVER                       = 0x0200;
+            public const uint GL_VERTEX_SHADER               = 0x8B31;
+            public const uint GL_FRAGMENT_SHADER             = 0x8B30;
+            public const uint GL_GEOMETRY_SHADER             = 0x8DD9;
+            public const uint GL_COMPUTE_SHADER              = 0x91B9;
+            public const uint GL_TESS_CONTROL_SHADER         = 0x8E88;
+            public const uint GL_TESS_EVALUATION_SHADER      = 0x8E87;
+            public const uint GL_COMPILE_STATUS              = 0x8B81;
+            public const uint GL_LINK_STATUS                 = 0x8B82;
+            public const uint GL_INFO_LOG_LENGTH             = 0x8B84;
+            public const uint GL_PROGRAM                     = 0x82E2;
+            public const uint GL_SHADER                      = 0x82E1;
+            public const uint GL_BUFFER                      = 0x82E0;
+            public const uint GL_VERTEX_ARRAY                = 0x9154;
+            public const uint GL_TEXTURE                     = 0x1702;
+            public const uint GL_ARRAY_BUFFER                = 0x8892;
+            public const uint GL_ELEMENT_ARRAY_BUFFER        = 0x8893;
+            public const uint GL_UNIFORM_BUFFER              = 0x8A11;
+            public const uint GL_SHADER_STORAGE_BUFFER       = 0x90D2;
+            public const uint GL_PIXEL_PACK_BUFFER           = 0x88EB;
+            public const uint GL_PIXEL_UNPACK_BUFFER         = 0x88EC;
+            public const uint GL_COPY_READ_BUFFER            = 0x8F36;
+            public const uint GL_COPY_WRITE_BUFFER           = 0x8F37;
+            public const uint GL_TRANSFORM_FEEDBACK_BUFFER   = 0x8C8E;
+            public const uint GL_STATIC_DRAW                 = 0x88E4;
+            public const uint GL_DYNAMIC_DRAW                = 0x88E8;
+            public const uint GL_STREAM_DRAW                 = 0x88E0;
+            public const uint GL_RGB                         = 0x1907;
+            public const uint GL_RGBA                        = 0x1908;
+            public const uint GL_DEPTH_COMPONENT             = 0x1902;
+            public const uint GL_TEXTURE_2D                  = 0x0DE1;
+            public const uint GL_TEXTURE0                    = 0x84C0;
+            public const uint GL_TEXTURE_MIN_FILTER          = 0x2801;
+            public const uint GL_TEXTURE_MAG_FILTER          = 0x2800;
+            public const uint GL_NEAREST                     = 0x2600;
+            public const uint GL_LINEAR                      = 0x2601;
+            public const uint GL_REPEAT                      = 0x2901;
+            public const uint GL_CLAMP_TO_EDGE               = 0x812F;
+            public const uint GL_FRAMEBUFFER                 = 0x8D40;
+            public const uint GL_COLOR_ATTACHMENT0           = 0x8CE0;
+            public const uint GL_DEPTH_ATTACHMENT            = 0x8D00;
+            public const uint GL_STENCIL_ATTACHMENT          = 0x8D20;
+            public const uint GL_RENDERBUFFER                = 0x8D41;
+            public const uint GL_R32F                        = 0x822E;
+            public const uint GL_RGBA32F                     = 0x8814;
+            public const uint GL_LINES                       = 0x0001;
+            public const uint GL_TRIANGLES                   = 0x0004;
+            public const uint GL_TRIANGLE_STRIP              = 0x0005;
+            public const uint GL_NO_ERROR                    = 0;
+            public const uint GL_INVALID_ENUM                = 0x0500;
+            public const uint GL_INVALID_VALUE               = 0x0501;
+            public const uint GL_INVALID_OPERATION           = 0x0502;
+            public const uint GL_OUT_OF_MEMORY               = 0x0505;
+            public const uint GL_VERSION                     = 0x1F02;
+            public const uint GL_BYTE                        = 0x1400;
+            public const uint GL_UNSIGNED_BYTE               = 0x1401;
+            public const uint GL_SHORT                       = 0x1402;
+            public const uint GL_UNSIGNED_SHORT              = 0x1403;
+            public const uint GL_INT                         = 0x1404;
+            public const uint GL_UNSIGNED_INT                = 0x1405;
+            public const uint GL_FLOAT                       = 0x1406;
+            public const uint GL_DOUBLE                      = 0x140A;
+            public const uint GL_INT_2_10_10_10_REV          = 0x8D9F;
+            public const uint GL_UNSIGNED_INT_2_10_10_10_REV = 0x8368;
+            public const uint GL_UNSIGNED_NORMALIZED         = 0x8C17;
 
             /// <summary>
             /// Получает функцию из OpenGL и возвращает её в виде C# функции (WGL)

@@ -2,9 +2,9 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 15.01.2026 13:30
+/// Сгенерирован: 15.01.2026 14:56
 /// </summary>
-public struct MassiveF : ByteObject{
+public struct MassiveF : ArrayByteObject{
 	// надо добавить sha256...
 
 	public MassiveF(){
@@ -140,8 +140,12 @@ public struct MassiveF : ByteObject{
 		   return "MassiveF(0-" + (Size - 1) + ", " + AutoSize + ")";
 	   }
 	   
-	   public int ByteSize(){
-		   return Size * sizeof(float); 
+	   public int ElementBSize(){
+			return sizeof(float); 
+		}
+	   
+	   public int BSize(){
+		   return Size * ElementBSize(); 
 	   }
 
 	#endregion

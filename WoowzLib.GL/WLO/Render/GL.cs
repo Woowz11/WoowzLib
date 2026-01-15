@@ -139,6 +139,30 @@ public class GL : RenderContext{
             }
         }
         private IntBuffer? __CurrentIntBuffer;
+        
+        /// <summary>
+        /// Текущий VertexConfig в контексте
+        /// </summary>
+        public VertexConfig? CurrentVertexConfig{
+            get => __CurrentVertexConfig;
+            set{
+                try{
+                    if(__CurrentVertexConfig == value){ return; }
+                    CheckGLResourceContext(value);
+                    if(value != null && !value.Created){ throw new Exception("VertexConfig не создан!"); }
+
+                    __MakeContext();
+
+                    __CurrentVertexConfig = value;
+                    WL.GL.Native.glBindVertexArray(value?.ID ?? 0);
+
+                    if(WL.GL.Debug.LogUse){ Logger.Info("VertexConfig [" + (value?.ToString() ?? "НИКАКОЙ") + "] используется!"); }
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при использовании VertexConfig [" + (value?.ToString() ?? "НИКАКОЙ") + "] у GL [" + this + "]!", e);
+                }
+            }
+        }
+        private VertexConfig? __CurrentVertexConfig;
 
     #endregion
     

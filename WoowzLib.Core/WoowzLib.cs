@@ -52,8 +52,6 @@ namespace WL{
             try{
                 if(Started){ throw new Exception("WoowzLib уже был запущен!"); }
                 Started = true;
-
-                string RunFolder = AppContext.BaseDirectory;
                 
                 Console.Title = "WoowzLib Program";
                 
@@ -120,6 +118,22 @@ namespace WL{
             OnMessage = null;
         }
         
+        /// <summary>
+        /// Условие типа <c>Condition ? IfTrue : IfFalse</c> но в виде функции
+        /// </summary>
+        /// <param name="Condition">Условие</param>
+        /// <param name="IfTrue">Если равно true</param>
+        /// <param name="IfFalse">Если равно false</param>
+        /// <returns><c>Condition ? IfTrue : IfFalse</c></returns>
+        public static object? Condition(bool Condition, object? IfTrue, object? IfFalse){
+            return Condition ? IfTrue : IfFalse;
+        }
+
+        /// <summary>
+        /// Папка, где запущено приложение
+        /// </summary>
+        public static string RunFolder => AppContext.BaseDirectory;
+        
         public static class Console{
             /// <summary>
             /// Название окна консоли
@@ -130,17 +144,6 @@ namespace WL{
                     System.Console.Title = value;
                 }
             }
-        }
-
-        /// <summary>
-        /// Условие типа <c>Condition ? IfTrue : IfFalse</c> но в виде функции
-        /// </summary>
-        /// <param name="Condition">Условие</param>
-        /// <param name="IfTrue">Если равно true</param>
-        /// <param name="IfFalse">Если равно false</param>
-        /// <returns><c>Condition ? IfTrue : IfFalse</c></returns>
-        public static object? Condition(bool Condition, object? IfTrue, object? IfFalse){
-            return Condition ? IfTrue : IfFalse;
         }
     }
 }

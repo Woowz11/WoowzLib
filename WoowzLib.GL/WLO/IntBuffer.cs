@@ -18,4 +18,10 @@ public class IntBuffer : Buffer{
     public override int Size(){
         return 0;
     }
+    
+    public override int ElementBSize(){
+        return 0;
+    }
+    
+    public override void __Use(){  }
 }

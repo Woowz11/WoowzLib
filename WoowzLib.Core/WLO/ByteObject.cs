@@ -20,5 +20,5 @@ public interface ByteObject{
     /// <summary>
     /// Размер объекта в байтах
     /// </summary>
-    public int ByteSize();
+    public int BSize();
 }

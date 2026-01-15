@@ -1,4 +1,6 @@
-﻿namespace WLO.GL;
+﻿using WL;
+
+namespace WLO.GL;
 
 public enum BufferType : uint{
     /// <summary>
@@ -33,7 +35,10 @@ public enum BufferUsage : uint{
     Never = WL.GL.Native.GL_STATIC_DRAW
 }
 
-public abstract class Buffer : GLResource{
+/// <summary>
+/// (BUFFER)
+/// </summary>
+public abstract class Buffer : GLResource, ArrayByteObject{
     protected Buffer(Render.GL Context, BufferType Type, BufferUsage Usage = BufferUsage.Never) : base(Context){
         try{
             this.Type = Type;
@@ -42,6 +47,8 @@ public abstract class Buffer : GLResource{
             ID = ID__[0];
             if(ID == 0){ throw new Exception("Не получилось создать шейдер в glGenBuffers!"); }
 
+            GLValue = GLValueFromBufferType(Type);
+            
             __Finish(WL.GL.Native.GL_BUFFER, Type + " Буфер");
 
             this.Usage = Usage;
@@ -81,10 +88,30 @@ public abstract class Buffer : GLResource{
     private BufferUsage __Usage;
 
     /// <summary>
+    /// Значение GLValue из BufferType
+    /// </summary>
+    public static GLValue GLValueFromBufferType(BufferType Type){
+        return Type switch{
+            BufferType.Float => GLValue.Float,
+            BufferType.Int   => GLValue.Int
+        };
+    }
+
+    /// <summary>
+    /// Значение GLValue
+    /// </summary>
+    public readonly GLValue GLValue;
+    
+    /// <summary>
     /// Кол-во значений в буфере
     /// </summary>
     public abstract int Size();
 
+    /// <summary>
+    /// Использование буфера
+    /// </summary>
+    public abstract void __Use();
+    
     protected abstract void __UpdateData();
     
     #region Override
@@ -92,6 +119,12 @@ public abstract class Buffer : GLResource{
         public override string ToString(){
             return "Buffer(\"" + Name + "\", " + Type + "|" + Usage + ", " + Size() + ", " + ID + ", " + Context + ")";
         }
+        
+        public int BSize(){
+            return Size() * ElementBSize();
+        }
 
-    #endregion
+        public abstract int ElementBSize();
+
+        #endregion
 }

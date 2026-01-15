@@ -1,7 +1,14 @@
 ﻿namespace WLO.GL;
 
 public class FloatBuffer : Buffer{
-    public FloatBuffer(Render.GL Context) : base(Context, BufferType.Float){}
+    public FloatBuffer(Render.GL Context, MassiveF? Data = null, BufferUsage Usage = BufferUsage.Never) : base(Context, BufferType.Float){
+        this.Usage = Usage;
+        if(Data.HasValue){ Set(Data.Value); }
+    }
+    public FloatBuffer(Render.GL Context, float[] Data, BufferUsage Usage = BufferUsage.Never) : base(Context, BufferType.Float){
+        this.Usage = Usage;
+        Set(Data);
+    }
     
     /// <summary>
     /// Использовать этот Float буфер
@@ -10,6 +17,7 @@ public class FloatBuffer : Buffer{
         Context.CurrentFloatBuffer = this;
         return this;
     }
+    public override void __Use(){ Use(); }
 
     /// <summary>
     /// Значения
@@ -47,10 +55,10 @@ public class FloatBuffer : Buffer{
     
     public FloatBuffer SetSlice(int Index, float[] Data){
         try{
-            int OffsetBytes = Index * (int)ByteSize.Float;
-            int SliceBytes = Data.Length * (int)ByteSize.Float;
+            int OffsetBytes = Index * ElementBSize();
+            int SliceBytes = Data.Length * ElementBSize();
 
-            if(OffsetBytes + SliceBytes > Size() * (int)ByteSize.Float){
+            if(OffsetBytes + SliceBytes > BSize()){
                 throw new Exception("Индекс и значения выходят за границы!");
             }
 
@@ -86,5 +94,9 @@ public class FloatBuffer : Buffer{
 
     public override int Size(){
         return Data.Size;
+    }
+
+    public override int ElementBSize(){
+        return Data.ElementBSize();
     }
 }

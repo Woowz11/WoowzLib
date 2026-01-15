@@ -477,7 +477,7 @@ public static class Generator{
                 
                 string Result = Pre() + "\n";
 
-                Result += "public struct " + Name + " : ByteObject" + (Custom ? " where T : unmanaged" : "") + "{\n";
+                Result += "public struct " + Name + " : ArrayByteObject" + (Custom ? " where T : unmanaged" : "") + "{\n";
 
                 Result += $$"""
                                 // надо добавить sha256...
@@ -615,8 +615,12 @@ public static class Generator{
                                        return "{{Name}}(0-" + (Size - 1) + ", " + AutoSize + ")";
                                    }
                                    
-                                   public int ByteSize(){
-                                       return Size * {{WL.WoowzLib.Condition(Custom, "WL.Byte.Size(typeof(T))", "sizeof(" + Type + ")")}}; 
+                                   public int ElementBSize(){
+                                        return {{WL.WoowzLib.Condition(Custom, "WL.Byte.Size(typeof(T))", "sizeof(" + Type + ")")}}; 
+                                    }
+                                   
+                                   public int BSize(){
+                                       return Size * ElementBSize(); 
                                    }
                             
                                 #endregion

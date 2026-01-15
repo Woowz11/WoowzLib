@@ -2,9 +2,9 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 15.01.2026 13:30
+/// Сгенерирован: 15.01.2026 14:56
 /// </summary>
-public struct Massive<T> : ByteObject where T : unmanaged{
+public struct Massive<T> : ArrayByteObject where T : unmanaged{
 	// надо добавить sha256...
 
 	public Massive(){
@@ -23,7 +23,7 @@ public struct Massive<T> : ByteObject where T : unmanaged{
 		this.AutoSize = AutoSize;
 	}
 
-	private T[] Data;
+	public T[] Data;
 	
 	public int Size => Data.Length;
 	
@@ -133,13 +133,6 @@ public struct Massive<T> : ByteObject where T : unmanaged{
 			value.CopyTo(Data);
 		}
 	}
-	
-	public T[] AsPrimitive{
-		get => Data;
-		set{
-		
-		}
-	}
 
 	#region Override
 
@@ -147,8 +140,12 @@ public struct Massive<T> : ByteObject where T : unmanaged{
 		   return "Massive<T>(0-" + (Size - 1) + ", " + AutoSize + ")";
 	   }
 	   
-	   public int ByteSize(){
-		   return Size * WL.Byte.Size(typeof(T)); 
+	   public int ElementBSize(){
+			return WL.Byte.Size(typeof(T)); 
+		}
+	   
+	   public int BSize(){
+		   return Size * ElementBSize(); 
 	   }
 
 	#endregion

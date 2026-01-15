@@ -2,9 +2,9 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 15.01.2026 13:30
+/// Сгенерирован: 15.01.2026 14:56
 /// </summary>
-public struct MassiveD : ByteObject{
+public struct MassiveD : ArrayByteObject{
 	// надо добавить sha256...
 
 	public MassiveD(){
@@ -23,7 +23,7 @@ public struct MassiveD : ByteObject{
 		this.AutoSize = AutoSize;
 	}
 
-	private double[] Data;
+	public double[] Data;
 	
 	public int Size => Data.Length;
 	
@@ -133,13 +133,6 @@ public struct MassiveD : ByteObject{
 			value.CopyTo(Data);
 		}
 	}
-	
-	public double[] AsPrimitive{
-		get => Data;
-		set{
-		
-		}
-	}
 
 	#region Override
 
@@ -147,8 +140,12 @@ public struct MassiveD : ByteObject{
 		   return "MassiveD(0-" + (Size - 1) + ", " + AutoSize + ")";
 	   }
 	   
-	   public int ByteSize(){
-		   return Size * sizeof(double); 
+	   public int ElementBSize(){
+			return sizeof(double); 
+		}
+	   
+	   public int BSize(){
+		   return Size * ElementBSize(); 
 	   }
 
 	#endregion

@@ -2,9 +2,9 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 15.01.2026 13:30
+/// Сгенерирован: 15.01.2026 14:56
 /// </summary>
-public struct MassiveUL : ByteObject{
+public struct MassiveUL : ArrayByteObject{
 	// надо добавить sha256...
 
 	public MassiveUL(){
@@ -23,7 +23,7 @@ public struct MassiveUL : ByteObject{
 		this.AutoSize = AutoSize;
 	}
 
-	private ulong[] Data;
+	public ulong[] Data;
 	
 	public int Size => Data.Length;
 	
@@ -133,13 +133,6 @@ public struct MassiveUL : ByteObject{
 			value.CopyTo(Data);
 		}
 	}
-	
-	public ulong[] AsPrimitive{
-		get => Data;
-		set{
-		
-		}
-	}
 
 	#region Override
 
@@ -147,8 +140,12 @@ public struct MassiveUL : ByteObject{
 		   return "MassiveUL(0-" + (Size - 1) + ", " + AutoSize + ")";
 	   }
 	   
-	   public int ByteSize(){
-		   return Size * sizeof(ulong); 
+	   public int ElementBSize(){
+			return sizeof(ulong); 
+		}
+	   
+	   public int BSize(){
+		   return Size * ElementBSize(); 
 	   }
 
 	#endregion
