@@ -29,18 +29,34 @@ public static class Program{
                                                                            gl_Position = vec4(InPosition, 1.0);
                                                                        }
                                                                        """);
+            
             Shader FShader = new Shader(AAA.Render, ShaderType.Fragment, """
                                                                          #version 330 core
                                                                          
                                                                          out vec4 OutColor;
                                                                          
                                                                          void main(){
-                                                                             OutColor = vec4(1.0, 0.0, 1.0, 1.0); // фиолетовый
+                                                                             OutColor = vec4(1.0, 0.0, 1.0, 1.0);
+                                                                         }
+                                                                         """);
+            
+            Shader FShader2 = new Shader(AAA.Render, ShaderType.Fragment, """
+                                                                         #version 330 core
+
+                                                                         out vec4 OutColor;
+
+                                                                         void main(){
+                                                                             OutColor = vec4(1.0, 1.0, 0.0, 1.0);
                                                                          }
                                                                          """);
 
-            WLO.GL.Program Prog = new WLO.GL.Program(AAA.Render, VShader, FShader);
+            WLO.GL.Program Prog  = new WLO.GL.Program(AAA.Render, VShader, FShader );
+            WLO.GL.Program Prog2 = new WLO.GL.Program(AAA.Render, VShader, FShader2);
 
+            VShader.Destroy();
+            FShader.Destroy();
+            FShader2.Destroy();
+            
             FloatBuffer VBuffer = new FloatBuffer(AAA.Render, new MassiveF([
                 0   ,  0.5f, 0,
                 0.5f, -0.5f, 0, 
@@ -50,13 +66,18 @@ public static class Program{
             VertexConfig VC = new VertexConfig(AAA.Render);
 
             VC.Connect(VBuffer, 0, DataCount.Three, 3, 0, false);
-            
+
+            WLO.GL.Program P = Prog;
             while(!AAA.ShouldDestroy){
                 AAA.Render.BackgroundColor = ColorF.Red;
                 
                 AAA.Render.Clear();
 
-                VC.Render(Prog, RenderMode.Triangles, 9);
+                VBuffer.Set(1, WL.Math.Random.Fast_0_1());
+                
+                P = P == Prog ? Prog2 : Prog;
+
+                VC.Render(P, RenderMode.Triangles, 9);
                 
                 AAA.FinishRender();
 

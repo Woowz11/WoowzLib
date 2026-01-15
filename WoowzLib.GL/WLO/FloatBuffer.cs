@@ -83,7 +83,15 @@ public class FloatBuffer : Buffer{
         
         return this;
     }
-    
+
+    public FloatBuffer SetSlice(int Index, MassiveF Data){
+        return SetSlice(Index, Data.Data);
+    }
+
+    public FloatBuffer Set(int Index, float Data){
+        return SetSlice(Index, [Data]);
+    }
+
     protected override void __UpdateData(){
         try{
             __SetAlways(Data.Data);

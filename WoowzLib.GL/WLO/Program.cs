@@ -1,6 +1,12 @@
 ﻿namespace WLO.GL;
 
+/// <summary>
+/// (PROGRAM)
+/// </summary>
 public class Program : GLResource{
+    /// <summary>
+    /// Программа содержащая в себе шейдеры (После компиляции шейдеры не имеют ценности для программы)
+    /// </summary>
     public Program(Render.GL Context) : base(Context){
         try{
             ID = WL.GL.Native.glCreateProgram();
@@ -14,6 +20,9 @@ public class Program : GLResource{
         }
     }
 
+    /// <summary>
+    /// Программа содержащая в себе шейдеры (После компиляции шейдеры не имеют ценности для программы)
+    /// </summary>
     public Program(Render.GL Context, params Shader[] Shaders) : this(Context){
         foreach(Shader Shader in Shaders){
             Connect(Shader);
