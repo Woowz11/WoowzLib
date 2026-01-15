@@ -4,7 +4,7 @@ namespace WL{
     /// <summary>
     /// Математические функции и т.д
     /// </summary>
-    [WLModule(-10000)]
+    [WLModule(-10000, 0)]
     public static class Math{
         /// <summary>
         /// Для работы со временем

@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using WLO;
 
 namespace WL{
-    [WLModule(int.MinValue)]
+    [WLModule(int.MinValue, 0)]
     public static class WoowzLib{
         static WoowzLib(){
             AppDomain     .CurrentDomain.ProcessExit        += (_, _) => Stop();
@@ -73,7 +73,7 @@ namespace WL{
                        .ToList().OrderBy(A => A.Attribute!.Order);
 
                 foreach(var Module in Modules){
-                    Logger.Info("Загружен WL модуль: " + Module.Type.Name);
+                    Logger.Info("Загружен WL модуль: " + Module.Type.Name + " " + Module.Attribute!.Version);
                     RuntimeHelpers.RunClassConstructor(Module.Type.TypeHandle);
                 }
             
@@ -125,19 +125,22 @@ namespace WL{
             /// Название окна консоли
             /// </summary>
             public static string Title{
-                get => __Title;
+                get => System.Console.Title;
                 set{
-                    try{
-                        if(__Title == value){ return; }
-                        __Title = value;
-
-                        System.Console.Title = value;
-                    }catch(Exception e){
-                        throw new Exception("Произошла ошибка при установке названия окну консоли!\nНазвание: \"" + value + "\"", e);
-                    }
+                    System.Console.Title = value;
                 }
             }
-            private static string __Title;
+        }
+
+        /// <summary>
+        /// Условие типа <c>Condition ? IfTrue : IfFalse</c> но в виде функции
+        /// </summary>
+        /// <param name="Condition">Условие</param>
+        /// <param name="IfTrue">Если равно true</param>
+        /// <param name="IfFalse">Если равно false</param>
+        /// <returns><c>Condition ? IfTrue : IfFalse</c></returns>
+        public static object? Condition(bool Condition, object? IfTrue, object? IfFalse){
+            return Condition ? IfTrue : IfFalse;
         }
     }
 }

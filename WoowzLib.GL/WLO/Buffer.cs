@@ -18,8 +18,23 @@ public enum BufferType : uint{
     TransformFeedback
 }
 
+public enum BufferUsage : uint{
+    /// <summary>
+    /// Буфер изменяется очень часто
+    /// </summary>
+    Always = WL.GL.Native.GL_STREAM_DRAW,
+    /// <summary>
+    /// Буфер изменяется иногда
+    /// </summary>
+    Maybe = WL.GL.Native.GL_DYNAMIC_DRAW,
+    /// <summary>
+    /// Буфер никогда не меняется
+    /// </summary>
+    Never = WL.GL.Native.GL_STATIC_DRAW
+}
+
 public abstract class Buffer : GLResource{
-    public Buffer(Render.GL Context, BufferType Type) : base(Context){
+    protected Buffer(Render.GL Context, BufferType Type, BufferUsage Usage = BufferUsage.Never) : base(Context){
         try{
             this.Type = Type;
             uint[] ID__ = new uint[1];
@@ -27,7 +42,9 @@ public abstract class Buffer : GLResource{
             ID = ID__[0];
             if(ID == 0){ throw new Exception("Не получилось создать шейдер в glGenBuffers!"); }
 
-            __Finish(WL.GL.Native.GL_BUFFER, "Буфер");
+            __Finish(WL.GL.Native.GL_BUFFER, Type + " Буфер");
+
+            this.Usage = Usage;
 
             if(WL.GL.Debug.LogCreate){ Logger.Info("Создан буфер [" + this + "]!"); }
         }catch(Exception e){
@@ -44,4 +61,37 @@ public abstract class Buffer : GLResource{
     /// Тип буфера
     /// </summary>
     public readonly BufferType Type;
+
+    /// <summary>
+    /// Частота изменения буфера
+    /// </summary>
+    public BufferUsage Usage{
+        get => __Usage;
+        set{
+            try{
+                if(__Usage == value){ return; }
+                __Usage = value;
+            
+                __UpdateData();
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при изменении частоты применения у буфера [" + this + "]!\nЧастота применения: " + value, e);
+            }
+        }
+    }
+    private BufferUsage __Usage;
+
+    /// <summary>
+    /// Кол-во значений в буфере
+    /// </summary>
+    public abstract int Size();
+
+    protected abstract void __UpdateData();
+    
+    #region Override
+
+        public override string ToString(){
+            return "Buffer(\"" + Name + "\", " + Type + "|" + Usage + ", " + Size() + ", " + ID + ", " + Context + ")";
+        }
+
+    #endregion
 }

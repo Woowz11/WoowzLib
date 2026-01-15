@@ -172,4 +172,12 @@ public class Program : GLResource{
         Context.CurrentProgram = this;
         return this;
     }
+    
+    #region Override
+
+        public override string ToString(){
+            return "Program(\"" + Name + "\", " + ConnectedShaders.Count + ":" + CompiledShaders.Count + ", " + (Compiled ? "" : "НЕ СКОМПИЛИРОВАННЫЙ, ") + ID + ", " + Context + ")";
+        }
+
+    #endregion
 }

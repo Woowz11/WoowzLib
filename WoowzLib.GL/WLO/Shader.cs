@@ -104,4 +104,12 @@ public class Shader : GLResource{
     /// Скомпилирован?
     /// </summary>
     public bool Compiled => Created && Status != 0;
+    
+    #region Override
+
+        public override string ToString(){
+            return "Shader(\"" + Name + "\", " + Type + ", " + (Compiled ? "" : "НЕ СКОМПИЛИРОВАННЫЙ, ") + ID + ", " + Context + ")";
+        }
+
+    #endregion
 }

@@ -477,7 +477,7 @@ public static class Generator{
                 
                 string Result = Pre() + "\n";
 
-                Result += "public struct " + Name + (Custom ? " where T : unmanaged" : "") + "{\n";
+                Result += "public struct " + Name + " : ByteObject" + (Custom ? " where T : unmanaged" : "") + "{\n";
 
                 Result += $$"""
                                 // надо добавить sha256...
@@ -498,7 +498,7 @@ public static class Generator{
                                     this.AutoSize = AutoSize;
                                 }
                             
-                                private {{Type}}[] Data;
+                                public {{Type}}[] Data;
                                 
                                 public int Size => Data.Length;
                                 
@@ -525,7 +525,7 @@ public static class Generator{
                                         
                                         return this;
                                     }catch(Exception e){
-                                        throw new Exception("Произошла ошибка при установке контента в массив [" + this + "]!\nКонтент: " + Data, e);
+                                        throw new Exception("Произошла ошибка при установке значений в массив [" + this + "]!\nЗначения: " + Data, e);
                                     }
                                 }
                                 
@@ -546,7 +546,7 @@ public static class Generator{
                                         Array.Copy(Data, 0, this.Data, Index, Data.Length);
                                         return this;
                                     }catch(Exception e){
-                                        throw new Exception("Произошла ошибка при установке части в массив [" + this + "]!\nИндекс: " + Index + "\nКонтент: " + Data, e);
+                                        throw new Exception("Произошла ошибка при установке части значений в массив [" + this + "]!\nИндекс: " + Index + "\nЗначения: " + Data, e);
                                     }
                                 }
                                 
@@ -596,7 +596,7 @@ public static class Generator{
                             
                                 public Span<{{Type}}> AsSpan{
                                     get => Data;
-                                    set {
+                                    set{
                                         if(value.Length != Size){
                                             if(AutoSize){
                                                 Resize(value.Length);
@@ -613,6 +613,10 @@ public static class Generator{
                             
                                    public override string ToString(){
                                        return "{{Name}}(0-" + (Size - 1) + ", " + AutoSize + ")";
+                                   }
+                                   
+                                   public int ByteSize(){
+                                       return Size * {{WL.WoowzLib.Condition(Custom, "WL.Byte.Size(typeof(T))", "sizeof(" + Type + ")")}}; 
                                    }
                             
                                 #endregion

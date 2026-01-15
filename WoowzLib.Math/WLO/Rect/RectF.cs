@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 15.01.2026 1:35
+/// Сгенерирован: 15.01.2026 13:30
 /// </summary>
 public struct RectF{
 	public static readonly Type Type = typeof(float);

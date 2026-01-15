@@ -2,9 +2,11 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 15.01.2026 1:35
+/// Сгенерирован: 15.01.2026 13:30
 /// </summary>
-public struct MassiveS{
+public struct MassiveS : ByteObject{
+	// надо добавить sha256...
+
 	public MassiveS(){
 		Data = [];
 		AutoSize = true;
@@ -48,7 +50,7 @@ public struct MassiveS{
 			
 			return this;
 		}catch(Exception e){
-			throw new Exception("Произошла ошибка при установке контента в массив [" + this + "]!\nКонтент: " + Data, e);
+			throw new Exception("Произошла ошибка при установке значений в массив [" + this + "]!\nЗначения: " + Data, e);
 		}
 	}
 	
@@ -69,7 +71,7 @@ public struct MassiveS{
 			Array.Copy(Data, 0, this.Data, Index, Data.Length);
 			return this;
 		}catch(Exception e){
-			throw new Exception("Произошла ошибка при установке части в массив [" + this + "]!\nИндекс: " + Index + "\nКонтент: " + Data, e);
+			throw new Exception("Произошла ошибка при установке части значений в массив [" + this + "]!\nИндекс: " + Index + "\nЗначения: " + Data, e);
 		}
 	}
 	
@@ -119,7 +121,7 @@ public struct MassiveS{
 
 	public Span<short> AsSpan{
 		get => Data;
-		set {
+		set{
 			if(value.Length != Size){
 				if(AutoSize){
 					Resize(value.Length);
@@ -131,11 +133,22 @@ public struct MassiveS{
 			value.CopyTo(Data);
 		}
 	}
+	
+	public short[] AsPrimitive{
+		get => Data;
+		set{
+		
+		}
+	}
 
 	#region Override
 
 	   public override string ToString(){
 		   return "MassiveS(0-" + (Size - 1) + ", " + AutoSize + ")";
+	   }
+	   
+	   public int ByteSize(){
+		   return Size * sizeof(short); 
 	   }
 
 	#endregion

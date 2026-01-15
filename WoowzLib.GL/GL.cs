@@ -2,7 +2,7 @@
 using WLO;
 
 namespace WL{
-    [WLModule(10)]
+    [WLModule(10, 0)]
     public static class GL{
         static GL(){
             DLL = WL.Native.LoadSystem("opengl32.dll");
@@ -89,14 +89,19 @@ namespace WL{
             public static bool LogDestroy;
             
             /// <summary>
-            /// Выводить сообщения по поводу программы!
+            /// Выводить сообщения по поводу программы?
             /// </summary>
             public static bool LogProgram;
 
             /// <summary>
-            /// Выводить сообщения по поводу использования!
+            /// Выводить сообщения по поводу использования?
             /// </summary>
             public static bool LogUse;
+
+            /// <summary>
+            /// Выводить сообщения по поводу буферов?
+            /// </summary>
+            public static bool LogBuffer;
         }
         
         public static class Native{

@@ -2,9 +2,11 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 15.01.2026 1:35
+/// Сгенерирован: 15.01.2026 13:30
 /// </summary>
-public struct MassiveF{
+public struct MassiveF : ByteObject{
+	// надо добавить sha256...
+
 	public MassiveF(){
 		Data = [];
 		AutoSize = true;
@@ -21,7 +23,7 @@ public struct MassiveF{
 		this.AutoSize = AutoSize;
 	}
 
-	private float[] Data;
+	public float[] Data;
 	
 	public int Size => Data.Length;
 	
@@ -48,7 +50,7 @@ public struct MassiveF{
 			
 			return this;
 		}catch(Exception e){
-			throw new Exception("Произошла ошибка при установке контента в массив [" + this + "]!\nКонтент: " + Data, e);
+			throw new Exception("Произошла ошибка при установке значений в массив [" + this + "]!\nЗначения: " + Data, e);
 		}
 	}
 	
@@ -69,7 +71,7 @@ public struct MassiveF{
 			Array.Copy(Data, 0, this.Data, Index, Data.Length);
 			return this;
 		}catch(Exception e){
-			throw new Exception("Произошла ошибка при установке части в массив [" + this + "]!\nИндекс: " + Index + "\nКонтент: " + Data, e);
+			throw new Exception("Произошла ошибка при установке части значений в массив [" + this + "]!\nИндекс: " + Index + "\nЗначения: " + Data, e);
 		}
 	}
 	
@@ -119,7 +121,7 @@ public struct MassiveF{
 
 	public Span<float> AsSpan{
 		get => Data;
-		set {
+		set{
 			if(value.Length != Size){
 				if(AutoSize){
 					Resize(value.Length);
@@ -136,6 +138,10 @@ public struct MassiveF{
 
 	   public override string ToString(){
 		   return "MassiveF(0-" + (Size - 1) + ", " + AutoSize + ")";
+	   }
+	   
+	   public int ByteSize(){
+		   return Size * sizeof(float); 
 	   }
 
 	#endregion

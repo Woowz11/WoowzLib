@@ -13,6 +13,7 @@ public static class Program{
             WL.GL.Debug.LogDestroy = true;
             WL.GL.Debug.LogProgram = true;
             WL.GL.Debug.LogUse = true;
+            WL.GL.Debug.LogBuffer = true;
             
             WL.GLFW.Start();
             
@@ -39,25 +40,15 @@ public static class Program{
 
             WLO.GL.Program Prog = new WLO.GL.Program(AAA.Render, VShader, FShader);
 
-            float[] VERTICES = [
-                 0   ,  0.5f, 0,
-                 0.5f, -0.5f, 0, 
-                -0.5f, -0.5f, 0
-            ];
-
             FloatBuffer VBuffer = new FloatBuffer(AAA.Render);
 
-            MassiveF M = new MassiveF();
+            MassiveF M = new MassiveF([
+                0   ,  0.5f, 0,
+                0.5f, -0.5f, 0, 
+                -0.5f, -0.5f, 0
+            ]);
 
-            M[5] = 125;
-            Logger.Debug(M[5]);
-            ref float test = ref M[5];
-            test = -666;
-            Logger.Debug(M[5]);
-
-            M.Set(VERTICES);
-            
-            Logger.Debug(M);
+            VBuffer.Set(M);
             
             while(!AAA.ShouldDestroy){
                 AAA.Render.BackgroundColor = ColorF.Red;
