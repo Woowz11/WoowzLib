@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 15.01.2026 14:56
+/// Сгенерирован: 16.01.2026 12:04
 /// </summary>
 public struct Vector4F{
 	public static readonly int  Numbers = 4;
@@ -100,6 +100,6 @@ public struct Vector4F{
 		public static Vector4F operator *(float A, Vector4F B){
 			return B * A;
 		}
-	
+		
 	#endregion
 }

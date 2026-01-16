@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 15.01.2026 14:56
+/// Сгенерирован: 16.01.2026 12:04
 /// </summary>
 public struct Vector3I{
 	public static readonly int  Numbers = 3;
@@ -95,6 +95,6 @@ public struct Vector3I{
 		public static Vector3I operator *(int A, Vector3I B){
 			return B * A;
 		}
-	
+		
 	#endregion
 }

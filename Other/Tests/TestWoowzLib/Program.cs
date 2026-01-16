@@ -8,13 +8,13 @@ public static class Program{
         try{
             WL.WoowzLib.Start();
 
-            WL.GL.Debug.LogMain = true;
+            /*WL.GL.Debug.LogMain = true;
             WL.GL.Debug.LogCreate = true;
             WL.GL.Debug.LogDestroy = true;
             WL.GL.Debug.LogProgram = true;
             WL.GL.Debug.LogUse = true;
             WL.GL.Debug.LogBuffer = true;
-            WL.GL.Debug.LogVertexConfig = true;
+            WL.GL.Debug.LogVertexConfig = true;*/
             
             WL.GLFW.Start();
             
@@ -69,6 +69,8 @@ public static class Program{
 
             WLO.GL.Program P = Prog;
             while(!AAA.ShouldDestroy){
+                AAA.Render.Viewport = new RectI(AAA.Size);
+                
                 AAA.Render.BackgroundColor = ColorF.Red;
                 
                 AAA.Render.Clear();

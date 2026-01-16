@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 15.01.2026 14:56
+/// Сгенерирован: 16.01.2026 12:04
 /// </summary>
 public struct RectI{
 	public static readonly Type Type = typeof(int);
@@ -10,8 +10,14 @@ public struct RectI{
 	public RectI(int X, int Y, int Width, int Height){
 		this.X = X; this.Y = Y; this.Width = Width; this.Height = Height;
 	}
+	public RectI(Vector2I Position, Vector2I Size){
+		this.Position = Position; this.Size = Size;
+	}
 	public RectI(int Width, int Height){
 		this.Width = Width; this.Height = Height;
+	}
+	public RectI(Vector2I Size){
+		this.Size = Size;
 	}
 	public RectI(){
 		Width = 128; Height = 128;
@@ -20,11 +26,17 @@ public struct RectI{
 	public int X;
 	public int Y;
 	
+	public Vector2I Position{
+		get => new Vector2I(X, Y);
+		set{
+			X = value.X;
+			Y = value.Y;
+		}
+	}
+	
 	public int Width {
 		get => __Width;
 		set{
-			if(__Width == value){ return; }
-		
 			if(value <= 0){ throw new Exception("Ширина не может быть <= 0 у [" + this + "]!"); }
 			__Width = value;
 		}
@@ -34,13 +46,19 @@ public struct RectI{
 	public int Height {
 		get => __Height;
 		set{
-			if(__Height == value){ return; }
-		
 			if(value <= 0){ throw new Exception("Высота не может быть <= 0 у [" + this + "]!"); }
 			__Height = value;
 		}
 	}
 	private int __Height;
+	
+	public Vector2I Size{
+		get => new Vector2I(Width, Height);
+		set{
+			Width  = value.X;
+			Height = value.Y;
+		}
+	}
 
 	#region Override
 

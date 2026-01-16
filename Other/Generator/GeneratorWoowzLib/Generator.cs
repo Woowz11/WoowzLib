@@ -199,7 +199,12 @@ public static class Generator{
                                     public static {{Name}} operator *({{Type}} A, {{Name}} B){
                                         return B * A;
                                     }
-                                
+                                    {{WL.WoowzLib.Condition(VectorType == VectorType.UInt, $$"""
+                                                                                             
+                                                                                                     public static implicit operator Vector{{N}}I(Vector{{N}}U Other){
+                                                                                                         return new Vector{{N}}I({{WL.String.Join("(int)Other.$0, ", "(int)Other.$0", Components)}});
+                                                                                                     }
+                                                                                             """, "")}}
                                 #endregion
                             """;
                 
@@ -367,8 +372,14 @@ public static class Generator{
                                 public {{Name}}({{Type}} X, {{Type}} Y, {{Type}} Width, {{Type}} Height){
                                     this.X = X; this.Y = Y; this.Width = Width; this.Height = Height;
                                 }
+                                public {{Name}}(Vector2{{TypeChar}} Position, Vector2{{TypeChar}} Size){
+                                    this.Position = Position; this.Size = Size;
+                                }
                                 public {{Name}}({{Type}} Width, {{Type}} Height){
                                     this.Width = Width; this.Height = Height;
+                                }
+                                public {{Name}}(Vector2{{TypeChar}} Size){
+                                    this.Size = Size;
                                 }
                                 public {{Name}}(){
                                     Width = 128; Height = 128;
@@ -377,11 +388,17 @@ public static class Generator{
                                 public {{Type}} X;
                                 public {{Type}} Y;
                                 
+                                public Vector2{{TypeChar}} Position{
+                                    get => new Vector2{{TypeChar}}(X, Y);
+                                    set{
+                                        X = value.X;
+                                        Y = value.Y;
+                                    }
+                                }
+                                
                                 public {{Type}} Width {
                                     get => __Width;
                                     set{
-                                        if(__Width == value){ return; }
-                                    
                                         if(value <= 0){ throw new Exception("Ширина не может быть <= 0 у [" + this + "]!"); }
                                         __Width = value;
                                     }
@@ -391,13 +408,19 @@ public static class Generator{
                                 public {{Type}} Height {
                                     get => __Height;
                                     set{
-                                        if(__Height == value){ return; }
-                                    
                                         if(value <= 0){ throw new Exception("Высота не может быть <= 0 у [" + this + "]!"); }
                                         __Height = value;
                                     }
                                 }
                                 private {{Type}} __Height;
+                                
+                                public Vector2{{TypeChar}} Size{
+                                    get => new Vector2{{TypeChar}}(Width, Height);
+                                    set{
+                                        Width  = value.X;
+                                        Height = value.Y;
+                                    }
+                                }
                             
                                 #region Override
                             

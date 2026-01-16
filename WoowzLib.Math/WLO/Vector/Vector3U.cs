@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 15.01.2026 14:56
+/// Сгенерирован: 16.01.2026 12:04
 /// </summary>
 public struct Vector3U{
 	public static readonly int  Numbers = 3;
@@ -87,6 +87,9 @@ public struct Vector3U{
 		public static Vector3U operator *(uint A, Vector3U B){
 			return B * A;
 		}
-	
+		
+		public static implicit operator Vector3I(Vector3U Other){
+			return new Vector3I((int)Other.X, (int)Other.Y, (int)Other.Z);
+		}
 	#endregion
 }
