@@ -18,7 +18,7 @@ namespace WLO{
 }
 
 namespace WL{
-    [WLModule(10, 0)]
+    [WLModule(10, 4)]
     public static class GL{
         static GL(){
             DLL = WL.Native.LoadSystem("opengl32.dll");
