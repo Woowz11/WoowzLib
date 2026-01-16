@@ -8,15 +8,15 @@ namespace WL{
         /// <summary>
         /// Когда началось вычисление
         /// </summary>
-        public long StartTime;
+        public double StartTime;
         /// <summary>
         /// Когда закончилось вычисление
         /// </summary>
-        public long StopTime;
+        public double StopTime;
         /// <summary>
         /// Время выполнения в миллисекундах
         /// </summary>
-        public long DeltaTime => StopTime - StartTime;
+        public double DeltaTime => StopTime - StartTime;
         /// <summary>
         /// Время выполнения в секундах
         /// </summary>
@@ -174,21 +174,26 @@ namespace WL{
             private static readonly Stopwatch __Stopwatch = Stopwatch.StartNew();
 
             /// <summary>
-            /// Сколько КАДРОВ прошло после запуска приложения (Очень точные)
+            /// Сколько ТИКОВ прошло после запуска приложения
             /// </summary>
-            public static long ProgramLifeTime => __Stopwatch.ElapsedTicks * 1000 / Stopwatch.Frequency;
+            public static long ProgramLifeTick => __Stopwatch.ElapsedTicks;
+            
+            /// <summary>
+            /// Сколько миллисекунд прошло после запуска приложения
+            /// </summary>
+            public static double ProgramLifeTime => ProgramLifeTick * 1000.0 / Stopwatch.Frequency;
 
             /// <summary>
             /// Конвертирует FPS в DeltaTime
             /// </summary>
-            public static long FPSToDeltaTime(double FPS){
-                return FPS == 0 ? 0 : (long)(1000.0 / FPS);
+            public static double FPSToDeltaTime(double FPS){
+                return FPS == 0 ? 0 : 1000.0 / FPS;
             }
 
             /// <summary>
             /// Конвертирует DeltaTime в FPS
             /// </summary>
-            public static double DeltaTimeToFPS(long DeltaTime){
+            public static double DeltaTimeToFPS(double DeltaTime){
                 return DeltaTime == 0 ? 0 : 1000.0 / DeltaTime;
             }
             
@@ -198,14 +203,14 @@ namespace WL{
             /// <param name="UniqueID">Уникальный ID, не должны совпадать с другими функциями</param>
             /// <param name="TargetDeltaTime">Целевое время между кадрами</param>
             /// <param name="Action">Действие, которое выполняется если DeltaTime совпадает</param>
-            public static void Limit(int UniqueID, long TargetDeltaTime, Action<TickData> Action){
+            public static void Limit(int UniqueID, double TargetDeltaTime, Action<TickData> Action){
                 try{
                     bool Do = false;
                     
-                    long Time = ProgramLifeTime;
+                    double Time = ProgramLifeTime;
                     
-                    if(Timers.TryGetValue(UniqueID, out long StartTime)){
-                        long Elapsed = Time - StartTime;
+                    if(Timers.TryGetValue(UniqueID, out double StartTime)){
+                        double Elapsed = Time - StartTime;
 
                         if(Elapsed >= TargetDeltaTime){ Do = true; }
                     }else{
@@ -243,7 +248,7 @@ namespace WL{
             /// <summary>
             /// Все запущенные вычисления информации по поводу потока
             /// </summary>
-            private static readonly Dictionary<int, long> Timers = [];
+            private static readonly Dictionary<int, double> Timers = [];
 
             /// <summary>
             /// Все текущие вычисления информации по поводу потока
@@ -269,8 +274,8 @@ namespace WL{
             /// <param name="UniqueID">Уникальный ID, должен совпадать с Start() функцией</param>
             public static TickData Stop(int UniqueID){
                 try{
-                    if(!Timers.TryGetValue(UniqueID, out long StartTime)){ throw new Exception("Попытка остановить вычисление информации по поводу потока не удалась, ещё не было запущено!"); }
-                    long StopTime = ProgramLifeTime;
+                    if(!Timers.TryGetValue(UniqueID, out double StartTime)){ throw new Exception("Попытка остановить вычисление информации по поводу потока не удалась, ещё не было запущено!"); }
+                    double StopTime = ProgramLifeTime;
                     
                     Timers.Remove(UniqueID);
 

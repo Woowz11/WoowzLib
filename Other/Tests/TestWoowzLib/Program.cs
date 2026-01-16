@@ -1,4 +1,5 @@
-﻿using WL;
+﻿using System.Runtime.CompilerServices;
+using WL;
 using WLO;
 using WLO.GL;
 using WLO.GLFW;
@@ -20,7 +21,7 @@ public static class Program{
             
             WL.GLFW.Start();
             
-            Window<GL> AAA = new Window<GL>(Title: "привет hello");
+            Window<GL> AAA = new Window<GL>();
 
             Shader VShader = new Shader(AAA.Render, ShaderType.Vertex, """
                                                                        layout(location = 0) in vec3 InPosition;
@@ -53,24 +54,32 @@ public static class Program{
 
             VC.Connect(VBuffer, 0, DataCount.Three, 3, 0, false);
 
+            TickData TD = new TickData();
+            int i = int.MaxValue - 1;
             while(!AAA.ShouldDestroy){
-                WL.WoowzLib.Tick.Limit(1, 8, (TD2) => {
+                WL.WoowzLib.Tick.LimitFPS(1, 120, (TD__) => {
+                    TD = TD__;
+                    
                     AAA.Render.Viewport = new RectI(AAA.Size);
             
                     AAA.Render.BackgroundColor = ColorF.Red;
             
                     AAA.Render.Clear();
+                    
+                    VC.Render(Prog, RenderMode.Triangles, 9);
 
-                    for(int i = 0; i < 10000; i++){
-                        VC.Render(Prog, RenderMode.Triangles, 9);
-                    }
-            
                     AAA.FinishRender();
-                
-                    Console.WriteLine("RENDER " + TD2.DeltaTime + " | " + TD2.FPS);
                 });
-                
-                WL.GLFW.Tick();
+
+                WL.WoowzLib.Tick.Limit(2, 16, (TD__) => {
+                    i++;
+                    if(i > 16){
+                        AAA.Title = "WoowzLib (" + TD.DeltaTime + " | " + TD.FPS + ") " + WL.Math.Time.ProgramLifeTick;
+                        i = 0;
+                    }
+
+                    WL.GLFW.Tick();
+                });
             }
             
             WL.GLFW.Stop();
