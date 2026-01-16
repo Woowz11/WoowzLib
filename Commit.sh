@@ -2,10 +2,8 @@
 
 ORIGINAL_DIR="$(pwd)"
 
-# Сначала вызываем pre-commit.sh
-sh "Other/Other/GitHook/pre-commit.sh"
-
-# Получаем сообщение коммита через WinForms
+# -------------------------------
+# 1. Получаем сообщение коммита через WinForms
 COMMIT_MSG=$(powershell -NoProfile -Command "
 Add-Type -AssemblyName System.Windows.Forms
 \$form = New-Object System.Windows.Forms.Form
@@ -42,12 +40,23 @@ if [ $? -ne 0 ] || [ -z "$COMMIT_MSG" ]; then
     exit 0
 fi
 
+# -------------------------------
+# 2. Обновляем версии через UpdateVersion.sh
+sh "Other/Other/GitHook/UpdateVersion.sh"
+
+# -------------------------------
+# 3. Создаём временный файл-флаг для pre-commit
+FLAG_FILE="TempCommit.txt"
+GIT_ROOT=$(git rev-parse --show-toplevel)
+cd "$GIT_ROOT" || exit 1
+touch "$FLAG_FILE"
+
+# -------------------------------
+# 4. Возвращаемся в исходную папку
 cd "$ORIGINAL_DIR" || exit 1
 
-# Добавляем все изменения
+# 5. Добавляем все изменения и делаем коммит
 git add -A
-
-# Делаем коммит
 git commit -m "$COMMIT_MSG"
 
 echo "Коммит выполнен: $COMMIT_MSG"

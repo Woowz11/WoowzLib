@@ -1,0 +1,26 @@
+#!/bin/bash
+# .git/hooks/pre-commit
+# chmod +x .git/hooks/pre-commit
+
+# Путь к файлу-флагу, относительно корня репозитория
+FLAG_FILE="TempCommit.txt"
+
+# Получаем абсолютный путь к корню Git
+GIT_ROOT=$(git rev-parse --show-toplevel)
+cd "$GIT_ROOT" || exit 1
+
+# Проверяем наличие файла-флага
+if [ ! -f "$FLAG_FILE" ]; then
+    # Выводим предупреждение через PowerShell
+    powershell.exe -Command "& {
+        Add-Type -AssemblyName PresentationFramework
+        [System.Windows.MessageBox]::Show('Коммит сделан вручную! Используйте Commit.sh','Внимание','OK','Warning')
+    }"
+
+    echo "Коммит отменён. Используйте Commit.sh для правильного коммита."
+    exit 1
+fi
+
+# Если файл есть — удаляем его и разрешаем коммит
+rm -f "$FLAG_FILE"
+exit 0
