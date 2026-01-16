@@ -33,6 +33,7 @@ public static class Program{
             
             Shader FShader = new Shader(AAA.Render, ShaderType.Fragment, """
                                                                          uniform float Time;
+                                                                         uniform float Time2;
                                                                          
                                                                          out vec4 OutColor;
                                                                          
@@ -48,7 +49,8 @@ public static class Program{
 
             WLO.GL.Program Prog  = new WLO.GL.Program(AAA.Render, VShader, FShader );
 
-            Uniform_Float U_Time = new Uniform_Float(Prog, "Time");
+            Uniform_Float U_Time = new Uniform_Float(Prog, "Time", true);
+            Uniform_Float U_Time2 = new Uniform_Float(Prog, "Time2", true);
             
             VShader.Destroy();
             FShader.Destroy();

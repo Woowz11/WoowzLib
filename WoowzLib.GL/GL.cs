@@ -45,6 +45,10 @@ namespace WL{
                 Native.glUniform2f                = Native.WGLFunction<Native.D_glUniform2f               >("glUniform2f"               );
                 Native.glUniform3f                = Native.WGLFunction<Native.D_glUniform3f               >("glUniform3f"               );
                 Native.glUniform4f                = Native.WGLFunction<Native.D_glUniform4f               >("glUniform4f"               );
+                Native.glUniform1i                = Native.WGLFunction<Native.D_glUniform1i               >("glUniform1i"               );
+                Native.glUniform2i                = Native.WGLFunction<Native.D_glUniform2i               >("glUniform2i"               );
+                Native.glUniform3i                = Native.WGLFunction<Native.D_glUniform3i               >("glUniform3i"               );
+                Native.glUniform4i                = Native.WGLFunction<Native.D_glUniform4i               >("glUniform4i"               );
                 Native.glGenBuffers               = Native.WGLFunction<Native.D_glGenBuffers              >("glGenBuffers"              );
                 Native.glBindBuffer               = Native.WGLFunction<Native.D_glBindBuffer              >("glBindBuffer"              );
                 Native.glBufferData               = Native.WGLFunction<Native.D_glBufferData              >("glBufferData"              );
@@ -336,6 +340,22 @@ namespace WL{
             [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
             public delegate void D_glGetFloatv(uint pname, float[] data);
             public static D_glGetFloatv glGetFloatv = null!;
+            
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glUniform1i(int location, int v0);
+            public static D_glUniform1i glUniform1i = null!;
+
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glUniform2i(int location, int v0, int v1);
+            public static D_glUniform2i glUniform2i = null!;
+
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glUniform3i(int location, int v0, int v1, int v2);
+            public static D_glUniform3i glUniform3i = null!;
+
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glUniform4i(int location, int v0, int v1, int v2, int v3);
+            public static D_glUniform4i glUniform4i = null!;
             
             public const uint GL_COLOR_BUFFER_BIT            = 0x00004000;
             public const uint GL_DEPTH_BUFFER_BIT            = 0x00000100;

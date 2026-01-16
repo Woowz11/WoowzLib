@@ -202,10 +202,7 @@ public class Program : GLResource{
     /// Убирает все Uniform у программы
     /// </summary>
     private void ClearUniforms(){
-        foreach(Uniform U in Uniforms){
-            U.__ClearProgram();
-        }
-        Uniforms.Clear();
+        Uniforms.RemoveAll(U => U.__ClearProgram());
     }
     
     #region Override
@@ -223,15 +220,18 @@ public abstract class Uniform{
     /// </summary>
     /// <param name="Program">Программа</param>
     /// <param name="Name">Название Uniform</param>
-    protected Uniform(Program Program, string Name){
+    /// <param name="TypeName">Тип в виде строки</param>
+    /// <param name="TryAnywayFind">Если включено, то пробует искать Location при изменении значения (Так же не отвязывает от программы)</param>
+    protected Uniform(Program Program, string Name, string TypeName, bool TryAnywayFind = false){
         try{
-            this.Program = Program;
-            this.Name    = Name;
+            this.Program       = Program;
+            this.Name          = Name;
+            this.TryAnywayFind = TryAnywayFind;
 
             if(!Program.Compiled){ throw new Exception("Программа не скомпилирована!"); }
             
             Location = WL.GL.Native.glGetUniformLocation(Program.ID, Name);
-            if(Location < 0){ throw new Exception("Не найден такой Uniform [\"" + Name + "\"] в программе!"); }
+            if(Location < 0 && !TryAnywayFind){ throw new Exception("Не найден такой Uniform [\"" + Name + "\"] в программе, или не используется!"); }
 
             Program.__AddUniform(this);
         }catch(Exception e){
@@ -247,8 +247,11 @@ public abstract class Uniform{
     /// <summary>
     /// Удаляет программу из Uniform
     /// </summary>
-    public void __ClearProgram(){
+    public bool __ClearProgram(){
+        Location = -1;
+        if(TryAnywayFind){ return false; }
         Program = null;
+        return true;
     }
 
     /// <summary>
@@ -264,12 +267,36 @@ public abstract class Uniform{
     /// <summary>
     /// Позиция Uniform в программе
     /// </summary>
-    public readonly int Location;
+    public int Location{ get; private set; }
+
+    /// <summary>
+    /// Если включено, то пробует искать Location при изменении значения (Так же не отвязывает от программы)
+    /// </summary>
+    public bool TryAnywayFind;
+
+    /// <summary>
+    /// Попытаться найти Location, если его нет
+    /// </summary>
+    protected void TryFind(){
+        try{
+            if(!TryAnywayFind){ return; }
+            if(Program == null || !Program.Compiled){ throw new Exception("Нет программы, или она не скомпилирована!"); }
+
+            Location = WL.GL.Native.glGetUniformLocation(Program.ID, Name);
+            if(Location < 0){ throw new Exception("Не найден такой Uniform [\"" + Name + "\"] в программе, или не используется!"); }
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при попытке поиска новой локации у Uniform [\"" + Name + "\"] в программе [" + Program + "]!", e);
+        }
+    }
 }
 
-public class Uniform_Float : Uniform{
-    public Uniform_Float(Program Program, string Name) : base(Program, Name){}
-
+/// <summary>
+/// Для Uniform формата (<c>float</c>)
+/// </summary>
+/// <param name="Program">Программа</param>
+/// <param name="Name">Название Uniform</param>
+/// <param name="TryAnywayFind">Если включено, то пробует искать Location при изменении значения (Так же не отвязывает от программы)</param>
+public class Uniform_Float(Program Program, string Name, bool TryAnywayFind = false) : Uniform(Program, Name, "Float", TryAnywayFind){
     public float Value{
         get => __Value;
         set{
@@ -279,6 +306,7 @@ public class Uniform_Float : Uniform{
                 __Value = value;
                 
                 Program!.Use();
+                TryFind();
                 WL.GL.Native.glUniform1f(Location, __Value);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при установке Uniform Float [" + this + "] значения!\nЗначение: " + value);
@@ -286,4 +314,186 @@ public class Uniform_Float : Uniform{
         }
     }
     private float __Value;
+}
+
+/// <summary>
+/// Для Uniform формата (<c>vec2</c>)
+/// </summary>
+/// <param name="Program">Программа</param>
+/// <param name="Name">Название Uniform</param>
+/// <param name="TryAnywayFind">Если включено, то пробует искать Location при изменении значения (Так же не отвязывает от программы)</param>
+public class Uniform_Vector2F(Program Program, string Name, bool TryAnywayFind = false) : Uniform(Program, Name, "Vector2F", TryAnywayFind){
+    public Vector2F Value{
+        get => __Value;
+        set{
+            try{
+                if(!Usable){ throw new Exception("Невозможно использовать этот Uniform!"); }
+                if(__Value == value){ return; }
+                __Value = value;
+                
+                Program!.Use();
+                TryFind();
+                WL.GL.Native.glUniform2f(Location, __Value.X, __Value.Y);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке Uniform Vector2F [" + this + "] значения!\nЗначение: " + value);
+            }
+        }
+    }
+    private Vector2F __Value;
+}
+
+/// <summary>
+/// Для Uniform формата (<c>vec3</c>)
+/// </summary>
+/// <param name="Program">Программа</param>
+/// <param name="Name">Название Uniform</param>
+/// <param name="TryAnywayFind">Если включено, то пробует искать Location при изменении значения (Так же не отвязывает от программы)</param>
+public class Uniform_Vector3F(Program Program, string Name, bool TryAnywayFind = false) : Uniform(Program, Name, "Vector3F", TryAnywayFind){
+    public Vector3F Value{
+        get => __Value;
+        set{
+            try{
+                if(!Usable){ throw new Exception("Невозможно использовать этот Uniform!"); }
+                if(__Value == value){ return; }
+                __Value = value;
+                
+                Program!.Use();
+                TryFind();
+                WL.GL.Native.glUniform3f(Location, __Value.X, __Value.Y, __Value.Z);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке Uniform Vector3F [" + this + "] значения!\nЗначение: " + value);
+            }
+        }
+    }
+    private Vector3F __Value;
+}
+
+/// <summary>
+/// Для Uniform формата (<c>vec4</c>)
+/// </summary>
+/// <param name="Program">Программа</param>
+/// <param name="Name">Название Uniform</param>
+/// <param name="TryAnywayFind">Если включено, то пробует искать Location при изменении значения (Так же не отвязывает от программы)</param>
+public class Uniform_Vector4F(Program Program, string Name, bool TryAnywayFind = false) : Uniform(Program, Name, "Vector4F", TryAnywayFind){
+    public Vector4F Value{
+        get => __Value;
+        set{
+            try{
+                if(!Usable){ throw new Exception("Невозможно использовать этот Uniform!"); }
+                if(__Value == value){ return; }
+                __Value = value;
+                
+                Program!.Use();
+                TryFind();
+                WL.GL.Native.glUniform4f(Location, __Value.X, __Value.Y, __Value.Z, __Value.W);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке Uniform Vector4F [" + this + "] значения!\nЗначение: " + value);
+            }
+        }
+    }
+    private Vector4F __Value;
+}
+
+/// <summary>
+/// Для Uniform формата (<c>int</c>)
+/// </summary>
+/// <param name="Program">Программа</param>
+/// <param name="Name">Название Uniform</param>
+/// <param name="TryAnywayFind">Если включено, то пробует искать Location при изменении значения (Так же не отвязывает от программы)</param>
+public class Uniform_Int(Program Program, string Name, bool TryAnywayFind = false) : Uniform(Program, Name, "Int", TryAnywayFind){
+    public int Value{
+        get => __Value;
+        set{
+            try{
+                if(!Usable){ throw new Exception("Невозможно использовать этот Uniform!"); }
+                if(__Value == value){ return; }
+                __Value = value;
+                
+                Program!.Use();
+                TryFind();
+                WL.GL.Native.glUniform1i(Location, __Value);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке Uniform Int [" + this + "] значения!\nЗначение: " + value);
+            }
+        }
+    }
+    private int __Value;
+}
+
+/// <summary>
+/// Для Uniform формата (<c>vec2i</c>)
+/// </summary>
+/// <param name="Program">Программа</param>
+/// <param name="Name">Название Uniform</param>
+/// <param name="TryAnywayFind">Если включено, то пробует искать Location при изменении значения (Так же не отвязывает от программы)</param>
+public class Uniform_Vector2I(Program Program, string Name, bool TryAnywayFind = false) : Uniform(Program, Name, "Vector2I", TryAnywayFind){
+    public Vector2I Value{
+        get => __Value;
+        set{
+            try{
+                if(!Usable){ throw new Exception("Невозможно использовать этот Uniform!"); }
+                if(__Value == value){ return; }
+                __Value = value;
+                
+                Program!.Use();
+                TryFind();
+                WL.GL.Native.glUniform2i(Location, __Value.X, __Value.Y);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке Uniform Vector2I [" + this + "] значения!\nЗначение: " + value);
+            }
+        }
+    }
+    private Vector2I __Value;
+}
+
+/// <summary>
+/// Для Uniform формата (<c>vec3i</c>)
+/// </summary>
+/// <param name="Program">Программа</param>
+/// <param name="Name">Название Uniform</param>
+/// <param name="TryAnywayFind">Если включено, то пробует искать Location при изменении значения (Так же не отвязывает от программы)</param>
+public class Uniform_Vector3I(Program Program, string Name, bool TryAnywayFind = false) : Uniform(Program, Name, "Vector3I", TryAnywayFind){
+    public Vector3I Value{
+        get => __Value;
+        set{
+            try{
+                if(!Usable){ throw new Exception("Невозможно использовать этот Uniform!"); }
+                if(__Value == value){ return; }
+                __Value = value;
+                
+                Program!.Use();
+                TryFind();
+                WL.GL.Native.glUniform3i(Location, __Value.X, __Value.Y, __Value.Z);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке Uniform Vector3I [" + this + "] значения!\nЗначение: " + value);
+            }
+        }
+    }
+    private Vector3I __Value;
+}
+
+/// <summary>
+/// Для Uniform формата (<c>vec4i</c>)
+/// </summary>
+/// <param name="Program">Программа</param>
+/// <param name="Name">Название Uniform</param>
+/// <param name="TryAnywayFind">Если включено, то пробует искать Location при изменении значения (Так же не отвязывает от программы)</param>
+public class Uniform_Vector4I(Program Program, string Name, bool TryAnywayFind = false) : Uniform(Program, Name, "Vector4I", TryAnywayFind){
+    public Vector4I Value{
+        get => __Value;
+        set{
+            try{
+                if(!Usable){ throw new Exception("Невозможно использовать этот Uniform!"); }
+                if(__Value == value){ return; }
+                __Value = value;
+                
+                Program!.Use();
+                TryFind();
+                WL.GL.Native.glUniform4i(Location, __Value.X, __Value.Y, __Value.Z, __Value.W);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке Uniform Vector4I [" + this + "] значения!\nЗначение: " + value);
+            }
+        }
+    }
+    private Vector4I __Value;
 }
