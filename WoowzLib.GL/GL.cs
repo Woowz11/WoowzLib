@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using WLO;
 
-namespace WL{
+namespace WLO{
     /// <summary>
     /// Типы значений для GL
     /// </summary>
@@ -15,7 +15,9 @@ namespace WL{
         Int           = WL.GL.Native.GL_INT,
         UnsignedInt   = WL.GL.Native.GL_UNSIGNED_INT
     }
-    
+}
+
+namespace WL{
     [WLModule(10, 0)]
     public static class GL{
         static GL(){

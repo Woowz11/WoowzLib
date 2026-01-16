@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using WLO;
 
-namespace WL{
+namespace WLO{
     public struct TickData{
         /// <summary>
         /// Когда началось вычисление
@@ -36,7 +36,9 @@ namespace WL{
         /// <param name="TargetFPS">Целевой FPS</param>
         public double DeltaFPS(double TargetFPS){ return Delta(WL.WoowzLib.Tick.FPSToDeltaTime(TargetFPS)); }
     }
-    
+}
+
+namespace WL{
     [WLModule(int.MinValue, 0)]
     public static class WoowzLib{
         static WoowzLib(){

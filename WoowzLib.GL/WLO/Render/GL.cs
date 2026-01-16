@@ -40,11 +40,6 @@ public class GL : RenderContext{
             float[] LineWidthLimit__ = new float[2];
             WL.GL.Native.glGetFloatv(WL.GL.Native.GL_ALIASED_LINE_WIDTH_RANGE, LineWidthLimit__);
             LineWidthLimit = new Vector2F(LineWidthLimit__[0], LineWidthLimit__[1]);
-            
-            __LineWidth = -1;
-            LineWidth = 10;//WL.Math.Average(LineWidthLimit.X, LineWidthLimit.Y);
-            
-            Console.WriteLine(LineWidthLimit);
 
             if(WL.GL.Debug.LogMain){ Logger.Info("Создан GL контекст [" + this + "] окну [" + ConnectedWindow + "]!"); }
         }catch(Exception e){
@@ -288,6 +283,7 @@ public class GL : RenderContext{
     /// <summary>
     /// Ширина линий
     /// </summary>
+    [Obsolete("Не реализовал, почему-то не работало, нужно разбираться мне лень", true)]
     public float LineWidth{
         get => __LineWidth;
         set{

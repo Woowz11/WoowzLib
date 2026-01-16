@@ -122,7 +122,7 @@ public class Program : GLResource{
     }
     
     /// <summary>
-    /// Изменяет шейдеры внутри программы (вписывает их внутрь, больше шейдеры нигде не используются)
+    /// Изменяет шейдеры внутри программы (вписывает их внутрь, больше шейдеры нигде не используются) (Сбрасывает существующие Uniform)
     /// </summary>
     public Program Compile(){
         try{
@@ -134,6 +134,8 @@ public class Program : GLResource{
             
             Context.__MakeContext();
 
+            ClearUniforms();
+            
             WL.GL.Native.glLinkProgram(ID);
             WL.GL.Native.glGetProgramiv(ID, WL.GL.Native.GL_LINK_STATUS, out int Status__);
             Status = Status__;
@@ -181,6 +183,30 @@ public class Program : GLResource{
         Context.CurrentProgram = this;
         return this;
     }
+
+    /// <summary>
+    /// Все Uniform программы
+    /// </summary>
+    private readonly List<Uniform> Uniforms = [];
+    
+    /// <summary>
+    /// Добавляет Uniform в программу
+    /// </summary>
+    /// <param name="U"></param>
+    public void __AddUniform(Uniform U){
+        if(Uniforms.Contains(U)){ throw new Exception("Такой Uniform уже есть в программе!"); }
+        Uniforms.Add(U);
+    }
+    
+    /// <summary>
+    /// Убирает все Uniform у программы
+    /// </summary>
+    private void ClearUniforms(){
+        foreach(Uniform U in Uniforms){
+            U.__ClearProgram();
+        }
+        Uniforms.Clear();
+    }
     
     #region Override
 
@@ -189,4 +215,75 @@ public class Program : GLResource{
         }
 
     #endregion
+}
+
+public abstract class Uniform{
+    /// <summary>
+    /// Uniform программы
+    /// </summary>
+    /// <param name="Program">Программа</param>
+    /// <param name="Name">Название Uniform</param>
+    protected Uniform(Program Program, string Name){
+        try{
+            this.Program = Program;
+            this.Name    = Name;
+
+            if(!Program.Compiled){ throw new Exception("Программа не скомпилирована!"); }
+            
+            Location = WL.GL.Native.glGetUniformLocation(Program.ID, Name);
+            if(Location < 0){ throw new Exception("Не найден такой Uniform [\"" + Name + "\"] в программе!"); }
+
+            Program.__AddUniform(this);
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при создании Uniform [" + this + "]!\nНазвание: \"" + Name + "\"\nПрограмма: " + Program, e);
+        }
+    }
+
+    /// <summary>
+    /// Программа к которой привязан Uniform
+    /// </summary>
+    public Program? Program{ get; private set; }
+
+    /// <summary>
+    /// Удаляет программу из Uniform
+    /// </summary>
+    public void __ClearProgram(){
+        Program = null;
+    }
+
+    /// <summary>
+    /// Uniform живой?
+    /// </summary>
+    public bool Usable => Program != null && Location >= 0;
+    
+    /// <summary>
+    /// Название Uniform
+    /// </summary>
+    public readonly string Name;
+
+    /// <summary>
+    /// Позиция Uniform в программе
+    /// </summary>
+    public readonly int Location;
+}
+
+public class Uniform_Float : Uniform{
+    public Uniform_Float(Program Program, string Name) : base(Program, Name){}
+
+    public float Value{
+        get => __Value;
+        set{
+            try{
+                if(!Usable){ throw new Exception("Невозможно использовать этот Uniform!"); }
+                if(__Value == value){ return; }
+                __Value = value;
+                
+                Program!.Use();
+                WL.GL.Native.glUniform1f(Location, __Value);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке Uniform Float [" + this + "] значения!\nЗначение: " + value);
+            }
+        }
+    }
+    private float __Value;
 }

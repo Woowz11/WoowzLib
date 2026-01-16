@@ -32,15 +32,24 @@ public static class Program{
                                                                        """);
             
             Shader FShader = new Shader(AAA.Render, ShaderType.Fragment, """
+                                                                         uniform float Time;
+                                                                         
                                                                          out vec4 OutColor;
                                                                          
                                                                          void main(){
-                                                                             OutColor = vec4(1, 0, 1, 1);
+                                                                             OutColor = vec4(
+                                                                                0.5 + sin(Time / 10000000)/2,
+                                                                                0.5 + sin(Time / 20000000)/2,
+                                                                                0.5 + sin(Time / 30000000)/2,
+                                                                                1
+                                                                            );
                                                                          }
                                                                          """);
 
             WLO.GL.Program Prog  = new WLO.GL.Program(AAA.Render, VShader, FShader );
 
+            Uniform_Float U_Time = new Uniform_Float(Prog, "Time");
+            
             VShader.Destroy();
             FShader.Destroy();
             
@@ -61,16 +70,16 @@ public static class Program{
             while(!AAA.ShouldDestroy){
                 WL.WoowzLib.Tick.LimitFPS(1, TARGETFPS, (TD__) => {
                     TD = TD__;
+
+                    U_Time.Value = WL.Math.Time.ProgramLifeTick;
                     
                     AAA.Render.Viewport = new RectI(AAA.Size);
             
-                    AAA.Render.BackgroundColor = ColorF.Red;
+                    AAA.Render.BackgroundColor = ColorF.Gray;
             
                     AAA.Render.Clear();
 
-                    AAA.Render.LineWidth = 1 + WL.Math.Random.Fast_0_1() * 9;
-                    Console.WriteLine(AAA.Render.LineWidth);
-                    VC.Render(Prog, RenderMode.Lines, 9);
+                    VC.Render(Prog, RenderMode.Triangles, 9);
 
                     AAA.FinishRender();
                 });
