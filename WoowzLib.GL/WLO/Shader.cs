@@ -48,14 +48,16 @@ public enum ShaderType : uint{
 /// Шейдер
 /// </summary>
 public class Shader : GLResource{
-    public Shader(Render.GL Context, ShaderType Type, string Source) : base(Context){
+    public Shader(Render.GL Context, ShaderType Type, string WLGLSL) : base(Context){
         try{
             this.Type = Type;
+
+            this.WLGLSL = WLGLSL;
+            GLSL = WL.GL.GLSL.WLGLSLToGLSL(WLGLSL);
+            
             ID = WL.GL.Native.glCreateShader((uint)Type);
             if(ID <= 0){ throw new Exception("Не получилось создать шейдер в glCreateShader!"); }
-
-            this.Source = Source;
-            WL.GL.Native.glShaderSource(ID, 1, [Source], null);
+            WL.GL.Native.glShaderSource(ID, 1, [GLSL], null);
 
             WL.GL.Native.glCompileShader(ID);
             WL.GL.Native.glGetShaderiv(ID, WL.GL.Native.GL_COMPILE_STATUS, out int Status__);
@@ -75,9 +77,9 @@ public class Shader : GLResource{
 
             __Finish(WL.GL.Native.GL_SHADER, "Шейдер");
             
-            if(WL.GL.Debug.LogCreate){ Logger.Info("Создан шейдер [" + this + "]!"); }
+            if(WL.GL.Debug.LogCreate){ Logger.Info("Создан шейдер [" + this + "]!\nКод (WLGLSL):\n" + WLGLSL + "\nКод (GLSL):\n" + GLSL); }
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при создании GL шейдера [" + this + "]!\nТип: " + Type + "\nКод:\n" + Source, e);
+            throw new Exception("Произошла ошибка при создании GL шейдера [" + this + "]!\nТип: " + Type + "\nКод:\n" + WLGLSL, e);
         }
     }
     
@@ -91,9 +93,14 @@ public class Shader : GLResource{
     public readonly ShaderType Type;
     
     /// <summary>
+    /// (Стартовый) Код шейдера
+    /// </summary>
+    public readonly string WLGLSL;
+    
+    /// <summary>
     /// Код шейдера
     /// </summary>
-    public readonly string Source;
+    public readonly string GLSL;
     
     /// <summary>
     /// Статус компиляции

@@ -133,6 +133,28 @@ namespace WL{
             public static bool LogVertexConfig;
         }
         
+        /// <summary>
+        /// Для работы с GLSL
+        /// </summary>
+        public static class GLSL{
+            /// <summary>
+            /// Конвертирует WoowzLib GLSL в обычный GLSL
+            /// </summary>
+            /// <param name="WLGLSL">WLGLSL код</param>
+            /// <returns>GLSL код</returns>
+            public static string WLGLSLToGLSL(string WLGLSL){
+                try{
+                    string GLSL = "//Конвертировано из WLGLSL! (WoowzLib GLSL)\n#version " + RenderContext.__OpenGLMajor + RenderContext.__OpenGLMinor + "0 core\n\n";
+
+                    GLSL += WLGLSL;
+                    
+                    return GLSL;
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при конвертации WLGLSL в GLSL!\nКод: " + WLGLSL);
+                }
+            }
+        }
+        
         public static class Native{
             [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
             public delegate void D_glClearColor(float r, float g, float b, float a);
