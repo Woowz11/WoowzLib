@@ -61,7 +61,9 @@ public static class Program{
             
                     AAA.Render.Clear();
 
-                    VC.Render(Prog, RenderMode.Triangles, 9);
+                    for(int i = 0; i < 10000; i++){
+                        VC.Render(Prog, RenderMode.Triangles, 9);
+                    }
             
                     AAA.FinishRender();
                 

@@ -214,7 +214,11 @@ namespace WL{
                     }
 
                     if(Do){
-                        Action.Invoke(Stop(UniqueID));
+                        if(!__TickData.TryGetValue(UniqueID, out TickData TD)){
+                            TD = new TickData();
+                        }
+                        Action.Invoke(TD);
+                        Stop(UniqueID);
                         Start(UniqueID);
                     }
                 }catch(Exception e){
@@ -240,6 +244,11 @@ namespace WL{
             /// Все запущенные вычисления информации по поводу потока
             /// </summary>
             private static readonly Dictionary<int, long> Timers = [];
+
+            /// <summary>
+            /// Все текущие вычисления информации по поводу потока
+            /// </summary>
+            private static readonly Dictionary<int, TickData> __TickData = [];
             
             /// <summary>
             /// Начинает вычисление информации по поводу потока (DeltaTime, FPS, ...)
@@ -264,10 +273,15 @@ namespace WL{
                     long StopTime = ProgramLifeTime;
                     
                     Timers.Remove(UniqueID);
-                    return new TickData{
+
+                    TickData TD = new TickData{
                         StartTime = StartTime,
                         StopTime  = StopTime
                     };
+                    
+                    __TickData[UniqueID] = TD;
+                    
+                    return TD;
                 }catch(Exception e){
                     throw new Exception("Произошла ошибка при остановке вычисления информации по поводу потока!\nID: " + UniqueID, e);
                 }
