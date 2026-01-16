@@ -22,6 +22,17 @@ public enum DataCount : int{
 }
 
 public enum RenderMode : uint{
+    /// <summary>
+    /// Рендерит на месте вершин точки
+    /// </summary>
+    Points = WL.GL.Native.GL_POINTS,
+    /// <summary>
+    /// Соединяет вершины линиями
+    /// </summary>
+    Lines = WL.GL.Native.GL_LINES,
+    /// <summary>
+    /// Рендерит вершины в виде треугольников
+    /// </summary>
     Triangles = WL.GL.Native.GL_TRIANGLES
 }
 

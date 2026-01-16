@@ -30,10 +30,21 @@ public class GL : RenderContext{
             
             WL.GL.__AddToTotalCreatedGL();
             ID = WL.GL.TotalCreatedGL;
-            
+
+            __BackgroundColor = ColorF.Black;
             BackgroundColor = ColorF.Orange;
+
+            __Viewport = new RectI();
+            Viewport = new RectI((int)ConnectedWindow!.__Width, (int)ConnectedWindow!.__Height);
+
+            float[] LineWidthLimit__ = new float[2];
+            WL.GL.Native.glGetFloatv(WL.GL.Native.GL_ALIASED_LINE_WIDTH_RANGE, LineWidthLimit__);
+            LineWidthLimit = new Vector2F(LineWidthLimit__[0], LineWidthLimit__[1]);
             
-            Viewport = new RectI(0, 0, (int)ConnectedWindow.__Width, (int)ConnectedWindow.__Height);
+            __LineWidth = -1;
+            LineWidth = 10;//WL.Math.Average(LineWidthLimit.X, LineWidthLimit.Y);
+            
+            Console.WriteLine(LineWidthLimit);
 
             if(WL.GL.Debug.LogMain){ Logger.Info("Создан GL контекст [" + this + "] окну [" + ConnectedWindow + "]!"); }
         }catch(Exception e){
@@ -60,6 +71,11 @@ public class GL : RenderContext{
     /// Версия GL (Сначала Major, потом Minor)
     /// </summary>
     public Vector2I Version{ get; private set; }
+
+    /// <summary>
+    /// Лимиты по ширине линии
+    /// </summary>
+    public Vector2F LineWidthLimit{ get; private set; }
 
     /// <summary>
     /// Проверяет, что контексты ресурса совпадают
@@ -268,6 +284,28 @@ public class GL : RenderContext{
         }
     }
     private RectI __Viewport;
+
+    /// <summary>
+    /// Ширина линий
+    /// </summary>
+    public float LineWidth{
+        get => __LineWidth;
+        set{
+            try{
+                if(value > LineWidthLimit.Y){ throw new Exception("Выходит за пределы [" + value + " > " + LineWidthLimit.Y + "]!"); }
+                if(value < LineWidthLimit.X){ throw new Exception("Выходит за пределы [" + value + " < " + LineWidthLimit.X + "]!"); }
+
+                if(__LineWidth == value){ return; }
+                __LineWidth = value;
+                
+                __MakeContext();
+                WL.GL.Native.glLineWidth(__LineWidth);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке ширины линий в GL [" + this + "]!\nШирина: " + value, e);
+            }
+        }
+    }
+    private float __LineWidth;
     
     #region Override
 

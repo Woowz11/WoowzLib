@@ -7,6 +7,12 @@ namespace WL{
     [WLModule(-10000, 0)]
     public static class Math{
         /// <summary>
+        /// Получить среднее число между двумя (Поддерживает большие числа)
+        /// </summary>
+        /// <returns>A + (B - A) * 0.5f</returns>
+        public static float Average(float A, float B){ return A + (B - A) * 0.5f; }
+
+        /// <summary>
         /// Для работы со временем
         /// </summary>
         public static class Time{

@@ -67,8 +67,10 @@ public static class Program{
                     AAA.Render.BackgroundColor = ColorF.Red;
             
                     AAA.Render.Clear();
-                    
-                    VC.Render(Prog, RenderMode.Triangles, 9);
+
+                    AAA.Render.LineWidth = 1 + WL.Math.Random.Fast_0_1() * 9;
+                    Console.WriteLine(AAA.Render.LineWidth);
+                    VC.Render(Prog, RenderMode.Lines, 9);
 
                     AAA.FinishRender();
                 });

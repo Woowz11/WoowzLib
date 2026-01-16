@@ -26,7 +26,9 @@ namespace WL{
             Native.glDisable         = WL.Native.DelegateFunction<Native.D_glDisable        >("glDisable"         ,DLL);
             Native.glViewport        = WL.Native.DelegateFunction<Native.D_glViewport       >("glViewport"        ,DLL);
             Native.glDepthFunc       = WL.Native.DelegateFunction<Native.D_glDepthFunc      >("glDepthFunc"       ,DLL);
+            Native.glGetFloatv       = WL.Native.DelegateFunction<Native.D_glGetFloatv      >("glGetFloatv"       ,DLL);
             Native.glGetString       = WL.Native.DelegateFunction<Native.D_glGetString      >("glGetString"       ,DLL);
+            Native.glLineWidth       = WL.Native.DelegateFunction<Native.D_glLineWidth      >("glLineWidth"       ,DLL);
             Native.glClearColor      = WL.Native.DelegateFunction<Native.D_glClearColor     >("glClearColor"      ,DLL);
             Native.wglGetProcAddress = WL.Native.DelegateFunction<Native.D_wglGetProcAddress>("wglGetProcAddress" ,DLL);
         }
@@ -325,6 +327,14 @@ namespace WL{
             public delegate void D_glDrawElements(uint mode, int count, uint type, IntPtr indices);
             public static D_glDrawElements glDrawElements = null!;
             
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glLineWidth(float width);
+            public static D_glLineWidth glLineWidth = null!;
+            
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glGetFloatv(uint pname, float[] data);
+            public static D_glGetFloatv glGetFloatv = null!;
+            
             public const uint GL_COLOR_BUFFER_BIT            = 0x00004000;
             public const uint GL_DEPTH_BUFFER_BIT            = 0x00000100;
             public const uint GL_STENCIL_BUFFER_BIT          = 0x00000400;
@@ -412,6 +422,8 @@ namespace WL{
             public const uint GL_QUADS                       = 0x0007;
             public const uint GL_QUAD_STRIP                  = 0x0008;
             public const uint GL_POLYGON                     = 0x0009;
+            public const uint GL_ALIASED_LINE_WIDTH_RANGE    = 0x846E;
+            public const uint GL_LINE_SMOOTH                 = 0x0B20;
 
             /// <summary>
             /// Получает функцию из OpenGL и возвращает её в виде C# функции (WGL)
