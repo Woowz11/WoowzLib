@@ -3,7 +3,7 @@
 # chmod +x .git/hooks/pre-commit
 
 # Путь к файлу-флагу, относительно корня репозитория
-FLAG_FILE="TempCommit.txt"
+FLAG_FILE="Other/Other/GitHook/.temp"
 
 # Получаем абсолютный путь к корню Git
 GIT_ROOT=$(git rev-parse --show-toplevel)

@@ -46,7 +46,7 @@ sh "Other/Other/GitHook/UpdateVersion.sh"
 
 # -------------------------------
 # 3. Создаём временный файл-флаг для pre-commit
-FLAG_FILE="TempCommit.txt"
+FLAG_FILE="Other/Other/GitHook/.temp"
 GIT_ROOT=$(git rev-parse --show-toplevel)
 cd "$GIT_ROOT" || exit 1
 touch "$FLAG_FILE"
