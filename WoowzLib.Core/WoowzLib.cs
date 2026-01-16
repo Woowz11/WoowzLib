@@ -25,6 +25,16 @@ namespace WL{
         /// Кадров в секунду
         /// </summary>
         public double FPS => WL.WoowzLib.Tick.DeltaTimeToFPS(DeltaTime);
+        /// <summary>
+        /// Подходит для умножения (Если DeltaTime совпадает с целью, то равен 1)
+        /// </summary>
+        /// <param name="TargetDelta">Целевой DeltaTime</param>
+        public double Delta(double TargetDelta){ return TargetDelta / DeltaTime; }
+        /// <summary>
+        /// Подходит для умножения (Если FPS совпадает с целью, то равен 1)
+        /// </summary>
+        /// <param name="TargetFPS">Целевой FPS</param>
+        public double DeltaFPS(double TargetFPS){ return Delta(WL.WoowzLib.Tick.FPSToDeltaTime(TargetFPS)); }
     }
     
     [WLModule(int.MinValue, 0)]
@@ -198,7 +208,7 @@ namespace WL{
             }
             
             /// <summary>
-            /// Ограничивает скорость потока по указанному DeltaTime
+            /// Ограничивает скорость потока по указанному DeltaTime (Стоит учитывать, что TickData берётся прошлого кадра!)
             /// </summary>
             /// <param name="UniqueID">Уникальный ID, не должны совпадать с другими функциями</param>
             /// <param name="TargetDeltaTime">Целевое время между кадрами</param>
@@ -232,7 +242,7 @@ namespace WL{
             }
 
             /// <summary>
-            /// Ограничивает скорость потока по указанному FPS
+            /// Ограничивает скорость потока по указанному FPS (Стоит учитывать, что TickData берётся прошлого кадра!)
             /// </summary>
             /// <param name="UniqueID">Уникальный ID, не должны совпадать с другими функциями</param>
             /// <param name="TargetFPS">Целевое FPS</param>

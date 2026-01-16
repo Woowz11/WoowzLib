@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using WL;
+﻿using WL;
 using WLO;
 using WLO.GL;
 using WLO.GLFW;
@@ -7,6 +6,7 @@ using GL = WLO.Render.GL;
 using Logger = WLO.Logger;
 
 public static class Program{
+
     public static int Main(string[] Args){
         try{
             WL.WoowzLib.Start();
@@ -53,11 +53,13 @@ public static class Program{
             VertexConfig VC = new VertexConfig(AAA.Render);
 
             VC.Connect(VBuffer, 0, DataCount.Three, 3, 0, false);
-
+            
+            const int TARGETFPS = 120;
+            
             TickData TD = new TickData();
             int i = int.MaxValue - 1;
             while(!AAA.ShouldDestroy){
-                WL.WoowzLib.Tick.LimitFPS(1, 120, (TD__) => {
+                WL.WoowzLib.Tick.LimitFPS(1, TARGETFPS, (TD__) => {
                     TD = TD__;
                     
                     AAA.Render.Viewport = new RectI(AAA.Size);
@@ -74,7 +76,7 @@ public static class Program{
                 WL.WoowzLib.Tick.Limit(2, 16, (TD__) => {
                     i++;
                     if(i > 16){
-                        AAA.Title = "WoowzLib (" + TD.DeltaTime + " | " + TD.FPS + ") " + WL.Math.Time.ProgramLifeTick;
+                        AAA.Title = "WoowzLib (" + TD.DeltaTime + " | " + TD.FPS + ") [" + TD__.DeltaTime + "] {" + TD.DeltaFPS(TARGETFPS) + "} " + WL.Math.Time.ProgramLifeTick;
                         i = 0;
                     }
 
