@@ -1,14 +1,14 @@
-﻿using WLO;
-using WLO.Render;
+﻿using WL;
+using WLO;
 using WLO.GL;
 using WLO.GLFW;
+using GL = WLO.Render.GL;
+using Logger = WLO.Logger;
 
 public static class Program{
     public static int Main(string[] Args){
         try{
             WL.WoowzLib.Start();
-
-            WL.GL.Debug.LogCreate = true;
             
             /*WL.GL.Debug.LogMain = true;
         
@@ -53,18 +53,21 @@ public static class Program{
 
             VC.Connect(VBuffer, 0, DataCount.Three, 3, 0, false);
 
-            WLO.GL.Program P = Prog;
             while(!AAA.ShouldDestroy){
-                AAA.Render.Viewport = new RectI(AAA.Size);
-                
-                AAA.Render.BackgroundColor = ColorF.Red;
-                
-                AAA.Render.Clear();
+                WL.WoowzLib.Tick.Limit(1, 8, (TD2) => {
+                    AAA.Render.Viewport = new RectI(AAA.Size);
+            
+                    AAA.Render.BackgroundColor = ColorF.Red;
+            
+                    AAA.Render.Clear();
 
-                VC.Render(Prog, RenderMode.Triangles, 9);
+                    VC.Render(Prog, RenderMode.Triangles, 9);
+            
+                    AAA.FinishRender();
                 
-                AAA.FinishRender();
-
+                    Console.WriteLine("RENDER " + TD2.DeltaTime + " | " + TD2.FPS);
+                });
+                
                 WL.GLFW.Tick();
             }
             

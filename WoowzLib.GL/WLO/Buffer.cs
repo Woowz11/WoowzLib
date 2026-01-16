@@ -117,7 +117,7 @@ public abstract class Buffer : GLResource, ArrayByteObject{
     #region Override
 
         public override string ToString(){
-            return "Buffer(\"" + Name + "\", " + Type + "|" + Usage + ", " + Size() + ", " + ID + ", " + Context + ")";
+            return "Buffer(\"" + Name + "\", " + Type + "|" + Usage + ", " + Size() + ", " + IDString + ", " + Context + ")";
         }
         
         public int BSize(){

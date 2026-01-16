@@ -70,7 +70,9 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
 
             WL.GLFW.Windows.Add(this);
 
-            Visible = true;
+            __Visible = false; Visible = true ;
+
+            __VSync = true; VSync = false;
 
             __CloseCallback = (W) => {
                 try{
@@ -423,6 +425,25 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
         }
     }
     private bool __Visible;
+
+    /// <summary>
+    /// Ограничение по FPS (на 60, ограничивает FinishRender())
+    /// </summary>
+    public bool VSync{
+        get => __VSync;
+        set{
+            try{
+                if(__VSync == value){ return; }
+                __VSync = value;
+
+                __UpdateContext();
+                WL.GLFW.Native.glfwSwapInterval(__VSync ? 1 : 0);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке VSync у окна [" + this + "]!\nVSync: " + value, e);
+            }
+        }
+    }
+    private bool __VSync;
     
     /// <summary>
     /// Уничтожает окно

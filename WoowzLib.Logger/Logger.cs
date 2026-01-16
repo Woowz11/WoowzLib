@@ -59,31 +59,26 @@ public class Logger{
 
             string FullMessage = WL.String.Join(Message);
             string[] Lines = FullMessage.Split('\n');
-
-            ConsoleColor Color;
-
-            if(__Eval){
-                Color = Type switch{
-                    MessageType.Info  => ConsoleColor.Gray,
-                    MessageType.Warn  => ConsoleColor.DarkYellow,
-                    MessageType.Error => ConsoleColor.DarkRed,
-                    MessageType.Fatal => ConsoleColor.DarkMagenta,
-                    MessageType.Debug => ConsoleColor.DarkGreen,
-                    _ => PreviousColor
-                };
-            }else{
-                Color = Type switch{
-                    MessageType.Info  => ConsoleColor.White,
-                    MessageType.Warn  => ConsoleColor.Yellow,
-                    MessageType.Error => ConsoleColor.Red,
-                    MessageType.Fatal => ConsoleColor.Magenta,
-                    MessageType.Debug => ConsoleColor.Green,
-                    _ => PreviousColor
-                };
-            }
+            
+            ConsoleColor ColorD = Type switch{
+                MessageType.Info  => ConsoleColor.Gray,
+                MessageType.Warn  => ConsoleColor.DarkYellow,
+                MessageType.Error => ConsoleColor.DarkRed,
+                MessageType.Fatal => ConsoleColor.DarkMagenta,
+                MessageType.Debug => ConsoleColor.DarkGreen,
+                _ => PreviousColor
+            };;
+            ConsoleColor ColorL = Type switch{
+                MessageType.Info  => ConsoleColor.White,
+                MessageType.Warn  => ConsoleColor.Yellow,
+                MessageType.Error => ConsoleColor.Red,
+                MessageType.Fatal => ConsoleColor.Magenta,
+                MessageType.Debug => ConsoleColor.Green,
+                _ => PreviousColor
+            };
 
             for(int i = 0; i < Lines.Length; i++){
-                Console.ForegroundColor = Color;
+                Console.ForegroundColor = __Eval ? ColorD : ColorL;
 
                 string Prefix = MessagePrefix(Type, i == 0);
                 OriginalOut.WriteLine(Prefix + Lines[i]);

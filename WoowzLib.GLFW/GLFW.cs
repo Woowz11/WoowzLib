@@ -51,6 +51,7 @@ namespace WL{
                 Native.glfwCreateWindow              = WL.Native.DelegateFunction<Native.D_glfwCreateWindow             >("glfwCreateWindow"             ,DLL);
                 Native.glfwSetWindowPos              = WL.Native.DelegateFunction<Native.D_glfwSetWindowPos             >("glfwSetWindowPos"             ,DLL);
                 Native.glfwGetWindowPos              = WL.Native.DelegateFunction<Native.D_glfwGetWindowPos             >("glfwGetWindowPos"             ,DLL);
+                Native.glfwSwapInterval              = WL.Native.DelegateFunction<Native.D_glfwSwapInterval             >("glfwSwapInterval"             ,DLL);
                 Native.glfwSetWindowSize             = WL.Native.DelegateFunction<Native.D_glfwSetWindowSize            >("glfwSetWindowSize"            ,DLL);
                 Native.glfwDestroyWindow             = WL.Native.DelegateFunction<Native.D_glfwDestroyWindow            >("glfwDestroyWindow"            ,DLL);
                 Native.glfwSetWindowTitle            = WL.Native.DelegateFunction<Native.D_glfwSetWindowTitle           >("glfwSetWindowTitle"           ,DLL);
@@ -228,6 +229,10 @@ namespace WL{
             [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
             public delegate void D_glfwHideWindow(IntPtr window);
             public static D_glfwHideWindow glfwHideWindow = null!;
+            
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate void D_glfwSwapInterval(int interval);
+            public static D_glfwSwapInterval glfwSwapInterval = null!;
             
             public const int GLFW_FOCUSED                 = 0x00020001;
             public const int GLFW_RESIZABLE               = 0x00020003;

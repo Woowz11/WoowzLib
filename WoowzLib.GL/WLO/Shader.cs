@@ -48,12 +48,21 @@ public enum ShaderType : uint{
 /// Шейдер
 /// </summary>
 public class Shader : GLResource{
-    public Shader(Render.GL Context, ShaderType Type, string WLGLSL) : base(Context){
+    /// <summary>
+    /// Создаёт шейдер
+    /// </summary>
+    /// <param name="Context">На какой контекст создавать?</param>
+    /// <param name="Type">Тип шейдера</param>
+    /// <param name="Code">WLGLSL или GLSL код шейдера</param>
+    /// <param name="ThatWLGLSL">Преобразовать код из WLGLSL в GLSL?</param>
+    public Shader(Render.GL Context, ShaderType Type, string Code, bool ThatWLGLSL = true) : base(Context){
         try{
             this.Type = Type;
 
-            this.WLGLSL = WLGLSL;
-            GLSL = WL.GL.GLSL.WLGLSLToGLSL(WLGLSL);
+            CompiledUseWLGLSL = ThatWLGLSL;
+            
+            WLGLSL = (ThatWLGLSL ? Code : "//Шейдер скомпилирован на чистом GLSL!");
+            GLSL   = (ThatWLGLSL ? WL.GL.GLSL.WLGLSLToGLSL(Code) : Code);
             
             ID = WL.GL.Native.glCreateShader((uint)Type);
             if(ID <= 0){ throw new Exception("Не получилось создать шейдер в glCreateShader!"); }
@@ -75,11 +84,11 @@ public class Shader : GLResource{
                 throw new Exception("Произошла ошибка при компиляции! Лог: " + Log);
             }
 
-            __Finish(WL.GL.Native.GL_SHADER, "Шейдер");
+            __Finish(WL.GL.Native.GL_SHADER, Type + " Шейдер");
             
-            if(WL.GL.Debug.LogCreate){ Logger.Info("Создан шейдер [" + this + "]!\nКод (WLGLSL):\n" + WLGLSL + "\nКод (GLSL):\n" + GLSL); }
+            if(WL.GL.Debug.LogCreate){ Logger.Info("Создан шейдер [" + this + "]!\nКод (WLGLSL):\n" + Code + "\nКод (GLSL):\n" + GLSL); }
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при создании GL шейдера [" + this + "]!\nТип: " + Type + "\nКод:\n" + WLGLSL, e);
+            throw new Exception("Произошла ошибка при создании GL шейдера [" + this + "]!\nТип: " + Type + "\nКод:\n" + Code, e);
         }
     }
     
@@ -101,6 +110,11 @@ public class Shader : GLResource{
     /// Код шейдера
     /// </summary>
     public readonly string GLSL;
+
+    /// <summary>
+    /// Скомпилировано с использованием WLGLSL?
+    /// </summary>
+    public readonly bool CompiledUseWLGLSL;
     
     /// <summary>
     /// Статус компиляции
@@ -115,7 +129,7 @@ public class Shader : GLResource{
     #region Override
 
         public override string ToString(){
-            return "Shader(\"" + Name + "\", " + Type + ", " + (Compiled ? "" : "НЕ СКОМПИЛИРОВАННЫЙ, ") + ID + ", " + Context + ")";
+            return "Shader(\"" + Name + "\", " + Type + ", " + (Compiled ? "" : "НЕ СКОМПИЛИРОВАННЫЙ, ") + IDString + ", " + Context + ")";
         }
 
     #endregion

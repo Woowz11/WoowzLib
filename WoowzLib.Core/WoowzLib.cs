@@ -1,8 +1,32 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using WLO;
 
 namespace WL{
+    public struct TickData{
+        /// <summary>
+        /// Когда началось вычисление
+        /// </summary>
+        public long StartTime;
+        /// <summary>
+        /// Когда закончилось вычисление
+        /// </summary>
+        public long StopTime;
+        /// <summary>
+        /// Время выполнения в миллисекундах
+        /// </summary>
+        public long DeltaTime => StopTime - StartTime;
+        /// <summary>
+        /// Время выполнения в секундах
+        /// </summary>
+        public double DeltaTimeS => DeltaTime / 1000.0;
+        /// <summary>
+        /// Кадров в секунду
+        /// </summary>
+        public double FPS => WL.WoowzLib.Tick.DeltaTimeToFPS(DeltaTime);
+    }
+    
     [WLModule(int.MinValue, 0)]
     public static class WoowzLib{
         static WoowzLib(){
@@ -142,6 +166,110 @@ namespace WL{
                 get => System.Console.Title;
                 set{
                     System.Console.Title = value;
+                }
+            }
+        }
+        
+        public static class Tick{
+            private static readonly Stopwatch __Stopwatch = Stopwatch.StartNew();
+
+            /// <summary>
+            /// Сколько КАДРОВ прошло после запуска приложения (Очень точные)
+            /// </summary>
+            public static long ProgramLifeTime => __Stopwatch.ElapsedTicks * 1000 / Stopwatch.Frequency;
+
+            /// <summary>
+            /// Конвертирует FPS в DeltaTime
+            /// </summary>
+            public static long FPSToDeltaTime(double FPS){
+                return FPS == 0 ? 0 : (long)(1000.0 / FPS);
+            }
+
+            /// <summary>
+            /// Конвертирует DeltaTime в FPS
+            /// </summary>
+            public static double DeltaTimeToFPS(long DeltaTime){
+                return DeltaTime == 0 ? 0 : 1000.0 / DeltaTime;
+            }
+            
+            /// <summary>
+            /// Ограничивает скорость потока по указанному DeltaTime
+            /// </summary>
+            /// <param name="UniqueID">Уникальный ID, не должны совпадать с другими функциями</param>
+            /// <param name="TargetDeltaTime">Целевое время между кадрами</param>
+            /// <param name="Action">Действие, которое выполняется если DeltaTime совпадает</param>
+            public static void Limit(int UniqueID, long TargetDeltaTime, Action<TickData> Action){
+                try{
+                    bool Do = false;
+                    
+                    long Time = ProgramLifeTime;
+                    
+                    if(Timers.TryGetValue(UniqueID, out long StartTime)){
+                        long Elapsed = Time - StartTime;
+
+                        if(Elapsed >= TargetDeltaTime){ Do = true; }
+                    }else{
+                        Start(UniqueID);
+                        Do = true;
+                    }
+
+                    if(Do){
+                        Action.Invoke(Stop(UniqueID));
+                        Start(UniqueID);
+                    }
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при ограничении потока через DeltaTime!\nID: " + UniqueID + "\nЦель: " + TargetDeltaTime, e);
+                }
+            }
+
+            /// <summary>
+            /// Ограничивает скорость потока по указанному FPS
+            /// </summary>
+            /// <param name="UniqueID">Уникальный ID, не должны совпадать с другими функциями</param>
+            /// <param name="TargetFPS">Целевое FPS</param>
+            /// <param name="Action">Действие, которое выполняется если FPS совпадает</param>
+            public static void LimitFPS(int UniqueID, double TargetFPS, Action<TickData> Action){
+                try{
+                    Limit(UniqueID, FPSToDeltaTime(TargetFPS), Action);
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при ограничении потока через FPS!\nID: " + UniqueID + "\nЦель: " + TargetFPS, e);
+                }
+            }
+
+            /// <summary>
+            /// Все запущенные вычисления информации по поводу потока
+            /// </summary>
+            private static readonly Dictionary<int, long> Timers = [];
+            
+            /// <summary>
+            /// Начинает вычисление информации по поводу потока (DeltaTime, FPS, ...)
+            /// </summary>
+            /// <param name="UniqueID">Уникальный ID, не должны совпадать с другими функциями</param>
+            public static void Start(int UniqueID){
+                try{
+                    if(Timers.ContainsKey(UniqueID)){ throw new Exception("Запущено вычисление информации по поводу потока, хотя ещё прошлое не было завершено!"); }
+                    Timers[UniqueID] = ProgramLifeTime;
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при старте вычисления информации по поводу потока!\nID: " + UniqueID, e);
+                }
+            }
+
+            /// <summary>
+            /// Заканчивает вычисление информации по поводу потока, становятся доступными DeltaTime, FPS, ...
+            /// </summary>
+            /// <param name="UniqueID">Уникальный ID, должен совпадать с Start() функцией</param>
+            public static TickData Stop(int UniqueID){
+                try{
+                    if(!Timers.TryGetValue(UniqueID, out long StartTime)){ throw new Exception("Попытка остановить вычисление информации по поводу потока не удалась, ещё не было запущено!"); }
+                    long StopTime = ProgramLifeTime;
+                    
+                    Timers.Remove(UniqueID);
+                    return new TickData{
+                        StartTime = StartTime,
+                        StopTime  = StopTime
+                    };
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при остановке вычисления информации по поводу потока!\nID: " + UniqueID, e);
                 }
             }
         }

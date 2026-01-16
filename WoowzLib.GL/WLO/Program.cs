@@ -185,7 +185,7 @@ public class Program : GLResource{
     #region Override
 
         public override string ToString(){
-            return "Program(\"" + Name + "\", " + ConnectedShaders.Count + ":" + CompiledShaders.Count + ", " + (Compiled ? "" : "НЕ СКОМПИЛИРОВАННЫЙ, ") + ID + ", " + Context + ")";
+            return "Program(\"" + Name + "\", " + ConnectedShaders.Count + ":" + CompiledShaders.Count + ", " + (Compiled ? "" : "НЕ СКОМПИЛИРОВАННЫЙ, ") + IDString + ", " + Context + ")";
         }
 
     #endregion

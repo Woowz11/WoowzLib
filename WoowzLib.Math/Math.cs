@@ -76,6 +76,11 @@ namespace WL{
             public static long LifeTime => Environment.TickCount64;
 
             /// <summary>
+            /// Сколько КАДРОВ прошло после запуска приложения (Очень точные)
+            /// </summary>
+            public static long ProgramLifeTime => WL.WoowzLib.Tick.ProgramLifeTime;
+
+            /// <summary>
             /// Вычисляет разницу между двумя моментами времени
             /// </summary>
             /// <returns>Разница</returns>

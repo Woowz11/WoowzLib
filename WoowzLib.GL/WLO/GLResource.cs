@@ -6,6 +6,8 @@ public abstract class GLResource{
             this.Context = Context;
             Context.__MakeContext();
             Context.__Register(this);
+
+            GlobalID = WL.GL.TotalCreatedResources;
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании GL ресурса [" + this + "]!\nКонтекст: " + Context, e);
         }
@@ -32,6 +34,16 @@ public abstract class GLResource{
     /// </summary>
     public uint ID{ get; protected set; }
 
+    /// <summary>
+    /// Глобальный ID (Полностью уникальный, НЕ GL ID)
+    /// </summary>
+    public readonly int GlobalID;
+
+    /// <summary>
+    /// ID ресурса в виде строки
+    /// </summary>
+    public string IDString => ID + "|" + GlobalID;
+    
     /// <summary>
     /// GL ресурс создан?
     /// </summary>
@@ -146,8 +158,22 @@ public abstract class GLResource{
     #region Override
 
         public override string ToString(){
-            return "GLResource(\"" + Name + "\", " + ID + ", " + Context + ")";
+            return "GLResource(\"" + Name + "\", " + IDString + ", " + Context + ")";
         }
 
+        public override bool Equals(object? Obj){
+            if(Obj is not GLResource Other){ return false; }
+            return GlobalID == Other.GlobalID;
+        }
+
+        public override int GetHashCode() => HashCode.Combine(GlobalID);
+
+        public static bool operator ==(GLResource? A, GLResource? B){
+            if(A is null || B is null){ return false; }
+            return A.Equals(B);
+        }
+
+        public static bool operator !=(GLResource? A, GLResource? B) => !(A == B);
+        
     #endregion
 }
