@@ -4,12 +4,38 @@ using WLO.GL;
 using WLO.GLFW;
 using GL = WLO.Render.GL;
 using Logger = WLO.Logger;
+using System.Windows.Forms;
 
 public static class Program{
 
+    [STAThread]
     public static int Main(string[] Args){
         try{
             WL.WoowzLib.Start();
+
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            
+            Form mainForm = new Form();
+            mainForm.Text = "Простое окно";
+            mainForm.Width = 400;
+            mainForm.Height = 300;
+            mainForm.StartPosition = FormStartPosition.CenterScreen;
+
+            // Добавим кнопку для примера
+            Button btn = new Button();
+            btn.Text = "Нажми меня";
+            btn.Width = 100;
+            btn.Height = 30;
+            btn.Top = 100;
+            btn.Left = 150;
+            btn.Click += (sender, e) => MessageBox.Show("Кнопка нажата!");
+            mainForm.Controls.Add(btn);
+
+            // Запускаем приложение
+            Application.Run(mainForm);
+            
+            return 0;
             
             /*WL.GL.Debug.LogMain = true;
         
