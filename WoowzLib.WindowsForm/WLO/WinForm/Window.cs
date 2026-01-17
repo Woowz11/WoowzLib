@@ -24,7 +24,7 @@ public class Window : IDisposable{
             Form.Shown += (_, _) => {
                 __X = -1;
                 __Y = -1;
-                Position = Vector2I.Zero;
+                Position = new Vector2I(64, 64);
             };
 
             Form.Closing += (_, e__) => {
@@ -360,7 +360,6 @@ public class Window : IDisposable{
                 Logger.Error("Произошла ошибка при вызове ивентов уничтожения окна [" + this + "]!", e);
             }
             
-            Form!.Close();
             Form!.Dispose();
             Form = null;
             

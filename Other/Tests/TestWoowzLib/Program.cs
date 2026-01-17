@@ -1,6 +1,8 @@
 ﻿using Microsoft.VisualBasic.Logging;
 using WL;
 using WLO;
+using WLO.GLFW;
+using WLO.Render;
 using WLO.WinForm;
 //using WLO.GL;
 //using WLO.GLFW;
@@ -14,15 +16,23 @@ public static class Program{
             WL.WoowzLib.Start();
 
 
-
+            WL.GLFW.Start();
 
             Window W  = new Window();
             Window W2 = new Window();
+
+            Window<EmptyRender> W3 = new Window<EmptyRender>();
             
-            while(!W.ShouldDestroy || !W2.ShouldDestroy){
+            while(!W.ShouldDestroy || !W2.ShouldDestroy || !W3.ShouldDestroy){
+                WL.WoowzLib.Tick.LimitFPS(1, 60, TD => {
+                    W.Title = TD.FPS.ToString();
+                });
+                
                 WL.Windows.Form.Tick();
+                WL.GLFW.Tick();
             }
 
+            WL.GLFW.Stop();
 
             /*WL.GL.Debug.LogMain = true;
 
@@ -113,6 +123,7 @@ public static class Program{
             WL.GLFW.Stop();*/
         }catch(Exception e){
             Logger.Fatal("ОШИБКА ВНУТРИ ПРИЛОЖЕНИЯ", e);
+            return 1;
         }
         
         return 0;

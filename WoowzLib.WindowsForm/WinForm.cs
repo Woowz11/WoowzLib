@@ -6,10 +6,10 @@ namespace WL.Windows;
 /// <summary>
 /// Что-бы работать с Windows Form, нужно в настройках проекта добавить <c>&lt;UseWindowsForms&gt;true&lt;/UseWindowsForms&gt;</c>, и TargetFramework должен заканчиваться на <c>*-windows</c>
 /// </summary>
-[WLModule(15, 2)]
+[WLModule(15, 3)]
 public class Form{
     static Form(){
-        WL.WoowzLib.OnStop += () => __Destroy();
+        WL.WoowzLib.OnStop += __Destroy;
         
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);

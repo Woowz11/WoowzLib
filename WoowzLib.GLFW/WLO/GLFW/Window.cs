@@ -46,7 +46,8 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_OPENGL_FORWARD_COMPAT, 1                                      );
             
             IntPtr Title__ = WL.Native.MemoryStringUTF(Title);
-            
+
+            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_VISIBLE, 0);
             Handle = WL.GLFW.Native.glfwCreateWindow((int)Width, (int)Height, Title__, IntPtr.Zero, IntPtr.Zero);
             
             WL.Native.Free(Title__);
@@ -60,7 +61,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             
             __X = -1;
             __Y = -1;
-            Position = Vector2I.Zero;
+            Position = new Vector2I(64, 64);
 
             Focused = WL.GLFW.Native.glfwGetWindowAttrib(Handle, WL.GLFW.Native.GLFW_FOCUSED) == 1;
             
