@@ -7,12 +7,13 @@ using Logger = WLO.Logger;
 using System.Windows.Forms;
 
 public static class Program{
-
-    [STAThread]
+    
     public static int Main(string[] Args){
         try{
             WL.WoowzLib.Start();
 
+            Console.WriteLine(WL.WoowzLib.ProgramType);
+            
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             

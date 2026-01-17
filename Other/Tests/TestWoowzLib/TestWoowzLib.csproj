@@ -4,8 +4,8 @@
         <TargetFramework>net8.0-windows</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <OutputType>WinExe</OutputType>
         <UseWindowsForms>true</UseWindowsForms>
+        <OutputType>Exe</OutputType>
     </PropertyGroup>
 
     <ItemGroup>

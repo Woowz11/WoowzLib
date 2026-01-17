@@ -2,17 +2,10 @@
 using File = WLO.File;
 
 namespace WL{
-    [WLModule(-2500, 0)]
+    [WLModule(-2500, 1)]
     public static class Native{
         public const string Error_DLLNotExist      = "Не найден DLL!";
         public const string Error_FunctionNotFound = "Функция не найдена!";
-        
-        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
-        private static extern IntPtr LoadLibrary(string lpFileName);
-        [DllImport("kernel32", SetLastError = true)]
-        private static extern bool FreeLibrary(IntPtr hModule);
-        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Ansi)]
-        private static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
 
         private static readonly Dictionary<string, IntPtr> LoadedDLL = new Dictionary<string, IntPtr>(StringComparer.OrdinalIgnoreCase);
 
@@ -62,7 +55,7 @@ namespace WL{
                     throw new Exception("Этот DLL уже был загружен! Handle: " + Handle);
                 }
 
-                Handle = LoadLibrary(DLLName);
+                Handle = WL.Windows.Kernel.LoadLibrary(DLLName);
                 if(Handle == IntPtr.Zero){
                     throw new Exception("Не получилось загрузить DLL внутри kernel32! Ошибка: " + Marshal.GetLastWin32Error());
                 }
@@ -84,7 +77,7 @@ namespace WL{
                     throw new Exception(Error_DLLNotExist);
                 }
                 
-                bool Result = FreeLibrary(Handle);
+                bool Result = WL.Windows.Kernel.FreeLibrary(Handle);
                 if(Result){
                     LoadedDLL.Remove(DLLName);
                 }else{
@@ -135,7 +128,7 @@ namespace WL{
         /// <returns>Ссылка на функцию</returns>
         public static IntPtr FunctionSystem(IntPtr DLL, string Name){
             try{
-                IntPtr Proc = GetProcAddress(DLL, Name);
+                IntPtr Proc = WL.Windows.Kernel.GetProcAddress(DLL, Name);
                 return Proc == IntPtr.Zero ? throw new Exception(Error_FunctionNotFound) : Proc;
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при загрузке функции из системного DLL (IntPtr) [" + DLL.ToInt64() + "]!\nФункция: " + Name);

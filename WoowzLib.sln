@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.String", "WoowzLib
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.Logger", "WoowzLib.Logger\WoowzLib.Logger.csproj", "{4FAD8323-50FC-4AC1-B752-793B559EB7FC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.WindowsForm", "WoowzLib.WindowsForm\WoowzLib.WindowsForm.csproj", "{5FBB0C8A-19D5-464E-BB11-029901C89A22}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|Any CPU = Release|Any CPU
@@ -49,5 +51,7 @@ Global
 		{7AA1A5B2-E889-4C12-A827-6DEF0A83175D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4FAD8323-50FC-4AC1-B752-793B559EB7FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4FAD8323-50FC-4AC1-B752-793B559EB7FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FBB0C8A-19D5-464E-BB11-029901C89A22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FBB0C8A-19D5-464E-BB11-029901C89A22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

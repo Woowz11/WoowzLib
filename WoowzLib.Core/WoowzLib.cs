@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
 using WLO;
 
 namespace WLO{
@@ -36,10 +38,28 @@ namespace WLO{
         /// <param name="TargetFPS">Целевой FPS</param>
         public double DeltaFPS(double TargetFPS){ return Delta(WL.WoowzLib.Tick.FPSToDeltaTime(TargetFPS)); }
     }
+
+    /// <summary>
+    /// Тип скомпилированной программы
+    /// </summary>
+    public enum ProgramType{
+        /// <summary>
+        /// Консольное приложение (Exe)
+        /// </summary>
+        Console,
+        /// <summary>
+        /// Оконное приложение (WinExe)
+        /// </summary>
+        Window,
+        /// <summary>
+        /// Никакое, возможно библиотека (возможно ещё Module)
+        /// </summary>
+        None
+    }
 }
 
 namespace WL{
-    [WLModule(int.MinValue, 0)]
+    [WLModule(int.MinValue, 1)]
     public static class WoowzLib{
         static WoowzLib(){
             AppDomain     .CurrentDomain.ProcessExit        += (_, _) => Stop();
@@ -88,9 +108,35 @@ namespace WL{
             try{
                 if(Started){ throw new Exception("WoowzLib уже был запущен!"); }
                 Started = true;
+
+                #region Детект типа программы
+
+                    WLO.ProgramType PT = ProgramType.None;
+                    
+                    if(Assembly.GetEntryAssembly() != null){
+                        PT = WL.Windows.Kernel.GetConsoleWindow() != IntPtr.Zero ? ProgramType.Console : ProgramType.Window;
+                    }
+                    
+                    ProgramType = PT;
+
+                #endregion
+
+                if(ProgramType == ProgramType.Window){
+                    WL.Windows.Kernel.AllocConsole();
+                }
+
+                Console.__SetHandle(WL.Windows.Kernel.GetConsoleWindow());
+                if(Console.Handle == IntPtr.Zero){ Logger.Warn("Не найдена консоль! Возможны ошибки"); }
+
+                if(ProgramType == ProgramType.Window){
+                    Console.Visible = false;
+                }
+                
+                Console.OutEncoding = Encoding.UTF8;
+                Console.InEncoding  = Encoding.UTF8;
                 
                 Console.Title = "WoowzLib Program";
-                
+
                 Logger.Info("Установка WL [\"" + RunFolder + "\"]:");
                 
                 foreach(string DLL in Directory.GetFiles(RunFolder, "WoowzLib.*.dll")){
@@ -169,15 +215,50 @@ namespace WL{
         /// Папка, где запущено приложение
         /// </summary>
         public static string RunFolder => AppContext.BaseDirectory;
-        
+
+        /// <summary>
+        /// Тип приложения
+        /// </summary>
+        public static ProgramType ProgramType{ get; private set; }
+
         public static class Console{
+            /// <summary>
+            /// Ссылка на консоль
+            /// </summary>
+            public static IntPtr Handle{ get; private set; }
+            public static void __SetHandle(IntPtr Handle__){ Handle = Handle__; }
+
             /// <summary>
             /// Название окна консоли
             /// </summary>
             public static string Title{
                 get => System.Console.Title;
+                set => System.Console.Title = value;
+            }
+
+            /// <summary>
+            /// Кодировка вывода
+            /// </summary>
+            public static Encoding OutEncoding{
+                get => System.Console.OutputEncoding;
+                set => System.Console.OutputEncoding = value;
+            }
+            
+            /// <summary>
+            /// Кодировка ввода
+            /// </summary>
+            public static Encoding InEncoding{
+                get => System.Console.InputEncoding;
+                set => System.Console.InputEncoding = value;
+            }
+
+            /// <summary>
+            /// Видно консоль?
+            /// </summary>
+            public static bool Visible{
+                get => WL.Windows.Kernel.IsWindowVisible(Handle);
                 set{
-                    System.Console.Title = value;
+                    WL.Windows.Kernel.ShowWindow(Handle, value ? WL.Windows.Kernel.SW_SHOW : WL.Windows.Kernel.SW_HIDE);
                 }
             }
         }
@@ -304,5 +385,33 @@ namespace WL{
                 }
             }
         }
+    }
+}
+
+namespace WL.Windows{
+    public static class Kernel{
+        [DllImport("kernel32")]
+        public static extern IntPtr GetConsoleWindow();
+        
+        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern IntPtr LoadLibrary(string lpFileName);
+        
+        [DllImport("kernel32", SetLastError = true)]
+        public static extern bool FreeLibrary(IntPtr hModule);
+        
+        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Ansi)]
+        public static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
+        
+        [DllImport("kernel32.dll")]
+        public static extern bool AllocConsole();
+        
+        [DllImport("user32.dll")]
+        public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        [DllImport("user32.dll")]
+        public static extern bool IsWindowVisible(IntPtr hWnd);
+        
+        public const int SW_HIDE = 0;
+        public const int SW_SHOW = 5;
     }
 }
