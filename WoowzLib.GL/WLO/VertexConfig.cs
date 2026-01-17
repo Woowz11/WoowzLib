@@ -126,12 +126,14 @@ public class VertexConfig : GLResource{
 
     public VertexConfig Render(Program Program, RenderMode RenderMode, int VertexCount, int Offset = 0){
         try{
+            CheckContext(Program.Context);
+
             Use();
             Program.Use();
 
             WL.GL.Native.glDrawArrays((uint)RenderMode, Offset, VertexCount);
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при рендере VertexConfig [" + this + "]!\nПрограмма: " + Program + "\nРежим рендера: " + RenderMode + "\nКол-во вершин: " + VertexCount);
+            throw new Exception("Произошла ошибка при рендере VertexConfig [" + this + "]!\nПрограмма: " + Program + "\nРежим рендера: " + RenderMode + "\nКол-во вершин: " + VertexCount, e);
         }
 
         return this;

@@ -56,9 +56,10 @@ public class Program : GLResource{
     /// <param name="Shader"></param>
     public Program Connect(Shader Shader){
         try{
+            CheckContext(Shader.Context);
             if(!Shader.Created){ throw new Exception("Шейдер не создан!"); }
             if(ConnectedShaders.Contains(Shader)){ throw new Exception("Такой шейдер уже есть!"); }
-            
+
             Context.__MakeContext();
             WL.GL.Native.glAttachShader(ID, Shader.ID);
             ConnectedShaders.Add(Shader);
@@ -80,6 +81,7 @@ public class Program : GLResource{
     /// <returns></returns>
     public Program Disconnect(Shader Shader){
         try{
+            CheckContext(Shader.Context);
             if(!Shader.Created){ throw new Exception("Шейдер не создан!"); }
             if(!ConnectedShaders.Contains(Shader)){ throw new Exception("Шейдер не найден!"); }
             
@@ -229,6 +231,8 @@ public abstract class Uniform{
             this.TryAnywayFind = TryAnywayFind;
 
             if(!Program.Compiled){ throw new Exception("Программа не скомпилирована!"); }
+
+            Program.Context.__MakeContext();
             
             Location = WL.GL.Native.glGetUniformLocation(Program.ID, Name);
             if(Location < 0 && !TryAnywayFind){ throw new Exception("Не найден такой Uniform [\"" + Name + "\"] в программе, или не используется!"); }
@@ -282,6 +286,8 @@ public abstract class Uniform{
             if(!TryAnywayFind){ return; }
             if(Program == null || !Program.Compiled){ throw new Exception("Нет программы, или она не скомпилирована!"); }
 
+            Program.Context.__MakeContext();
+            
             Location = WL.GL.Native.glGetUniformLocation(Program.ID, Name);
             if(Location < 0){ throw new Exception("Не найден такой Uniform [\"" + Name + "\"] в программе, или не используется!"); }
         }catch(Exception e){

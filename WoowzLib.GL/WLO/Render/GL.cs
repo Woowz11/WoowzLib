@@ -75,7 +75,7 @@ public class GL : RenderContext{
     /// <summary>
     /// Проверяет, что контексты ресурса совпадают
     /// </summary>
-    private void CheckGLResourceContext(GLResource? Resource){ if(Resource == null){ return; } if(Resource.Context != this){ throw new Exception("Контекст ресурса [" + Resource + "] и указанного GL [" + this + "] не совпадают!"); } }
+    private void CheckGLResourceContext(GLResource? Resource){ if(Resource == null){ return; } Resource.CheckContext(this); __MakeContext(); }
 
     #region Uses
 
@@ -86,8 +86,8 @@ public class GL : RenderContext{
             get => __CurrentProgram;
             set{
                 try{
-                    if(__CurrentProgram == value){ return; }
                     CheckGLResourceContext(value);
+                    if(__CurrentProgram == value){ return; }
                     if(value != null && !value.Created){ throw new Exception("Программа не создана!"); }
 
                     __MakeContext();
@@ -110,8 +110,8 @@ public class GL : RenderContext{
             get => __CurrentFloatBuffer;
             set{
                 try{
-                    if(__CurrentFloatBuffer == value){ return; }
                     CheckGLResourceContext(value);
+                    if(__CurrentFloatBuffer == value){ return; }
                     if(value != null && !value.Created){ throw new Exception("Буфер не создан!"); }
 
                     __MakeContext();
@@ -134,8 +134,8 @@ public class GL : RenderContext{
             get => __CurrentIntBuffer;
             set{
                 try{
-                    if(__CurrentIntBuffer == value){ return; }
                     CheckGLResourceContext(value);
+                    if(__CurrentIntBuffer == value){ return; }
                     if(value != null && !value.Created){ throw new Exception("Буфер не создан!"); }
 
                     __MakeContext();
@@ -158,8 +158,8 @@ public class GL : RenderContext{
             get => __CurrentVertexConfig;
             set{
                 try{
-                    if(__CurrentVertexConfig == value){ return; }
                     CheckGLResourceContext(value);
+                    if(__CurrentVertexConfig == value){ return; }
                     if(value != null && !value.Created){ throw new Exception("VertexConfig не создан!"); }
 
                     __MakeContext();

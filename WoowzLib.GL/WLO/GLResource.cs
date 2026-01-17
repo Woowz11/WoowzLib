@@ -108,6 +108,11 @@ public abstract class GLResource{
         __Parent.Remove(Parent);
         Parent.__Children.Remove(this);
     }
+
+    /// <summary>
+    /// Проверяет, если контексты не совпадают, то выдаёт ошибку
+    /// </summary>
+    public void CheckContext(Render.GL OtherContext){ if(Context != OtherContext){ throw new Exception("Контексты не совпадают! [" + Context + "] != [" + OtherContext + "]"); } }
     
     /// <summary>
     /// Вызывается при уничтожении ресурса
@@ -119,7 +124,7 @@ public abstract class GLResource{
     /// </summary>
     public void Destroy(){
         try{
-            if(!Created        ){ throw new Exception("Ресурс уже уничтоженный!"); }
+            if(!Created          ){ throw new Exception("Ресурс уже уничтоженный!"); }
             if(__Parent.Count > 0){ throw new Exception("Невозможно уничтожить, есть родитель!"); }
 
             TryDestroy();

@@ -4,7 +4,8 @@ namespace WLO.WinForm;
 
 public class Window : IDisposable{
     /// <summary>
-    /// Создаёт WinForm окно
+    /// Создаёт WinForm окно<br />
+    /// Прежде чем создать, прочитайте что нужно для окна у WL.Windows.Form
     /// </summary>
     /// <param name="Width">Ширина окна</param>
     /// <param name="Height">Высота окна</param>
