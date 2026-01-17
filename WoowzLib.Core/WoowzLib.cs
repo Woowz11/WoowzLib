@@ -59,7 +59,7 @@ namespace WLO{
 }
 
 namespace WL{
-    [WLModule(int.MinValue, 1)]
+    [WLModule(int.MinValue, 2)]
     public static class WoowzLib{
         static WoowzLib(){
             AppDomain     .CurrentDomain.ProcessExit        += (_, _) => Stop();

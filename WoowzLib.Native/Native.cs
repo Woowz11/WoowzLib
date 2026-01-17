@@ -2,7 +2,7 @@
 using File = WLO.File;
 
 namespace WL{
-    [WLModule(-2500, 1)]
+    [WLModule(-2500, 2)]
     public static class Native{
         public const string Error_DLLNotExist      = "Не найден DLL!";
         public const string Error_FunctionNotFound = "Функция не найдена!";

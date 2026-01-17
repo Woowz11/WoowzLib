@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 
 namespace WL{
-    [WLModule(-1000, 3)]
+    [WLModule(-1000, 4)]
     public static class Explorer{
         /// <summary>
         /// Для работы с файлами

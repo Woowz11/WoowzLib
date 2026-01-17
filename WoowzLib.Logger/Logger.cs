@@ -3,7 +3,7 @@ using WLO;
 
 namespace WL;
 
-[WLModule(-500, 0)]
+[WLModule(-500, 1)]
 public class Logger{
     static Logger(){
         WL.WoowzLib.OnStarted += () => {
@@ -17,6 +17,10 @@ public class Logger{
             catch(Exception e){
                 throw new Exception("Произошла ошибка при установке Logger!", e);
             }
+        };
+
+        WL.WoowzLib.OnStop += () => {
+            Console.ForegroundColor = ConsoleColor.Gray;
         };
     }
     
@@ -55,8 +59,6 @@ public class Logger{
     
     private static void Print(MessageType Type, object[] Message){
         try{
-            ConsoleColor PreviousColor = Console.ForegroundColor;
-
             string FullMessage = WL.String.Join(Message);
             string[] Lines = FullMessage.Split('\n');
             
@@ -65,16 +67,14 @@ public class Logger{
                 MessageType.Warn  => ConsoleColor.DarkYellow,
                 MessageType.Error => ConsoleColor.DarkRed,
                 MessageType.Fatal => ConsoleColor.DarkMagenta,
-                MessageType.Debug => ConsoleColor.DarkGreen,
-                _ => PreviousColor
+                MessageType.Debug => ConsoleColor.DarkGreen
             };;
             ConsoleColor ColorL = Type switch{
                 MessageType.Info  => ConsoleColor.White,
                 MessageType.Warn  => ConsoleColor.Yellow,
                 MessageType.Error => ConsoleColor.Red,
                 MessageType.Fatal => ConsoleColor.Magenta,
-                MessageType.Debug => ConsoleColor.Green,
-                _ => PreviousColor
+                MessageType.Debug => ConsoleColor.Green
             };
 
             for(int i = 0; i < Lines.Length; i++){
@@ -85,8 +85,6 @@ public class Logger{
 
                 __Eval = !__Eval;
             }
-            
-            Console.ForegroundColor = PreviousColor;
         }catch(Exception e){
             throw new Exception("Произошла ошибка при отправке сообщения типа [" + Type + "]!\nСообщение: (" + WL.String.Join(Message) + ")");
         }

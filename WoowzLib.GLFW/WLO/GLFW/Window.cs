@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-namespace WLO.GLFW;
+﻿namespace WLO.GLFW;
 
 public abstract class WindowBase : WindowContext, IDisposable{
     public abstract void Destroy();
@@ -24,7 +22,7 @@ public abstract class WindowBase : WindowContext, IDisposable{
 /// </summary>
 public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     /// <summary>
-    /// Создаёт окно
+    /// Создаёт GLFW окно
     /// </summary>
     /// <param name="Width">Ширина окна</param>
     /// <param name="Height">Высота окна</param>
@@ -42,10 +40,10 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             this.Resizable = Resizable;
             WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_RESIZABLE, Resizable ? 1 : 0);
 
-            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_CONTEXT_VERSION_MAJOR, RenderContext.__OpenGLMajor);
-            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_CONTEXT_VERSION_MINOR, RenderContext.__OpenGLMinor);
-            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_OPENGL_PROFILE, WL.GLFW.Native.GLFW_OPENGL_CORE_PROFILE);
-            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_OPENGL_FORWARD_COMPAT, 1);
+            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_CONTEXT_VERSION_MAJOR, RenderContext.__OpenGLMajor            );
+            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_CONTEXT_VERSION_MINOR, RenderContext.__OpenGLMinor            );
+            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_OPENGL_PROFILE       , WL.GLFW.Native.GLFW_OPENGL_CORE_PROFILE);
+            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_OPENGL_FORWARD_COMPAT, 1                                      );
             
             IntPtr Title__ = WL.Native.MemoryStringUTF(Title);
             
@@ -59,10 +57,10 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             __Height = Height;
             
             __Title  = Title;
-
-            WL.GLFW.Native.glfwGetWindowPos(Handle, out int X, out int Y);
-            __X = X;
-            __Y = Y;
+            
+            __X = -1;
+            __Y = -1;
+            Position = Vector2I.Zero;
 
             Focused = WL.GLFW.Native.glfwGetWindowAttrib(Handle, WL.GLFW.Native.GLFW_FOCUSED) == 1;
             
@@ -90,7 +88,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
                 __Height = (uint)Height;
 
                 try{
-                    OnResize?.Invoke(this, Width, Height);   
+                    OnResize?.Invoke(this, __Width, __Height);   
                 }catch(Exception e){
                     Logger.Error("Произошла ошибка при вызове ивентов на изменение размера окна [" + this + "]!\nШирина: " + Width + "\nВысота: " + Height, e);
                 }
@@ -134,7 +132,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             Render.__ConnectWindow(this);
 
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при создании окна [" + this + "]!", e);
+            throw new Exception("Произошла ошибка при создании GLFW окна [" + this + "]!", e);
         }
     }
     private readonly WL.GLFW.Native.WindowCloseCallback   ? __CloseCallback   ;
@@ -162,7 +160,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     /// <summary>
     /// Проверяет, уничтожено окно или нет? (Выдаёт ошибку)
     /// </summary>
-    public Window<TRender> CheckDestroyed(){ if(Destroyed){ throw new Exception("Окно [" + this + "] уничтожено!"); } return this; }
+    public Window<TRender> CheckDestroyed(){ return Destroyed ? throw new Exception("Окно [" + this + "] уничтожено!") : this; }
 
     /// <summary>
     /// Завершает рендер (меняет буфер рендера с буфером экрана местами)
@@ -221,7 +219,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
         #region Delegates
 
             public delegate void WindowEvent(Window<TRender> Window);
-            public delegate void WindowEvent_Size(Window<TRender> Window, int Width, int Height);
+            public delegate void WindowEvent_Size(Window<TRender> Window, uint Width, uint Height);
             public delegate void WindowEvent_Position(Window<TRender> Window, int X, int Y);
             public delegate void WindowEvent_Focus(Window<TRender> Window, bool Focus);
             
