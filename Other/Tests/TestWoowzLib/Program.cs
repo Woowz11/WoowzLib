@@ -12,14 +12,14 @@ public static class Program{
     public static int Main(string[] Args){
         try{
             WL.WoowzLib.Start();
-
+            
             WL.GL.Debug.LogMain = true;
             WL.GL.Debug.LogDestroy = true;
             WL.GL.Debug.LogProgram = true;
             //WL.GL.Debug.LogUse = true;
             WL.GL.Debug.LogBuffer = true;
             WL.GL.Debug.LogVertexConfig = true;
-
+            
             WL.GLFW.Start();
 
             Window<GL> AAA = new Window<GL>();
@@ -87,7 +87,7 @@ public static class Program{
                     }
                 });
 
-                WL.WoowzLib.Tick.Limit(2, 16, (TD__) => {
+                WL.WoowzLib.Tick.LimitFPS(2, 60, (TD__) => {
                     i++;
                     if(i > 16 && !AAA.ShouldDestroy){
                         AAA.Title = "WoowzLib (" + TD.DeltaTime + " | " + TD.FPS + ") [" + TD__.DeltaTime + "] {" + TD.DeltaFPS(TARGETFPS) + "} " + WL.Math.Time.ProgramLifeTick;
