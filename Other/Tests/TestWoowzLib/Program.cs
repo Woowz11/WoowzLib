@@ -16,9 +16,9 @@ public static class Program{
 
 
 
-            Window W = new Window();
+            Window W  = new Window();
             Window W2 = new Window();
-
+            
             while(!W.ShouldDestroy || !W2.ShouldDestroy){
                 WL.Windows.Form.Tick();
             }

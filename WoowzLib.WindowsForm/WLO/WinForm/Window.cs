@@ -13,14 +13,19 @@ public class Window : IDisposable{
         try{
             Form = new Form();
             ID   = RuntimeHelpers.GetHashCode(Form);
+
+            WL.Windows.Form.Windows.Add(this);
             
             this.Title = Title;
             Size  = new Vector2U(Width, Height);
             
-            __X = -1;
-            __Y = -1;
-            Position = Vector2I.Zero;
             Focused  = Form.Focused;
+
+            Form.Shown += (_, _) => {
+                __X = -1;
+                __Y = -1;
+                Position = Vector2I.Zero;
+            };
 
             Form.Closing += (_, e__) => {
                 try{
@@ -75,17 +80,8 @@ public class Window : IDisposable{
                     Logger.Error("Произошла ошибка при вызове ивентов на изменение фокуса окна [" + this + "] на false!\nФокус: " + Focused, e);
                 }
             };
-            
-            Thread Thread__ = new Thread(() => {
-                try{
-                    Application.Run(Form);
-                }catch(Exception e){
-                    Logger.Error("Произошла ошибка в потоке WinForm окна [" + this + "]!", e);
-                }
-            });
-            Thread__.SetApartmentState(ApartmentState.STA);
-            Thread__.IsBackground = true;
-            Thread__.Start();
+
+            Visible = true;
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании WinForm окна [" + this + "]!", e);
         }
@@ -100,23 +96,6 @@ public class Window : IDisposable{
     /// Оригинальное окно
     /// </summary>
     public Form? Form{ get; private set; }
-
-    /// <summary>
-    /// Вызывает функции окна в нужном для него потоке
-    /// </summary>
-    private void __Invoke(Action Action){
-        try{
-            CheckDestroyed();
-            
-            if(Form!.InvokeRequired){
-                Form.Invoke(Action);
-            }else{
-                Action.Invoke();
-            }
-        }catch(Exception e){
-            throw new Exception("Произошла ошибка при попытке вызова действий WinForm окну [" + this + "]!", e);
-        }
-    }
     
     /// <summary>
     /// Уничтожено окно?
@@ -184,10 +163,10 @@ public class Window : IDisposable{
             try{
                 if(__Width == value){ return; }
                 __Width = value;
-
-                __Invoke(() => {
-                    Form!.Width = (int)__Width;
-                });
+                
+                CheckDestroyed();
+                
+                Form!.Width = (int)__Width;
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при установке ширины окну [" + this + "]!\nШирина: " + value, e);
             }
@@ -204,10 +183,10 @@ public class Window : IDisposable{
             try{
                 if(__Height == value){ return; }
                 __Height = value;
-
-                __Invoke(() => {
-                    Form!.Height = (int)__Height;
-                });
+                
+                CheckDestroyed();
+                
+                Form!.Height = (int)__Height;
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при установке высоты окну [" + this + "]!\nВысота: " + value, e);
             }
@@ -227,10 +206,10 @@ public class Window : IDisposable{
                 __Width  = value.X;
                 __Height = value.Y;
 
-                __Invoke(() => {
-                    Form!.Width = (int)__Width;
-                    Form!.Height = (int)__Height;
-                });
+                CheckDestroyed();
+                
+                Form!.Width = (int)__Width;
+                Form!.Height = (int)__Height;
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при установке размера окну [" + this + "]!\nРазмер: " + value, e);
             }
@@ -247,9 +226,9 @@ public class Window : IDisposable{
                 if(__X == value){ return; }
                 __X = value;
 
-                __Invoke(() => {
-                    Form!.Location = new Point(__X, __Y);
-                });
+                CheckDestroyed();
+                
+                Form!.Location = new Point(__X, __Y);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при установке позиции по X у окна [" + this + "]!\nX: " + value, e);
             }
@@ -266,10 +245,10 @@ public class Window : IDisposable{
             try{
                 if(__Y == value){ return; }
                 __Y = value;
-
-                __Invoke(() => {
-                    Form!.Location = new Point(__X, __Y);
-                });
+                
+                CheckDestroyed();
+                
+                Form!.Location = new Point(__X, __Y);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при установке позиции по Y у окна [" + this + "]!\nY: " + value, e);
             }
@@ -287,10 +266,10 @@ public class Window : IDisposable{
                 if(__X == value.X && __Y == value.Y){ return; }
                 __X = value.X;
                 __Y = value.Y;
-
-                __Invoke(() => {
-                    Form!.Location = new Point(__X, __Y);
-                });
+                
+                CheckDestroyed();
+                
+                Form!.Location = new Point(__X, __Y);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при установке позиции у окна [" + this + "]!\nПозиция: " + value, e);
             }
@@ -321,16 +300,40 @@ public class Window : IDisposable{
             try{
                 if(__Title == value){ return; }
                 __Title = value;
-
-                __Invoke(() => {
-                    Form!.Text = __Title;
-                });
+                
+                CheckDestroyed();
+                
+                Form!.Text = __Title;
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при установке названия окну [" + this + "]!\nНазвание: \"" + value + "\"", e);
             }
         }
     }
     private string __Title;
+    
+    /// <summary>
+    /// Видно окно?
+    /// </summary>
+    public bool Visible{
+        get => __Visible;
+        set{
+            try{
+                if(__Visible == value){ return; }
+                __Visible = value;
+
+                CheckDestroyed();
+
+                if(__Visible){
+                    Form!.Show();   
+                }else{
+                    Form!.Hide();
+                }
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке видимости у окна [" + this + "]!\nВидимость: " + value, e);
+            }
+        }
+    }
+    private bool __Visible;
     
     /// <summary>
     /// Окно должно уничтожиться? (При получении уничтожает окно если должно)
@@ -358,7 +361,10 @@ public class Window : IDisposable{
             }
             
             Form!.Close();
+            Form!.Dispose();
             Form = null;
+            
+            WL.Windows.Form.Windows.Remove(this);
             
             ID = -1;
         }catch(Exception e){

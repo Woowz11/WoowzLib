@@ -4,7 +4,7 @@ using WLO.GLFW;
 using File = WLO.File;
 
 namespace WL{
-    [WLModule(30, 1)]
+    [WLModule(30, 2)]
     public static class GLFW{
         static GLFW(){
             WL.WoowzLib.OnStop += () => __Destroy(true);
@@ -91,8 +91,8 @@ namespace WL{
         public static void Tick(){
             try{
                 Native.glfwPollEvents();
-                foreach(WindowBase window in Windows.ToArray()){
-                    if(window.ShouldDestroy){ window.Destroy(); }
+                foreach(WindowBase Window in Windows.ToArray()){
+                    if(Window.ShouldDestroy){ Window.Destroy(); }
                 }
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при обновлении GLFW!", e);
