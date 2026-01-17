@@ -90,8 +90,6 @@ public class GL : RenderContext{
                     if(__CurrentProgram == value){ return; }
                     if(value != null && !value.Created){ throw new Exception("Программа не создана!"); }
 
-                    __MakeContext();
-
                     __CurrentProgram = value;
                     WL.GL.Native.glUseProgram(value?.ID ?? 0);
 
@@ -113,8 +111,6 @@ public class GL : RenderContext{
                     CheckGLResourceContext(value);
                     if(__CurrentFloatBuffer == value){ return; }
                     if(value != null && !value.Created){ throw new Exception("Буфер не создан!"); }
-
-                    __MakeContext();
 
                     __CurrentFloatBuffer = value;
                     WL.GL.Native.glBindBuffer((uint)BufferType.Float, value?.ID ?? 0);
@@ -138,8 +134,6 @@ public class GL : RenderContext{
                     if(__CurrentIntBuffer == value){ return; }
                     if(value != null && !value.Created){ throw new Exception("Буфер не создан!"); }
 
-                    __MakeContext();
-
                     __CurrentIntBuffer = value;
                     WL.GL.Native.glBindBuffer((uint)BufferType.Int, value?.ID ?? 0);
 
@@ -161,8 +155,6 @@ public class GL : RenderContext{
                     CheckGLResourceContext(value);
                     if(__CurrentVertexConfig == value){ return; }
                     if(value != null && !value.Created){ throw new Exception("VertexConfig не создан!"); }
-
-                    __MakeContext();
 
                     __CurrentVertexConfig = value;
                     WL.GL.Native.glBindVertexArray(value?.ID ?? 0);

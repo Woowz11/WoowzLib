@@ -31,7 +31,6 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     /// <param name="Resizable">Можно изменять размер окна курсором?</param>
     public Window(uint Width = 800, uint Height = 600, string Title = "WL Window", bool TransparentBuffer = true, bool Resizable = true){
         try{
-            // Я ХЗ, как реализовывать общие ресурсы между контекстами рендера, нужно будет придумать
             if(!WL.GLFW.Stared){ throw new Exception("GLFW не запущен!"); }
 
             HasTransparentBuffer = TransparentBuffer;
@@ -162,11 +161,11 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     /// Проверяет, уничтожено окно или нет? (Выдаёт ошибку)
     /// </summary>
     public Window<TRender> CheckDestroyed(){ return Destroyed ? throw new Exception("Окно [" + this + "] уничтожено!") : this; }
-
+    
     /// <summary>
     /// Завершает рендер (меняет буфер рендера с буфером экрана местами)
     /// </summary>
-    public Window<TRender> FinishRender(){
+    public Window<TRender> StopRender(){
         try{
             CheckDestroyed(); WL.GLFW.Native.glfwSwapBuffers(Handle);   
         }catch(Exception e){

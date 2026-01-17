@@ -23,7 +23,6 @@ public static class Program{
             WL.GLFW.Start();
 
             Window<GL> AAA = new Window<GL>();
-            Window<GL> BBB = new Window<GL>();
 
             Shader VShader = new Shader(AAA.Render, ShaderType.Vertex, """
                                                                        layout(location = 0) in vec3 InPosition;
@@ -64,59 +63,16 @@ public static class Program{
             VertexConfig VC = new VertexConfig(AAA.Render);
 
             VC.Connect(VBuffer, 0, DataCount.Three, 3, 0, false);
-            
-            //-----------------------
-            
-            Shader _2_VShader = new Shader(BBB.Render, ShaderType.Vertex, """
-                                                                       layout(location = 0) in vec3 InPosition;
-
-                                                                       void main(){
-                                                                           gl_Position = vec4(InPosition, 1.0);
-                                                                       }
-                                                                       """);
-
-            Shader _2_FShader = new Shader(BBB.Render, ShaderType.Fragment, """
-                                                                            uniform float Time;
-
-                                                                            out vec4 OutColor;
-
-                                                                            void main(){
-                                                                                OutColor = vec4(
-                                                                                   0.5 + sin(Time / 100000)/2,
-                                                                                   0.5 + sin(Time / 200000)/2,
-                                                                                   0.5 + sin(Time / 300000)/2,
-                                                                                   1
-                                                                               );
-                                                                            }
-                                                                            """);
-
-            WLO.GL.Program _2_Prog  = new WLO.GL.Program(BBB.Render, _2_VShader, _2_FShader );
-
-            Uniform_Float _2_U_Time = new Uniform_Float(_2_Prog, "Time");
-
-            _2_VShader.Destroy();
-            _2_FShader.Destroy();
-
-            FloatBuffer _2_VBuffer = new FloatBuffer(BBB.Render, new MassiveF([
-                0   ,  1f, 0,
-                0.5f, -0.5f, 0,
-                -0.5f, -0.5f, 0
-            ]));
-
-            VertexConfig _2_VC = new VertexConfig(BBB.Render);
-
-            _2_VC.Connect(_2_VBuffer, 0, DataCount.Three, 3, 0, false);
 
             const int TARGETFPS = 120;
 
             TickData TD = new TickData();
             int i = int.MaxValue - 1;
-            while(!AAA.ShouldDestroy || !BBB.ShouldDestroy){
+            while(!AAA.ShouldDestroy){
                 WL.WoowzLib.Tick.LimitFPS(1, TARGETFPS, (TD__) => {
                     TD = TD__;
 
                     if(!AAA.ShouldDestroy){
-
                         U_Time.Value = WL.Math.Time.ProgramLifeTick;
 
                         AAA.Render.Viewport = new RectI(AAA.Size);
@@ -127,22 +83,7 @@ public static class Program{
 
                         VC.Render(Prog, RenderMode.Triangles, 9);
 
-                        AAA.FinishRender();
-                    }
-                    
-                    if(!BBB.ShouldDestroy){
-
-                        _2_U_Time.Value = (float)WL.Math.Time.ProgramLifeTick / 10;
-
-                        BBB.Render.Viewport = new RectI(BBB.Size);
-
-                        BBB.Render.BackgroundColor = ColorF.Transparent;
-
-                        BBB.Render.Clear();
-
-                        _2_VC.Render(_2_Prog, RenderMode.Triangles, 9);
-
-                        BBB.FinishRender();
+                        AAA.StopRender();
                     }
                 });
 
