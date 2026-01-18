@@ -70,6 +70,28 @@ public sealed class DrawableWindow : Drawable{
 
                 WL.Windows.Kernel.UpdateWindow(Window);
 
+                IntPtr HDC = Kernel.GetDC(Window);
+
+                Kernel.PIXELFORMATDESCRIPTOR PFD = new Kernel.PIXELFORMATDESCRIPTOR
+                {
+                    nSize = (ushort)Marshal.SizeOf<Kernel.PIXELFORMATDESCRIPTOR>(),
+                    nVersion = 1,
+                    dwFlags = Kernel.PFD_DRAW_TO_WINDOW | Kernel.PFD_SUPPORT_OPENGL | Kernel.PFD_DOUBLEBUFFER,
+                    iPixelType = Kernel.PFD_TYPE_RGBA,
+                    cColorBits = 32,
+                    cDepthBits = 24,
+                    cStencilBits = 8,
+                    iLayerType = Kernel.PFD_MAIN_PLANE
+                };
+
+                int PixelFormat = Kernel.ChoosePixelFormat(HDC, ref PFD);
+                if(PixelFormat == 0){ throw new Exception("Не удалось выбрать PixelFormat!"); }
+
+                if(!Kernel.SetPixelFormat(HDC, PixelFormat, ref PFD)){ throw new Exception("Не удалось установить PixelFormat!"); }
+
+                
+                Kernel.ReleaseDC(Window, HDC);
+                
                 Empty = new DrawableWindow(Window);
                 
                 __Event.Set();

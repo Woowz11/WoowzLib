@@ -21,9 +21,9 @@ public class Window{
 
             this.Resizable = Resizable;
             WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_RESIZABLE, Resizable ? 1 : 0);
-
-            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_CONTEXT_VERSION_MAJOR, RenderAPI.__OpenGLMajor            );
-            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_CONTEXT_VERSION_MINOR, RenderAPI.__OpenGLMinor            );
+            
+            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_CONTEXT_VERSION_MAJOR, RenderAPI.__OpenGLMajor                );
+            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_CONTEXT_VERSION_MINOR, RenderAPI.__OpenGLMinor                );
             WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_OPENGL_PROFILE       , WL.GLFW.Native.GLFW_OPENGL_CORE_PROFILE);
             WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_OPENGL_FORWARD_COMPAT, 1                                      );
             

@@ -92,15 +92,11 @@ public class GL : RenderAPI{
             IntPtr HDC = WL.Windows.Kernel.GetDC(WindowHandle);
 
             if(Handle == IntPtr.Zero){
-                int PixelFormat = WL.Windows.Kernel.GetPixelFormat(HDC);
-
-                WL.Windows.Kernel.DescribePixelFormat(HDC, PixelFormat, Marshal.SizeOf<Kernel.PIXELFORMATDESCRIPTOR>(), out Kernel.PIXELFORMATDESCRIPTOR PFD);
-                
                 Handle = WL.GL.Native.wglCreateContext(HDC);
                 if(Handle == IntPtr.Zero){ throw new Exception("Не получилось создать контекст GL в wglCreateContext! HDC: " + HDC + ", Ошибка: " + WL.Windows.Kernel.GetLastError()); }
             }
 
-            if(!WL.GL.Native.wglMakeCurrent(HDC, Handle)){ throw new Exception("Не получилось установить контекст GL через wglMakeCurrent! HDC: " + HDC); }
+            if(!WL.GL.Native.wglMakeCurrent(HDC, Handle)){ throw new Exception("Не получилось установить контекст GL через wglMakeCurrent! HDC: " + HDC + ", Ошибка: " + WL.Windows.Kernel.GetLastError()); }
 
             __CurrentWindowHandle = WindowHandle;
             __CurrentHDC = HDC;
