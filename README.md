@@ -10,7 +10,7 @@
 
 ``WoowzLib`` — Это модульная библиотека для C#
 
-Упрощает работу с GLFW, GL и т.д, добавляет кеширование, и предупреждает если где-то что-то не так, к примеру имеет авто-очистки, содержит комментарии и try/catch и всё на Русском языке
+Упрощает работу с [VULCAN RENDER & CUSTOM WINDOWS], добавляет кеширование, и предупреждает если где-то что-то не так, к примеру имеет авто-очистки, содержит комментарии и try/catch и всё на Русском языке
 
 Использует Net 8.0
 
@@ -18,76 +18,20 @@
 
 ## Модули
 
-|Название   |Что делает?|
-|:---------:|:---------|
-|Core       |Основа для всех модулей, работа с Console, Kernel и т.д|
-|Math       |Математика, Random, время, вектора, цвета, и т.д|
-|String     |Работа со строками|
-|Explorer   |Работа с файлами и папками|
-|Byte       |Работа с байтами, собственные массивы|
-|Logger     |Собственный обработчик сообщений (с цветами, временем и т.д)|
-|Native     |Загрузка DLL, работа с памятью|
-|WindowsForm|Создание WinForm окнон|
-|GLFW       |Создание GLFW окнон|
-|GL         |OpenGL рендер (> 4.6)|
+|Название     |Что делает?|
+|:-----------:|:---------|
+|Core + System|Основа для всех модулей, работа с Console, Windows и т.д|
+|Math         |Математика, Random, время, вектора, цвета, и т.д|
+|String       |Работа со строками|
+|Explorer     |Работа с файлами и папками|
+|Byte         |Работа с байтами, собственные массивы|
+|Logger       |Собственный обработчик сообщений (с цветами, временем и т.д)|
 
 ## Пример
 
 </div>
 
 В начале кода нужно написать ``WL.WoowzLib.Start();``, что-бы модули правильно инициализировались
-
-<div align="center">
-
-### Создание окна WinForm
-
-</div>
-
-```cs
-...
-public static class Program{
-	public static int Main(string[] Args){
-		WL.WoowzLib.Start();
-		
-		Window W = new Window(); // Прежде чем создавать, прочитайте что требуется
-		
-		while(!W.ShouldDestroy){
-			WL.Windows.Form.Tick();
-		}
-	}
-}
-```
-
-<div align="center">
-
-### Создание окна GLFW
-
-</div>
-
-```cs
-...
-public static class Program{
-	public static int Main(string[] Args){
-		WL.WoowzLib.Start();
-		
-		WL.GLFW.Start();
-		
-		Window<GL> W = new Window<GL>();
-		
-		while(!W.ShouldDestroy){
-			W.Render.BackgroundColor = ColorF.Red;
-			
-			W.Render.Clear();
-			
-			W.FinishRender();
-			
-			WL.GLFW.Tick();
-		}
-		
-		WL.GLFW.Stop();
-	}
-}
-```
 
 <div align="center">
 
