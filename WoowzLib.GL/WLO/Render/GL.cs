@@ -1,4 +1,6 @@
-﻿using WLO.GL;
+﻿using System.Runtime.InteropServices;
+using WL.Windows;
+using WLO.GL;
 using Buffer = WLO.GL.Buffer;
 
 namespace WLO.Render;
@@ -7,6 +9,10 @@ namespace WLO.Render;
 /// OpenGL рендер для окна
 /// </summary>
 public class GL : RenderAPI{
+    public GL(){
+        Context(() => {});
+    }
+    
     public void __TryStart(){
         try{
             if(Started){ return; } Started = true;
@@ -86,22 +92,30 @@ public class GL : RenderAPI{
             IntPtr HDC = WL.Windows.Kernel.GetDC(WindowHandle);
 
             if(Handle == IntPtr.Zero){
+                int PixelFormat = WL.Windows.Kernel.GetPixelFormat(HDC);
+
+                WL.Windows.Kernel.DescribePixelFormat(HDC, PixelFormat, Marshal.SizeOf<Kernel.PIXELFORMATDESCRIPTOR>(), out Kernel.PIXELFORMATDESCRIPTOR PFD);
+                
                 Handle = WL.GL.Native.wglCreateContext(HDC);
-                if(Handle == IntPtr.Zero){ throw new Exception("Не получилось создать контекст GL в wglCreateContext! HDC: " + HDC); }
+                if(Handle == IntPtr.Zero){ throw new Exception("Не получилось создать контекст GL в wglCreateContext! HDC: " + HDC + ", Ошибка: " + WL.Windows.Kernel.GetLastError()); }
             }
 
             if(!WL.GL.Native.wglMakeCurrent(HDC, Handle)){ throw new Exception("Не получилось установить контекст GL через wglMakeCurrent! HDC: " + HDC); }
 
-            WL.Windows.Kernel.ReleaseDC(WindowHandle, HDC);
+            __CurrentWindowHandle = WindowHandle;
+            __CurrentHDC = HDC;
             
             __TryStart();
         }catch(Exception e){
             throw new Exception("Произошла ошибка при установке контекста GL [" + this + "]!\nЦель: " + Target, e);
         }
     }
+    private IntPtr __CurrentWindowHandle, __CurrentHDC;
     
     protected override void __StopContext(){
         WL.GL.Native.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+        
+        WL.Windows.Kernel.ReleaseDC(__CurrentWindowHandle, __CurrentHDC);
     }
 
     /// <summary>

@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 18.01.2026 14:53
+/// Сгенерирован: 18.01.2026 18:11
 /// </summary>
 public struct ColorB{
 	public static readonly Type Type = typeof(byte);
@@ -50,7 +50,7 @@ public struct ColorB{
 	#region Override
 
 		public override string ToString(){
-			return "ColorB(" + R + ", " + G + ", " + B + ", " + (A == 255 ? "" : A) + ")";
+			return "ColorB(" + R + ", " + G + ", " + B + (A == 255 ? "" : ", " + A) + ")";
 		}
 		
 		public override bool Equals(object? obj){

@@ -13,25 +13,6 @@ public static class Program{
     public static int Main(string[] Args){
         try{
             WL.WoowzLib.Start();
-
-            Logger.Debug(DrawableWindow.Empty.Handle);
-            Logger.Debug(Kernel.GetWindowTitle(DrawableWindow.Empty.Handle));
-
-            Kernel.RECT R;
-            Kernel.GetClientRect(DrawableWindow.Empty.Handle, out R);
-            
-            Logger.Debug(R.Right - R.Left, R.Bottom - R.Top);
-
-            IntPtr HDC = Kernel.GetDC(IntPtr.Zero + 1);//DrawableWindow.Empty.Handle);
-            
-            Logger.Debug(HDC);
-            
-            Logger.Debug(Kernel.GetDeviceCaps(HDC, Kernel.HORZRES));
-            Logger.Debug(Kernel.GetDeviceCaps(HDC, Kernel.VERTRES));
-            
-            Console.Read();
-            
-            return 0;
             
             WL.GL.Debug.LogBuffer = true;
             WL.GL.Debug.LogCreate = true;

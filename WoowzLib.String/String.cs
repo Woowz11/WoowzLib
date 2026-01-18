@@ -5,7 +5,7 @@ namespace WL{
     /// <summary>
     /// Работа со строками
     /// </summary>
-    [WLModule(-5000, 2)]
+    [WLModule(-5000, 3)]
     public static class String{
         private static readonly Regex Regex1 = new Regex(@"\$(\d+)", RegexOptions.Compiled);
         
@@ -66,6 +66,18 @@ namespace WL{
             }
         }
 
+        /// <summary>
+        /// Объединяет массив объектов в строку
+        /// </summary>
+        /// <param name="FirstFormat">Сначала [<c>"($0"</c>]</param>
+        /// <param name="MiddleFormat">Перед последним [<c>", $0, "</c>]</param>
+        /// <param name="LastFormat">Последний [<c>"$0)"</c>]</param>
+        /// <param name="Values">Элементы [<c>new object[]{"A", "B", "C"}</c>]</param>
+        /// <returns>[<c>"(A, B, C)"</c>]</returns>
+        public static string Join(string FirstFormat, string MiddleFormat, string LastFormat, object[] Values){
+            return Join((I, O, Last) => Last ? Format(LastFormat, O) : (I == 0 ? Format(FirstFormat, O) : Format(MiddleFormat, O)), Values);
+        }
+        
         /// <summary>
         /// Объединяет массив объектов в строку
         /// </summary>

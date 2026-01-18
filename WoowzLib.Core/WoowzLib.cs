@@ -59,7 +59,7 @@ namespace WLO{
 }
 
 namespace WL{
-    [WLModule(int.MinValue, 6)]
+    [WLModule(int.MinValue, 7)]
     public static class WoowzLib{
         static WoowzLib(){
             AppDomain     .CurrentDomain.ProcessExit        += (_, _) => Stop();
@@ -582,6 +582,57 @@ namespace WL.Windows{
         [DllImport("user32.dll")]
         public static extern IntPtr GetWindowDC(IntPtr hWnd);
         
+        [StructLayout(LayoutKind.Sequential)]
+        public struct PIXELFORMATDESCRIPTOR {
+            public ushort nSize;
+            public ushort nVersion;
+            public uint   dwFlags;
+            public byte   iPixelType;
+            public byte   cColorBits;
+            public byte   cRedBits;
+            public byte   cRedShift;
+            public byte   cGreenBits;
+            public byte   cGreenShift;
+            public byte   cBlueBits;
+            public byte   cBlueShift;
+            public byte   cAlphaBits;
+            public byte   cAlphaShift;
+            public byte   cAccumBits;
+            public byte   cAccumRedBits;
+            public byte   cAccumGreenBits;
+            public byte   cAccumBlueBits;
+            public byte   cAccumAlphaBits;
+            public byte   cDepthBits;
+            public byte   cStencilBits;
+            public byte   cAuxBuffers;
+            public byte   iLayerType;
+            public byte   bReserved;
+            public uint   dwLayerMask;
+            public uint   dwVisibleMask;
+            public uint   dwDamageMask;
+        }
+        
+        [DllImport("gdi32.dll")]
+        public static extern int ChoosePixelFormat(IntPtr hdc, ref PIXELFORMATDESCRIPTOR ppfd);
+
+        [DllImport("gdi32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetPixelFormat(IntPtr hdc, int format, ref PIXELFORMATDESCRIPTOR ppfd);
+        
+        [DllImport("gdi32.dll")]
+        public static extern int GetPixelFormat(IntPtr hdc);
+
+        [DllImport("gdi32.dll")]
+        public static extern int DescribePixelFormat(
+            IntPtr hdc,
+            int iPixelFormat,
+            int nBytes,
+            out PIXELFORMATDESCRIPTOR ppfd
+        );
+        
+        [DllImport("kernel32.dll")]
+        public static extern uint GetLastError();
+        
         public const int  SW_HIDE             = 0;
         public const int  SW_SHOW             = 5;
         public const uint WS_POPUP            = 0x80000000;
@@ -591,5 +642,10 @@ namespace WL.Windows{
         public const uint PM_REMOVE           = 0x0001;
         public const int  HORZRES             = 8;
         public const int  VERTRES             = 10;
+        public const uint PFD_DRAW_TO_WINDOW  = 0x00000004;
+        public const uint PFD_SUPPORT_OPENGL  = 0x00000020;
+        public const uint PFD_DOUBLEBUFFER    = 0x00000001;
+        public const byte PFD_TYPE_RGBA       = 0;
+        public const byte PFD_MAIN_PLANE      = 0;
     }
 }

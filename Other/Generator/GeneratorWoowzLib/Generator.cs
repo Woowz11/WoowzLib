@@ -297,7 +297,7 @@ public static class Generator{
                                 #region Override
                             
                                     public override string ToString(){
-                                        return "{{Name}}(" + {{WL.String.Join("$0 + \", \" + ", "($0 == " + V_1 + " ? \"\" : $0)", Components)}} + ")";
+                                        return "{{Name}}(" + {{WL.String.Join("$0", " + \", \" + $0", " + ($0 == " + V_1 + " ? \"\" : \", \" + $0)", Components)}} + ")";
                                     }
                                     
                                     public override bool Equals(object? obj){

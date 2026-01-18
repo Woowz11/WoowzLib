@@ -29,7 +29,7 @@ public sealed class DrawableWindow : Drawable{
     /// Пустой контекст (невидимое окно)
     /// </summary>
     public static DrawableWindow? Empty{ get; private set; }
-
+    
     /// <summary>
     /// Создаёт невидимое окно
     /// </summary>
@@ -60,7 +60,7 @@ public sealed class DrawableWindow : Drawable{
                 IntPtr Window = WL.Windows.Kernel.CreateWindowEx(
                     0,
                     WindowClass.lpszClassName,
-                    "KAKA",
+                    "",
                     WL.Windows.Kernel.WS_OVERLAPPEDWINDOW | WL.Windows.Kernel.WS_VISIBLE,
                     100, 100, 400, 300,
                     IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero
@@ -71,7 +71,7 @@ public sealed class DrawableWindow : Drawable{
                 WL.Windows.Kernel.UpdateWindow(Window);
 
                 Empty = new DrawableWindow(Window);
-
+                
                 __Event.Set();
                 
                 while(WL.Windows.Kernel.GetMessage(out Kernel.MSG Message, IntPtr.Zero, 0, 0)){
