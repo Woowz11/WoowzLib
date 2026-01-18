@@ -27,7 +27,6 @@ public static class Program{
             Window W2 = new Window();
 
             GL GL1 = new GL();
-            GL GL2 = new GL(GL1);
             
             Uniform_Float U_Time = null;
             WLO.GL.Program Prog = null;

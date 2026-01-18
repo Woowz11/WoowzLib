@@ -6,7 +6,7 @@ namespace WLO.Render;
 /// <summary>
 /// OpenGL рендер для окна
 /// </summary>
-public class GL(RenderAPI? parent = null) : RenderAPI(parent){
+public class GL(RenderAPI? Parent = null) : RenderAPI(Parent){
     public void __TryStart(){
         try{
             if(Started){ return; } Started = true;
@@ -222,7 +222,7 @@ public class GL(RenderAPI? parent = null) : RenderAPI(parent){
         TotalCreatedResources++;
     }
     public void __Unregister(GLResource Resource) => Resources.Remove(Resource);
-
+    
     /// <summary>
     /// Очищает все ресурсы внутри этого контекста!
     /// </summary>
@@ -242,7 +242,13 @@ public class GL(RenderAPI? parent = null) : RenderAPI(parent){
 
         return this;
     }
-    
+
+    /// <summary>
+    /// Проверяет контекст, если его нету то ошибка
+    /// </summary>
+    /// <returns></returns>
+    public GL CheckContext(){ return RenderAPI.CurrentRenderAPI == null ? throw new Exception("Функция вызывается вне GL контекста!") : this; }
+
     /// <summary>
     /// Цвет заднего фона
     /// </summary>
@@ -250,6 +256,8 @@ public class GL(RenderAPI? parent = null) : RenderAPI(parent){
         get => __BackgroundColor;
         set{
             try{
+                CheckContext();
+                
                 if(__BackgroundColor == value){ return; }
                 __BackgroundColor = value;
                 
@@ -269,6 +277,8 @@ public class GL(RenderAPI? parent = null) : RenderAPI(parent){
     /// </summary>
     public GL Clear(bool Color = true, bool Depth = true, bool Stencil = false){
         try{
+            CheckContext();
+            
             if(!Color && !Depth && !Stencil){ return this; }
 
             uint Mask = 0;
@@ -291,6 +301,8 @@ public class GL(RenderAPI? parent = null) : RenderAPI(parent){
         get => __Viewport;
         set{
             try{
+                CheckContext();
+                
                 if(__Viewport == value){ return; }
                 __Viewport = value;
                 
@@ -310,6 +322,8 @@ public class GL(RenderAPI? parent = null) : RenderAPI(parent){
         get => __LineWidth;
         set{
             try{
+                CheckContext();
+                
                 if(value > LineWidthLimit.Y){ throw new Exception("Выходит за пределы [" + value + " > " + LineWidthLimit.Y + "]!"); }
                 if(value < LineWidthLimit.X){ throw new Exception("Выходит за пределы [" + value + " < " + LineWidthLimit.X + "]!"); }
 

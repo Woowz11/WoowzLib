@@ -3,7 +3,8 @@
 public abstract class GLResource{
     protected GLResource(){
         try{
-            this.Context = (Render.GL)RenderAPI.CurrentRenderAPI;
+            Context = (Render.GL)RenderAPI.CurrentRenderAPI!;
+            if(Context == null){ throw new Exception("Создан ресурс вне какого либо GL контекста!"); }
             Context.__Register(this);
 
             GlobalID = WL.GL.TotalCreatedResources;
@@ -111,6 +112,7 @@ public abstract class GLResource{
     /// <summary>
     /// Проверяет, если контексты не совпадают, то выдаёт ошибку
     /// </summary>
+    [Obsolete("нужно дополнить проверкой, по совместимости ресурсов", false)]
     public void CheckContext(Render.GL OtherContext){ if(Context != OtherContext){ throw new Exception("Контексты не совпадают! [" + Context + "] != [" + OtherContext + "]"); } }
     
     /// <summary>

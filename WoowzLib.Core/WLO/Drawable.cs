@@ -3,7 +3,7 @@
 /// <summary>
 /// Принимает RenderAPI для рендера в него изображения
 /// </summary>
-public abstract class Drawable{ }
+public abstract class Drawable{}
 
 /// <summary>
 /// Принимает RenderAPI для рендера в окно
