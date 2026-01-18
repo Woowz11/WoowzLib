@@ -1,26 +1,9 @@
 ﻿namespace WLO.GLFW;
 
-public abstract class WindowBase : WindowContext, IDisposable{
-    public abstract void Destroy();
-    public abstract void Dispose();
-    
-    /// <summary>
-    /// Окно должно уничтожиться? (При получении уничтожает окно если должно)
-    /// </summary>
-    public bool ShouldDestroy{ get; private set; }
-    
-    /// <summary>
-    /// Добавляет окно в очередь на уничтожение
-    /// </summary>
-    public void WaitDestroy(){
-        ShouldDestroy = true;
-    }
-}
-
 /// <summary>
 /// GLFW окно
 /// </summary>
-public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
+public class Window{
     /// <summary>
     /// Создаёт GLFW окно
     /// </summary>
@@ -39,8 +22,8 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             this.Resizable = Resizable;
             WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_RESIZABLE, Resizable ? 1 : 0);
 
-            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_CONTEXT_VERSION_MAJOR, RenderContext.__OpenGLMajor            );
-            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_CONTEXT_VERSION_MINOR, RenderContext.__OpenGLMinor            );
+            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_CONTEXT_VERSION_MAJOR, RenderAPI.__OpenGLMajor            );
+            WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_CONTEXT_VERSION_MINOR, RenderAPI.__OpenGLMinor            );
             WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_OPENGL_PROFILE       , WL.GLFW.Native.GLFW_OPENGL_CORE_PROFILE);
             WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_OPENGL_FORWARD_COMPAT, 1                                      );
             
@@ -52,6 +35,8 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             WL.Native.Free(Title__);
 
             if(Handle == IntPtr.Zero){ throw new Exception("Не получилось создать окно внутри glfwCreateWindow!"); }
+
+            HandleWin = WL.GLFW.Native.glfwGetWin32Window(Handle);
             
             __Width  = Width;
             __Height = Height;
@@ -127,10 +112,8 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
                 
             };
             WL.GLFW.Native.glfwSetWindowMaximizeCallback(Handle, __MaximizeCallback);
-            
-            Render = new TRender();
-            Render.__ConnectWindow(this);
 
+            Drawable = new DrawableWindow(HandleWin);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании GLFW окна [" + this + "]!", e);
         }
@@ -143,15 +126,17 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     private readonly WL.GLFW.Native.WindowMaximizeCallback? __MaximizeCallback;
 
     /// <summary>
+    /// Уникальный ID окна (основан на Handle)
+    /// </summary>
+    public long ID{ get; protected set; }
+    
+    /// <summary>
     /// Ссылка на окно (<c>GLFWwindow*</c>)
     /// </summary>
     public IntPtr Handle{ get; private set; }
 
-    /// <summary>
-    /// Рендер окна
-    /// </summary>
-    public TRender Render{ get; private set; }
-
+    public IntPtr HandleWin;
+    
     /// <summary>
     /// Уничтожено окно?
     /// </summary>
@@ -160,12 +145,14 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     /// <summary>
     /// Проверяет, уничтожено окно или нет? (Выдаёт ошибку)
     /// </summary>
-    public Window<TRender> CheckDestroyed(){ return Destroyed ? throw new Exception("Окно [" + this + "] уничтожено!") : this; }
+    public Window CheckDestroyed(){ return Destroyed ? throw new Exception("Окно [" + this + "] уничтожено!") : this; }
+
+    public DrawableWindow Drawable;
     
     /// <summary>
     /// Завершает рендер (меняет буфер рендера с буфером экрана местами)
     /// </summary>
-    public Window<TRender> StopRender(){
+    public Window StopRender(){
         try{
             CheckDestroyed(); WL.GLFW.Native.glfwSwapBuffers(Handle);   
         }catch(Exception e){
@@ -218,10 +205,10 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
 
         #region Delegates
 
-            public delegate void WindowEvent(Window<TRender> Window);
-            public delegate void WindowEvent_Size(Window<TRender> Window, uint Width, uint Height);
-            public delegate void WindowEvent_Position(Window<TRender> Window, int X, int Y);
-            public delegate void WindowEvent_Focus(Window<TRender> Window, bool Focus);
+            public delegate void WindowEvent(Window Window);
+            public delegate void WindowEvent_Size(Window Window, uint Width, uint Height);
+            public delegate void WindowEvent_Position(Window Window, int X, int Y);
+            public delegate void WindowEvent_Focus(Window Window, bool Focus);
             
         #endregion
         
@@ -235,7 +222,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     /// <summary>
     /// Установить окно в фокус
     /// </summary>
-    public Window<TRender> Focus(){
+    public Window Focus(){
         try{
             if(Focused){ return this; }
             Focused = true;
@@ -268,6 +255,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             }
         }
     }
+    private uint __Width;
     
     /// <summary>
     /// Высота окна
@@ -286,6 +274,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             }
         }
     }
+    private uint __Height;
     
     /// <summary>
     /// Размер окна
@@ -425,7 +414,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     private bool __Visible;
 
     /// <summary>
-    /// Ограничение по FPS (на 60, ограничивает FinishRender())
+    /// Ограничение по FPS (на 60, ограничивает StopRender())
     /// </summary>
     public bool VSync{
         get => __VSync;
@@ -433,8 +422,7 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             try{
                 if(__VSync == value){ return; }
                 __VSync = value;
-
-                __UpdateContext();
+                
                 WL.GLFW.Native.glfwSwapInterval(__VSync ? 1 : 0);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при установке VSync у окна [" + this + "]!\nVSync: " + value, e);
@@ -444,9 +432,21 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     private bool __VSync;
     
     /// <summary>
+    /// Окно должно уничтожиться? (При получении уничтожает окно если должно)
+    /// </summary>
+    public bool ShouldDestroy{ get; private set; }
+    
+    /// <summary>
+    /// Добавляет окно в очередь на уничтожение
+    /// </summary>
+    public void WaitDestroy(){
+        ShouldDestroy = true;
+    }
+
+    /// <summary>
     /// Уничтожает окно
     /// </summary>
-    public override void Destroy(){
+    public void Destroy(){
         try{
             CheckDestroyed();
 
@@ -455,8 +455,6 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             }catch(Exception e){
                 Logger.Error("Произошла ошибка при вызове ивентов уничтожения окна [" + this + "]!", e);
             }
-
-            Render.__UnconnectWindow();
             
             WL.GLFW.Native.glfwDestroyWindow(Handle);
             WL.GLFW.Windows.Remove(this);
@@ -469,30 +467,13 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
     }
     
     #region Overwride
-
-        public override void Dispose(){
-            try{
-                if(Destroyed){ return; }
-                Destroy();
-            }catch{ /**/ }
-        }
-        
-        public override void __UpdateContext(){
-            try{
-                CheckDestroyed();
-                
-                WL.GLFW.Native.glfwMakeContextCurrent(Handle);
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при установке GLFW контекста у окна [" + this + "]!", e);
-            }
-        }
-        
+    
         public override string ToString(){
-            return "GLFW.Window<" + Render + ">(\"" + Title + "\", " + X + ":" + Y + ", " + Width + "x" + Height + ", " + (Destroyed ? "Уничтожено" : ID) + ")";
+            return "GLFW.Window(\"" + Title + "\", " + X + ":" + Y + ", " + Width + "x" + Height + ", " + (Destroyed ? "Уничтожено" : ID) + ")";
         }
 
         public override bool Equals(object? obj){
-            if(obj is not Window<TRender> other){ return false; }
+            if(obj is not Window other){ return false; }
             return ID == other.ID;
         }
 
@@ -500,13 +481,13 @@ public class Window<TRender> : WindowBase where TRender : RenderContext, new(){
             return ID.GetHashCode();
         }
 
-        public static bool operator ==(Window<TRender>? A, Window<TRender>? B){
+        public static bool operator ==(Window? A, Window? B){
             if(ReferenceEquals(A, B)){ return true; }
             if(A is null || B is null){ return false; }
             return A.ID == B.ID;
         }
 
-        public static bool operator !=(Window<TRender>? A, Window<TRender>? B){
+        public static bool operator !=(Window? A, Window? B){
             return !(A == B);
         }
 

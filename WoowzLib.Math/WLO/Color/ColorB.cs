@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 16.01.2026 12:04
+/// Сгенерирован: 18.01.2026 14:53
 /// </summary>
 public struct ColorB{
 	public static readonly Type Type = typeof(byte);
@@ -44,7 +44,8 @@ public struct ColorB{
 	public static ColorB Black => new ColorB().ToBlack();
 	public ColorB ToTransparent(){ return Set(0, 0, 0, 0); }
 	public static ColorB Transparent => new ColorB().ToTransparent();
-
+	public ColorB ToRandom(){ return Set(WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), 1); }
+	public static ColorB Random => new ColorB().ToRandom();
 
 	#region Override
 

@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 16.01.2026 12:04
+/// Сгенерирован: 18.01.2026 14:53
 /// </summary>
 public struct ColorF{
 	public static readonly Type Type = typeof(float);
@@ -44,7 +44,8 @@ public struct ColorF{
 	public static ColorF Black => new ColorF().ToBlack();
 	public ColorF ToTransparent(){ return Set(0, 0, 0, 0); }
 	public static ColorF Transparent => new ColorF().ToTransparent();
-
+	public ColorF ToRandom(){ return Set(WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), 1); }
+	public static ColorF Random => new ColorF().ToRandom();
 
 	#region Override
 

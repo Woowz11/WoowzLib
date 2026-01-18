@@ -7,7 +7,7 @@ public class Program : GLResource{
     /// <summary>
     /// Программа содержащая в себе шейдеры (После компиляции шейдеры не имеют ценности для программы)
     /// </summary>
-    public Program(Render.GL Context) : base(Context){
+    public Program() : base(){
         try{
             ID = WL.GL.Native.glCreateProgram();
             if(ID <= 0){ throw new Exception("Не получилось создать шейдер в glCreateProgram!"); }
@@ -23,7 +23,7 @@ public class Program : GLResource{
     /// <summary>
     /// Программа содержащая в себе шейдеры (После компиляции шейдеры не имеют ценности для программы)
     /// </summary>
-    public Program(Render.GL Context, params Shader[] Shaders) : this(Context){
+    public Program(params Shader[] Shaders) : this(){
         foreach(Shader Shader in Shaders){
             Connect(Shader);
         }
@@ -59,8 +59,7 @@ public class Program : GLResource{
             CheckContext(Shader.Context);
             if(!Shader.Created){ throw new Exception("Шейдер не создан!"); }
             if(ConnectedShaders.Contains(Shader)){ throw new Exception("Такой шейдер уже есть!"); }
-
-            Context.__MakeContext();
+            
             WL.GL.Native.glAttachShader(ID, Shader.ID);
             ConnectedShaders.Add(Shader);
 
@@ -85,7 +84,6 @@ public class Program : GLResource{
             if(!Shader.Created){ throw new Exception("Шейдер не создан!"); }
             if(!ConnectedShaders.Contains(Shader)){ throw new Exception("Шейдер не найден!"); }
             
-            Context.__MakeContext();
             WL.GL.Native.glDetachShader(ID, Shader.ID);
             ConnectedShaders.Remove(Shader);
             
@@ -106,8 +104,7 @@ public class Program : GLResource{
     public Program Clear(){
         try{
             if(ConnectedShaders.Count == 0){ return this; }
-
-            Context.__MakeContext();
+            
             foreach(Shader Shader in ConnectedShaders){
                 WL.GL.Native.glDetachShader(ID, Shader.ID);
             }
@@ -133,8 +130,6 @@ public class Program : GLResource{
             foreach(Shader Shader in ConnectedShaders){
                 if(!Shader.Compiled){ throw new Exception("Шейдер [" + Shader + "] не скомпилированный!"); }
             }
-            
-            Context.__MakeContext();
 
             ClearUniforms();
             
@@ -231,8 +226,6 @@ public abstract class Uniform{
             this.TryAnywayFind = TryAnywayFind;
 
             if(!Program.Compiled){ throw new Exception("Программа не скомпилирована!"); }
-
-            Program.Context.__MakeContext();
             
             Location = WL.GL.Native.glGetUniformLocation(Program.ID, Name);
             if(Location < 0 && !TryAnywayFind){ throw new Exception("Не найден такой Uniform [\"" + Name + "\"] в программе, или не используется!"); }
@@ -285,8 +278,6 @@ public abstract class Uniform{
         try{
             if(!TryAnywayFind){ return; }
             if(Program == null || !Program.Compiled){ throw new Exception("Нет программы, или она не скомпилирована!"); }
-
-            Program.Context.__MakeContext();
             
             Location = WL.GL.Native.glGetUniformLocation(Program.ID, Name);
             if(Location < 0){ throw new Exception("Не найден такой Uniform [\"" + Name + "\"] в программе, или не используется!"); }

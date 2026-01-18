@@ -1,10 +1,9 @@
 ﻿namespace WLO.GL;
 
 public abstract class GLResource{
-    protected GLResource(Render.GL Context){
+    protected GLResource(){
         try{
-            this.Context = Context;
-            Context.__MakeContext();
+            this.Context = (Render.GL)RenderAPI.CurrentRenderAPI;
             Context.__Register(this);
 
             GlobalID = WL.GL.TotalCreatedResources;
@@ -140,8 +139,6 @@ public abstract class GLResource{
         try{
             if(Created && __Parent.Count == 0){
                 if(WL.GL.Debug.LogDestroy){ Logger.Info("Уничтожение GL ресурса [" + this + "]!"); }
-                
-                Context.__MakeContext();
 
                 foreach(GLResource Child in __Children){
                     Child.TryDestroy();

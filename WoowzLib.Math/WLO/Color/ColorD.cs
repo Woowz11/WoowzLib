@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 16.01.2026 12:04
+/// Сгенерирован: 18.01.2026 14:53
 /// </summary>
 public struct ColorD{
 	public static readonly Type Type = typeof(double);
@@ -44,7 +44,8 @@ public struct ColorD{
 	public static ColorD Black => new ColorD().ToBlack();
 	public ColorD ToTransparent(){ return Set(0, 0, 0, 0); }
 	public static ColorD Transparent => new ColorD().ToTransparent();
-
+	public ColorD ToRandom(){ return Set(WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), 1); }
+	public static ColorD Random => new ColorD().ToRandom();
 
 	#region Override
 

@@ -4,7 +4,7 @@ using WLO.GLFW;
 using File = WLO.File;
 
 namespace WL{
-    [WLModule(30, 4)]
+    [WLModule(30, 5)]
     public static class GLFW{
         static GLFW(){
             WL.WoowzLib.OnStop += () => __Destroy(true);
@@ -13,7 +13,7 @@ namespace WL{
         /// <summary>
         /// Открытые окна
         /// </summary>
-        internal static readonly HashSet<WindowBase> Windows = [];
+        internal static readonly HashSet<Window> Windows = [];
         
         /// <summary>
         /// Текущий glfw3.dll
@@ -54,6 +54,7 @@ namespace WL{
                 Native.glfwSwapInterval              = WL.Native.DelegateFunction<Native.D_glfwSwapInterval             >("glfwSwapInterval"             ,DLL);
                 Native.glfwSetWindowSize             = WL.Native.DelegateFunction<Native.D_glfwSetWindowSize            >("glfwSetWindowSize"            ,DLL);
                 Native.glfwDestroyWindow             = WL.Native.DelegateFunction<Native.D_glfwDestroyWindow            >("glfwDestroyWindow"            ,DLL);
+                Native.glfwGetWin32Window            = WL.Native.DelegateFunction<Native.D_glfwGetWin32Window           >("glfwGetWin32Window"           ,DLL);
                 Native.glfwSetWindowTitle            = WL.Native.DelegateFunction<Native.D_glfwSetWindowTitle           >("glfwSetWindowTitle"           ,DLL);
                 Native.glfwSetWindowAttrib           = WL.Native.DelegateFunction<Native.D_glfwSetWindowAttrib          >("glfwSetWindowAttrib"          ,DLL);
                 Native.glfwGetWindowAttrib           = WL.Native.DelegateFunction<Native.D_glfwGetWindowAttrib          >("glfwGetWindowAttrib"          ,DLL);
@@ -91,7 +92,7 @@ namespace WL{
         public static void Tick(){
             try{
                 Native.glfwPollEvents();
-                foreach(WindowBase Window in Windows.ToArray()){
+                foreach(Window Window in Windows.ToArray()){
                     if(Window.ShouldDestroy){ Window.Destroy(); }
                 }
             }catch(Exception e){
@@ -105,7 +106,7 @@ namespace WL{
 
                 if(Windows.Count > 0){ Logger.Warn("Оставшиеся окна были закрыты через WL.GLFW.Stop()!"); }
 
-                foreach(WindowBase Window in Windows.ToArray()){
+                foreach(Window Window in Windows.ToArray()){
                     Window.Destroy();
                 }
                 Windows.Clear();
@@ -233,6 +234,10 @@ namespace WL{
             [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
             public delegate void D_glfwSwapInterval(int interval);
             public static D_glfwSwapInterval glfwSwapInterval = null!;
+            
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            public delegate IntPtr D_glfwGetWin32Window(IntPtr window);
+            public static D_glfwGetWin32Window glfwGetWin32Window = null!;
             
             public const int GLFW_FOCUSED                 = 0x00020001;
             public const int GLFW_RESIZABLE               = 0x00020003;

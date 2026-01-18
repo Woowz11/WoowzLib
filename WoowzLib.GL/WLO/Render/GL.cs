@@ -6,9 +6,11 @@ namespace WLO.Render;
 /// <summary>
 /// OpenGL рендер для окна
 /// </summary>
-public class GL : RenderContext{
-    public override void __Start(){
+public class GL : RenderAPI{
+    public void __TryStart(){
         try{
+            if(created){ return; } created = true;
+
             IntPtr VersionLink = WL.GL.Native.glGetString(WL.GL.Native.GL_VERSION);
             string? __Version = WL.Native.FromMemoryString(VersionLink);
             
@@ -24,10 +26,10 @@ public class GL : RenderContext{
             }
             Version = new Vector2I(Major, Minor);
 
-            if(Version.X < __OpenGLMajor || Version.Y < __OpenGLMinor){ Logger.Warn("Установлена не максимальная версия GL [" + Major + "." + Minor + "] < [" + RenderContext.__OpenGLMajor + "." + RenderContext.__OpenGLMinor + "], возможны ошибки!"); }
-
-            WL.GL.__StartWGL();
+            if(Version.X < __OpenGLMajor || Version.Y < __OpenGLMinor){ Logger.Warn("Установлена не максимальная версия GL [" + Major + "." + Minor + "] < [" + __OpenGLMajor + "." + __OpenGLMinor + "], возможны ошибки!"); }
             
+            WL.GL.__StartWGL();
+                
             WL.GL.__AddToTotalCreatedGL();
             ID = WL.GL.TotalCreatedGL;
 
@@ -35,18 +37,19 @@ public class GL : RenderContext{
             BackgroundColor = ColorF.Orange;
 
             __Viewport = new RectI();
-            Viewport = new RectI((int)ConnectedWindow!.__Width, (int)ConnectedWindow!.__Height);
+            Viewport = new RectI(128, 128);
 
             float[] LineWidthLimit__ = new float[2];
             WL.GL.Native.glGetFloatv(WL.GL.Native.GL_ALIASED_LINE_WIDTH_RANGE, LineWidthLimit__);
             LineWidthLimit = new Vector2F(LineWidthLimit__[0], LineWidthLimit__[1]);
-
-            if(WL.GL.Debug.LogMain){ Logger.Info("Создан GL контекст [" + this + "] окну [" + ConnectedWindow + "]!"); }
+            
+            if(WL.GL.Debug.LogMain){ Logger.Info("Создан GL контекст [" + this + "]!"); }
         }catch(Exception e){
             throw new Exception("Произошла ошибка при инициализации стартовых значений GL [" + this + "]!", e);
         }
     }
-
+    private bool created;
+    
     public override void __Stop(){
         try{
             if(WL.GL.Debug.LogMain){ Logger.Info("Авто-очистка GL [" + this + "]!"); }
@@ -55,6 +58,31 @@ public class GL : RenderContext{
         }catch(Exception e){
             throw new Exception("Произошла ошибка при очистке GL [" + this + "]!", e);
         }
+    }
+
+    private IntPtr Handle = IntPtr.Zero;
+    
+    protected override void MakeCurrent(Drawable Target){
+        if(Target is not DrawableWindow W){ throw new Exception("пока-что поддерживает только окна"); }
+
+        IntPtr HDC = WL.Windows.Kernel.GetDC(W.Handle);
+
+        if(Handle == IntPtr.Zero){
+            Handle = WL.GL.Native.wglCreateContext(HDC);
+            if(Handle == IntPtr.Zero){ throw new Exception("1"); }
+
+            if(Parent is GL P){
+                if(!WL.GL.Native.wglShareLists(P.Handle, Handle)){ throw new Exception("2"); }
+            }
+        }
+
+        if(!WL.GL.Native.wglMakeCurrent(HDC, Handle)){ throw new Exception("3"); }
+
+        __TryStart();
+    }
+    
+    protected override void DoneCurrent(){
+        WL.GL.Native.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
     }
 
     /// <summary>
@@ -72,11 +100,6 @@ public class GL : RenderContext{
     /// </summary>
     public Vector2F LineWidthLimit{ get; private set; }
 
-    /// <summary>
-    /// Проверяет, что контексты ресурса совпадают
-    /// </summary>
-    private void CheckGLResourceContext(GLResource? Resource){ if(Resource == null){ return; } Resource.CheckContext(this); __MakeContext(); }
-
     #region Uses
 
         /// <summary>
@@ -86,7 +109,6 @@ public class GL : RenderContext{
             get => __CurrentProgram;
             set{
                 try{
-                    CheckGLResourceContext(value);
                     if(__CurrentProgram == value){ return; }
                     if(value != null && !value.Created){ throw new Exception("Программа не создана!"); }
 
@@ -108,7 +130,6 @@ public class GL : RenderContext{
             get => __CurrentFloatBuffer;
             set{
                 try{
-                    CheckGLResourceContext(value);
                     if(__CurrentFloatBuffer == value){ return; }
                     if(value != null && !value.Created){ throw new Exception("Буфер не создан!"); }
 
@@ -130,7 +151,6 @@ public class GL : RenderContext{
             get => __CurrentIntBuffer;
             set{
                 try{
-                    CheckGLResourceContext(value);
                     if(__CurrentIntBuffer == value){ return; }
                     if(value != null && !value.Created){ throw new Exception("Буфер не создан!"); }
 
@@ -152,7 +172,6 @@ public class GL : RenderContext{
             get => __CurrentVertexConfig;
             set{
                 try{
-                    CheckGLResourceContext(value);
                     if(__CurrentVertexConfig == value){ return; }
                     if(value != null && !value.Created){ throw new Exception("VertexConfig не создан!"); }
 
@@ -219,8 +238,7 @@ public class GL : RenderContext{
             try{
                 if(__BackgroundColor == value){ return; }
                 __BackgroundColor = value;
-
-                __MakeContext();
+                
                 WL.GL.Native.glClearColor(__BackgroundColor.R, __BackgroundColor.G, __BackgroundColor.B, __BackgroundColor.A);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при установке цвета заднего фона GL [" + this + "]!\nЦвет: " + value, e);
@@ -243,8 +261,7 @@ public class GL : RenderContext{
             if(Color  ){ Mask |= WL.GL.Native.GL_COLOR_BUFFER_BIT  ; }
             if(Depth  ){ Mask |= WL.GL.Native.GL_DEPTH_BUFFER_BIT  ; }
             if(Stencil){ Mask |= WL.GL.Native.GL_STENCIL_BUFFER_BIT; }
-
-            __MakeContext();
+            
             WL.GL.Native.glClear(Mask);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при очистке рендера GL [" + this + "]!\nЦвет: " + Color + "\nГлубина: " + Depth + "\nТрафарет: " + Stencil, e);
@@ -263,7 +280,6 @@ public class GL : RenderContext{
                 if(__Viewport == value){ return; }
                 __Viewport = value;
                 
-                __MakeContext();
                 WL.GL.Native.glViewport(__Viewport.X, __Viewport.Y, __Viewport.Width, __Viewport.Height);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при изменении области рендера GL [" + this + "]!\nОбласть: " + value, e);
@@ -286,7 +302,6 @@ public class GL : RenderContext{
                 if(__LineWidth == value){ return; }
                 __LineWidth = value;
                 
-                __MakeContext();
                 WL.GL.Native.glLineWidth(__LineWidth);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при установке ширины линий в GL [" + this + "]!\nШирина: " + value, e);

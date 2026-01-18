@@ -291,7 +291,8 @@ public static class Generator{
                             {{WL.String.Join((i, Obj, Last) => {
                                 return "\tpublic " + Name + " To" + Obj.Key + "(){ return Set(" + WL.String.Join(Obj.Value) + "); }\n" +
                                        "\tpublic static " + Name + " " + Obj.Key + " => new " + Name + "().To" + Obj.Key + "();\n";
-                            }, Constants)}}
+                            }, Constants)}}    public {{Name}} ToRandom(){ return Set({{WL.WoowzLib.Condition(ColorType == ColorType.Int,"WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255)", (ColorType == ColorType.Byte ? "WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte()" : "WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1()"))}}, 1); }
+                                public static {{Name}} Random => new {{Name}}().ToRandom();
                             
                                 #region Override
                             

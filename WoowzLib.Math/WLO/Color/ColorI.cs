@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 16.01.2026 12:04
+/// Сгенерирован: 18.01.2026 14:53
 /// </summary>
 public struct ColorI{
 	public static readonly Type Type = typeof(int);
@@ -44,7 +44,8 @@ public struct ColorI{
 	public static ColorI Black => new ColorI().ToBlack();
 	public ColorI ToTransparent(){ return Set(0, 0, 0, 0); }
 	public static ColorI Transparent => new ColorI().ToTransparent();
-
+	public ColorI ToRandom(){ return Set(WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255), 1); }
+	public static ColorI Random => new ColorI().ToRandom();
 
 	#region Override
 

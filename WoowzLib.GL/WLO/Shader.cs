@@ -55,7 +55,7 @@ public class Shader : GLResource{
     /// <param name="Type">Тип шейдера</param>
     /// <param name="Code">WLGLSL или GLSL код шейдера</param>
     /// <param name="ThatWLGLSL">Преобразовать код из WLGLSL в GLSL?</param>
-    public Shader(Render.GL Context, ShaderType Type, string Code, bool ThatWLGLSL = true) : base(Context){
+    public Shader(ShaderType Type, string Code, bool ThatWLGLSL = true) : base(){
         try{
             this.Type = Type;
 

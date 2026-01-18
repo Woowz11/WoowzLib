@@ -18,7 +18,7 @@ namespace WLO{
 }
 
 namespace WL{
-    [WLModule(10, 6)]
+    [WLModule(10, 7)]
     public static class GL{
         static GL(){
             DLL = WL.Native.LoadSystem("opengl32.dll");
@@ -32,6 +32,10 @@ namespace WL{
             Native.glGetString       = WL.Native.DelegateFunction<Native.D_glGetString      >("glGetString"       ,DLL);
             Native.glLineWidth       = WL.Native.DelegateFunction<Native.D_glLineWidth      >("glLineWidth"       ,DLL);
             Native.glClearColor      = WL.Native.DelegateFunction<Native.D_glClearColor     >("glClearColor"      ,DLL);
+            Native.wglShareLists     = WL.Native.DelegateFunction<Native.D_wglShareLists    >("wglShareLists"     ,DLL);
+            Native.wglMakeCurrent    = WL.Native.DelegateFunction<Native.D_wglMakeCurrent   >("wglMakeCurrent"    ,DLL);
+            Native.wglCreateContext  = WL.Native.DelegateFunction<Native.D_wglCreateContext >("wglCreateContext"  ,DLL);
+            Native.wglDeleteContext  = WL.Native.DelegateFunction<Native.D_wglDeleteContext >("wglDeleteContext"  ,DLL);
             Native.wglGetProcAddress = WL.Native.DelegateFunction<Native.D_wglGetProcAddress>("wglGetProcAddress" ,DLL);
         }
 
@@ -152,7 +156,7 @@ namespace WL{
             /// <returns>GLSL код</returns>
             public static string WLGLSLToGLSL(string WLGLSL){
                 try{
-                    string GLSL = "//Конвертировано из WLGLSL! (WoowzLib GLSL)\n#version " + RenderContext.__OpenGLMajor + RenderContext.__OpenGLMinor + "0 core\n\n";
+                    string GLSL = "//Конвертировано из WLGLSL! (WoowzLib GLSL)\n#version " + RenderAPI.__OpenGLMajor + RenderAPI.__OpenGLMinor + "0 core\n\n";
 
                     GLSL += WLGLSL;
                     
@@ -356,6 +360,22 @@ namespace WL{
             [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
             public delegate void D_glUniform4i(int location, int v0, int v1, int v2, int v3);
             public static D_glUniform4i glUniform4i = null!;
+            
+            [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+            public delegate IntPtr D_wglCreateContext(IntPtr hdc);
+            public static D_wglCreateContext wglCreateContext = null!;
+
+            [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+            public delegate bool D_wglMakeCurrent(IntPtr hdc, IntPtr hglrc);
+            public static D_wglMakeCurrent wglMakeCurrent = null!;
+
+            [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+            public delegate bool D_wglDeleteContext(IntPtr hglrc);
+            public static D_wglDeleteContext wglDeleteContext = null!;
+
+            [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+            public delegate bool D_wglShareLists(IntPtr hglrc1, IntPtr hglrc2);
+            public static D_wglShareLists wglShareLists = null!;
             
             public const uint GL_COLOR_BUFFER_BIT            = 0x00004000;
             public const uint GL_DEPTH_BUFFER_BIT            = 0x00000100;

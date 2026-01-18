@@ -59,7 +59,7 @@ namespace WLO{
 }
 
 namespace WL{
-    [WLModule(int.MinValue, 2)]
+    [WLModule(int.MinValue, 3)]
     public static class WoowzLib{
         static WoowzLib(){
             AppDomain     .CurrentDomain.ProcessExit        += (_, _) => Stop();
@@ -390,16 +390,16 @@ namespace WL{
 
 namespace WL.Windows{
     public static class Kernel{
-        [DllImport("kernel32")]
+        [DllImport("kernel32.dll")]
         public static extern IntPtr GetConsoleWindow();
         
-        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern IntPtr LoadLibrary(string lpFileName);
         
-        [DllImport("kernel32", SetLastError = true)]
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool FreeLibrary(IntPtr hModule);
         
-        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Ansi)]
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Ansi)]
         public static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
         
         [DllImport("kernel32.dll")]
@@ -410,6 +410,16 @@ namespace WL.Windows{
 
         [DllImport("user32.dll")]
         public static extern bool IsWindowVisible(IntPtr hWnd);
+        
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr GetDC(IntPtr hWnd);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
+        
+        [DllImport("gdi32.dll", CallingConvention = CallingConvention.StdCall)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SwapBuffers(IntPtr hdc);
         
         public const int SW_HIDE = 0;
         public const int SW_SHOW = 5;

@@ -40,7 +40,7 @@ public enum RenderMode : uint{
 /// (VERTEXARRAY)
 /// </summary>
 public class VertexConfig : GLResource{
-    public VertexConfig(Render.GL Context) : base(Context){
+    public VertexConfig() : base(){
         try{
             uint[] ID__ = new uint[1];
             WL.GL.Native.glGenVertexArrays(1, ID__);

@@ -4,7 +4,7 @@ namespace WL{
     /// <summary>
     /// Математические функции и т.д
     /// </summary>
-    [WLModule(-10000, 4)]
+    [WLModule(-10000, 5)]
     public static class Math{
         /// <summary>
         /// Получить среднее число между двумя (Поддерживает большие числа)
@@ -127,6 +127,7 @@ namespace WL{
                 Fast_Seed ^= Fast_Seed << 5 ;
                 return (Fast_Seed & 0xFFFFFF) / (float)0x1000000;
             }
+            
             /// <summary>
             /// Очень быстрое случайное число от 0 до 1 (Подходит для рендера, легко предугадать)
             /// </summary>
@@ -137,6 +138,30 @@ namespace WL{
                 Seed ^= Seed >> 17;
                 Seed ^= Seed << 5 ;
                 return (Seed & 0xFFFFFF) / (float)0x1000000;
+            }
+            
+            /// <summary>
+            /// Очень быстрое случайное целое число от Min до Max (Подходит для рендера, легко предугадать)
+            /// </summary>
+            /// <returns></returns>
+            public static int Fast_Int(int Min, int Max){
+                if(Min > Max){ (Min, Max) = (Max, Min); }
+
+                Fast_Seed ^= Fast_Seed << 13;
+                Fast_Seed ^= Fast_Seed >> 17;
+                Fast_Seed ^= Fast_Seed << 5 ;
+                return Min + (((int)(Fast_Seed & 0x7FFFFFFF)) % (Max - Min + 1));
+            }
+            
+            /// <summary>
+            /// Очень быстрый случайный байт от 0 до 255 (Подходит для рендера, легко предугадать)
+            /// </summary>
+            public static byte Fast_Byte(){
+                Fast_Seed ^= Fast_Seed << 13;
+                Fast_Seed ^= Fast_Seed >> 17;
+                Fast_Seed ^= Fast_Seed << 5;
+
+                return (byte)(Fast_Seed & 0xFF);
             }
         }
     }

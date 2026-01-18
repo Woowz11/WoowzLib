@@ -39,7 +39,7 @@ public enum BufferUsage : uint{
 /// (BUFFER)
 /// </summary>
 public abstract class Buffer : GLResource, ArrayByteObject{
-    protected Buffer(Render.GL Context, BufferType Type, BufferUsage Usage = BufferUsage.Never) : base(Context){
+    protected Buffer(BufferType Type, BufferUsage Usage = BufferUsage.Never) : base(){
         try{
             this.Type = Type;
             uint[] ID__ = new uint[1];

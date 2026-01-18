@@ -1,11 +1,11 @@
 ﻿namespace WLO.GL;
 
 public class FloatBuffer : Buffer{
-    public FloatBuffer(Render.GL Context, MassiveF? Data = null, BufferUsage Usage = BufferUsage.Never) : base(Context, BufferType.Float){
+    public FloatBuffer(MassiveF? Data = null, BufferUsage Usage = BufferUsage.Never) : base(BufferType.Float){
         this.Usage = Usage;
         if(Data.HasValue){ Set(Data.Value); }
     }
-    public FloatBuffer(Render.GL Context, float[] Data, BufferUsage Usage = BufferUsage.Never) : base(Context, BufferType.Float){
+    public FloatBuffer(float[] Data, BufferUsage Usage = BufferUsage.Never) : base(BufferType.Float){
         this.Usage = Usage;
         Set(Data);
     }

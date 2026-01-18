@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 16.01.2026 12:04
+/// Сгенерирован: 18.01.2026 14:53
 /// </summary>
 public struct RectI{
 	public static readonly Type Type = typeof(int);

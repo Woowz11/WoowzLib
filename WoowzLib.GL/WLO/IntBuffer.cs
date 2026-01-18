@@ -1,7 +1,7 @@
 ﻿namespace WLO.GL;
 
 public class IntBuffer : Buffer{
-    public IntBuffer(Render.GL Context) : base(Context, BufferType.Int){}
+    public IntBuffer() : base(BufferType.Int){}
     
     /// <summary>
     /// Использовать этот Int буфер
