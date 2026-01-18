@@ -5,7 +5,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 2)]
+    [WLModule(int.MinValue + 1, 3)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -549,6 +549,12 @@ namespace WL{
                 [DllImport("kernel32.dll")]
                 public static extern uint GetLastError();
                 
+                [DllImport("user32.dll", SetLastError = true)]
+                public static extern IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
+
+                [DllImport("user32.dll", SetLastError = true)]
+                public static extern IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+                
                 public const int  SW_HIDE             = 0;
                 public const int  SW_SHOW             = 5;
                 public const uint WS_POPUP            = 0x80000000;
@@ -563,6 +569,26 @@ namespace WL{
                 public const uint PFD_DOUBLEBUFFER    = 0x00000001;
                 public const byte PFD_TYPE_RGBA       = 0;
                 public const byte PFD_MAIN_PLANE      = 0;
+                public const int  GWLP_USERDATA       = -21;
+                public const uint WM_CLOSE            = 0x0010;
+                public const uint WM_DESTROY          = 0x0002;
+                public const uint WM_SIZE             = 0x0005;
+                public const uint WM_MOVE             = 0x0003;
+                public const uint WM_SHOWWINDOW       = 0x0018;
+                public const uint WM_KEYDOWN          = 0x0100;
+                public const uint WM_KEYUP            = 0x0101;
+                public const uint WM_CHAR             = 0x0102;
+                public const uint WM_MOUSEMOVE        = 0x0200;
+                public const uint WM_LBUTTONDOWN      = 0x0201;
+                public const uint WM_LBUTTONUP        = 0x0202;
+                public const uint WM_RBUTTONDOWN      = 0x0204;
+                public const uint WM_RBUTTONUP        = 0x0205;
+                public const uint WM_MOUSEWHEEL       = 0x020A;
+                public const uint WM_PAINT            = 0x000F;
+                public const uint WM_SETCURSOR        = 0x0020;
+                public const uint WM_ACTIVATE         = 0x0006;
+                public const uint WM_SETFOCUS         = 0x0007;
+                public const uint WM_KILLFOCUS        = 0x0008;
             }
         }
     }

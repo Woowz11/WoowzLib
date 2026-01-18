@@ -7,9 +7,12 @@ public static class Program{
         try{
             WL.WoowzLib.Start();
 
-            Window W = new Window();
+            Window W1 = new Window();
+            Window W2 = new Window();
 
-            Console.Read();
+            while(W1.Alive || W2.Alive){
+                WL.Window.Update();
+            }
         }catch(Exception e){
             Logger.Fatal("ОШИБКА ВНУТРИ ПРИЛОЖЕНИЯ", e);
             return 1;
