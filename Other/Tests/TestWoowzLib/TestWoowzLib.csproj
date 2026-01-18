@@ -13,7 +13,9 @@
       <ProjectReference Include="..\..\..\WoowzLib.Explorer\WoowzLib.Explorer.csproj" />
       <ProjectReference Include="..\..\..\WoowzLib.Logger\WoowzLib.Logger.csproj" />
       <ProjectReference Include="..\..\..\WoowzLib.Math\WoowzLib.Math.csproj" />
+      <ProjectReference Include="..\..\..\WoowzLib.Render\WoowzLib.Render.csproj" />
       <ProjectReference Include="..\..\..\WoowzLib.String\WoowzLib.String.csproj" />
+      <ProjectReference Include="..\..\..\WoowzLib.Window\WoowzLib.Window.csproj" />
     </ItemGroup>
     
 </Project>

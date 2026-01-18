@@ -6,7 +6,7 @@ using System.Text;
 using WLO;
 
 namespace WL{
-    [WLModule(int.MinValue, 9)]
+    [WLModule(int.MinValue, 10)]
     public static class WoowzLib{
         static WoowzLib(){
             try{
@@ -107,7 +107,7 @@ namespace WL{
                 
                 Console.Title = "WoowzLib Program";
 
-                Logger.Info("Установка WL [\"" + WL.System.RunFolder + "\"]:");
+                Logger.Info("Установка WL [" + OSType + "] [\"" + WL.System.RunFolder + "\"]:");
                 
                 foreach(string DLL in Directory.GetFiles( WL.System.RunFolder, "WoowzLib.*.dll")){
                     Assembly.LoadFrom(DLL);
@@ -123,7 +123,7 @@ namespace WL{
                        .ToList().OrderBy(A => A.Attribute!.Order);
 
                 foreach(var Module in Modules){
-                    Logger.Info("Загружен WL модуль: " + Module.Type.Name + " " + Module.Attribute!.Version);
+                    Logger.Info("Загружен WL модуль: [" + Module.Attribute!.Order + "] " + Module.Type.Name + " " + Module.Attribute!.Version);
                     RuntimeHelpers.RunClassConstructor(Module.Type.TypeHandle);
                 }
             
