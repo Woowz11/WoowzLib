@@ -3,14 +3,12 @@
 /// <summary>
 /// Принимает RenderAPI для рендера в него изображения
 /// </summary>
-public abstract class Drawable{
+public abstract class Drawable{ }
 
-}
-
-public sealed class DrawableWindow : Drawable{
-    public IntPtr Handle;
-
-    public DrawableWindow(IntPtr Handle){
-        this.Handle = Handle;
-    }
+/// <summary>
+/// Принимает RenderAPI для рендера в окно
+/// </summary>
+/// <param name="handle"></param>
+public sealed class DrawableWindow(IntPtr handle) : Drawable{
+    public readonly IntPtr Handle = handle;
 }

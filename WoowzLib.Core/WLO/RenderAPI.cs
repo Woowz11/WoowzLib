@@ -5,38 +5,63 @@
 /// </summary>
 public abstract class RenderAPI{
     protected RenderAPI(RenderAPI? Parent = null){
-        if(Parent != null){
-            this.Parent = Parent;
-            Parent.Child.Add(this);
-        }
-    }
-
-    protected RenderAPI Parent;
-
-    protected readonly List<RenderAPI> Child = [];
-
-    protected abstract void MakeCurrent(Drawable Target);
-    protected abstract void DoneCurrent();
-
-    public void Context(Drawable Target, Action Action){
-        CurrentDrawable = Target;
-        CurrentRenderAPI = this;
-        
-        MakeCurrent(Target);
         try{
-            Action();
-        }finally{
-            DoneCurrent();
+            if(Parent != null){
+                this.Parent = Parent;
+                Parent.Child.Add(this);
+            }
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при создании RenderAPI [" + this + "]!\nРодитель: " + Parent, e);
         }
-
-        CurrentDrawable = null;
-        CurrentRenderAPI = null;
     }
 
-    public static RenderAPI? CurrentRenderAPI;
-    public static Drawable?  CurrentDrawable;
-    
-    public abstract void __Stop();
+    /// <summary>
+    /// Привязанный родительский RenderAPI (К примеру для OpenGL, влияет на общие ресурсы)
+    /// </summary>
+    public readonly RenderAPI? Parent;
+
+    /// <summary>
+    /// Все привязанные к этому RenderAPI
+    /// </summary>
+    public readonly List<RenderAPI> Child = [];
+
+    protected abstract void __StartContext(Drawable Target);
+    protected abstract void __StopContext();
+
+    /// <summary>
+    /// Вызвать функции RenderAPI у указанной цели
+    /// </summary>
+    /// <param name="Target">Цель</param>
+    /// <param name="Action">Действия</param>
+    public void Context(Drawable Target, Action Action){
+        try{
+            CurrentDrawable = Target;
+            CurrentRenderAPI = this;
+        
+            __StartContext(Target);
+            try{
+                Action();
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при вызове действий у контекста [" + this + "]!\nЦель: " + Target);
+            }finally{
+                __StopContext();
+            }
+
+            CurrentDrawable = null;
+            CurrentRenderAPI = null;
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при вызове контекста [" + this + "]!\nЦель: " + Target);
+        }
+    }
+
+    /// <summary>
+    /// Текущий RenderAPI в контексте
+    /// </summary>
+    public static RenderAPI? CurrentRenderAPI{ get; private set; }
+    /// <summary>
+    /// Текущая цель в контексте
+    /// </summary>
+    public static Drawable?  CurrentDrawable { get; private set; }
     
     public bool Shared(RenderAPI Other){
         return this == Other || Parent == Other || Other.Parent == this;

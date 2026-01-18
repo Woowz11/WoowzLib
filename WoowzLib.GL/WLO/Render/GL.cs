@@ -6,10 +6,10 @@ namespace WLO.Render;
 /// <summary>
 /// OpenGL рендер для окна
 /// </summary>
-public class GL : RenderAPI{
+public class GL(RenderAPI? parent = null) : RenderAPI(parent){
     public void __TryStart(){
         try{
-            if(created){ return; } created = true;
+            if(Started){ return; } Started = true;
 
             IntPtr VersionLink = WL.GL.Native.glGetString(WL.GL.Native.GL_VERSION);
             string? __Version = WL.Native.FromMemoryString(VersionLink);
@@ -30,14 +30,17 @@ public class GL : RenderAPI{
             
             WL.GL.__StartWGL();
                 
-            WL.GL.__AddToTotalCreatedGL();
+            WL.GL.TotalGL.Add(this);
             ID = WL.GL.TotalCreatedGL;
 
+            // Отключение VSync
+            WL.GL.Native.wglSwapIntervalEXT(0);
+            
             __BackgroundColor = ColorF.Black;
-            BackgroundColor = ColorF.Orange;
+            BackgroundColor   = ColorF.Orange;
 
             __Viewport = new RectI();
-            Viewport = new RectI(128, 128);
+            Viewport   = new RectI(128, 128);
 
             float[] LineWidthLimit__ = new float[2];
             WL.GL.Native.glGetFloatv(WL.GL.Native.GL_ALIASED_LINE_WIDTH_RANGE, LineWidthLimit__);
@@ -48,11 +51,16 @@ public class GL : RenderAPI{
             throw new Exception("Произошла ошибка при инициализации стартовых значений GL [" + this + "]!", e);
         }
     }
-    private bool created;
     
-    public override void __Stop(){
+    /// <summary>
+    /// Был найден контекст и GL инициализировался полностью
+    /// </summary>
+    public bool Started{ get; private set; }
+
+    public void __Destroy(bool Warn){
         try{
-            if(WL.GL.Debug.LogMain){ Logger.Info("Авто-очистка GL [" + this + "]!"); }
+            if(Warn){ Logger.Warn("Авто-очистка GL [" + this + "]!" + (!Started ? " (GL был без контекста)" : "")); }
+            if(!Started){ return; }
 
             ClearALLResources();
         }catch(Exception e){
@@ -62,26 +70,32 @@ public class GL : RenderAPI{
 
     private IntPtr Handle = IntPtr.Zero;
     
-    protected override void MakeCurrent(Drawable Target){
-        if(Target is not DrawableWindow W){ throw new Exception("пока-что поддерживает только окна"); }
+    protected override void __StartContext(Drawable Target){
+        try{
+            if(Target is not DrawableWindow DWindow){ throw new Exception("Цель пока-что поддерживается только в виде окна!"); }
 
-        IntPtr HDC = WL.Windows.Kernel.GetDC(W.Handle);
+            IntPtr HDC = WL.Windows.Kernel.GetDC(DWindow.Handle);
 
-        if(Handle == IntPtr.Zero){
-            Handle = WL.GL.Native.wglCreateContext(HDC);
-            if(Handle == IntPtr.Zero){ throw new Exception("1"); }
+            if(Handle == IntPtr.Zero){
+                Handle = WL.GL.Native.wglCreateContext(HDC);
+                if(Handle == IntPtr.Zero){ throw new Exception("Не получилось создать контекст GL в wglCreateContext! HDC: " + HDC); }
 
-            if(Parent is GL P){
-                if(!WL.GL.Native.wglShareLists(P.Handle, Handle)){ throw new Exception("2"); }
+                if(Parent is GL ParentGL){
+                    if(!WL.GL.Native.wglShareLists(ParentGL.Handle, Handle)){ throw new Exception("Не получилось поделиться ресурсами GL через wglShareLists! Родительский GL: " + ParentGL); }
+                }
             }
+
+            if(!WL.GL.Native.wglMakeCurrent(HDC, Handle)){ throw new Exception("Не получилось установить контекст GL через wglMakeCurrent! HDC: " + HDC); }
+
+            WL.Windows.Kernel.ReleaseDC(DWindow.Handle, HDC);
+            
+            __TryStart();
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при установке контекста GL [" + this + "]!\nЦель: " + Target, e);
         }
-
-        if(!WL.GL.Native.wglMakeCurrent(HDC, Handle)){ throw new Exception("3"); }
-
-        __TryStart();
     }
     
-    protected override void DoneCurrent(){
+    protected override void __StopContext(){
         WL.GL.Native.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
     }
 

@@ -4,7 +4,7 @@ using WLO.GLFW;
 using File = WLO.File;
 
 namespace WL{
-    [WLModule(30, 5)]
+    [WLModule(30, 6)]
     public static class GLFW{
         static GLFW(){
             WL.WoowzLib.OnStop += () => __Destroy(true);

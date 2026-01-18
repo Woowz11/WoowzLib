@@ -18,25 +18,32 @@ namespace WLO{
 }
 
 namespace WL{
-    [WLModule(10, 7)]
+    [WLModule(10, 8)]
     public static class GL{
         static GL(){
             DLL = WL.Native.LoadSystem("opengl32.dll");
             
-            Native.glClear           = WL.Native.DelegateFunction<Native.D_glClear          >("glClear"           ,DLL);
-            Native.glEnable          = WL.Native.DelegateFunction<Native.D_glEnable         >("glEnable"          ,DLL);
-            Native.glDisable         = WL.Native.DelegateFunction<Native.D_glDisable        >("glDisable"         ,DLL);
-            Native.glViewport        = WL.Native.DelegateFunction<Native.D_glViewport       >("glViewport"        ,DLL);
-            Native.glDepthFunc       = WL.Native.DelegateFunction<Native.D_glDepthFunc      >("glDepthFunc"       ,DLL);
-            Native.glGetFloatv       = WL.Native.DelegateFunction<Native.D_glGetFloatv      >("glGetFloatv"       ,DLL);
-            Native.glGetString       = WL.Native.DelegateFunction<Native.D_glGetString      >("glGetString"       ,DLL);
-            Native.glLineWidth       = WL.Native.DelegateFunction<Native.D_glLineWidth      >("glLineWidth"       ,DLL);
-            Native.glClearColor      = WL.Native.DelegateFunction<Native.D_glClearColor     >("glClearColor"      ,DLL);
-            Native.wglShareLists     = WL.Native.DelegateFunction<Native.D_wglShareLists    >("wglShareLists"     ,DLL);
-            Native.wglMakeCurrent    = WL.Native.DelegateFunction<Native.D_wglMakeCurrent   >("wglMakeCurrent"    ,DLL);
-            Native.wglCreateContext  = WL.Native.DelegateFunction<Native.D_wglCreateContext >("wglCreateContext"  ,DLL);
-            Native.wglDeleteContext  = WL.Native.DelegateFunction<Native.D_wglDeleteContext >("wglDeleteContext"  ,DLL);
-            Native.wglGetProcAddress = WL.Native.DelegateFunction<Native.D_wglGetProcAddress>("wglGetProcAddress" ,DLL);
+            Native.glClear            = WL.Native.DelegateFunction<Native.D_glClear           >("glClear"            ,DLL);
+            Native.glEnable           = WL.Native.DelegateFunction<Native.D_glEnable          >("glEnable"           ,DLL);
+            Native.glDisable          = WL.Native.DelegateFunction<Native.D_glDisable         >("glDisable"          ,DLL);
+            Native.glViewport         = WL.Native.DelegateFunction<Native.D_glViewport        >("glViewport"         ,DLL);
+            Native.glDepthFunc        = WL.Native.DelegateFunction<Native.D_glDepthFunc       >("glDepthFunc"        ,DLL);
+            Native.glGetFloatv        = WL.Native.DelegateFunction<Native.D_glGetFloatv       >("glGetFloatv"        ,DLL);
+            Native.glGetString        = WL.Native.DelegateFunction<Native.D_glGetString       >("glGetString"        ,DLL);
+            Native.glLineWidth        = WL.Native.DelegateFunction<Native.D_glLineWidth       >("glLineWidth"        ,DLL);
+            Native.glClearColor       = WL.Native.DelegateFunction<Native.D_glClearColor      >("glClearColor"       ,DLL);
+            Native.wglShareLists      = WL.Native.DelegateFunction<Native.D_wglShareLists     >("wglShareLists"      ,DLL);
+            Native.wglMakeCurrent     = WL.Native.DelegateFunction<Native.D_wglMakeCurrent    >("wglMakeCurrent"     ,DLL);
+            Native.wglCreateContext   = WL.Native.DelegateFunction<Native.D_wglCreateContext  >("wglCreateContext"   ,DLL);
+            Native.wglDeleteContext   = WL.Native.DelegateFunction<Native.D_wglDeleteContext  >("wglDeleteContext"   ,DLL);
+            Native.wglGetProcAddress  = WL.Native.DelegateFunction<Native.D_wglGetProcAddress >("wglGetProcAddress"  ,DLL);
+
+            WL.WoowzLib.OnStop += () => {
+                foreach(WLO.Render.GL GL in TotalGL){
+                    GL.__Destroy(true);
+                }
+                TotalGL.Clear();
+            };
         }
 
         public static void __StartWGL(){
@@ -77,6 +84,7 @@ namespace WL{
                 Native.glBindVertexArray          = Native.WGLFunction<Native.D_glBindVertexArray         >("glBindVertexArray"         );
                 Native.glGetShaderInfoLog         = Native.WGLFunction<Native.D_glGetShaderInfoLog        >("glGetShaderInfoLog"        );
                 Native.glUniformMatrix4fv         = Native.WGLFunction<Native.D_glUniformMatrix4fv        >("glUniformMatrix4fv"        );
+                Native.wglSwapIntervalEXT         = Native.WGLFunction<Native.D_wglSwapIntervalEXT        >("wglSwapIntervalEXT"        );
                 Native.glGetProgramInfoLog        = Native.WGLFunction<Native.D_glGetProgramInfoLog       >("glGetProgramInfoLog"       );
                 Native.glGetUniformLocation       = Native.WGLFunction<Native.D_glGetUniformLocation      >("glGetUniformLocation"      );
                 Native.glDeleteVertexArrays       = Native.WGLFunction<Native.D_glDeleteVertexArrays      >("glDeleteVertexArrays"      );
@@ -101,13 +109,17 @@ namespace WL{
         /// </summary>
         public static int TotalCreatedResources{ get; private set; }
         public static void __AddToTotalCreatedResources(){ TotalCreatedResources++; }
-        
+
         /// <summary>
         /// Всего созданных контекстов
         /// </summary>
-        public static int TotalCreatedGL{ get; private set; }
-        public static void __AddToTotalCreatedGL(){ TotalCreatedGL++; }
-
+        public static int TotalCreatedGL => TotalGL.Count;
+        
+        /// <summary>
+        /// Все рендеры GL
+        /// </summary>
+        public static readonly List<WLO.Render.GL> TotalGL = [];
+        
         public static class Debug{
             /// <summary>
             /// Выводить сообщения об самом GL?
@@ -376,6 +388,10 @@ namespace WL{
             [UnmanagedFunctionPointer(CallingConvention.StdCall)]
             public delegate bool D_wglShareLists(IntPtr hglrc1, IntPtr hglrc2);
             public static D_wglShareLists wglShareLists = null!;
+            
+            [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+            public delegate int D_wglSwapIntervalEXT(int interval);
+            public static D_wglSwapIntervalEXT wglSwapIntervalEXT = null!;
             
             public const uint GL_COLOR_BUFFER_BIT            = 0x00004000;
             public const uint GL_DEPTH_BUFFER_BIT            = 0x00000100;

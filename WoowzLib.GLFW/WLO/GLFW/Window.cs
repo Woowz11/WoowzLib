@@ -55,8 +55,6 @@ public class Window{
 
             __Visible = false; Visible = true ;
 
-            __VSync = true; VSync = false;
-
             __CloseCallback = (W) => {
                 try{
                     OnClose?.Invoke(this);
@@ -135,6 +133,9 @@ public class Window{
     /// </summary>
     public IntPtr Handle{ get; private set; }
 
+    /// <summary>
+    /// Ссылка на окно (Оригинальное Windows окно)
+    /// </summary>
     public IntPtr HandleWin;
     
     /// <summary>
@@ -147,7 +148,10 @@ public class Window{
     /// </summary>
     public Window CheckDestroyed(){ return Destroyed ? throw new Exception("Окно [" + this + "] уничтожено!") : this; }
 
-    public DrawableWindow Drawable;
+    /// <summary>
+    /// Цель вывода
+    /// </summary>
+    public readonly DrawableWindow Drawable;
     
     /// <summary>
     /// Завершает рендер (меняет буфер рендера с буфером экрана местами)
@@ -412,24 +416,6 @@ public class Window{
         }
     }
     private bool __Visible;
-
-    /// <summary>
-    /// Ограничение по FPS (на 60, ограничивает StopRender())
-    /// </summary>
-    public bool VSync{
-        get => __VSync;
-        set{
-            try{
-                if(__VSync == value){ return; }
-                __VSync = value;
-                
-                WL.GLFW.Native.glfwSwapInterval(__VSync ? 1 : 0);
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при установке VSync у окна [" + this + "]!\nVSync: " + value, e);
-            }
-        }
-    }
-    private bool __VSync;
     
     /// <summary>
     /// Окно должно уничтожиться? (При получении уничтожает окно если должно)
@@ -489,6 +475,10 @@ public class Window{
 
         public static bool operator !=(Window? A, Window? B){
             return !(A == B);
+        }
+
+        public static implicit operator DrawableWindow(Window W){
+            return W.Drawable;
         }
 
     #endregion
