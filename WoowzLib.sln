@@ -4,15 +4,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.Core", "WoowzLib.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWoowzLib", "Other\Tests\TestWoowzLib\TestWoowzLib.csproj", "{5323AB76-CA1B-4B3E-904D-333F5369EA85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.GLFW", "WoowzLib.GLFW\WoowzLib.GLFW.csproj", "{D6F63FB0-D182-42CC-9960-0372230DCEB6}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.Math", "WoowzLib.Math\WoowzLib.Math.csproj", "{47978918-9CA0-433B-B85D-CA6FA29522A8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.Native", "WoowzLib.Native\WoowzLib.Native.csproj", "{4746E564-D66C-4503-94AE-6158F5BF8B65}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.Explorer", "WoowzLib.Explorer\WoowzLib.Explorer.csproj", "{F5B4845D-45B2-4886-BC41-4A78E3918CA1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.GL", "WoowzLib.GL\WoowzLib.GL.csproj", "{4A5BBF06-1A4E-4AF0-B216-8EA2E85AEAA7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeneratorWoowzLib", "Other\Generator\GeneratorWoowzLib\GeneratorWoowzLib.csproj", "{09784F92-32B5-4577-83E3-0B8107A882CE}"
 EndProject
@@ -21,8 +17,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.String", "WoowzLib.String\WoowzLib.String.csproj", "{7AA1A5B2-E889-4C12-A827-6DEF0A83175D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.Logger", "WoowzLib.Logger\WoowzLib.Logger.csproj", "{4FAD8323-50FC-4AC1-B752-793B559EB7FC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.WindowsForm", "WoowzLib.WindowsForm\WoowzLib.WindowsForm.csproj", "{5FBB0C8A-19D5-464E-BB11-029901C89A22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,16 +27,12 @@ Global
 		{E20DF4DA-9BBE-4E43-AFDB-0B1B16DE3D8C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5323AB76-CA1B-4B3E-904D-333F5369EA85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5323AB76-CA1B-4B3E-904D-333F5369EA85}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D6F63FB0-D182-42CC-9960-0372230DCEB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D6F63FB0-D182-42CC-9960-0372230DCEB6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{47978918-9CA0-433B-B85D-CA6FA29522A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47978918-9CA0-433B-B85D-CA6FA29522A8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4746E564-D66C-4503-94AE-6158F5BF8B65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4746E564-D66C-4503-94AE-6158F5BF8B65}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F5B4845D-45B2-4886-BC41-4A78E3918CA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5B4845D-45B2-4886-BC41-4A78E3918CA1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4A5BBF06-1A4E-4AF0-B216-8EA2E85AEAA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4A5BBF06-1A4E-4AF0-B216-8EA2E85AEAA7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{09784F92-32B5-4577-83E3-0B8107A882CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09784F92-32B5-4577-83E3-0B8107A882CE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4DD2810C-BD13-487C-A65F-0EDBA2B46343}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -51,7 +41,5 @@ Global
 		{7AA1A5B2-E889-4C12-A827-6DEF0A83175D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4FAD8323-50FC-4AC1-B752-793B559EB7FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4FAD8323-50FC-4AC1-B752-793B559EB7FC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5FBB0C8A-19D5-464E-BB11-029901C89A22}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5FBB0C8A-19D5-464E-BB11-029901C89A22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
