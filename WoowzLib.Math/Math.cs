@@ -4,7 +4,7 @@ namespace WL{
     /// <summary>
     /// Математические функции и т.д
     /// </summary>
-    [WLModule(-10000, 6)]
+    [WLModule(-10000, 7)]
     public static class Math{
         /// <summary>
         /// Получить среднее число между двумя (Поддерживает большие числа)
@@ -84,12 +84,12 @@ namespace WL{
             /// <summary>
             /// Сколько ТИКОВ прошло после запуска приложения
             /// </summary>
-            public static long ProgramLifeTick => WL.WoowzLib.Tick.ProgramLifeTick;
+            public static long ProgramLifeTick => WL.System.Tick.ProgramLifeTick;
             
             /// <summary>
             /// Сколько миллисекунд прошло после запуска приложения
             /// </summary>
-            public static double ProgramLifeTime => WL.WoowzLib.Tick.ProgramLifeTime;
+            public static double ProgramLifeTime => WL.System.Tick.ProgramLifeTime;
 
             /// <summary>
             /// Вычисляет разницу между двумя моментами времени

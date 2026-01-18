@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 
 namespace WL{
-    [WLModule(-1000, 4)]
+    [WLModule(-1000, 5)]
     public static class Explorer{
         /// <summary>
         /// Для работы с файлами
@@ -12,7 +12,7 @@ namespace WL{
             /// </summary>
             /// <param name="Path">Путь [<c>"test/file.json"</c>]</param>
             /// <returns>Файл существует?</returns>
-            public static bool Exist(string Path) => System.IO.File.Exists(Path);
+            public static bool Exist(string Path) => global::System.IO.File.Exists(Path);
             
             /// <summary>
             /// Уничтожает файл по указанному пути
@@ -21,7 +21,7 @@ namespace WL{
             public static void Destroy(string Path){
                 try{
                     if(!Exist(Path)){ throw new Exception(global::WLO.File.Error_FileAlreadyDestroyed); }
-                    System.IO.File.Delete(Path);
+                    global::System.IO.File.Delete(Path);
                 }catch(Exception e){
                     throw new Exception("Не получилось уничтожить файл по пути [" + Path + "]!");
                 }
@@ -34,7 +34,7 @@ namespace WL{
             /// <returns>[<c>"folder/folder2/"</c>]</returns>
             public static string OnlyFolder(string Path){
                 if(string.IsNullOrWhiteSpace(Path)){ return ""; }
-                return System.IO.Path.GetDirectoryName(Path) + "/";
+                return global::System.IO.Path.GetDirectoryName(Path) + "/";
             }
         }
         
@@ -70,7 +70,7 @@ namespace WL{
             public static void Destroy(string Path){
                 try{
                     if(!Exist(Path)){ throw new Exception("Папка не найдена!"); }
-                    System.IO.Directory.Delete(Path, true);
+                    global::System.IO.Directory.Delete(Path, true);
                 }catch(Exception e){
                     throw new Exception("Не получилось уничтожить папку по пути [" + Path + "]!");
                 }
@@ -85,8 +85,8 @@ namespace WL{
                     if(!Exist(Path)){ throw new Exception("Папка не найдена!"); }
 
                     foreach(string File in Directory.GetFiles(Path)){
-                        System.IO.File.SetAttributes(File, FileAttributes.Normal);
-                        System.IO.File.Delete(File);
+                        global::System.IO.File.SetAttributes(File, FileAttributes.Normal);
+                        global::System.IO.File.Delete(File);
                     }
 
                     foreach(string Folder in Directory.GetDirectories(Path)){
@@ -137,7 +137,7 @@ namespace WL{
             /// <param name="Path">Путь до файла (с поддержкой папок) [<c>"test/file.txt"</c>]</param>
             /// <returns>Файл</returns>
             public static global::WLO.File Create(string Path){
-                global::WLO.File TempFile = new global::WLO.File(System.IO.Path.Combine(TempFolder, Path));
+                global::WLO.File TempFile = new global::WLO.File(global::System.IO.Path.Combine(TempFolder, Path));
 
                 TempFiles.Add(TempFile);
                 
@@ -156,7 +156,7 @@ namespace WL{
             /// <param name="Assembly">Сборка, где искать ресурс (если null, значит в текущей)</param>
             /// <returns>Ресурс (сохранённый во временной папке)</returns>
             public static global::WLO.File Load(string ID, Assembly? Assembly = null){
-                Assembly Assembly__ = Assembly ?? System.Reflection.Assembly.GetExecutingAssembly();
+                Assembly Assembly__ = Assembly ?? global::System.Reflection.Assembly.GetExecutingAssembly();
 
                 string? ProjectName = Assembly__.GetName().Name;
                 

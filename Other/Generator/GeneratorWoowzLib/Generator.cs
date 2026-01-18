@@ -199,7 +199,7 @@ public static class Generator{
                                     public static {{Name}} operator *({{Type}} A, {{Name}} B){
                                         return B * A;
                                     }
-                                    {{WL.WoowzLib.Condition(VectorType == VectorType.UInt, $$"""
+                                    {{WL.System.Condition(VectorType == VectorType.UInt, $$"""
                                                                                              
                                                                                                      public static implicit operator Vector{{N}}I(Vector{{N}}U Other){
                                                                                                          return new Vector{{N}}I({{WL.String.Join("(int)Other.$0, ", "(int)Other.$0", Components)}});
@@ -291,7 +291,7 @@ public static class Generator{
                             {{WL.String.Join((i, Obj, Last) => {
                                 return "\tpublic " + Name + " To" + Obj.Key + "(){ return Set(" + WL.String.Join(Obj.Value) + "); }\n" +
                                        "\tpublic static " + Name + " " + Obj.Key + " => new " + Name + "().To" + Obj.Key + "();\n";
-                            }, Constants)}}    public {{Name}} ToRandom(){ return Set({{WL.WoowzLib.Condition(ColorType == ColorType.Int,"WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255)", (ColorType == ColorType.Byte ? "WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte()" : "WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1()"))}}, 1); }
+                            }, Constants)}}    public {{Name}} ToRandom(){ return Set({{WL.System.Condition(ColorType == ColorType.Int,"WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255)", (ColorType == ColorType.Byte ? "WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte()" : "WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1()"))}}, 1); }
                                 public static {{Name}} Random => new {{Name}}().ToRandom();
                             
                                 #region Override
@@ -640,7 +640,7 @@ public static class Generator{
                                    }
                                    
                                    public int ElementBSize(){
-                                        return {{WL.WoowzLib.Condition(Custom, "WL.Byte.Size(typeof(T))", "sizeof(" + Type + ")")}}; 
+                                        return {{WL.System.Condition(Custom, "WL.Byte.Size(typeof(T))", "sizeof(" + Type + ")")}}; 
                                     }
                                    
                                    public int BSize(){

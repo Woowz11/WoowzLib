@@ -3,10 +3,10 @@ using WLO;
 
 namespace WL;
 
-[WLModule(-500, 2)]
+[WLModule(-500, 3)]
 public class Logger{
     static Logger(){
-        WL.WoowzLib.OnStarted += () => {
+        WL.WoowzLib.OnStart += () => {
             try{
                 OriginalOut = Console.Out;
                 Console.SetOut(new LoggerWriter());
