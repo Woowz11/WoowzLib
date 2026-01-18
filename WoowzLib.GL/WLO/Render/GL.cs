@@ -6,13 +6,13 @@ namespace WLO.Render;
 /// <summary>
 /// OpenGL рендер для окна
 /// </summary>
-public class GL(RenderAPI? Parent = null) : RenderAPI(Parent){
+public class GL : RenderAPI{
     public void __TryStart(){
         try{
             if(Started){ return; } Started = true;
 
             IntPtr VersionLink = WL.GL.Native.glGetString(WL.GL.Native.GL_VERSION);
-            string? __Version = WL.Native.FromMemoryString(VersionLink);
+            string? __Version = WL.WoowzLib.Native.FromMemoryString(VersionLink);
             
             FullVersion = __Version ?? "Unknown";
             
@@ -62,32 +62,37 @@ public class GL(RenderAPI? Parent = null) : RenderAPI(Parent){
             if(Warn){ Logger.Warn("Авто-очистка GL [" + this + "]!" + (!Started ? " (GL был без контекста)" : "")); }
             if(!Started){ return; }
 
-            ClearALLResources();
+            Context(() => ClearALLResources());
         }catch(Exception e){
             throw new Exception("Произошла ошибка при очистке GL [" + this + "]!", e);
         }
     }
 
+    /// <summary>
+    /// Ссылка на контекст GL (Сам рендер OpenGL)
+    /// </summary>
     private IntPtr Handle = IntPtr.Zero;
     
-    protected override void __StartContext(Drawable Target){
+    protected override void __StartContext(Drawable? Target){
         try{
-            if(Target is not DrawableWindow DWindow){ throw new Exception("Цель пока-что поддерживается только в виде окна!"); }
-
-            IntPtr HDC = WL.Windows.Kernel.GetDC(DWindow.Handle);
+            IntPtr WindowHandle;
+            if(Target != null){
+                if(Target is not DrawableWindow DWindow){ throw new Exception("Цель пока-что поддерживается только в виде окна!"); }
+                WindowHandle = DWindow.Handle;
+            }else{
+                WindowHandle = DrawableWindow.Empty!.Handle;
+            }
+            
+            IntPtr HDC = WL.Windows.Kernel.GetDC(WindowHandle);
 
             if(Handle == IntPtr.Zero){
                 Handle = WL.GL.Native.wglCreateContext(HDC);
                 if(Handle == IntPtr.Zero){ throw new Exception("Не получилось создать контекст GL в wglCreateContext! HDC: " + HDC); }
-
-                if(Parent is GL ParentGL){
-                    if(!WL.GL.Native.wglShareLists(ParentGL.Handle, Handle)){ throw new Exception("Не получилось поделиться ресурсами GL через wglShareLists! Родительский GL: " + ParentGL); }
-                }
             }
 
             if(!WL.GL.Native.wglMakeCurrent(HDC, Handle)){ throw new Exception("Не получилось установить контекст GL через wglMakeCurrent! HDC: " + HDC); }
 
-            WL.Windows.Kernel.ReleaseDC(DWindow.Handle, HDC);
+            WL.Windows.Kernel.ReleaseDC(WindowHandle, HDC);
             
             __TryStart();
         }catch(Exception e){
@@ -228,6 +233,8 @@ public class GL(RenderAPI? Parent = null) : RenderAPI(Parent){
     /// </summary>
     public GL ClearALLResources(){
         try{
+            CheckContext();
+            
             if(WL.GL.Debug.LogDestroy){ Logger.Info("Очистка всех ресурсов [" + this + "]!"); }
             
             foreach(GLResource Resource in Resources.ToArray()){

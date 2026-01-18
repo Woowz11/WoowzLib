@@ -2,7 +2,7 @@
 using File = WLO.File;
 
 namespace WL{
-    [WLModule(-2500, 2)]
+    [WLModule(-2500, 3)]
     public static class Native{
         public const string Error_DLLNotExist      = "Не найден DLL!";
         public const string Error_FunctionNotFound = "Функция не найдена!";
@@ -155,53 +155,6 @@ namespace WL{
         /// <returns>Функция которую можно вызвать как C# функцию</returns>
         public static D DelegateFunction<D>(string Name, IntPtr DLL) where D : Delegate{
             return Marshal.GetDelegateForFunctionPointer<D>(FunctionSystem(DLL, Name));
-        }
-
-        /// <summary>
-        /// Сохраняет строку в память (Нужно очищать!)
-        /// </summary>
-        /// <param name="S">Строка</param>
-        /// <returns>Ссылка на строку</returns>
-        public static IntPtr MemoryString(string S){
-            return Marshal.StringToHGlobalAnsi(S);
-        }
-
-        /// <summary>
-        /// Сохраняет строку в память (с поддержкой уникальных символов) (Нужно очищать!)
-        /// </summary>
-        /// <param name="S">Строка</param>
-        /// <returns>Ссылка на строку</returns>
-        public static IntPtr MemoryStringUTF(string S){
-            byte[] Bytes = System.Text.Encoding.UTF8.GetBytes(S + '\0');
-            IntPtr Link = Memory(Bytes.Length);
-            Marshal.Copy(Bytes, 0, Link, Bytes.Length);
-            return Link;
-        }
-
-        /// <summary>
-        /// Даёт ссылку на память указанного размера
-        /// </summary>
-        /// <param name="ByteSize">Какого размера дать ссылку на память?</param>
-        /// <returns></returns>
-        public static IntPtr Memory(int ByteSize){
-            return Marshal.AllocHGlobal(ByteSize);
-        }
-
-        /// <summary>
-        /// Освобождает память
-        /// </summary>
-        /// <param name="Link">Ссылка на занятую ячейку</param>
-        public static void Free(IntPtr Link){
-            Marshal.FreeHGlobal(Link);
-        }
-
-        /// <summary>
-        /// Получает строку из памяти
-        /// </summary>
-        /// <param name="Link">Ссылка на строку</param>
-        /// <returns>Строка (если память пуста, то вернёт <c>null</c>)</returns>
-        public static string? FromMemoryString(IntPtr Link){
-            return Marshal.PtrToStringAnsi(Link);
         }
     }
 }

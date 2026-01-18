@@ -27,12 +27,12 @@ public class Window{
             WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_OPENGL_PROFILE       , WL.GLFW.Native.GLFW_OPENGL_CORE_PROFILE);
             WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_OPENGL_FORWARD_COMPAT, 1                                      );
             
-            IntPtr Title__ = WL.Native.MemoryStringUTF(Title);
+            IntPtr Title__ = WL.WoowzLib.Native.MemoryStringUTF(Title);
 
             WL.GLFW.Native.glfwWindowHint(WL.GLFW.Native.GLFW_VISIBLE, 0);
             Handle = WL.GLFW.Native.glfwCreateWindow((int)Width, (int)Height, Title__, IntPtr.Zero, IntPtr.Zero);
             
-            WL.Native.Free(Title__);
+            WL.WoowzLib.Native.Free(Title__);
 
             if(Handle == IntPtr.Zero){ throw new Exception("Не получилось создать окно внутри glfwCreateWindow!"); }
 
@@ -383,9 +383,9 @@ public class Window{
 
                 CheckDestroyed();
 
-                IntPtr Title__ = WL.Native.MemoryStringUTF(__Title);
+                IntPtr Title__ = WL.WoowzLib.Native.MemoryStringUTF(__Title);
                 WL.GLFW.Native.glfwSetWindowTitle(Handle, Title__);
-                WL.Native.Free(Title__);
+                WL.WoowzLib.Native.Free(Title__);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при установке названия окну [" + this + "]!\nНазвание: \"" + value + "\"", e);
             }

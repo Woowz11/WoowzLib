@@ -5,7 +5,7 @@ namespace WL{
     /// <summary>
     /// Работа со строками
     /// </summary>
-    [WLModule(-5000, 1)]
+    [WLModule(-5000, 2)]
     public static class String{
         private static readonly Regex Regex1 = new Regex(@"\$(\d+)", RegexOptions.Compiled);
         
@@ -92,8 +92,8 @@ namespace WL{
         /// </summary>
         /// <param name="Values">Элементы [<c>new object[]{"A", "B", "C"}</c>]</param>
         /// <returns>[<c>"A, B, C"</c>]</returns>
-        public static string Join(object[] Values){
-            return string.Join(", ", Values);
+        public static string Join(object[]? Values){
+            return Values == null ? "NULL" : string.Join(", ", Values);
         }
         
         /// <summary>

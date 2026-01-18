@@ -59,7 +59,7 @@ namespace WLO{
 }
 
 namespace WL{
-    [WLModule(int.MinValue, 5)]
+    [WLModule(int.MinValue, 6)]
     public static class WoowzLib{
         static WoowzLib(){
             AppDomain     .CurrentDomain.ProcessExit        += (_, _) => Stop();
@@ -68,6 +68,8 @@ namespace WL{
             System.Console.CancelKeyPress                   += (_, e) => { Stop(); e.Cancel = false; };
 
             OnMessage += (Type, Message) => {
+                Message ??= [null!];
+
                 string Prefix = Type switch{
                     MessageType.Warn  => "[WARN] ",
                     MessageType.Error => "[ERROR] ",
@@ -76,7 +78,7 @@ namespace WL{
                                     _ => "",
                 };
 
-                System.Console.WriteLine(Prefix + Message[0]);
+                System.Console.WriteLine(Prefix + (Message[0]?.ToString() ?? "NULL"));
 
                 for(int i = 1; i < Message.Length; i++){
                     System.Console.WriteLine(Message[i]?.ToString() ?? "NULL");
@@ -159,6 +161,10 @@ namespace WL{
             
                 Logger.Info("Установка WL завершена!");
 
+                DrawableWindow.__CreateEmpty();
+
+                OnStop += DrawableWindow.__DestroyEmpty;
+                
                 try{
                     OnStarted?.Invoke();   
                 }catch(Exception e){
@@ -182,14 +188,14 @@ namespace WL{
         /// <summary>
         /// Ивент вызывается при отправке сообщений через Logger
         /// </summary>
-        public static event Action<MessageType, object[]>? OnMessage;
+        public static event Action<MessageType, object[]?>? OnMessage;
 
         /// <summary>
         /// Отправляет сообщение в OnMessage
         /// </summary>
         /// <param name="Type">Тип сообщения</param>
         /// <param name="Message">Сообщение</param>
-        public static void __Print(MessageType Type, object[] Message){
+        public static void __Print(MessageType Type, object[]? Message){
             OnMessage?.Invoke(Type, Message);
         }
 
@@ -385,6 +391,55 @@ namespace WL{
                 }
             }
         }
+        
+        public static class Native{
+            /// <summary>
+            /// Сохраняет строку в память (Нужно очищать!)
+            /// </summary>
+            /// <param name="S">Строка</param>
+            /// <returns>Ссылка на строку</returns>
+            public static IntPtr MemoryString(string S){
+                return Marshal.StringToHGlobalAnsi(S);
+            }
+
+            /// <summary>
+            /// Сохраняет строку в память (с поддержкой уникальных символов) (Нужно очищать!)
+            /// </summary>
+            /// <param name="S">Строка</param>
+            /// <returns>Ссылка на строку</returns>
+            public static IntPtr MemoryStringUTF(string S){
+                byte[] Bytes = System.Text.Encoding.UTF8.GetBytes(S + '\0');
+                IntPtr Link = Memory(Bytes.Length);
+                Marshal.Copy(Bytes, 0, Link, Bytes.Length);
+                return Link;
+            }
+
+            /// <summary>
+            /// Даёт ссылку на память указанного размера
+            /// </summary>
+            /// <param name="ByteSize">Какого размера дать ссылку на память?</param>
+            /// <returns></returns>
+            public static IntPtr Memory(int ByteSize){
+                return Marshal.AllocHGlobal(ByteSize);
+            }
+
+            /// <summary>
+            /// Освобождает память
+            /// </summary>
+            /// <param name="Link">Ссылка на занятую ячейку</param>
+            public static void Free(IntPtr Link){
+                Marshal.FreeHGlobal(Link);
+            }
+
+            /// <summary>
+            /// Получает строку из памяти
+            /// </summary>
+            /// <param name="Link">Ссылка на строку</param>
+            /// <returns>Строка (если память пуста, то вернёт <c>null</c>)</returns>
+            public static string? FromMemoryString(IntPtr Link){
+                return Marshal.PtrToStringAnsi(Link);
+            }
+        }
     }
 }
 
@@ -421,7 +476,120 @@ namespace WL.Windows{
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SwapBuffers(IntPtr hdc);
         
-        public const int SW_HIDE = 0;
-        public const int SW_SHOW = 5;
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern IntPtr CreateWindowEx(
+            uint dwExStyle,
+            string lpClassName,
+            string lpWindowName,
+            uint dwStyle,
+            int x,
+            int y,
+            int nWidth,
+            int nHeight,
+            IntPtr hWndParent,
+            IntPtr hMenu,
+            IntPtr hInstance,
+            IntPtr lpParam
+        );
+        
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DestroyWindow(IntPtr hWnd);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+        public static extern IntPtr GetModuleHandle(string? lpModuleName);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern ushort RegisterClassEx(ref WNDCLASSEX lpwcx);
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct WNDCLASSEX{
+            public uint   cbSize;
+            public uint   style;
+            public IntPtr lpfnWndProc;
+            public int    cbClsExtra;
+            public int    cbWndExtra;
+            public IntPtr hInstance;
+            public IntPtr hIcon;
+            public IntPtr hCursor;
+            public IntPtr hbrBackground;
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string lpszMenuName;
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string lpszClassName;
+            public IntPtr hIconSm;
+        }
+        
+        [DllImport("user32.dll")]
+        public static extern IntPtr DefWindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+        
+        public delegate IntPtr WndProcDelegate(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+        
+        [DllImport("user32.dll")]
+        public static extern bool UpdateWindow(IntPtr hWnd);
+        
+        public static IntPtr WindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam){ return DefWindowProc(hWnd, msg, wParam, lParam); }
+        
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MSG{
+            public IntPtr hwnd;
+            public uint   message;
+            public IntPtr wParam;
+            public IntPtr lParam;
+            public uint   time;
+            public POINT  pt;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct POINT{
+            public int x;
+            public int y;
+        }
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetMessage(out MSG lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool TranslateMessage([In] ref MSG lpMsg);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr DispatchMessage([In] ref MSG lpMsg);
+        
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool PeekMessage(out MSG lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax, uint wRemoveMsg);
+        
+        [DllImport("gdi32.dll")]
+        public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+        
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+
+        public static string GetWindowTitle(IntPtr hwnd){
+            StringBuilder sb = new StringBuilder(256);
+            int len = GetWindowText(hwnd, sb, sb.Capacity);
+            return sb.ToString(0, len);
+        }
+        
+        [DllImport("user32.dll")]
+        public static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT { public int Left, Top, Right, Bottom; }
+        
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetWindowDC(IntPtr hWnd);
+        
+        public const int  SW_HIDE             = 0;
+        public const int  SW_SHOW             = 5;
+        public const uint WS_POPUP            = 0x80000000;
+        public const uint WS_VISIBLE          = 0x10000000;
+        public const uint WS_EX_NOACTIVATE    = 0x08000000;
+        public const uint WS_OVERLAPPEDWINDOW = 0x00CF0000;
+        public const uint PM_REMOVE           = 0x0001;
+        public const int  HORZRES             = 8;
+        public const int  VERTRES             = 10;
     }
 }

@@ -75,10 +75,10 @@ public class Shader : GLResource{
                 WL.GL.Native.glGetShaderiv(ID, WL.GL.Native.GL_INFO_LOG_LENGTH, out int LogSize);
                 string Log = "Лог пустой!";
                 if(LogSize > 0){
-                    IntPtr LogLink = WL.Native.Memory(LogSize);
+                    IntPtr LogLink = WL.WoowzLib.Native.Memory(LogSize);
                     WL.GL.Native.glGetShaderInfoLog(ID, LogSize, out _, LogLink);
-                    Log = WL.Native.FromMemoryString(LogLink) ?? "Не найден лог!";
-                    WL.Native.Free(LogLink);   
+                    Log = WL.WoowzLib.Native.FromMemoryString(LogLink) ?? "Не найден лог!";
+                    WL.WoowzLib.Native.Free(LogLink);   
                 }
 
                 throw new Exception("Произошла ошибка при компиляции! Лог: " + Log);
