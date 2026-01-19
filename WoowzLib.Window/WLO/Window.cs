@@ -3,7 +3,7 @@ using WLO;
 
 namespace WL.WLO;
 
-public class Window : IWindow{
+public class Window : WindowContext{
     /// <summary>
     /// Создаёт окно
     /// </summary>
@@ -72,7 +72,8 @@ public class Window : IWindow{
             foreach(WindowElement Child in Children){
                 Child.Destroy();
             }
-            Children.Clear();
+               Children.Clear();
+            AllChildren.Clear();
             
             WL.System.Native.Windows.DestroyWindow(Handle);
             
@@ -120,9 +121,13 @@ public class Window : IWindow{
         /// <param name="LParam">Параметр 2</param>
         private IntPtr __Events(uint Message, IntPtr WParam, IntPtr LParam){
             try{
-                long LP = LParam.ToInt64();
-                int Word1 = (short) (LP        & 0xFFFF);
-                int Word2 = (short)((LP >> 16) & 0xFFFF);
+                long LP = (long)LParam;
+                short   LWord_L = (short) (LP        & 0xFFFF);
+                short   HWord_L = (short)((LP >> 16) & 0xFFFF);
+
+                ulong WP = (ulong)WParam;
+                ushort LWord_W = (ushort)(WP & 0xFFFF);
+                ushort HWord_W = (ushort)(WP >> 16   );
                 
                 switch(Message){
                     // Закрытие окна (через крестик например)
@@ -137,8 +142,8 @@ public class Window : IWindow{
                     
                     // Обновление размера у окна
                     case System.Native.Windows.WM_SIZE:
-                        __Width  = (uint)(Word1);
-                        __Height = (uint)(Word2);
+                        __Width  = (uint)(LWord_L);
+                        __Height = (uint)(HWord_L);
 
                         try{
                             OnResize?.Invoke(this, __Width, __Height);
@@ -189,6 +194,17 @@ public class Window : IWindow{
                         }
                         
                         break;
+                    
+                    // Обработка элементов у окна
+                    case System.Native.Windows.WM_COMMAND:
+                        ushort NotifyCode = HWord_W;
+                        ushort ElementID  = LWord_W;
+
+                        IntPtr ElementHandle = LParam;
+
+                        
+                        
+                        return IntPtr.Zero;
                 }
 
                 return System.Native.Windows.DefWindowProcW(Handle, Message, WParam, LParam);
@@ -230,23 +246,36 @@ public class Window : IWindow{
 
     #region Дети
 
+    /// <summary>
+    /// Привязанные элементы к окну
+    /// </summary>
     private readonly List<WindowElement> Children = [];
+    
+        /// <summary>
+        /// Привязанные элементы к окну (все!!! в том числе дети детей)
+        /// </summary>
+        private readonly List<WindowElement> AllChildren = [];
+        public void __AddChild(WindowElement WE){ AllChildren.Add(WE); }
 
-    public Window Add(WindowElement Element){
-        try{
-            CheckDestroyed();
-            
-            if(Element.Parent != IntPtr.Zero){ throw new Exception("Этот элемент уже привязан к какому-то окну! Ссылка на окно: " + Element.Parent); }
-            
-            Element.__SetParent(this);
-            
-            Children.Add(Element);
-        }catch(Exception e){
-            throw new Exception("Произошла ошибка при добавлении элемента [" + Element + "] окну [" + this + "]!", e);
+        /// <summary>
+        /// Добавить элемент к окну
+        /// </summary>
+        /// <param name="Element">Элемент</param>
+        public override void Add(WindowElement Element){
+            try{
+                CheckDestroyed();
+                
+                if(Element.Parent != null){ throw new Exception("Этот элемент уже привязан к какому-то окну! Ссылка на окно: " + Element.Parent); }
+                
+                Element.__SetParent(this);
+                
+                Children.Add(Element);
+                AllChildren.Add(Element);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при добавлении элемента [" + Element + "] окну [" + this + "]!", e);
+            }
         }
-
-        return this;
-    }
+    
 
     #endregion
     
@@ -268,7 +297,7 @@ public class Window : IWindow{
     private string __Title;
 }
 
-public abstract class IWindow{
+public abstract class WindowContext{
     /// <summary>
     /// Ссылка на окно
     /// </summary>
@@ -283,11 +312,35 @@ public abstract class IWindow{
     /// Делает проверку, уничтожено окно или нет?
     /// </summary>
     public void CheckDestroyed(){ if(!Alive){ throw new Exception("Пародия окна [" + this + "] уничтожена!"); } }
+
+    /// <summary>
+    /// Добавить элемент к окну
+    /// </summary>
+    /// <param name="Element">Элемент</param>
+    public abstract void Add(WindowElement Element);
+        
+    /// <summary>
+    /// Добавляет элементы к окну
+    /// </summary>
+    /// <param name="Elements">Элементы</param>
+    public void Add(params WindowElement[] Elements){
+        try{
+            CheckDestroyed();
+                
+            if(Elements == null){ throw new Exception("Не указаны элементы!"); }
+
+            foreach(WindowElement Element in Elements){
+                Add(Element);
+            }
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при добавлении элементов [" + Elements + "] окну [" + this + "]!", e);
+        }
+    }
     
     /// <summary>
     /// Обновляет размер окна
     /// </summary>
-    private void __UpdateSize(){
+    protected void __UpdateSize(){
         try{
             System.Native.Windows.RECT Rect = new System.Native.Windows.RECT{
                 left   = 0,
@@ -307,7 +360,7 @@ public abstract class IWindow{
     /// <summary>
     /// Обновляет позицию окна
     /// </summary>
-    private void __UpdatePosition(){
+    protected void __UpdatePosition(){
         try{
             System.Native.Windows.SetWindowPos(Handle, IntPtr.Zero, __X, __Y, 0, 0, System.Native.Windows.SWP_NOZORDER | System.Native.Windows.SWP_NOSIZE);
         }catch(Exception e){

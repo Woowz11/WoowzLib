@@ -13,9 +13,18 @@ public static class Program{
 
             Window W1 = new Window();
 
-            Button Test = new Button();
+            Button Test1 = new Button(default, 10, 10);
+            Button Test2 = new Button("Кнопка", 10, 10 + 30);
+            Button Test3 = new Button("AAAAAAAAAAAAAAAAAAAAA", 10, 10 + 30 + 30);
+            Button Test4 = new Button("B", 10, 10 + 30 + 30 + 30);
 
-            W1.Add(Test);
+            Panel P = new Panel();
+
+            P.Add(Test1);
+
+            W1.Add(P);
+            
+            P.Add(Test2, Test3, Test4);
             
             Window W2 = new Window();
 
@@ -41,7 +50,9 @@ public static class Program{
                     if(W1.Alive){
                         W1.Title = WL.Math.Random.Fast_0_1().ToString();
 
-                        Test.X = (int)(W1.Width / 2) + (int)(Math.Sin(TD.DeltaTick * 3) * 100);
+                        P.X = (int)(W1.Width / 2) + (int)(Math.Sin(TD.DeltaTick * 3) * 100);
+
+                        Test1.Text = W1.Title;
                     }
 
                     if(W2.Alive){

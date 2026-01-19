@@ -5,7 +5,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 7)]
+    [WLModule(int.MinValue + 1, 8)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -706,6 +706,8 @@ namespace WL{
                 public const uint SWP_NOZORDER        = 0x0004;
                 public const uint WM_WINDOWPOSCHANGED = 0x0047;
                 public const uint WS_CHILD            = 0x40000000;
+                public const uint WM_COMMAND          = 0x0111;
+                public const uint BN_CLICKED          = 0;
             }
         }
     }
