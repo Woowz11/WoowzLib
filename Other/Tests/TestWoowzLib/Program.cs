@@ -1,11 +1,15 @@
 ﻿using WL.WLO;
+using WLO;
 using Logger = WLO.Logger;
 
 public static class Program{
     
     public static int Main(string[] Args){
         try{
-            WL.WoowzLib.Start();
+            WL.WoowzLib.Start(new WoowzLibInfo(
+                Name  : "Test WoowzLib",
+                Author: "Woowz11"
+            ));
 
             Window W1 = new Window();
             

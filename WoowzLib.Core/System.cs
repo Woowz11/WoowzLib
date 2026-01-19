@@ -5,7 +5,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 5)]
+    [WLModule(int.MinValue + 1, 6)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -347,9 +347,21 @@ namespace WL{
             /// Даёт ссылку на память указанного размера
             /// </summary>
             /// <param name="ByteSize">Какого размера дать ссылку на память?</param>
-            /// <returns></returns>
+            /// <returns>Ссылка на память</returns>
             public static IntPtr Memory(int ByteSize){
                 return Marshal.AllocHGlobal(ByteSize);
+            }
+
+            /// <summary>
+            /// Сохраняет struct в память (Нужно очищать!)
+            /// </summary>
+            /// <param name="Data">сам struct</param>
+            /// <typeparam name="T">тип struct</typeparam>
+            /// <returns>Ссылка на struct</returns>
+            public static IntPtr Memory<T>(T Data){
+                IntPtr Link = Marshal.AllocHGlobal(Marshal.SizeOf<T>());
+                Marshal.StructureToPtr(Data, Link, false);
+                return Link;
             }
 
             /// <summary>

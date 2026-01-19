@@ -6,7 +6,7 @@ using System.Text;
 using WLO;
 
 namespace WL{
-    [WLModule(int.MinValue, 13)]
+    [WLModule(int.MinValue, 14)]
     public static class WoowzLib{
         static WoowzLib(){
             try{
@@ -26,7 +26,7 @@ namespace WL{
                     Message ??= [null!];
 
                     string Prefix = Type switch{
-                        MessageType.Warn => "[WARN] ",
+                        MessageType.Warn  => "[WARN] ",
                         MessageType.Error => "[ERROR] ",
                         MessageType.Fatal => "[FATAL] ",
                         MessageType.Debug => "[DEBUG] ",
@@ -63,13 +63,21 @@ namespace WL{
         public static bool Started{ get; private set; }
 
         /// <summary>
-        /// Запуск WoowzLib и его модулей
+        /// Информация об проекте
         /// </summary>
-        public static void Start(){
+        public static WoowzLibInfo ProjectInfo{ get; private set; }
+
+        /// <summary>
+        /// Запуск WoowzLib и его модулей
+        /// <param name="Info">Дополнительная информация</param>
+        /// </summary>
+        public static void Start(WoowzLibInfo Info = default){
             try{
                 if(Started){ throw new Exception("WoowzLib уже был запущен!"); }
                 Started = true;
 
+                ProjectInfo = Info;
+                
                 #region Детект ОС
 
                     OSType OSType = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? OSType.Windows : (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? OSType.Linux : (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? OSType.OSX : (RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD) ? OSType.FreeBSD : OSType.Unknown)));
@@ -107,7 +115,7 @@ namespace WL{
                 
                 Console.Title = "WoowzLib Program";
 
-                Logger.Info("Установка WL [" + OSType + "] [\"" + WL.System.RunFolder + "\"]:");
+                Logger.Info("Установка WL [" + OSType + " : \"" + ProjectInfo.Name + " " + ProjectInfo.Version + "\" на \"" + ProjectInfo.Engine + " " + ProjectInfo.EngineVersion + "\"] [\"" + WL.System.RunFolder + "\"]:");
                 
                 foreach(string DLL in Directory.GetFiles( WL.System.RunFolder, "WoowzLib.*.dll")){
                     Assembly.LoadFrom(DLL);
@@ -170,5 +178,39 @@ namespace WL{
         public static void __RemoveOnMessage(){
             OnMessage = null;
         }
+    }
+}
+
+namespace WLO{
+    public readonly struct WoowzLibInfo(string Name = "New Project", uint Version = 0, string Engine = "WoowzLib", uint EngineVersion = 0, string Author = "Anonymous", string License = "MIT"){
+        /// <summary>
+        /// Название проекта
+        /// </summary>
+        public readonly string Name = Name;
+        
+        /// <summary>
+        /// Версия проекта
+        /// </summary>
+        public readonly uint Version;
+        
+        /// <summary>
+        /// Движок проекта
+        /// </summary>
+        public readonly string Engine = Engine;
+
+        /// <summary>
+        /// Версия движка проекта
+        /// </summary>
+        public readonly uint EngineVersion;
+        
+        /// <summary>
+        /// Автор проекта
+        /// </summary>
+        public readonly string Author = Author;
+        
+        /// <summary>
+        /// Лицензия проекта
+        /// </summary>
+        public readonly string License = License;
     }
 }
