@@ -5,7 +5,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 3)]
+    [WLModule(int.MinValue + 1, 4)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -392,14 +392,14 @@ namespace WL{
                 [return: MarshalAs(UnmanagedType.Bool)]
                 public static extern bool SwapBuffers(IntPtr hdc);
                 
-                [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-                public static extern IntPtr CreateWindowEx(
+                [DllImport("user32.dll", EntryPoint = "CreateWindowExW", CharSet = CharSet.Unicode, SetLastError = true)]
+                public static extern IntPtr CreateWindowExW(
                     uint dwExStyle,
                     string lpClassName,
                     string lpWindowName,
                     uint dwStyle,
-                    int x,
-                    int y,
+                    int X,
+                    int Y,
                     int nWidth,
                     int nHeight,
                     IntPtr hWndParent,
@@ -439,12 +439,15 @@ namespace WL{
                 [DllImport("user32.dll")]
                 public static extern IntPtr DefWindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
                 
+                [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+                public static extern IntPtr DefWindowProcW(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+                
                 public delegate IntPtr WndProcDelegate(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
                 
                 [DllImport("user32.dll")]
                 public static extern bool UpdateWindow(IntPtr hWnd);
                 
-                public static IntPtr WindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam){ return DefWindowProc(hWnd, msg, wParam, lParam); }
+                public static IntPtr WindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam){ return DefWindowProcW(hWnd, msg, wParam, lParam); }
                 
                 [StructLayout(LayoutKind.Sequential)]
                 public struct MSG{
@@ -493,7 +496,13 @@ namespace WL{
                 public static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
 
                 [StructLayout(LayoutKind.Sequential)]
-                public struct RECT { public int Left, Top, Right, Bottom; }
+                public struct RECT
+                {
+                    public int left;
+                    public int top;
+                    public int right;
+                    public int bottom;
+                }
                 
                 [DllImport("user32.dll")]
                 public static extern IntPtr GetWindowDC(IntPtr hWnd);
@@ -555,6 +564,36 @@ namespace WL{
                 [DllImport("user32.dll", SetLastError = true)]
                 public static extern IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
                 
+                [DllImport("user32.dll")]
+                public static extern IntPtr SetCursor(IntPtr hCursor);
+               
+                [DllImport("user32.dll", SetLastError = true)]
+                public static extern IntPtr LoadCursor(IntPtr hInstance, int lpCursorName);
+                
+                public static IntPtr CURSOR_Arrow = System.Native.Windows.LoadCursor(IntPtr.Zero, System.Native.Windows.IDC_ARROW);
+                
+                [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+                public static extern bool SetWindowText(IntPtr hWnd, string lpString);
+                
+                [DllImport("user32.dll", SetLastError = true)]
+                public static extern bool SetWindowPos(
+                    IntPtr hWnd,
+                    IntPtr hWndInsertAfter,
+                    int X,
+                    int Y,
+                    int cx,
+                    int cy,
+                    uint uFlags
+                );
+                
+                [DllImport("user32.dll", SetLastError = true)]
+                public static extern bool AdjustWindowRectEx(
+                    ref RECT lpRect,
+                    uint dwStyle,
+                    bool bMenu,
+                    uint dwExStyle
+                );
+                
                 public const int  SW_HIDE             = 0;
                 public const int  SW_SHOW             = 5;
                 public const uint WS_POPUP            = 0x80000000;
@@ -589,6 +628,10 @@ namespace WL{
                 public const uint WM_ACTIVATE         = 0x0006;
                 public const uint WM_SETFOCUS         = 0x0007;
                 public const uint WM_KILLFOCUS        = 0x0008;
+                public const int  HTCLIENT            = 1;
+                public const int  IDC_ARROW           = 32512;
+                public const uint SWP_NOMOVE          = 0x0002;
+                public const uint SWP_NOZORDER        = 0x0004;
             }
         }
     }

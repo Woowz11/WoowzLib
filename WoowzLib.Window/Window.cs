@@ -1,6 +1,6 @@
 ﻿namespace WL;
 
-[WLModule(-100, 2)]
+[WLModule(-100, 3)]
 public class Window{
     public static readonly List<WLO.Window> Windows = [];
     
