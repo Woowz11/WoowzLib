@@ -5,7 +5,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 8)]
+    [WLModule(int.MinValue + 1, 9)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -391,40 +391,59 @@ namespace WL{
             public static string? FromMemoryString(IntPtr Link){
                 return Marshal.PtrToStringAnsi(Link);
             }
+
+            /// <summary>
+            /// Присоединяет WinAPI ивент для окна окну
+            /// </summary>
+            /// <param name="Window">Окно</param>
+            /// <param name="Event">Ивент [Окно, действие, параметр W, параметр L]</param>
+            /// <returns>Ссылка на ивент</returns>
+            public static Windows.WndProcDelegate ConnectEventsToWindow(IntPtr Window, Func<IntPtr, uint, IntPtr, IntPtr, IntPtr> Event){
+                Windows.WndProcDelegate Events__ = new System.Native.Windows.WndProcDelegate((Window, Message, WParam, LParam) => Event(Window, Message, WParam, LParam));
+
+                IntPtr p = Marshal.GetFunctionPointerForDelegate(Events__);
+                System.Native.Windows.SetWindowLongPtrW(Window, System.Native.Windows.GWLP_WNDPROC, p);
+
+                return Events__;
+            }
             
             public static class Windows{
-                 [DllImport("kernel32.dll")]
+                private const string DLL_Kernel = "kernel32.dll";
+                private const string DLL_User   = "user32.dll";
+                private const string DLL_GDI    = "gdi32.dll";
+                
+                [DllImport(DLL_Kernel)]
                 public static extern IntPtr GetConsoleWindow();
                 
-                [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+                [DllImport(DLL_Kernel, SetLastError = true, CharSet = CharSet.Unicode)]
                 public static extern IntPtr LoadLibrary(string lpFileName);
                 
-                [DllImport("kernel32.dll", SetLastError = true)]
+                [DllImport(DLL_Kernel, SetLastError = true)]
                 public static extern bool FreeLibrary(IntPtr hModule);
                 
-                [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Ansi)]
+                [DllImport(DLL_Kernel, SetLastError = true, CharSet = CharSet.Ansi)]
                 public static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
                 
-                [DllImport("kernel32.dll")]
+                [DllImport(DLL_Kernel)]
                 public static extern bool AllocConsole();
                 
-                [DllImport("user32.dll")]
+                [DllImport(DLL_User)]
                 public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-                [DllImport("user32.dll")]
+                [DllImport(DLL_User)]
                 public static extern bool IsWindowVisible(IntPtr hWnd);
                 
-                [DllImport("user32.dll", SetLastError = true)]
+                [DllImport(DLL_User, SetLastError = true)]
                 public static extern IntPtr GetDC(IntPtr hWnd);
 
-                [DllImport("user32.dll", SetLastError = true)]
+                [DllImport(DLL_User, SetLastError = true)]
                 public static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
                 
-                [DllImport("gdi32.dll", CallingConvention = CallingConvention.StdCall)]
+                [DllImport(DLL_GDI, CallingConvention = CallingConvention.StdCall)]
                 [return: MarshalAs(UnmanagedType.Bool)]
                 public static extern bool SwapBuffers(IntPtr hdc);
                 
-                [DllImport("user32.dll", EntryPoint = "CreateWindowExW", CharSet = CharSet.Unicode, SetLastError = true)]
+                [DllImport(DLL_User, CharSet = CharSet.Unicode, SetLastError = true)]
                 public static extern IntPtr CreateWindowExW(
                     uint dwExStyle,
                     string lpClassName,
@@ -440,15 +459,15 @@ namespace WL{
                     IntPtr lpParam
                 );
                 
-                [DllImport("user32.dll", SetLastError = true)]
+                [DllImport(DLL_User, SetLastError = true)]
                 [return: MarshalAs(UnmanagedType.Bool)]
                 public static extern bool DestroyWindow(IntPtr hWnd);
 
-                [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+                [DllImport(DLL_Kernel, CharSet = CharSet.Unicode)]
                 public static extern IntPtr GetModuleHandle(string? lpModuleName);
 
-                [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-                public static extern ushort RegisterClassEx(ref WNDCLASSEX lpwcx);
+                [DllImport(DLL_User, SetLastError = true, CharSet = CharSet.Unicode)]
+                public static extern ushort RegisterClassExW(ref WNDCLASSEX lpwcx);
 
                 [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
                 public struct WNDCLASSEX{
@@ -468,18 +487,15 @@ namespace WL{
                     public IntPtr hIconSm;
                 }
                 
-                [DllImport("user32.dll")]
-                public static extern IntPtr DefWindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
-                
-                [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+                [DllImport(DLL_User, CharSet = CharSet.Unicode)]
                 public static extern IntPtr DefWindowProcW(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
                 
                 public delegate IntPtr WndProcDelegate(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
                 
-                [DllImport("user32.dll")]
+                [DllImport(DLL_User)]
                 public static extern bool UpdateWindow(IntPtr hWnd);
                 
-                public static IntPtr WindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam){ return DefWindowProcW(hWnd, msg, wParam, lParam); }
+                public static IntPtr EmptyWindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam){ return DefWindowProcW(hWnd, msg, wParam, lParam); }
                 
                 [StructLayout(LayoutKind.Sequential)]
                 public struct MSG{
@@ -497,25 +513,25 @@ namespace WL{
                     public int y;
                 }
 
-                [DllImport("user32.dll")]
+                [DllImport(DLL_User)]
                 [return: MarshalAs(UnmanagedType.Bool)]
                 public static extern bool GetMessage(out MSG lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
 
-                [DllImport("user32.dll")]
+                [DllImport(DLL_User)]
                 [return: MarshalAs(UnmanagedType.Bool)]
                 public static extern bool TranslateMessage([In] ref MSG lpMsg);
 
-                [DllImport("user32.dll")]
+                [DllImport(DLL_User)]
                 public static extern IntPtr DispatchMessage([In] ref MSG lpMsg);
                 
-                [DllImport("user32.dll")]
+                [DllImport(DLL_User)]
                 [return: MarshalAs(UnmanagedType.Bool)]
                 public static extern bool PeekMessage(out MSG lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax, uint wRemoveMsg);
                 
-                [DllImport("gdi32.dll")]
+                [DllImport(DLL_GDI)]
                 public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
                 
-                [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+                [DllImport(DLL_User, CharSet = CharSet.Unicode)]
                 public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
 
                 public static string GetWindowTitle(IntPtr hwnd){
@@ -524,7 +540,7 @@ namespace WL{
                     return sb.ToString(0, len);
                 }
                 
-                [DllImport("user32.dll")]
+                [DllImport(DLL_User)]
                 public static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
 
                 [StructLayout(LayoutKind.Sequential)]
@@ -536,7 +552,7 @@ namespace WL{
                     public int bottom;
                 }
                 
-                [DllImport("user32.dll")]
+                [DllImport(DLL_User)]
                 public static extern IntPtr GetWindowDC(IntPtr hWnd);
                 
                 [StructLayout(LayoutKind.Sequential)]
@@ -569,17 +585,17 @@ namespace WL{
                     public uint   dwDamageMask;
                 }
                 
-                [DllImport("gdi32.dll")]
+                [DllImport(DLL_GDI)]
                 public static extern int ChoosePixelFormat(IntPtr hdc, ref PIXELFORMATDESCRIPTOR ppfd);
 
-                [DllImport("gdi32.dll")]
+                [DllImport(DLL_GDI)]
                 [return: MarshalAs(UnmanagedType.Bool)]
                 public static extern bool SetPixelFormat(IntPtr hdc, int format, ref PIXELFORMATDESCRIPTOR ppfd);
                 
-                [DllImport("gdi32.dll")]
+                [DllImport(DLL_GDI)]
                 public static extern int GetPixelFormat(IntPtr hdc);
 
-                [DllImport("gdi32.dll")]
+                [DllImport(DLL_GDI)]
                 public static extern int DescribePixelFormat(
                     IntPtr hdc,
                     int iPixelFormat,
@@ -587,27 +603,27 @@ namespace WL{
                     out PIXELFORMATDESCRIPTOR ppfd
                 );
                 
-                [DllImport("kernel32.dll")]
+                [DllImport(DLL_Kernel)]
                 public static extern uint GetLastError();
                 
-                [DllImport("user32.dll", SetLastError = true)]
+                [DllImport(DLL_User, SetLastError = true)]
                 public static extern IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
 
-                [DllImport("user32.dll", SetLastError = true)]
-                public static extern IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+                [DllImport(DLL_User, CharSet = CharSet.Unicode, SetLastError = true)]
+                public static extern IntPtr SetWindowLongPtrW(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
                 
-                [DllImport("user32.dll")]
+                [DllImport(DLL_User)]
                 public static extern IntPtr SetCursor(IntPtr hCursor);
                
-                [DllImport("user32.dll", SetLastError = true)]
+                [DllImport(DLL_User, SetLastError = true)]
                 public static extern IntPtr LoadCursor(IntPtr hInstance, int lpCursorName);
                 
                 public static IntPtr CURSOR_Arrow = System.Native.Windows.LoadCursor(IntPtr.Zero, System.Native.Windows.IDC_ARROW);
                 
-                [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-                public static extern bool SetWindowText(IntPtr hWnd, string lpString);
+                [DllImport(DLL_User, CharSet = CharSet.Unicode, SetLastError = true)]
+                public static extern bool SetWindowTextW(IntPtr hWnd, string lpString);
                 
-                [DllImport("user32.dll", SetLastError = true)]
+                [DllImport(DLL_User, SetLastError = true)]
                 public static extern bool SetWindowPos(
                     IntPtr hWnd,
                     IntPtr hWndInsertAfter,
@@ -618,7 +634,7 @@ namespace WL{
                     uint uFlags
                 );
                 
-                [DllImport("user32.dll", SetLastError = true)]
+                [DllImport(DLL_User, SetLastError = true)]
                 public static extern bool AdjustWindowRectEx(
                     ref RECT lpRect,
                     uint dwStyle,
@@ -650,20 +666,35 @@ namespace WL{
                     public byte[] rgbReserved;
                 }
                 
-                [DllImport("user32.dll")]
+                [DllImport(DLL_User)]
                 public static extern IntPtr BeginPaint(IntPtr hWnd, out PAINTSTRUCT lpPaint);
 
-                [DllImport("user32.dll")]
+                [DllImport(DLL_User)]
                 public static extern bool EndPaint(IntPtr hWnd, ref PAINTSTRUCT lpPaint);
 
-                [DllImport("user32.dll")]
+                [DllImport(DLL_User)]
                 public static extern int FillRect(IntPtr hDC, ref RECT lprc, IntPtr hbr);
 
-                [DllImport("gdi32.dll")]
+                [DllImport(DLL_GDI)]
                 public static extern IntPtr CreateSolidBrush(uint color);
 
-                [DllImport("gdi32.dll")]
+                [DllImport(DLL_GDI)]
                 public static extern bool DeleteObject(IntPtr hObject);
+                
+                [DllImport(DLL_User, CharSet = CharSet.Unicode, SetLastError = true)]
+                public static extern uint GetClassLongW(IntPtr hWnd, int nIndex);
+                
+                [DllImport(DLL_User, CharSet = CharSet.Unicode, SetLastError = true)]
+                public static extern IntPtr GetClassLongPtrW(IntPtr hWnd, int nIndex);
+                
+                [DllImport(DLL_User, CharSet = CharSet.Unicode, SetLastError = true)]
+                public static extern IntPtr CallWindowProcW(
+                    IntPtr lpPrevWndFunc,
+                    IntPtr hWnd,
+                    uint Msg,
+                    IntPtr wParam,
+                    IntPtr lParam
+                );
                 
                 public const int  SW_HIDE             = 0;
                 public const int  SW_SHOW             = 5;
@@ -708,6 +739,9 @@ namespace WL{
                 public const uint WS_CHILD            = 0x40000000;
                 public const uint WM_COMMAND          = 0x0111;
                 public const uint BN_CLICKED          = 0;
+                public const int  GWLP_WNDPROC        = -4;
+                public const int  GCLP_WNDPROC        = -24;
+                public const uint WM_SETTEXT          = 0x000C;
             }
         }
     }

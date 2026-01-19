@@ -15,19 +15,17 @@ public class Window : WindowContext{
             const string WindowClassName = "WoowzLib_Window";
             
             IntPtr Instance = WL.System.Native.Windows.GetModuleHandle(null);
-
-            __Events__ = new System.Native.Windows.WndProcDelegate(__StaticEvents);
             
             System.Native.Windows.WNDCLASSEX WindowClass = new System.Native.Windows.WNDCLASSEX{
                 cbSize        = (uint)Marshal.SizeOf<System.Native.Windows.WNDCLASSEX>(),
-                lpfnWndProc   = Marshal.GetFunctionPointerForDelegate(__Events__),
+                lpfnWndProc   = Marshal.GetFunctionPointerForDelegate(new System.Native.Windows.WndProcDelegate(System.Native.Windows.EmptyWindowProc)),
                 hInstance     = Instance,
                 lpszClassName = WindowClassName,
                 hCursor       = IntPtr.Zero,
                 hbrBackground = IntPtr.Zero
             };
 
-            WL.System.Native.Windows.RegisterClassEx(ref WindowClass);
+            WL.System.Native.Windows.RegisterClassExW(ref WindowClass);
 
             Handle = WL.System.Native.Windows.CreateWindowExW(
                 0,
@@ -44,8 +42,7 @@ public class Window : WindowContext{
 
             if(Handle == IntPtr.Zero){ throw new Exception("Не получилось создать окно внутри CreateWindowEx!"); }
             
-            __GC__ = GCHandle.Alloc(this);
-            System.Native.Windows.SetWindowLongPtr(Handle, System.Native.Windows.GWLP_USERDATA, GCHandle.ToIntPtr(__GC__));
+            __Events__ = System.Native.ConnectEventsToWindow(Handle, __Events);
             
             WL.Window.Windows.Add(this);
             
@@ -56,8 +53,8 @@ public class Window : WindowContext{
             throw new Exception("Произошла ошибка при создании окна [" + this + "]!", e);
         }
     }
-    private GCHandle                              __GC__;
-    private System.Native.Windows.WndProcDelegate __Events__;
+    // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
+    private readonly System.Native.Windows.WndProcDelegate __Events__;
     
     public void DestroyNow(){
         try{
@@ -71,16 +68,13 @@ public class Window : WindowContext{
 
             foreach(WindowElement Child in Children){
                 Child.Destroy();
-            }
-               Children.Clear();
-            AllChildren.Clear();
+            } 
+            Children.Clear();
             
             WL.System.Native.Windows.DestroyWindow(Handle);
             
             Handle = IntPtr.Zero;
             ShouldDestroy = false;
-
-            if(__GC__.IsAllocated){ __GC__.Free(); }
 
             WL.Window.Windows.Remove(this);
         }catch(Exception e){
@@ -103,23 +97,14 @@ public class Window : WindowContext{
     }
 
     #region Процессы окна
-
-        private static IntPtr __StaticEvents(IntPtr Window, uint Message, IntPtr WParam, IntPtr LParam){
-            try{
-                IntPtr Link = System.Native.Windows.GetWindowLongPtr(Window, System.Native.Windows.GWLP_USERDATA);
-                return Link != IntPtr.Zero ? ((Window)GCHandle.FromIntPtr(Link).Target!).__Events(Message, WParam, LParam) : System.Native.Windows.DefWindowProcW(Window, Message, WParam, LParam);
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка у __StaticEvents!", e);
-            }
-        }
-
+    
         /// <summary>
         /// Вызывает WinAPI ивенты для окна
         /// </summary>
         /// <param name="Message">Ивент</param>
         /// <param name="WParam">Параметр 1</param>
         /// <param name="LParam">Параметр 2</param>
-        private IntPtr __Events(uint Message, IntPtr WParam, IntPtr LParam){
+        public override IntPtr __Events(IntPtr OtherWindow, uint Message, IntPtr WParam, IntPtr LParam){
             try{
                 long LP = (long)LParam;
                 short   LWord_L = (short) (LP        & 0xFFFF);
@@ -197,14 +182,7 @@ public class Window : WindowContext{
                     
                     // Обработка элементов у окна
                     case System.Native.Windows.WM_COMMAND:
-                        ushort NotifyCode = HWord_W;
-                        ushort ElementID  = LWord_W;
-
-                        IntPtr ElementHandle = LParam;
-
-                        
-                        
-                        return IntPtr.Zero;
+                        return __UpdateCommand(WParam, LParam, Children);
                 }
 
                 return System.Native.Windows.DefWindowProcW(Handle, Message, WParam, LParam);
@@ -250,12 +228,6 @@ public class Window : WindowContext{
     /// Привязанные элементы к окну
     /// </summary>
     private readonly List<WindowElement> Children = [];
-    
-        /// <summary>
-        /// Привязанные элементы к окну (все!!! в том числе дети детей)
-        /// </summary>
-        private readonly List<WindowElement> AllChildren = [];
-        public void __AddChild(WindowElement WE){ AllChildren.Add(WE); }
 
         /// <summary>
         /// Добавить элемент к окну
@@ -270,7 +242,6 @@ public class Window : WindowContext{
                 Element.__SetParent(this);
                 
                 Children.Add(Element);
-                AllChildren.Add(Element);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при добавлении элемента [" + Element + "] окну [" + this + "]!", e);
             }
@@ -288,7 +259,7 @@ public class Window : WindowContext{
                 if(__Title == value){ return; }
                 __Title = value;
 
-                System.Native.Windows.SetWindowText(Handle, __Title);
+                System.Native.Windows.SetWindowTextW(Handle, __Title);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при изменении названия у окна [" + this + "]!\nНазвание: \"" + value + "\"", e);
             }
@@ -335,6 +306,26 @@ public abstract class WindowContext{
         }catch(Exception e){
             throw new Exception("Произошла ошибка при добавлении элементов [" + Elements + "] окну [" + this + "]!", e);
         }
+    }
+    
+    public abstract IntPtr __Events(IntPtr OtherWindow, uint Message, IntPtr WParam, IntPtr LParam);
+
+    public IntPtr __UpdateCommand(IntPtr WParam, IntPtr LParam, List<WindowElement> Children){
+        ulong WP = (ulong)WParam;
+        ushort NotifyCode = (ushort)(WP & 0xFFFF);
+        ushort ElementID  = (ushort)(WP >> 16   );
+                        
+        IntPtr ElementHandle = LParam;
+        
+        WindowElement? Element = Children.FirstOrDefault(E => E.Handle == ElementHandle);
+
+        if(Element is Button Button){
+            if(NotifyCode == System.Native.Windows.BN_CLICKED){
+                Button.__InvokeOnClick();
+            }
+        }
+        
+        return IntPtr.Zero;
     }
     
     /// <summary>

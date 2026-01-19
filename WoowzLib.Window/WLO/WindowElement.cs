@@ -1,4 +1,7 @@
-﻿namespace WL.WLO;
+﻿using System.Runtime.InteropServices;
+using WLO;
+
+namespace WL.WLO;
 
 public abstract class WindowElement : WindowContext{
     public WindowContext? Parent{ get; private set; }
@@ -9,9 +12,7 @@ public abstract class WindowElement : WindowContext{
             this.Parent = Parent;
             if(!this.Parent.Alive){ throw new Exception("Окно не живое!"); }
             if(Created){ throw new Exception("Элемент уже созданный!"); }
-            __Create();
-            Created = true;
-            if(Handle == IntPtr.Zero){ throw new Exception("Элемент не создался!"); }
+            __CreateElement(this);
             __CreateAndChild();
         }catch(Exception e){
             throw new Exception("Произошла ошибка при установке элементу [" + this + "] родителя (окно) [" + Parent + "]!", e);
@@ -36,10 +37,14 @@ public abstract class WindowElement : WindowContext{
             Element.__Create();
             Element.Created = true;
             if(Handle == IntPtr.Zero){ throw new Exception("Элемент не создался!"); }
+
+            __Events__ = System.Native.ConnectEventsToWindow(Element.Handle, __Events);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании элемента [" + Element + "] у [" + this + "]!", e);
         }
     }
+    // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
+    private System.Native.Windows.WndProcDelegate __Events__;
     
     private void __CreateAndChild(){
         try{
@@ -59,18 +64,21 @@ public abstract class WindowElement : WindowContext{
 
     public abstract void __Create();
 
-    public abstract void __Destroy();
+    public abstract IntPtr __Destroy();
     
     public void Destroy(){
-        foreach(WindowElement Child in Children){
-            Child.Destroy();
-        }
-        Children.Clear();
+        try{
+            foreach(WindowElement Child in Children){
+                Child.Destroy();
+            }
+            Children.Clear();
 
-        if(Alive){
-            __Destroy();
-            //System.Native.Windows.DestroyWindow(Handle);
-            Handle = IntPtr.Zero;
+            if(Alive){
+                Handle = __Destroy();
+                if(Handle != IntPtr.Zero){ throw new Exception("Неверно удалился элемент!"); }
+            }
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при уничтожении [" + this + "]!", e);
         }
     }
     

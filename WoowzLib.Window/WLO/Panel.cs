@@ -1,4 +1,6 @@
-﻿namespace WL.WLO;
+﻿using System.Runtime.InteropServices;
+
+namespace WL.WLO;
 
 public class Panel : WindowElement{
     public Panel(int X = 0, int Y = 0, uint Width = 128, uint Height = 128){
@@ -21,12 +23,26 @@ public class Panel : WindowElement{
                 System.Native.Windows.GetModuleHandle(null),
                 IntPtr.Zero
             );
+
+            __DefaultEvents__ = System.Native.Windows.GetClassLongPtrW(Handle, System.Native.Windows.GCLP_WNDPROC);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании панели [" + this + "]!", e);
         }
     }
+    private IntPtr __DefaultEvents__;
     
-    public override void __Destroy(){
+    public override IntPtr __Destroy(){
         System.Native.Windows.DestroyWindow(Handle);
+        
+        return IntPtr.Zero;
+    }
+
+    public override IntPtr __Events(IntPtr OtherWindow, uint Message, IntPtr WParam, IntPtr LParam){
+        switch(Message){
+            case System.Native.Windows.WM_COMMAND:
+                return __UpdateCommand(WParam, LParam, Children);
+        }
+        
+        return System.Native.Windows.CallWindowProcW(__DefaultEvents__, OtherWindow, Message, WParam, LParam);
     }
 }

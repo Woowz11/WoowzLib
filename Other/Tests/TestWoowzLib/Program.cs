@@ -18,9 +18,17 @@ public static class Program{
             Button Test3 = new Button("AAAAAAAAAAAAAAAAAAAAA", 10, 10 + 30 + 30);
             Button Test4 = new Button("B", 10, 10 + 30 + 30 + 30);
 
+            Test1.OnClick += button => {
+                Logger.Debug("CLICK");
+            };
+            
+            Test2.OnClick += button => {
+                Logger.Debug("CLICK 2");
+            };
+            
             Panel P = new Panel();
 
-            P.Add(Test1);
+            W1.Add(Test1);
 
             W1.Add(P);
             
@@ -53,6 +61,8 @@ public static class Program{
                         P.X = (int)(W1.Width / 2) + (int)(Math.Sin(TD.DeltaTick * 3) * 100);
 
                         Test1.Text = W1.Title;
+
+                        Test2.Text = "Русский " + Test1.Text;
                     }
 
                     if(W2.Alive){
