@@ -250,6 +250,26 @@ public class Window : WindowContext{
 
     #endregion
     
+    /// <summary>
+    /// Обновляет размер окна
+    /// </summary>
+    public override void __UpdateSize(){
+        try{
+            System.Native.Windows.RECT Rect = new System.Native.Windows.RECT{
+                left   = 0,
+                top    = 0,
+                right  = (int)__Width,
+                bottom = (int)__Height
+            };
+
+            System.Native.Windows.AdjustWindowRectEx(ref Rect, System.Native.Windows.WS_OVERLAPPEDWINDOW, false, 0);
+
+            System.Native.Windows.SetWindowPos(Handle, IntPtr.Zero, 0, 0, Rect.right - Rect.left, Rect.bottom - Rect.top, System.Native.Windows.SWP_NOZORDER | System.Native.Windows.SWP_NOMOVE);
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при обновлении размера у пародии окна [" + this + "]!", e);
+        }
+    }
+    
     public string Title{
         get => __Title;
         set{
@@ -331,7 +351,7 @@ public abstract class WindowContext{
     /// <summary>
     /// Обновляет размер окна
     /// </summary>
-    protected void __UpdateSize(){
+    public virtual void __UpdateSize(){
         try{
             System.Native.Windows.RECT Rect = new System.Native.Windows.RECT{
                 left   = 0,
@@ -339,8 +359,6 @@ public abstract class WindowContext{
                 right  = (int)__Width,
                 bottom = (int)__Height
             };
-
-            System.Native.Windows.AdjustWindowRectEx(ref Rect, System.Native.Windows.WS_OVERLAPPEDWINDOW, false, 0);
 
             System.Native.Windows.SetWindowPos(Handle, IntPtr.Zero, 0, 0, Rect.right - Rect.left, Rect.bottom - Rect.top, System.Native.Windows.SWP_NOZORDER | System.Native.Windows.SWP_NOMOVE);
         }catch(Exception e){

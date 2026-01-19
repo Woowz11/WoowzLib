@@ -6,11 +6,13 @@ public static class Program{
     
     public static int Main(string[] Args){
         try{
+            WL.Render.Debug.LogMain = true;
+            
             WL.WoowzLib.Start(new WoowzLibInfo(
                 Name  : "Test WoowzLib",
                 Author: "Woowz11"
             ));
-
+            
             Window W1 = new Window();
 
             Button Test1 = new Button(default, 10, 10);

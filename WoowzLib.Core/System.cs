@@ -1,11 +1,12 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
 using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 9)]
+    [WLModule(int.MinValue + 1, 10)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -349,7 +350,7 @@ namespace WL{
             /// <returns>Ссылка на строку</returns>
             public static IntPtr MemoryStringUTF(string S){
                 byte[] Bytes = global::System.Text.Encoding.UTF8.GetBytes(S + '\0');
-                IntPtr Link = Memory(Bytes.Length);
+                IntPtr Link = MemoryEmpty(Bytes.Length);
                 Marshal.Copy(Bytes, 0, Link, Bytes.Length);
                 return Link;
             }
@@ -359,20 +360,30 @@ namespace WL{
             /// </summary>
             /// <param name="ByteSize">Какого размера дать ссылку на память?</param>
             /// <returns>Ссылка на память</returns>
-            public static IntPtr Memory(int ByteSize){
+            public static IntPtr MemoryEmpty(int ByteSize){
                 return Marshal.AllocHGlobal(ByteSize);
             }
 
             /// <summary>
             /// Сохраняет struct в память (Нужно очищать!)
             /// </summary>
-            /// <param name="Data">сам struct</param>
-            /// <typeparam name="T">тип struct</typeparam>
+            /// <param name="Data">Сам struct</param>
+            /// <typeparam name="T">Тип struct</typeparam>
             /// <returns>Ссылка на struct</returns>
-            public static IntPtr Memory<T>(T Data){
-                IntPtr Link = Marshal.AllocHGlobal(Marshal.SizeOf<T>());
+            public static IntPtr Memory<T>(T Data) where T : struct{
+                IntPtr Link = MemoryEmpty<T>();
                 Marshal.StructureToPtr(Data, Link, false);
                 return Link;
+            }
+            
+            /// <summary>
+            /// Выделяет память размера указанного struct (Нужно очищать!)
+            /// </summary>
+            /// <typeparam name="T">Тип struct</typeparam>
+            /// <param name="Count">Кол-во struct</param>
+            /// <returns>Ссылка на память</returns>
+            public static IntPtr MemoryEmpty<T>(int Count = 1) where T : struct{
+                return Marshal.AllocHGlobal(Marshal.SizeOf<T>() * Count);
             }
 
             /// <summary>
