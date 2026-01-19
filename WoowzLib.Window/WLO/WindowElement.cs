@@ -74,6 +74,11 @@ public abstract class WindowElement : WindowContext{
             Children.Clear();
 
             if(Alive){
+                try{
+                    OnDestroy?.Invoke();   
+                }catch(Exception e){
+                    Logger.Error("Произошла ошибка при вызове ивента уничтожения элемента [" + this + "]!", e);
+                }
                 Handle = __Destroy();
                 if(Handle != IntPtr.Zero){ throw new Exception("Неверно удалился элемент!"); }
             }
@@ -93,6 +98,15 @@ public abstract class WindowElement : WindowContext{
             throw new Exception("Произошла ошибка при добавлении элемента [" + Element + "] окну [" + this + "]!", e);
         }
     }
+
+    #region Ивенты
+
+        /// <summary>
+        /// Вызывается при уничтожении
+        /// </summary>
+        public event Action? OnDestroy;
+
+    #endregion
     
     public new uint Width{
         get => __Width;

@@ -1,9 +1,10 @@
 ﻿using System.Runtime.InteropServices;
+using WL.WLO;
 using WLO;
 
 namespace WL;
 
-[WLModule(-50, 3)]
+[WLModule(-50, 4)]
 public class Render{
     static Render(){
         try{
@@ -11,6 +12,20 @@ public class Render{
                 try{
                     if(DLL == IntPtr.Zero){ return; }
 
+                    if(CommandBuffer != IntPtr.Zero){
+                        if(Debug.LogMain){ Logger.Info("Уничтожен CommandBuffer!"); }
+                        
+                        Native.vkFreeCommandBuffers(Device, CommandPool, 1, [CommandBuffer]);
+                        CommandBuffer = IntPtr.Zero;
+                    }
+
+                    if(CommandPool != IntPtr.Zero){
+                        if(Debug.LogMain){ Logger.Info("Уничтожен CommandPool!"); }
+                        
+                        Native.vkDestroyCommandPool(Device, CommandPool, IntPtr.Zero);
+                        CommandPool = IntPtr.Zero;
+                    }
+                    
                     if(Device != IntPtr.Zero){
                         if(Debug.LogMain){ Logger.Info("Уничтожен Device!"); }
                         
@@ -42,10 +57,19 @@ public class Render{
             Native.vkGetDeviceQueue                         = System.Native.DelegateFunction<Native.D_vkGetDeviceQueue                        >("vkGetDeviceQueue"                        ,DLL);
             Native.vkCreateInstance                         = System.Native.DelegateFunction<Native.D_vkCreateInstance                        >("vkCreateInstance"                        ,DLL);
             Native.vkDestroyInstance                        = System.Native.DelegateFunction<Native.D_vkDestroyInstance                       >("vkDestroyInstance"                       ,DLL);
+            Native.vkEndCommandBuffer                       = System.Native.DelegateFunction<Native.D_vkEndCommandBuffer                      >("vkEndCommandBuffer"                      ,DLL);
+            Native.vkCreateCommandPool                      = System.Native.DelegateFunction<Native.D_vkCreateCommandPool                     >("vkCreateCommandPool"                     ,DLL);
+            Native.vkDestroySurfaceKHR                      = System.Native.DelegateFunction<Native.D_vkDestroySurfaceKHR                     >("vkDestroySurfaceKHR"                     ,DLL);
+            Native.vkDestroyCommandPool                     = System.Native.DelegateFunction<Native.D_vkDestroyCommandPool                    >("vkDestroyCommandPool"                    ,DLL);
+            Native.vkFreeCommandBuffers                     = System.Native.DelegateFunction<Native.D_vkFreeCommandBuffers                    >("vkFreeCommandBuffers"                    ,DLL);
+            Native.vkBeginCommandBuffer                     = System.Native.DelegateFunction<Native.D_vkBeginCommandBuffer                    >("vkBeginCommandBuffer"                    ,DLL);
+            Native.vkResetCommandBuffer                     = System.Native.DelegateFunction<Native.D_vkResetCommandBuffer                    >("vkResetCommandBuffer"                    ,DLL);
+            Native.vkCreateWin32SurfaceKHR                  = System.Native.DelegateFunction<Native.D_vkCreateWin32SurfaceKHR                 >("vkCreateWin32SurfaceKHR"                 ,DLL);
+            Native.vkAllocateCommandBuffers                 = System.Native.DelegateFunction<Native.D_vkAllocateCommandBuffers                >("vkAllocateCommandBuffers"                ,DLL);            
             Native.vkEnumeratePhysicalDevices               = System.Native.DelegateFunction<Native.D_vkEnumeratePhysicalDevices              >("vkEnumeratePhysicalDevices"              ,DLL);
             Native.vkGetPhysicalDeviceProperties            = System.Native.DelegateFunction<Native.D_vkGetPhysicalDeviceProperties           >("vkGetPhysicalDeviceProperties"           ,DLL);
             Native.vkGetPhysicalDeviceQueueFamilyProperties = System.Native.DelegateFunction<Native.D_vkGetPhysicalDeviceQueueFamilyProperties>("vkGetPhysicalDeviceQueueFamilyProperties",DLL);
-
+            
             if(Debug.LogMain){ Logger.Info("Загружены функции Vulkan!"); }
 
             int Result;
@@ -63,19 +87,32 @@ public class Render{
                     applicationVersion = WL.WoowzLib.ProjectInfo.Version,
                     pEngineName        = Engine,
                     engineVersion      = WL.WoowzLib.ProjectInfo.EngineVersion,
-                    apiVersion         = Native.VK_MAKE_VERSION(1, 3, 204) // Какую версию Vulkan использовать?
+                    apiVersion         = Native.VK_MAKE_VERSION(1, 4, 329) // Какую версию Vulkan использовать?
                 });
-            
+
+                string[] Extensions = [
+                    "VK_KHR_surface",
+                    "VK_KHR_win32_surface"
+                ];
+                
+                IntPtr[] Extensions__ = new IntPtr[Extensions.Length];
+                for(int i = 0; i < Extensions.Length; i++){
+                    Extensions__[i] = WL.System.Native.MemoryString(Extensions[i]);
+                }
+                
                 try{
                     Native.VkInstanceCreateInfo CreateInfo = new Native.VkInstanceCreateInfo{
                         sType = Native.VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
                         pNext = IntPtr.Zero,
-                    
-                        pApplicationInfo        = ProjectInfo,
+                        flags = 0,
+                        
+                        enabledExtensionCount   = (uint)Extensions__.Length,
+                        ppEnabledExtensionNames = Marshal.UnsafeAddrOfPinnedArrayElement(Extensions__, 0),
+                        
                         enabledLayerCount       = 0,
                         ppEnabledLayerNames     = IntPtr.Zero,
-                        enabledExtensionCount   = 0,
-                        ppEnabledExtensionNames = IntPtr.Zero
+                        
+                        pApplicationInfo        = ProjectInfo
                     };
 
                     Result = Native.vkCreateInstance(ref CreateInfo, IntPtr.Zero, out IntPtr VK__);
@@ -88,6 +125,10 @@ public class Render{
                     System.Native.Free(Name       );
                     System.Native.Free(Engine     );
                     System.Native.Free(ProjectInfo);
+
+                    foreach(IntPtr Extension in Extensions__){
+                        WL.System.Native.Free(Extension);
+                    }
                 }
 
             #endregion
@@ -199,6 +240,41 @@ public class Render{
                 if(Debug.LogMain){ Logger.Info("Графическая очередь: " + GraphicQueue); }
 
             #endregion
+
+            #region Создание Command Pool
+
+                Native.VkCommandPoolCreateInfo CreatePoolInfo = new Native.VkCommandPoolCreateInfo{
+                    sType = Native.VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+                    queueFamilyIndex = (uint)GraphicQueueFamilyIndex,
+                    flags = 0
+                };
+
+                Result = Native.vkCreateCommandPool(Device, ref CreatePoolInfo, IntPtr.Zero, out IntPtr CommandPool__);
+                if(Result != 0){ throw new Exception("Произошла ошибка при создании Command Pool! Код: " + Result); }
+
+                CommandPool = CommandPool__;
+                
+                if(Debug.LogMain){ Logger.Info("Создан CommandPool! CommandPool: " + CommandPool); }
+
+            #endregion
+
+            #region Создание Command Buffers
+
+                Native.VkCommandBufferAllocateInfo AllocateInfo = new Native.VkCommandBufferAllocateInfo{
+                    sType = Native.VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+                    commandPool = CommandPool,
+                    level = Native.VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+                    commandBufferCount = 1
+                };
+
+                Result = Native.vkAllocateCommandBuffers(Device, ref AllocateInfo, out IntPtr CommandBuffer__);
+                if(Result != 0){ throw new Exception("Произошла ошибка при создании Command Buffer! Код: " + Result); }
+
+                CommandBuffer = CommandBuffer__;
+                
+                if(Debug.LogMain){ Logger.Info("Создан CommandBuffer! CommandBuffer: " + CommandBuffer); }
+
+            #endregion
         }catch(Exception e){
             throw new Exception("Произошла ошибка при инициализации рендера!", e);
         }
@@ -234,6 +310,83 @@ public class Render{
     /// </summary>
     public static IntPtr GraphicQueue{ get; private set; }
 
+    /// <summary>
+    /// Сборник буферов команд рендера
+    /// </summary>
+    public static IntPtr CommandPool{ get; private set; }
+
+    /// <summary>
+    /// Буфер команд рендера
+    /// </summary>
+    public static IntPtr CommandBuffer{ get; private set; }
+
+    /// <summary>
+    /// Рисует указанные команды
+    /// <param name="Context">Куда рендерить?</param>
+    /// </summary>
+    public static void Draw(RenderContext Context, Action Action){
+        try{
+            Native.VkCommandBufferBeginInfo BeginInfo = new Native.VkCommandBufferBeginInfo{
+                sType = Native.VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+                pNext = IntPtr.Zero,
+                    
+                flags = Native.VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
+                pInheritanceInfo = IntPtr.Zero
+            };
+
+            int Result = Native.vkBeginCommandBuffer(CommandBuffer, ref BeginInfo);
+            if(Result != 0){ throw new Exception("Произошла ошибка в vkBeginCommandBuffer! Код: " + Result); }
+
+            Exception? e__ = null;
+            try{
+                Action.Invoke();
+            }catch(Exception e){
+                e__ = e;
+            }
+            
+            Result = Native.vkEndCommandBuffer(CommandBuffer);
+            if(Result != 0){ throw new Exception("Произошла ошибка в vkEndCommandBuffer! Код: " + Result); }
+
+            if(e__ != null){ throw e__; }
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка в рисовании/рендере!\nКонтекст: " + Context, e);
+        }
+    }
+
+    /// <summary>
+    /// Соединяет рендер с RenderSurface
+    /// </summary>
+    public static RenderContext Connect(RenderSurface RS){
+        try{
+            IntPtr HWND = RS.RenderHandle();
+
+            Native.VkWin32SurfaceCreateInfoKHR SurfaceInfo = new Native.VkWin32SurfaceCreateInfoKHR{
+                sType = Native.VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
+                hinstance = WL.System.Native.Windows.GetModuleHandle(null),
+                hwnd = HWND
+            };
+
+            int Result = Native.vkCreateWin32SurfaceKHR(VK, ref SurfaceInfo, IntPtr.Zero, out IntPtr Surface);
+            if(Result != 0){ throw new Exception("Произошла ошибка при вызове vkCreateWin32SurfaceKHR! Код: " + Result); }
+
+            RenderContext RC = new RenderContext{ Surface = Surface };
+
+            RS.RenderDestroy += () => {
+                if(Debug.LogMain){ Logger.Info("Отсоединено [" + RS + "] от рендера!"); }
+
+                Native.vkDestroySurfaceKHR(VK, RC.Surface, IntPtr.Zero);
+                
+                RC.Surface = IntPtr.Zero;
+            };
+
+            if(Debug.LogMain){ Logger.Info("Присоединено [" + RS + "] к рендеру!"); }
+
+            return RC;
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при соединении рендера с [" + RS + "]!", e);
+        }
+    }
+    
     public class Debug{
         public static bool LogMain;
     }
@@ -274,6 +427,78 @@ public class Render{
             IntPtr pQueueFamilyProperties
         );
         public static D_vkGetPhysicalDeviceQueueFamilyProperties vkGetPhysicalDeviceQueueFamilyProperties = null!;
+        
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int D_vkCreateCommandPool(
+            IntPtr device,
+            ref VkCommandPoolCreateInfo pCreateInfo,
+            IntPtr pAllocator,
+            out IntPtr pCommandPool
+        );
+        public static D_vkCreateCommandPool vkCreateCommandPool = null!;
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void D_vkDestroyCommandPool(
+            IntPtr device,
+            IntPtr commandPool,
+            IntPtr pAllocator
+        );
+        public static D_vkDestroyCommandPool vkDestroyCommandPool = null!;
+        
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int D_vkAllocateCommandBuffers(
+            IntPtr device,
+            ref VkCommandBufferAllocateInfo pAllocateInfo,
+            out IntPtr pCommandBuffers
+        );
+        public static D_vkAllocateCommandBuffers vkAllocateCommandBuffers = null!;
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void D_vkFreeCommandBuffers(
+            IntPtr device,
+            IntPtr commandPool,
+            uint commandBufferCount,
+            IntPtr[] pCommandBuffers
+        );
+        public static D_vkFreeCommandBuffers vkFreeCommandBuffers = null!;
+        
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int D_vkBeginCommandBuffer(
+            IntPtr commandBuffer,
+            ref VkCommandBufferBeginInfo pBeginInfo
+        );
+        public static D_vkBeginCommandBuffer vkBeginCommandBuffer = null!;
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int D_vkEndCommandBuffer(
+            IntPtr commandBuffer
+        );
+        public static D_vkEndCommandBuffer vkEndCommandBuffer = null!;
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int D_vkResetCommandBuffer(
+            IntPtr commandBuffer,
+            uint flags
+        );
+        public static D_vkResetCommandBuffer vkResetCommandBuffer = null!;
+        
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int D_vkCreateWin32SurfaceKHR(
+            IntPtr instance,
+            ref VkWin32SurfaceCreateInfoKHR pCreateInfo,
+            IntPtr pAllocator,
+            out IntPtr pSurface
+        );
+        public static D_vkCreateWin32SurfaceKHR vkCreateWin32SurfaceKHR = null!;
+
+        // Делегат для уничтожения Surface
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void D_vkDestroySurfaceKHR(
+            IntPtr instance,
+            IntPtr surface,
+            IntPtr pAllocator
+        );
+        public static D_vkDestroySurfaceKHR vkDestroySurfaceKHR = null!;
         
         [StructLayout(LayoutKind.Sequential)]
         public struct VkInstanceCreateInfo
@@ -361,6 +586,41 @@ public class Render{
             public uint depth;
         }
         
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkCommandPoolCreateInfo {
+            public uint   sType;
+            public IntPtr pNext;
+            public uint   flags;
+            public uint   queueFamilyIndex;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkCommandBufferAllocateInfo {
+            public uint   sType;
+            public IntPtr pNext;
+            public IntPtr commandPool;
+            public uint   level;
+            public uint   commandBufferCount;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkCommandBufferBeginInfo {
+            public uint   sType;
+            public IntPtr pNext;
+            public uint   flags;
+            public IntPtr pInheritanceInfo;
+        }
+        
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkWin32SurfaceCreateInfoKHR
+        {
+            public uint   sType;
+            public IntPtr pNext;
+            public uint   flags;
+            public IntPtr hinstance;
+            public IntPtr hwnd;
+        }
+        
         [global::System.Flags]
         public enum VkQueueFlags : uint
         {
@@ -371,9 +631,20 @@ public class Render{
             PROTECTED      = 0x00000010
         }
         
-        public const uint VK_STRUCTURE_TYPE_APPLICATION_INFO         = 0;
-        public const uint VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO     = 1;
-        public const uint VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO = 2;
-        public const uint VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO       = 3;
+        public const uint VK_STRUCTURE_TYPE_APPLICATION_INFO               = 0;
+        public const uint VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO           = 1;
+        public const uint VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO       = 2;
+        public const uint VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO             = 3;
+        public const uint VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO       = 4;
+        public const uint VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO   = 5;
+        public const uint VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO      = 6;
+        public const uint VK_COMMAND_BUFFER_LEVEL_PRIMARY                  = 0;
+        public const uint VK_COMMAND_BUFFER_LEVEL_SECONDARY                = 1;
+        public const uint VK_COMMAND_POOL_CREATE_TRANSIENT_BIT             = 0x00000001;
+        public const uint VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT  = 0x00000002;
+        public const uint VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT      = 0x00000001;
+        public const uint VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT = 0x00000002;
+        public const uint VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT     = 0x00000004;
+        public const uint VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR  = 1000009000;
     }
 }

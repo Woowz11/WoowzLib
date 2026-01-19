@@ -6,7 +6,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 10)]
+    [WLModule(int.MinValue + 1, 11)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -753,6 +753,8 @@ namespace WL{
                 public const int  GWLP_WNDPROC        = -4;
                 public const int  GCLP_WNDPROC        = -24;
                 public const uint WM_SETTEXT          = 0x000C;
+                public const uint WS_CLIPCHILDREN     = 0x02000000;
+                public const uint WS_CLIPSIBLINGS     = 0x04000000;
             }
         }
     }

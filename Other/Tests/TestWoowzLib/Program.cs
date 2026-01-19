@@ -14,7 +14,7 @@ public static class Program{
             ));
             
             Window W1 = new Window();
-
+            
             Button Test1 = new Button(default, 10, 10);
             Button Test2 = new Button("Кнопка", 10, 10 + 30);
             Button Test3 = new Button("AAAAAAAAAAAAAAAAAAAAA", 10, 10 + 30 + 30);
@@ -37,6 +37,16 @@ public static class Program{
             P.Add(Test2, Test3, Test4);
             
             Window W2 = new Window();
+            
+            RenderPanel RP = new RenderPanel(Width: W2.Width, Height: W2.Height);
+            W2.Add(RP);
+            
+            RenderContext R1 = WL.Render.Connect(RP);
+
+            W2.OnResize += (window, u, arg3) => {
+                RP.Width = u;
+                RP.Height = arg3;
+            };
 
             W1.OnResize += (window, u, arg3) => {
                 if(W2.Alive){
@@ -65,6 +75,10 @@ public static class Program{
                         Test1.Text = W1.Title;
 
                         Test2.Text = "Русский " + Test1.Text;
+                        
+                        WL.Render.Draw(R1, () => {
+                            
+                        });
                     }
 
                     if(W2.Alive){

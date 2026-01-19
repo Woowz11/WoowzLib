@@ -6,7 +6,7 @@ using System.Text;
 using WLO;
 
 namespace WL{
-    [WLModule(int.MinValue, 18)]
+    [WLModule(int.MinValue, 19)]
     public static class WoowzLib{
         static WoowzLib(){
             try{
