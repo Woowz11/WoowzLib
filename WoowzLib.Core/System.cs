@@ -5,7 +5,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 6)]
+    [WLModule(int.MinValue + 1, 7)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -126,8 +126,7 @@ namespace WL{
                         double Elapsed = Time - StartTime;
 
                         if(Elapsed >= TargetDeltaTime){ Do = true; }
-                    }
-                    else{
+                    }else{
                         Start(UniqueID);
                         Do = true;
                     }
@@ -135,14 +134,21 @@ namespace WL{
                     if(Do){
                         if(!__TickData.TryGetValue(UniqueID, out TickData TD)){
                             TD = new TickData();
+                        }else{
+                            if(TD.Tick      == -1){ TD.Tick      = 0; }
+                            if(TD.DeltaTick == -1){ TD.DeltaTick = 0; }
+
+                            TD.Tick++;
+                            TD.DeltaTick += TD.DeltaTimeS;
+                            
+                            __TickData[UniqueID] = TD;
                         }
 
                         Action.Invoke(TD);
-                        Stop(UniqueID);
+                        Stop (UniqueID);
                         Start(UniqueID);
                     }
-                }
-                catch(Exception e){
+                }catch(Exception e){
                     throw new Exception("Произошла ошибка при ограничении потока через DeltaTime!\nID: " + UniqueID + "\nЦель: " + TargetDeltaTime, e);
                 }
             }
@@ -156,8 +162,7 @@ namespace WL{
             public static void LimitFPS(int UniqueID, double TargetFPS, Action<TickData> Action){
                 try{
                     Limit(UniqueID, FPSToDeltaTime(TargetFPS), Action);
-                }
-                catch(Exception e){
+                }catch(Exception e){
                     throw new Exception("Произошла ошибка при ограничении потока через FPS!\nID: " + UniqueID + "\nЦель: " + TargetFPS, e);
                 }
             }
@@ -197,7 +202,13 @@ namespace WL{
 
                     Timers.Remove(UniqueID);
 
-                    TickData TD = new TickData{ StartTime = StartTime, StopTime = StopTime };
+                    bool HasOldTD = __TickData.TryGetValue(UniqueID, out TickData OldTD);
+                    
+                    TickData TD = new TickData{
+                        StartTime = StartTime, StopTime = StopTime,
+                        Tick      = HasOldTD ? OldTD.Tick      : -1,
+                        DeltaTick = HasOldTD ? OldTD.DeltaTick : -1
+                    };
 
                     __TickData[UniqueID] = TD;
 
@@ -276,7 +287,7 @@ namespace WL{
                         LoadedDLL.Remove(KTR);
                     }
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при разгрузке DLL (IntPtr) [" + DLL.ToInt64() + "]!", e);
+                    throw new Exception("Произошла ошибка при разгрузке DLL (IntPtr) [" + DLL + "]!", e);
                 }
             }
             
@@ -307,7 +318,7 @@ namespace WL{
                     IntPtr Proc = Windows.GetProcAddress(DLL, Name);
                     return Proc == IntPtr.Zero ? throw new Exception(Error_FunctionNotFound) : Proc;
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при загрузке функции из DLL (IntPtr) [" + DLL.ToInt64() + "]!\nФункция: " + Name);
+                    throw new Exception("Произошла ошибка при загрузке функции из DLL (IntPtr) [" + DLL + "]!\nФункция: " + Name);
                 }
             }
             
@@ -694,6 +705,7 @@ namespace WL{
                 public const uint SWP_NOMOVE          = 0x0002;
                 public const uint SWP_NOZORDER        = 0x0004;
                 public const uint WM_WINDOWPOSCHANGED = 0x0047;
+                public const uint WS_CHILD            = 0x40000000;
             }
         }
     }
@@ -706,32 +718,48 @@ namespace WLO{
         /// Когда началось вычисление
         /// </summary>
         public double StartTime;
+        
         /// <summary>
         /// Когда закончилось вычисление
         /// </summary>
         public double StopTime;
+        
         /// <summary>
         /// Время выполнения в миллисекундах
         /// </summary>
         public double DeltaTime => StopTime - StartTime;
+        
         /// <summary>
         /// Время выполнения в секундах
         /// </summary>
         public double DeltaTimeS => DeltaTime / 1000.0;
+        
         /// <summary>
         /// Кадров в секунду
         /// </summary>
         public double FPS => WL.System.Tick.DeltaTimeToFPS(DeltaTime);
+        
         /// <summary>
         /// Подходит для умножения (Если DeltaTime совпадает с целью, то равен 1)
         /// </summary>
         /// <param name="TargetDelta">Целевой DeltaTime</param>
         public double Delta(double TargetDelta){ return TargetDelta / DeltaTime; }
+        
         /// <summary>
         /// Подходит для умножения (Если FPS совпадает с целью, то равен 1)
         /// </summary>
         /// <param name="TargetFPS">Целевой FPS</param>
         public double DeltaFPS(double TargetFPS){ return Delta(WL.System.Tick.FPSToDeltaTime(TargetFPS)); }
+
+        /// <summary>
+        /// Сколько тиков прошло (+ 1) (Есть только в Limit!)
+        /// </summary>
+        public int Tick;
+
+        /// <summary>
+        /// Сколько тиков прошло (+ Delta(...)) (Есть только в Limit!)
+        /// </summary>
+        public double DeltaTick;
     }
 
     /// <summary>

@@ -3,7 +3,7 @@ using WLO;
 
 namespace WL.WLO;
 
-public class Window{
+public class Window : IWindow{
     /// <summary>
     /// Создаёт окно
     /// </summary>
@@ -58,11 +58,6 @@ public class Window{
     }
     private GCHandle                              __GC__;
     private System.Native.Windows.WndProcDelegate __Events__;
-
-    /// <summary>
-    /// Ссылка на окно
-    /// </summary>
-    public IntPtr Handle{ get; private set; }
     
     public void DestroyNow(){
         try{
@@ -74,6 +69,11 @@ public class Window{
 
             if(Handle == IntPtr.Zero){ throw new Exception("Ссылка на окно пустая!"); }
 
+            foreach(WindowElement Child in Children){
+                Child.Destroy();
+            }
+            Children.Clear();
+            
             WL.System.Native.Windows.DestroyWindow(Handle);
             
             Handle = IntPtr.Zero;
@@ -95,7 +95,7 @@ public class Window{
     /// <summary>
     /// Окно живое?
     /// </summary>
-    public bool Alive => Handle != IntPtr.Zero && !ShouldDestroy;
+    public new bool Alive => Handle != IntPtr.Zero && !ShouldDestroy;
     
     public void Destroy(){
         ShouldDestroy = true;
@@ -228,109 +228,27 @@ public class Window{
         
     #endregion
 
-    /// <summary>
-    /// Делает проверку, уничтожено окно или нет?
-    /// </summary>
-    public Window CheckDestroyed(){ return !Alive ? throw new Exception("Окно [" + this + "] уничтожено!") : this; }
+    #region Дети
 
-    /// <summary>
-    /// Обновляет размер окна
-    /// </summary>
-    private void __UpdateSize(){
+    private readonly List<WindowElement> Children = [];
+
+    public Window Add(WindowElement Element){
         try{
-            System.Native.Windows.RECT Rect = new System.Native.Windows.RECT{
-                left   = 0,
-                top    = 0,
-                right  = (int)__Width,
-                bottom = (int)__Height
-            };
-
-            System.Native.Windows.AdjustWindowRectEx(ref Rect, System.Native.Windows.WS_OVERLAPPEDWINDOW, false, 0);
-
-            System.Native.Windows.SetWindowPos(Handle, IntPtr.Zero, 0, 0, Rect.right - Rect.left, Rect.bottom - Rect.top, System.Native.Windows.SWP_NOZORDER | System.Native.Windows.SWP_NOMOVE);
+            CheckDestroyed();
+            
+            if(Element.Parent != IntPtr.Zero){ throw new Exception("Этот элемент уже привязан к какому-то окну! Ссылка на окно: " + Element.Parent); }
+            
+            Element.__SetParent(this);
+            
+            Children.Add(Element);
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при обновлении размера у окна [" + this + "]!", e);
+            throw new Exception("Произошла ошибка при добавлении элемента [" + Element + "] окну [" + this + "]!", e);
         }
-    }
-    
-    /// <summary>
-    /// Обновляет позицию окна
-    /// </summary>
-    private void __UpdatePosition(){
-        try{
-            System.Native.Windows.SetWindowPos(Handle, IntPtr.Zero, __X, __Y, 0, 0, System.Native.Windows.SWP_NOZORDER | System.Native.Windows.SWP_NOSIZE);
-        }catch(Exception e){
-            throw new Exception("Произошла ошибка при обновлении позиции у окна [" + this + "]!", e);
-        }
-    }
-    
-    public uint Width{
-        get => __Width;
-        set{
-            try{
-                CheckDestroyed();
-                
-                if(__Width == value){ return; }
-                __Width = value;
 
-                __UpdateSize();
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении ширины у окна [" + this + "]!\nШирина: " + value, e);
-            }
-        }
+        return this;
     }
-    private uint __Width;
-    
-    public uint Height{
-        get => __Height;
-        set{
-            try{
-                CheckDestroyed();
-                
-                if(__Height == value){ return; }
-                __Height = value;
-                
-                __UpdateSize();
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении высоты у окна [" + this + "]!\nВысота: " + value, e);
-            }
-        }
-    }
-    private uint __Height;
 
-    public int X{
-        get => __X;
-        set{
-            try{
-                CheckDestroyed();
-
-                if(__X == value){ return; }
-                __X = value;
-                
-                __UpdatePosition();
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении позиции по X у окна [" + this + "]!\nX: " + value, e);
-            }
-        }
-    }
-    private int __X;
-    
-    public int Y{
-        get => __Y;
-        set{
-            try{
-                CheckDestroyed();
-
-                if(__Y == value){ return; }
-                __Y = value;
-                
-                __UpdatePosition();
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении позиции по Y у окна [" + this + "]!\nY: " + value, e);
-            }
-        }
-    }
-    private int __Y;
+    #endregion
     
     public string Title{
         get => __Title;
@@ -348,4 +266,120 @@ public class Window{
         }
     }
     private string __Title;
+}
+
+public abstract class IWindow{
+    /// <summary>
+    /// Ссылка на окно
+    /// </summary>
+    public IntPtr Handle{ get; protected set; }
+
+    /// <summary>
+    /// Окно живое?
+    /// </summary>
+    public bool Alive => Handle != IntPtr.Zero;
+    
+    /// <summary>
+    /// Делает проверку, уничтожено окно или нет?
+    /// </summary>
+    public void CheckDestroyed(){ if(!Alive){ throw new Exception("Пародия окна [" + this + "] уничтожена!"); } }
+    
+    /// <summary>
+    /// Обновляет размер окна
+    /// </summary>
+    private void __UpdateSize(){
+        try{
+            System.Native.Windows.RECT Rect = new System.Native.Windows.RECT{
+                left   = 0,
+                top    = 0,
+                right  = (int)__Width,
+                bottom = (int)__Height
+            };
+
+            System.Native.Windows.AdjustWindowRectEx(ref Rect, System.Native.Windows.WS_OVERLAPPEDWINDOW, false, 0);
+
+            System.Native.Windows.SetWindowPos(Handle, IntPtr.Zero, 0, 0, Rect.right - Rect.left, Rect.bottom - Rect.top, System.Native.Windows.SWP_NOZORDER | System.Native.Windows.SWP_NOMOVE);
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при обновлении размера у пародии окна [" + this + "]!", e);
+        }
+    }
+    
+    /// <summary>
+    /// Обновляет позицию окна
+    /// </summary>
+    private void __UpdatePosition(){
+        try{
+            System.Native.Windows.SetWindowPos(Handle, IntPtr.Zero, __X, __Y, 0, 0, System.Native.Windows.SWP_NOZORDER | System.Native.Windows.SWP_NOSIZE);
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при обновлении позиции у пародии окна [" + this + "]!", e);
+        }
+    }
+    
+    public uint Width{
+        get => __Width;
+        set{
+            try{
+                CheckDestroyed();
+                
+                if(__Width == value){ return; }
+                __Width = value;
+
+                __UpdateSize();
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при изменении ширины у пародии окна [" + this + "]!\nШирина: " + value, e);
+            }
+        }
+    }
+    protected uint __Width;
+    
+    public uint Height{
+        get => __Height;
+        set{
+            try{
+                CheckDestroyed();
+                
+                if(__Height == value){ return; }
+                __Height = value;
+                
+                __UpdateSize();
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при изменении высоты у пародии окна [" + this + "]!\nВысота: " + value, e);
+            }
+        }
+    }
+    protected uint __Height;
+
+    public int X{
+        get => __X;
+        set{
+            try{
+                CheckDestroyed();
+
+                if(__X == value){ return; }
+                __X = value;
+                
+                __UpdatePosition();
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при изменении позиции по X у пародии окна [" + this + "]!\nX: " + value, e);
+            }
+        }
+    }
+    protected int __X;
+    
+    public int Y{
+        get => __Y;
+        set{
+            try{
+                CheckDestroyed();
+
+                if(__Y == value){ return; }
+                __Y = value;
+                
+                __UpdatePosition();
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при изменении позиции по Y у пародии окна [" + this + "]!\nY: " + value, e);
+            }
+        }
+    }
+    protected int __Y;
 }

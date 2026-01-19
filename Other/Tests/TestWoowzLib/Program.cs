@@ -12,6 +12,10 @@ public static class Program{
             ));
 
             Window W1 = new Window();
+
+            Button Test = new Button();
+
+            W1.Add(Test);
             
             Window W2 = new Window();
 
@@ -36,6 +40,8 @@ public static class Program{
                 WL.System.Tick.LimitFPS(1, 120, TD => {
                     if(W1.Alive){
                         W1.Title = WL.Math.Random.Fast_0_1().ToString();
+
+                        Test.X = (int)(W1.Width / 2) + (int)(Math.Sin(TD.DeltaTick * 3) * 100);
                     }
 
                     if(W2.Alive){
