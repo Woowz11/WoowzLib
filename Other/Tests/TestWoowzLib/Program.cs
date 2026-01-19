@@ -18,7 +18,7 @@ public static class Program{
             Button Test1 = new Button(default, 10, 10);
             Button Test2 = new Button("Кнопка", 10, 10 + 30);
             Button Test3 = new Button("AAAAAAAAAAAAAAAAAAAAA", 10, 10 + 30 + 30);
-            Button Test4 = new Button("B", 10, 10 + 30 + 30 + 30);
+            Button Test4 = new Button("😁", 10, 10 + 30 + 30 + 30);
 
             Test1.OnClick += button => {
                 Logger.Debug("CLICK");
@@ -68,7 +68,7 @@ public static class Program{
             while(W1.Alive || W2.Alive){
                 WL.System.Tick.LimitFPS(1, 120, TD => {
                     if(W1.Alive){
-                        W1.Title = WL.Math.Random.Fast_0_1().ToString();
+                        W1.Title = TD.Tick.ToString();
 
                         P.X = (int)(W1.Width / 2) + (int)(Math.Sin(TD.DeltaTick * 3) * 100);
 

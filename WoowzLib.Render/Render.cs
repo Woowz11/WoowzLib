@@ -4,7 +4,7 @@ using WLO;
 
 namespace WL;
 
-[WLModule(-50, 4)]
+[WLModule(-50, 5)]
 public class Render{
     static Render(){
         try{
@@ -52,23 +52,30 @@ public class Render{
 
             if(Debug.LogMain){ Logger.Info("Загружен Vulkan DLL!"); }
 
-            Native.vkCreateDevice                           = System.Native.DelegateFunction<Native.D_vkCreateDevice                          >("vkCreateDevice"                          ,DLL);
-            Native.vkDestroyDevice                          = System.Native.DelegateFunction<Native.D_vkDestroyDevice                         >("vkDestroyDevice"                         ,DLL);
-            Native.vkGetDeviceQueue                         = System.Native.DelegateFunction<Native.D_vkGetDeviceQueue                        >("vkGetDeviceQueue"                        ,DLL);
-            Native.vkCreateInstance                         = System.Native.DelegateFunction<Native.D_vkCreateInstance                        >("vkCreateInstance"                        ,DLL);
-            Native.vkDestroyInstance                        = System.Native.DelegateFunction<Native.D_vkDestroyInstance                       >("vkDestroyInstance"                       ,DLL);
-            Native.vkEndCommandBuffer                       = System.Native.DelegateFunction<Native.D_vkEndCommandBuffer                      >("vkEndCommandBuffer"                      ,DLL);
-            Native.vkCreateCommandPool                      = System.Native.DelegateFunction<Native.D_vkCreateCommandPool                     >("vkCreateCommandPool"                     ,DLL);
-            Native.vkDestroySurfaceKHR                      = System.Native.DelegateFunction<Native.D_vkDestroySurfaceKHR                     >("vkDestroySurfaceKHR"                     ,DLL);
-            Native.vkDestroyCommandPool                     = System.Native.DelegateFunction<Native.D_vkDestroyCommandPool                    >("vkDestroyCommandPool"                    ,DLL);
-            Native.vkFreeCommandBuffers                     = System.Native.DelegateFunction<Native.D_vkFreeCommandBuffers                    >("vkFreeCommandBuffers"                    ,DLL);
-            Native.vkBeginCommandBuffer                     = System.Native.DelegateFunction<Native.D_vkBeginCommandBuffer                    >("vkBeginCommandBuffer"                    ,DLL);
-            Native.vkResetCommandBuffer                     = System.Native.DelegateFunction<Native.D_vkResetCommandBuffer                    >("vkResetCommandBuffer"                    ,DLL);
-            Native.vkCreateWin32SurfaceKHR                  = System.Native.DelegateFunction<Native.D_vkCreateWin32SurfaceKHR                 >("vkCreateWin32SurfaceKHR"                 ,DLL);
-            Native.vkAllocateCommandBuffers                 = System.Native.DelegateFunction<Native.D_vkAllocateCommandBuffers                >("vkAllocateCommandBuffers"                ,DLL);            
-            Native.vkEnumeratePhysicalDevices               = System.Native.DelegateFunction<Native.D_vkEnumeratePhysicalDevices              >("vkEnumeratePhysicalDevices"              ,DLL);
-            Native.vkGetPhysicalDeviceProperties            = System.Native.DelegateFunction<Native.D_vkGetPhysicalDeviceProperties           >("vkGetPhysicalDeviceProperties"           ,DLL);
-            Native.vkGetPhysicalDeviceQueueFamilyProperties = System.Native.DelegateFunction<Native.D_vkGetPhysicalDeviceQueueFamilyProperties>("vkGetPhysicalDeviceQueueFamilyProperties",DLL);
+            Native.vkCreateDevice                            = System.Native.DelegateFunction<Native.D_vkCreateDevice                           >("vkCreateDevice"                           ,DLL);
+            Native.vkDestroyDevice                           = System.Native.DelegateFunction<Native.D_vkDestroyDevice                          >("vkDestroyDevice"                          ,DLL);
+            Native.vkGetDeviceQueue                          = System.Native.DelegateFunction<Native.D_vkGetDeviceQueue                         >("vkGetDeviceQueue"                         ,DLL);
+            Native.vkCreateInstance                          = System.Native.DelegateFunction<Native.D_vkCreateInstance                         >("vkCreateInstance"                         ,DLL);
+            Native.vkDestroyInstance                         = System.Native.DelegateFunction<Native.D_vkDestroyInstance                        >("vkDestroyInstance"                        ,DLL);
+            Native.vkEndCommandBuffer                        = System.Native.DelegateFunction<Native.D_vkEndCommandBuffer                       >("vkEndCommandBuffer"                       ,DLL);
+            Native.vkCreateCommandPool                       = System.Native.DelegateFunction<Native.D_vkCreateCommandPool                      >("vkCreateCommandPool"                      ,DLL);
+            Native.vkDestroySurfaceKHR                       = System.Native.DelegateFunction<Native.D_vkDestroySurfaceKHR                      >("vkDestroySurfaceKHR"                      ,DLL);
+            Native.vkDestroyCommandPool                      = System.Native.DelegateFunction<Native.D_vkDestroyCommandPool                     >("vkDestroyCommandPool"                     ,DLL);
+            Native.vkFreeCommandBuffers                      = System.Native.DelegateFunction<Native.D_vkFreeCommandBuffers                     >("vkFreeCommandBuffers"                     ,DLL);
+            Native.vkBeginCommandBuffer                      = System.Native.DelegateFunction<Native.D_vkBeginCommandBuffer                     >("vkBeginCommandBuffer"                     ,DLL);
+            Native.vkResetCommandBuffer                      = System.Native.DelegateFunction<Native.D_vkResetCommandBuffer                     >("vkResetCommandBuffer"                     ,DLL);
+            Native.vkCreateSwapchainKHR                      = System.Native.DelegateFunction<Native.D_vkCreateSwapchainKHR                     >("vkCreateSwapchainKHR"                     ,DLL);
+            Native.vkDestroySwapchainKHR                     = System.Native.DelegateFunction<Native.D_vkDestroySwapchainKHR                    >("vkDestroySwapchainKHR"                    ,DLL);
+            Native.vkCreateWin32SurfaceKHR                   = System.Native.DelegateFunction<Native.D_vkCreateWin32SurfaceKHR                  >("vkCreateWin32SurfaceKHR"                  ,DLL);
+            Native.vkGetSwapchainImagesKHR                   = System.Native.DelegateFunction<Native.D_vkGetSwapchainImagesKHR                  >("vkGetSwapchainImagesKHR"                  ,DLL);
+            Native.vkAllocateCommandBuffers                  = System.Native.DelegateFunction<Native.D_vkAllocateCommandBuffers                 >("vkAllocateCommandBuffers"                 ,DLL);            
+            Native.vkEnumeratePhysicalDevices                = System.Native.DelegateFunction<Native.D_vkEnumeratePhysicalDevices               >("vkEnumeratePhysicalDevices"               ,DLL);
+            Native.vkGetPhysicalDeviceProperties             = System.Native.DelegateFunction<Native.D_vkGetPhysicalDeviceProperties            >("vkGetPhysicalDeviceProperties"            ,DLL);
+            Native.vkGetPhysicalDeviceSurfaceFormatsKHR      = System.Native.DelegateFunction<Native.D_vkGetPhysicalDeviceSurfaceFormatsKHR     >("vkGetPhysicalDeviceSurfaceFormatsKHR"     ,DLL);
+            Native.vkGetPhysicalDeviceQueueFamilyProperties  = System.Native.DelegateFunction<Native.D_vkGetPhysicalDeviceQueueFamilyProperties >("vkGetPhysicalDeviceQueueFamilyProperties" ,DLL);
+            Native.vkGetPhysicalDeviceSurfaceCapabilitiesKHR = System.Native.DelegateFunction<Native.D_vkGetPhysicalDeviceSurfaceCapabilitiesKHR>("vkGetPhysicalDeviceSurfaceCapabilitiesKHR",DLL);
+            Native.vkGetPhysicalDeviceSurfacePresentModesKHR = System.Native.DelegateFunction<Native.D_vkGetPhysicalDeviceSurfacePresentModesKHR>("vkGetPhysicalDeviceSurfacePresentModesKHR",DLL);
+            
             
             if(Debug.LogMain){ Logger.Info("Загружены функции Vulkan!"); }
 
@@ -90,14 +97,14 @@ public class Render{
                     apiVersion         = Native.VK_MAKE_VERSION(1, 4, 329) // Какую версию Vulkan использовать?
                 });
 
-                string[] Extensions = [
+                string[] ExtensionsVK = [
                     "VK_KHR_surface",
                     "VK_KHR_win32_surface"
                 ];
                 
-                IntPtr[] Extensions__ = new IntPtr[Extensions.Length];
-                for(int i = 0; i < Extensions.Length; i++){
-                    Extensions__[i] = WL.System.Native.MemoryString(Extensions[i]);
+                IntPtr[] ExtensionsVK__ = new IntPtr[ExtensionsVK.Length];
+                for(int i = 0; i < ExtensionsVK.Length; i++){
+                    ExtensionsVK__[i] = WL.System.Native.MemoryString(ExtensionsVK[i]);
                 }
                 
                 try{
@@ -106,8 +113,8 @@ public class Render{
                         pNext = IntPtr.Zero,
                         flags = 0,
                         
-                        enabledExtensionCount   = (uint)Extensions__.Length,
-                        ppEnabledExtensionNames = Marshal.UnsafeAddrOfPinnedArrayElement(Extensions__, 0),
+                        enabledExtensionCount   = (uint)ExtensionsVK__.Length,
+                        ppEnabledExtensionNames = Marshal.UnsafeAddrOfPinnedArrayElement(ExtensionsVK__, 0),
                         
                         enabledLayerCount       = 0,
                         ppEnabledLayerNames     = IntPtr.Zero,
@@ -126,7 +133,7 @@ public class Render{
                     System.Native.Free(Engine     );
                     System.Native.Free(ProjectInfo);
 
-                    foreach(IntPtr Extension in Extensions__){
+                    foreach(IntPtr Extension in ExtensionsVK__){
                         WL.System.Native.Free(Extension);
                     }
                 }
@@ -208,11 +215,23 @@ public class Render{
                 };
 
                 Marshal.Copy(new float[]{ 1 }, 0, QueueCreateInfo.pQueuePriorities, 1);
-
+                
+                string[] ExtensionsDevice = [
+                    "VK_KHR_swapchain"
+                ];
+                
+                IntPtr[] ExtensionsDevice__ = new IntPtr[ExtensionsDevice.Length];
+                for(int i = 0; i < ExtensionsDevice.Length; i++){
+                    ExtensionsDevice__[i] = WL.System.Native.MemoryString(ExtensionsDevice[i]);
+                }
+                
                 Native.VkDeviceCreateInfo DeviceCreateInfo = new Native.VkDeviceCreateInfo{
                     sType = Native.VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
                     queueCreateInfoCount = 1,
-                    pQueueCreateInfos = WL.System.Native.Memory<Native.VkDeviceQueueCreateInfo>(QueueCreateInfo)
+                    pQueueCreateInfos = WL.System.Native.Memory<Native.VkDeviceQueueCreateInfo>(QueueCreateInfo),
+                    
+                    enabledExtensionCount = (uint)ExtensionsDevice__.Length,
+                    ppEnabledExtensionNames = Marshal.UnsafeAddrOfPinnedArrayElement(ExtensionsDevice__, 0)
                 };
             
                 try{
@@ -358,25 +377,14 @@ public class Render{
     /// </summary>
     public static RenderContext Connect(RenderSurface RS){
         try{
-            IntPtr HWND = RS.RenderHandle();
-
-            Native.VkWin32SurfaceCreateInfoKHR SurfaceInfo = new Native.VkWin32SurfaceCreateInfoKHR{
-                sType = Native.VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
-                hinstance = WL.System.Native.Windows.GetModuleHandle(null),
-                hwnd = HWND
-            };
-
-            int Result = Native.vkCreateWin32SurfaceKHR(VK, ref SurfaceInfo, IntPtr.Zero, out IntPtr Surface);
-            if(Result != 0){ throw new Exception("Произошла ошибка при вызове vkCreateWin32SurfaceKHR! Код: " + Result); }
-
-            RenderContext RC = new RenderContext{ Surface = Surface };
-
+            RenderContext RC = new RenderContext(
+                RS
+            );
+            
             RS.RenderDestroy += () => {
                 if(Debug.LogMain){ Logger.Info("Отсоединено [" + RS + "] от рендера!"); }
 
-                Native.vkDestroySurfaceKHR(VK, RC.Surface, IntPtr.Zero);
-                
-                RC.Surface = IntPtr.Zero;
+                RC.__Destroy();
             };
 
             if(Debug.LogMain){ Logger.Info("Присоединено [" + RS + "] к рендеру!"); }
@@ -490,8 +498,7 @@ public class Render{
             out IntPtr pSurface
         );
         public static D_vkCreateWin32SurfaceKHR vkCreateWin32SurfaceKHR = null!;
-
-        // Делегат для уничтожения Surface
+        
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void D_vkDestroySurfaceKHR(
             IntPtr instance,
@@ -499,6 +506,113 @@ public class Render{
             IntPtr pAllocator
         );
         public static D_vkDestroySurfaceKHR vkDestroySurfaceKHR = null!;
+        
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void D_vkDestroySwapchainKHR(
+            IntPtr device,
+            IntPtr swapchain,
+            IntPtr pAllocator
+        );
+        public static D_vkDestroySwapchainKHR vkDestroySwapchainKHR = null!;
+
+        
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int D_vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
+            IntPtr physicalDevice,
+            IntPtr surface,
+            out VkSurfaceCapabilitiesKHR capabilities
+        );
+        public static D_vkGetPhysicalDeviceSurfaceCapabilitiesKHR vkGetPhysicalDeviceSurfaceCapabilitiesKHR = null!;
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int D_vkGetPhysicalDeviceSurfaceFormatsKHR(
+            IntPtr physicalDevice,
+            IntPtr surface,
+            ref uint surfaceFormatCount,
+            IntPtr surfaceFormats
+        );
+        public static D_vkGetPhysicalDeviceSurfaceFormatsKHR vkGetPhysicalDeviceSurfaceFormatsKHR = null!;
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int D_vkGetPhysicalDeviceSurfacePresentModesKHR(
+            IntPtr physicalDevice,
+            IntPtr surface,
+            ref uint presentModeCount,
+            IntPtr presentModes
+        );
+        public static D_vkGetPhysicalDeviceSurfacePresentModesKHR vkGetPhysicalDeviceSurfacePresentModesKHR = null!;
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int D_vkCreateSwapchainKHR(
+            IntPtr device,
+            ref VkSwapchainCreateInfoKHR createInfo,
+            IntPtr allocator,
+            out IntPtr swapchain
+        );
+        public static D_vkCreateSwapchainKHR vkCreateSwapchainKHR = null!;
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int D_vkGetSwapchainImagesKHR(
+            IntPtr device,
+            IntPtr swapchain,
+            ref uint swapchainImageCount,
+            IntPtr swapchainImages
+        );
+        public static D_vkGetSwapchainImagesKHR vkGetSwapchainImagesKHR = null!;
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkSurfaceFormatKHR{
+            public uint format;
+            public uint colorSpace;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkSurfaceCapabilitiesKHR{
+            public uint       minImageCount;
+            public uint       maxImageCount;
+            public VkExtent2D currentExtent;
+            public VkExtent2D minImageExtent;
+            public VkExtent2D maxImageExtent;
+            public uint       maxImageArrayLayers;
+            public uint       supportedTransforms;
+            public uint       currentTransform;
+            public uint       supportedCompositeAlpha;
+            public uint       supportedUsageFlags;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkExtent2D{
+            public uint width;
+            public uint height;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkSwapchainCreateInfoKHR{
+            public uint   sType;
+            public IntPtr pNext;
+            public uint   flags;
+
+            public IntPtr surface;
+
+            public uint       minImageCount;
+            public uint       imageFormat;
+            public uint       imageColorSpace;
+            public VkExtent2D imageExtent;
+
+            public uint imageArrayLayers;
+            public uint imageUsage;
+
+            public uint   imageSharingMode;
+            public uint   queueFamilyIndexCount;
+            public IntPtr pQueueFamilyIndices;
+
+            public uint preTransform;
+            public uint compositeAlpha;
+            public uint presentMode;
+            public uint clipped;
+
+            public IntPtr oldSwapchain;
+        }
         
         [StructLayout(LayoutKind.Sequential)]
         public struct VkInstanceCreateInfo
@@ -572,10 +686,10 @@ public class Render{
         [StructLayout(LayoutKind.Sequential)]
         public struct VkQueueFamilyProperties
         {
-            public VkQueueFlags queueFlags;       // Какие операции поддерживаются
-            public uint         queueCount;               // Количество очередей в этом семействе
-            public uint         timestampValidBits;       // Количество бит для таймстемпов
-            public VkExtent3D   minImageTransferGranularity; // Минимальная размерность при копировании изображений
+            public VkQueueFlags queueFlags;
+            public uint         queueCount;
+            public uint         timestampValidBits;
+            public VkExtent3D   minImageTransferGranularity;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -646,5 +760,10 @@ public class Render{
         public const uint VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT = 0x00000002;
         public const uint VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT     = 0x00000004;
         public const uint VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR  = 1000009000;
+        public const uint VK_PRESENT_MODE_FIFO_KHR                         = 2;
+        public const uint VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR      = 1000001000;
+        public const uint VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT              = 0x00000010;
+        public const uint VK_SHARING_MODE_EXCLUSIVE                        = 0;
+        public const uint VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR                = 0x00000001;
     }
 }
