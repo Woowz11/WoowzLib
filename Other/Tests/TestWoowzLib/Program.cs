@@ -15,7 +15,17 @@ public static class Program{
                 if(W2.Alive){
                     W2.Width = u;
                     W2.Height = arg3;
+                    
+                    W2.X = W1.X + (int)W1.Width + 32;
+                    W2.Y = W1.Y;
                 }  
+            };
+
+            W1.OnMove += (window, i, arg3) => {
+                if(W2.Alive){
+                    W2.X = W1.X + (int)W1.Width + 32;
+                    W2.Y = W1.Y;
+                }
             };
             
             while(W1.Alive || W2.Alive){

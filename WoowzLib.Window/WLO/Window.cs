@@ -120,6 +120,10 @@ public class Window{
         /// <param name="LParam">Параметр 2</param>
         private IntPtr __Events(uint Message, IntPtr WParam, IntPtr LParam){
             try{
+                long LP = LParam.ToInt64();
+                int Word1 = (short) (LP        & 0xFFFF);
+                int Word2 = (short)((LP >> 16) & 0xFFFF);
+                
                 switch(Message){
                     // Закрытие окна (через крестик например)
                     case System.Native.Windows.WM_CLOSE:
@@ -133,8 +137,8 @@ public class Window{
                     
                     // Обновление размера у окна
                     case System.Native.Windows.WM_SIZE:
-                        __Width  = (uint)(LParam.ToInt32() & 0xFFFF);
-                        __Height = (uint)((LParam.ToInt32() >> 16) & 0xFFFF);
+                        __Width  = (uint)(Word1);
+                        __Height = (uint)(Word2);
 
                         try{
                             OnResize?.Invoke(this, __Width, __Height);
@@ -143,11 +147,45 @@ public class Window{
                         }
                         break;
                     
+                    // Обновление позиции окна
+                    case System.Native.Windows.WM_WINDOWPOSCHANGED:
+                        System.Native.Windows.WINDOWPOS Position = Marshal.PtrToStructure<System.Native.Windows.WINDOWPOS>(LParam);
+
+                        if((Position.flags & System.Native.Windows.SWP_NOMOVE) == 0){
+                            __X = Position.x;
+                            __Y = Position.y;
+
+                            try{
+                                OnMove?.Invoke(this, __X, __Y);
+                            }
+                            catch(Exception e){
+                                Logger.Error("Произошла ошибка при вызове ивентов на изменение позиции окна [" + this + "]!", e);
+                            }
+                        }
+
+                        break;
+                    
                     // Обновление курсора внутри окна
                     case System.Native.Windows.WM_SETCURSOR:
                         int HitTest = (short)(LParam.ToInt64() & 0xFFFF);
                         if(HitTest == System.Native.Windows.HTCLIENT){
                             System.Native.Windows.SetCursor(System.Native.Windows.CURSOR_Arrow);
+                        }
+                        
+                        break;
+                    
+                    // Рисование внутри окна
+                    case System.Native.Windows.WM_PAINT:
+                        IntPtr HDC = System.Native.Windows.BeginPaint(Handle, out System.Native.Windows.PAINTSTRUCT PS);
+
+                        try{
+                            System.Native.Windows.GetClientRect(Handle, out System.Native.Windows.RECT ClientRect);
+                            IntPtr Brush = System.Native.Windows.CreateSolidBrush(0x00808080); // пока-что так
+
+                            System.Native.Windows.FillRect(HDC, ref ClientRect, Brush);
+                            System.Native.Windows.DeleteObject(Brush);
+                        }finally{
+                            System.Native.Windows.EndPaint(Handle, ref PS);    
                         }
                         
                         break;
@@ -183,6 +221,11 @@ public class Window{
         /// </summary>
         public event Action<Window, uint, uint>? OnResize;
 
+        /// <summary>
+        /// Вызывается когда окно сдвинулось [Окно, новая X, новая Y]
+        /// </summary>
+        public event Action<Window, int, int>? OnMove;
+        
     #endregion
 
     /// <summary>
@@ -190,6 +233,9 @@ public class Window{
     /// </summary>
     public Window CheckDestroyed(){ return !Alive ? throw new Exception("Окно [" + this + "] уничтожено!") : this; }
 
+    /// <summary>
+    /// Обновляет размер окна
+    /// </summary>
     private void __UpdateSize(){
         try{
             System.Native.Windows.RECT Rect = new System.Native.Windows.RECT{
@@ -204,6 +250,17 @@ public class Window{
             System.Native.Windows.SetWindowPos(Handle, IntPtr.Zero, 0, 0, Rect.right - Rect.left, Rect.bottom - Rect.top, System.Native.Windows.SWP_NOZORDER | System.Native.Windows.SWP_NOMOVE);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при обновлении размера у окна [" + this + "]!", e);
+        }
+    }
+    
+    /// <summary>
+    /// Обновляет позицию окна
+    /// </summary>
+    private void __UpdatePosition(){
+        try{
+            System.Native.Windows.SetWindowPos(Handle, IntPtr.Zero, __X, __Y, 0, 0, System.Native.Windows.SWP_NOZORDER | System.Native.Windows.SWP_NOSIZE);
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при обновлении позиции у окна [" + this + "]!", e);
         }
     }
     
@@ -241,6 +298,40 @@ public class Window{
     }
     private uint __Height;
 
+    public int X{
+        get => __X;
+        set{
+            try{
+                CheckDestroyed();
+
+                if(__X == value){ return; }
+                __X = value;
+                
+                __UpdatePosition();
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при изменении позиции по X у окна [" + this + "]!\nX: " + value, e);
+            }
+        }
+    }
+    private int __X;
+    
+    public int Y{
+        get => __Y;
+        set{
+            try{
+                CheckDestroyed();
+
+                if(__Y == value){ return; }
+                __Y = value;
+                
+                __UpdatePosition();
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при изменении позиции по Y у окна [" + this + "]!\nY: " + value, e);
+            }
+        }
+    }
+    private int __Y;
+    
     public string Title{
         get => __Title;
         set{

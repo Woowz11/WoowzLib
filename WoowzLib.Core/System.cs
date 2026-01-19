@@ -5,7 +5,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 4)]
+    [WLModule(int.MinValue + 1, 5)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -232,14 +232,10 @@ namespace WL{
             public static IntPtr Load(string DLLName){
                 try{
                     if(string.IsNullOrWhiteSpace(DLLName)){ throw new Exception("Имя DLL файла пустое!"); }
-                    if(LoadedDLL.TryGetValue(DLLName, out IntPtr Handle) && Handle != IntPtr.Zero){
-                        throw new Exception("Этот DLL уже был загружен! Handle: " + Handle);
-                    }
+                    if(LoadedDLL.TryGetValue(DLLName, out IntPtr Handle) && Handle != IntPtr.Zero){ throw new Exception("Этот DLL уже был загружен! Handle: " + Handle); }
 
                     Handle = Windows.LoadLibrary(DLLName);
-                    if(Handle == IntPtr.Zero){
-                        throw new Exception("Не получилось загрузить DLL внутри kernel32! Ошибка: " + Marshal.GetLastWin32Error());
-                    }
+                    if(Handle == IntPtr.Zero){ throw new Exception("Не получилось загрузить DLL внутри kernel32! Ошибка: " + Marshal.GetLastWin32Error()); }
 
                     LoadedDLL[DLLName] = Handle;
                     return Handle;
@@ -254,18 +250,33 @@ namespace WL{
             /// <param name="DLLName">Название DLL файла</param>
             public static void Unload(string DLLName){
                 try{
-                    if(!LoadedDLL.TryGetValue(DLLName, out IntPtr Handle) || Handle == IntPtr.Zero){
-                        throw new Exception(Error_DLLNotExist);
-                    }
+                    if(!LoadedDLL.TryGetValue(DLLName, out IntPtr Handle) || Handle == IntPtr.Zero){ throw new Exception(Error_DLLNotExist); }
                     
-                    bool Result = Windows.FreeLibrary(Handle);
-                    if(Result){
-                        LoadedDLL.Remove(DLLName);
-                    }else{
-                        throw new Exception("Не получилось выгрузить DLL внутри kernel32! Ошибка: " + Marshal.GetLastWin32Error());
-                    }
+                    if(!Windows.FreeLibrary(Handle)){ throw new Exception("Не получилось выгрузить DLL внутри kernel32! Ошибка: " + Marshal.GetLastWin32Error()); }
+                    
+                    LoadedDLL.Remove(DLLName);
                 }catch(Exception e){
                     throw new Exception("Произошла ошибка при разгрузке DLL [" + DLLName + "]!", e);
+                }
+            }
+            
+            /// <summary>
+            /// Разгрузка DLL файла
+            /// </summary>
+            /// <param name="DLL">Ссылка на DLL файла</param>
+            public static void Unload(IntPtr DLL){
+                try{
+                    if(DLL == IntPtr.Zero){ throw new Exception("Указанная ссылка пустая!"); }
+                    
+                    if(!Windows.FreeLibrary(DLL)){ throw new Exception("Не получилось выгрузить DLL внутри kernel32! Ошибка: " + Marshal.GetLastWin32Error()); }
+
+                    string? KTR = (from KVP in LoadedDLL where KVP.Value == DLL select KVP.Key).FirstOrDefault();
+
+                    if(KTR != null){
+                        LoadedDLL.Remove(KTR);
+                    }
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при разгрузке DLL (IntPtr) [" + DLL.ToInt64() + "]!", e);
                 }
             }
             
@@ -277,9 +288,7 @@ namespace WL{
             /// <returns>Ссылка на функцию</returns>
             public static IntPtr Function(string DLLName, string Name){
                 try{
-                    if(!LoadedDLL.TryGetValue(DLLName, out IntPtr Handle)){
-                        throw new Exception(Error_DLLNotExist);
-                    }
+                    if(!LoadedDLL.TryGetValue(DLLName, out IntPtr Handle)){ throw new Exception(Error_DLLNotExist); }
 
                     return Function(Handle, Name);
                 }catch(Exception e){
@@ -594,6 +603,45 @@ namespace WL{
                     uint dwExStyle
                 );
                 
+                [StructLayout(LayoutKind.Sequential)]
+                public struct WINDOWPOS
+                {
+                    public IntPtr hwnd;
+                    public IntPtr hwndInsertAfter;
+                    public int    x;
+                    public int    y;
+                    public int    cx;
+                    public int    cy;
+                    public uint   flags;
+                }
+                
+                [StructLayout(LayoutKind.Sequential)]
+                public struct PAINTSTRUCT
+                {
+                    public IntPtr hdc;
+                    public bool   fErase;
+                    public RECT   rcPaint;
+                    public bool   fRestore;
+                    public bool   fIncUpdate;
+                    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+                    public byte[] rgbReserved;
+                }
+                
+                [DllImport("user32.dll")]
+                public static extern IntPtr BeginPaint(IntPtr hWnd, out PAINTSTRUCT lpPaint);
+
+                [DllImport("user32.dll")]
+                public static extern bool EndPaint(IntPtr hWnd, ref PAINTSTRUCT lpPaint);
+
+                [DllImport("user32.dll")]
+                public static extern int FillRect(IntPtr hDC, ref RECT lprc, IntPtr hbr);
+
+                [DllImport("gdi32.dll")]
+                public static extern IntPtr CreateSolidBrush(uint color);
+
+                [DllImport("gdi32.dll")]
+                public static extern bool DeleteObject(IntPtr hObject);
+                
                 public const int  SW_HIDE             = 0;
                 public const int  SW_SHOW             = 5;
                 public const uint WS_POPUP            = 0x80000000;
@@ -630,8 +678,10 @@ namespace WL{
                 public const uint WM_KILLFOCUS        = 0x0008;
                 public const int  HTCLIENT            = 1;
                 public const int  IDC_ARROW           = 32512;
+                public const uint SWP_NOSIZE          = 0x0001;
                 public const uint SWP_NOMOVE          = 0x0002;
                 public const uint SWP_NOZORDER        = 0x0004;
+                public const uint WM_WINDOWPOSCHANGED = 0x0047;
             }
         }
     }

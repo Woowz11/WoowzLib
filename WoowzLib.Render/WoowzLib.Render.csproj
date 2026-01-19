@@ -8,7 +8,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <EmbeddedResource Include="Resource\vulkan-1.dll" LogicalName="WoowzLib.vulkan-1.dll" />
+    </ItemGroup>
+    
+    <ItemGroup>
         <ProjectReference Include="..\WoowzLib.Core\WoowzLib.Core.csproj" />
+        <ProjectReference Include="..\WoowzLib.Explorer\WoowzLib.Explorer.csproj" />
+        <ProjectReference Include="..\WoowzLib.Math\WoowzLib.Math.csproj" />
     </ItemGroup>
 
 </Project>
