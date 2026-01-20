@@ -4,7 +4,7 @@ using WLO;
 
 namespace WL;
 
-[WLModule(-50, 6)]
+[WLModule(-50, 7)]
 public class Render{
     static Render(){
         try{
@@ -356,9 +356,7 @@ public class Render{
     /// </summary>
     public static RenderContext Connect(RenderSurface RS){
         try{
-            RenderContext RC = new RenderContext(
-                RS
-            );
+            RenderContext RC = new RenderContext(RS);
             
             RS.RenderDestroy += () => {
                 if(Debug.LogMain){ Logger.Info("Отсоединено [" + RS + "] от рендера!"); }
@@ -371,6 +369,55 @@ public class Render{
             return RC;
         }catch(Exception e){
             throw new Exception("Произошла ошибка при соединении рендера с [" + RS + "]!", e);
+        }
+    }
+
+    /// <summary>
+    /// Использует CommandBuffer
+    /// </summary>
+    /// <param name="Action"></param>
+    public static void UseCommandBuffer(Action Action){
+        try{
+            Native.VkCommandBufferBeginInfo CB_Begin = new Native.VkCommandBufferBeginInfo{
+                sType = Native.VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+                pNext = IntPtr.Zero,
+                    
+                flags = Native.VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
+                pInheritanceInfo = IntPtr.Zero
+            };
+            
+            int Result = Native.vkBeginCommandBuffer(CommandBuffer, ref CB_Begin);
+            if(Result != 0){ throw new Exception("Произошла ошибка в vkBeginCommandBuffer! Код: " + Result); }
+            
+            Action.Invoke();
+            
+            Result = Native.vkEndCommandBuffer(CommandBuffer);
+            if(Result != 0){ throw new Exception("Произошла ошибка в vkEndCommandBuffer! Код: " + Result); }
+            
+            SubmitCommandBuffer();
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при использовании CommandBuffer!", e);
+        }
+    }
+
+    /// <summary>
+    /// Отправляет CommandBuffer в рендер
+    /// </summary>
+    public static void SubmitCommandBuffer(){
+        try{
+            Native.VkSubmitInfo Submit = new Native.VkSubmitInfo{
+                sType = Native.VK_STRUCTURE_TYPE_SUBMIT_INFO,
+                commandBufferCount = 1,
+                pCommandBuffers = WL.System.Native.MemoryEmpty(IntPtr.Size)
+            };
+            Marshal.WriteIntPtr(Submit.pCommandBuffers, CommandBuffer);
+
+            int Result = Native.vkQueueSubmit(GraphicQueue, 1, ref Submit, IntPtr.Zero);
+            if(Result != 0){ throw new Exception("Не получилось отправить запрос! Код: " + Result); }
+            
+            WL.System.Native.Free(Submit.pCommandBuffers);
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при отправке запроса CommandBuffer в рендере!", e);
         }
     }
     
@@ -982,7 +1029,6 @@ public class Render{
         public const uint VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT = 0x00000002;
         public const uint VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT     = 0x00000004;
         public const uint VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR  = 1000009000;
-        public const uint VK_PRESENT_MODE_FIFO_KHR                         = 2;
         public const uint VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR      = 1000001000;
         public const uint VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT              = 0x00000010;
         public const uint VK_SHARING_MODE_EXCLUSIVE                        = 0;
@@ -1034,5 +1080,25 @@ public class Render{
         public const int  VK_ERROR_FRAGMENTED_POOL                         = -12;
         public const int  VK_ERROR_OUT_OF_DATE_KHR                         = -1000001004;
         public const int  VK_SUBOPTIMAL_KHR                                = 1000001003;
+        
+        /// <summary>
+        /// Показывает кадр сразу, как только готов<br/>
+        /// Без VSync, возможен tearing
+        /// </summary>
+        public const uint VK_PRESENT_MODE_IMMEDIATE_KHR                    = 0;
+        /// <summary>
+        /// Перезаписывает предыдущий кадр, показывается только на VBlank<br/>
+        /// Без VSync
+        /// </summary>
+        public const uint VK_PRESENT_MODE_MAILBOX_KHR                      = 1;
+        /// <summary>
+        /// Кадры добавляются в очередь, каждый кадр ждёт своего VBlank<br/>
+        /// Есть VSync (блокирует CPU)
+        /// </summary>
+        public const uint VK_PRESENT_MODE_FIFO_KHR                         = 2;
+        /// <summary>
+        /// Аналог VK_PRESENT_MODE_FIFO_KHR, но если кадр не успел VBlank, то показывается сразу (нет блокировки CPU)
+        /// </summary>
+        public const uint VK_PRESENT_MODE_FIFO_RELAXED_KHR                 = 3;
     }
 }

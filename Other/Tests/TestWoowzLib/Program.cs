@@ -30,22 +30,35 @@ public static class Program{
             
             Panel P = new Panel();
 
+            Panel P2 = new Panel();
+
             W1.Add(Test1);
 
             W1.Add(P);
+            W1.Add(P2);
             
             P.Add(Test2, Test3, Test4);
+
+            RenderPanel RP2 = new RenderPanel(64, 64, 512, 512);
+            W1.Add(RP2);
+
+            RenderContext R2 = WL.Render.Connect(RP2);
             
             Window W2 = new Window();
             
-            RenderPanel RP = new RenderPanel(Width: W2.Width, Height: W2.Height);
-            W2.Add(RP);
+            RenderPanel RP1 = new RenderPanel(Width: W2.Width, Height: W2.Height);
+            W2.Add(RP1);
             
-            RenderContext R1 = WL.Render.Connect(RP);
+            RenderContext R1 = WL.Render.Connect(RP1);
 
+            RenderPanel RP3 = new RenderPanel();
+            W2.Add(RP3);
+            
+            RenderContext R3 = WL.Render.Connect(RP3); 
+            
             W2.OnResize += (window, u, arg3) => {
-                RP.Width = u;
-                RP.Height = arg3;
+                RP1.Width = u;
+                RP1.Height = arg3;
             };
 
             W1.OnResize += (window, u, arg3) => {
@@ -64,23 +77,34 @@ public static class Program{
                     W2.Y = W1.Y;
                 }
             };
-            
+
+            double d = 2;
             while(W1.Alive || W2.Alive){
-                WL.System.Tick.LimitFPS(1, 120, TD => {
+                WL.System.Tick.LimitFPS(1, 300, TD => {
                     if(W1.Alive){
                         W1.Title = TD.Tick.ToString();
-
-                        P.X = (int)(W1.Width / 2) + (int)(Math.Sin(TD.DeltaTick * 3) * 100);
+                        
+                        P.X = (int)(W1.Width / 2) + (int)(Math.Sin(TD.DeltaTick) * 200);
+                        P2.X = (int)(W1.Width / 2);
 
                         Test1.Text = W1.Title;
 
                         Test2.Text = "Русский " + Test1.Text;
+
+                        R2.Render(ColorF.Random, () => {
+                            
+                        });
                     }
 
                     if(W2.Alive){
-                        W2.Title = TD.FPS.ToString();
-                        
+                        d += TD.DeltaTimeS;
+                        if(d > 0.5f){ W2.Title = TD.FPS.ToString(); d = 0; }
+
                         R1.Render(ColorF.Random, () => {
+                            
+                        });
+                        
+                        R3.Render(ColorF.Random, () => {
                             
                         });
                     }

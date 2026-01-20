@@ -61,11 +61,13 @@ public class Window : WindowContext{
             try{
                 OnDestroy?.Invoke(this);   
             }catch(Exception e){
-                Logger.Error("Произошла ошибка при вызове ивентов на уничтожение окна!", e);
+                Logger.Error("Произошла ошибка при вызове ивентов на уничтожение окна [" + this + "]!", e);
             }
 
             if(Handle == IntPtr.Zero){ throw new Exception("Ссылка на окно пустая!"); }
 
+            AllChildren.Clear();
+            
             foreach(WindowElement Child in Children){
                 Child.Destroy();
             } 
@@ -224,10 +226,16 @@ public class Window : WindowContext{
 
     #region Дети
 
-    /// <summary>
-    /// Привязанные элементы к окну
-    /// </summary>
-    private readonly List<WindowElement> Children = [];
+        /// <summary>
+        /// Привязанные элементы к окну
+        /// </summary>
+        private readonly List<WindowElement> Children = [];
+
+        /// <summary>
+        /// Абсолютно все привязанные элементы к окну
+        /// </summary>
+        private readonly List<WindowElement> AllChildren = [];
+        public void __AddChildToAll(WindowElement WE){ AllChildren.Add(WE); }
 
         /// <summary>
         /// Добавить элемент к окну
@@ -246,7 +254,6 @@ public class Window : WindowContext{
                 throw new Exception("Произошла ошибка при добавлении элемента [" + Element + "] окну [" + this + "]!", e);
             }
         }
-    
 
     #endregion
     
@@ -267,6 +274,37 @@ public class Window : WindowContext{
             System.Native.Windows.SetWindowPos(Handle, IntPtr.Zero, 0, 0, Rect.right - Rect.left, Rect.bottom - Rect.top, System.Native.Windows.SWP_NOZORDER | System.Native.Windows.SWP_NOMOVE);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при обновлении размера у пародии окна [" + this + "]!", e);
+        }
+    }
+
+    /// <summary>
+    /// Обновляет позиции у элементов по Z
+    /// </summary>
+    public void __UpdateZOrder(){
+        try{
+            List<WindowElement> Sorted = AllChildren
+                 .Select((K, V) => new{ WE = K, I = V })
+                 .OrderBy(KVP => KVP.WE.Z)
+                 .ThenBy(KVP => KVP.I)
+                 .Select(KVP => KVP.WE)
+                 .ToList();
+
+            for(int i = 0; i < Sorted.Count; i++){
+                WindowElement WE = Sorted[i];
+                try{
+                    if(!WE.Created){ continue; }
+                    if(!WE.Alive){ throw new Exception("Элемент уничтоженный!"); }
+                    
+                    IntPtr InsertAfter = i == 0 ? System.Native.Windows.HWND_BOTTOM : Sorted[i - 1].Handle;
+
+                    WL.System.Native.Windows.SetWindowPos(WE.Handle, InsertAfter, 0, 0, 0, 0, WL.System.Native.Windows.SWP_NOMOVE | System.Native.Windows.SWP_NOSIZE);
+
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при обновлении позиции у элемента [" + WE + "]!", e);
+                }
+            }
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при обновлении позиций у элементов по Z у окна [" + this + "]!", e);
         }
     }
     

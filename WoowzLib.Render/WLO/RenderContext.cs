@@ -8,12 +8,14 @@ public class RenderContext{
         try{
             RenderSurface = RS;
             
-            IntPtr HWND = RS.RenderHandle();
+            IntPtr Handle = RS.RenderHandle();
+
+            if(Handle == IntPtr.Zero){ throw new Exception("Не найден Handle у RenderSurface!"); }
 
             WL.Render.Native.VkWin32SurfaceCreateInfoKHR SurfaceInfo = new WL.Render.Native.VkWin32SurfaceCreateInfoKHR{
                 sType = WL.Render.Native.VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
                 hinstance = WL.System.Native.Windows.GetModuleHandle(null),
-                hwnd = HWND
+                hwnd = Handle
             };
             
             int Result = WL.Render.Native.vkCreateWin32SurfaceKHR(WL.Render.VK, ref SurfaceInfo, IntPtr.Zero, out IntPtr Surface__);
@@ -51,8 +53,6 @@ public class RenderContext{
             int Result = WL.Render.Native.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(WL.Render.GPU, Surface, out WL.Render.Native.VkSurfaceCapabilitiesKHR Caps);
             if(Result != 0){ throw new Exception("Не получилось узнать возможности поверхности через vkGetPhysicalDeviceSurfaceCapabilitiesKHR! Код: " + Result); }
             
-            Logger.Debug(Caps.currentExtent.width, Caps.currentExtent.height);
-            
             Extent = (Caps.currentExtent.width, Caps.currentExtent.height);
             
             uint FormatTotal = 0;
@@ -77,6 +77,18 @@ public class RenderContext{
             if(Result != 0){ throw new Exception("Не получилось получить список \"Как показывается кадр\"! Код: " + Result); }
 
             uint PresentMode = WL.Render.Native.VK_PRESENT_MODE_FIFO_KHR;
+
+            for(int i = 0; i < PresentModeTotal; i++){
+                uint Mode = (uint)Marshal.ReadInt32(PresentModes, i * sizeof(int));
+
+                if(Mode == WL.Render.Native.VK_PRESENT_MODE_MAILBOX_KHR){
+                    PresentMode = Mode; 
+                }
+
+                if(Mode == WL.Render.Native.VK_PRESENT_MODE_IMMEDIATE_KHR && PresentMode != WL.Render.Native.VK_PRESENT_MODE_MAILBOX_KHR){
+                    PresentMode = Mode;
+                }
+            }
             
             uint ImageTotal = Caps.minImageCount + 1;
             if(Caps.maxImageCount > 0 && ImageTotal > Caps.maxImageCount){ ImageTotal = Caps.maxImageCount; }
@@ -212,12 +224,18 @@ public class RenderContext{
     public IntPtr[]?     ImageViews     { get; private set; }
     public IntPtr[]?     Framebuffers   { get; private set; }
 
+    /// <summary>
+    /// Контекст ещё живой?
+    /// </summary>
     public bool Alive => RenderSurface.RenderHandle() != IntPtr.Zero;
 
     /// <summary>
     /// Рендерит
+    /// <param name="BackgroundColor">Цвет заднего фона</param>
+    /// <param name="Action">Действие на рендер</param>
+    /// <returns>Удачно произошёл рендер?</returns>
     /// </summary>
-    public void Render(ColorF BackgroundColor, Action Action){
+    public bool Render(ColorF BackgroundColor, Action Action){
         int Result = 0;
         
         try{
@@ -231,17 +249,6 @@ public class RenderContext{
             Result = WL.Render.Native.vkAcquireNextImageKHR(WL.Render.Device, Swapchain, ulong.MaxValue, IntPtr.Zero, IntPtr.Zero, out uint ImageIndex);
             if(Result != 0){ throw new Exception("Не удалось получить индекс изображения Swapchain! Код: " + Result); }
 
-            WL.Render.Native.VkCommandBufferBeginInfo CB_Begin = new WL.Render.Native.VkCommandBufferBeginInfo{
-                sType = WL.Render.Native.VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-                pNext = IntPtr.Zero,
-                    
-                flags = WL.Render.Native.VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
-                pInheritanceInfo = IntPtr.Zero
-            };
-
-            Result = WL.Render.Native.vkBeginCommandBuffer(WL.Render.CommandBuffer, ref CB_Begin);
-            if(Result != 0){ throw new Exception("Произошла ошибка в vkBeginCommandBuffer! Код: " + Result); }
-            
             WL.Render.Native.VkClearValue BackgroundColor__ = new WL.Render.Native.VkClearValue{
                 color = new WL.Render.Native.VkClearColorValue{
                     float32_0 = BackgroundColor.R,
@@ -253,40 +260,60 @@ public class RenderContext{
 
             IntPtr __BackgroundColor__ = WL.System.Native.Memory<Render.Native.VkClearValue>(BackgroundColor__);
             
-            WL.Render.Native.VkRenderPassBeginInfo RP_Begin = new Render.Native.VkRenderPassBeginInfo{
-                sType = WL.Render.Native.VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-                renderPass = RenderPass,
-                framebuffer = Framebuffers[0],
-                renderArea = new WL.Render.Native.VkRect2D{
-                    offset = new WL.Render.Native.VkOffset2D { x = 0, y = 0 },
-                    extent = new WL.Render.Native.VkExtent2D { width = Extent.Item1, height = Extent.Item2 }
-                },
-                clearValueCount = 1,
-                pClearValues = __BackgroundColor__
-            };
-            
-            WL.Render.Native.vkCmdBeginRenderPass(WL.Render.CommandBuffer, ref RP_Begin, WL.Render.Native.VK_SUBPASS_CONTENTS_INLINE);
-            
             Exception? e__ = null;
-            try{ Action.Invoke(); }catch(Exception e){ e__ = e; }
-
-            WL.Render.Native.vkCmdEndRenderPass(WL.Render.CommandBuffer);
+            WL.Render.UseCommandBuffer(() => {
+                WL.Render.Native.VkRenderPassBeginInfo RP_Begin = new Render.Native.VkRenderPassBeginInfo{
+                    sType = WL.Render.Native.VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+                    renderPass = RenderPass,
+                    framebuffer = Framebuffers![ImageIndex],
+                    renderArea = new WL.Render.Native.VkRect2D{
+                        offset = new WL.Render.Native.VkOffset2D { x = 0, y = 0 },
+                        extent = new WL.Render.Native.VkExtent2D { width = Extent.Item1, height = Extent.Item2 }
+                    },
+                    clearValueCount = 1,
+                    pClearValues = __BackgroundColor__
+                };
             
-            Result = WL.Render.Native.vkEndCommandBuffer(WL.Render.CommandBuffer);
-            if(Result != 0){ throw new Exception("Произошла ошибка в vkEndCommandBuffer! Код: " + Result); }
+                WL.Render.Native.vkCmdBeginRenderPass(WL.Render.CommandBuffer, ref RP_Begin, WL.Render.Native.VK_SUBPASS_CONTENTS_INLINE);
+                
+                try{ Action.Invoke(); }catch(Exception e){ e__ = e; }
+
+                WL.Render.Native.vkCmdEndRenderPass(WL.Render.CommandBuffer);
+            });
+            
+            WL.System.Native.Free(__BackgroundColor__);
             
             if(e__ != null){ throw e__; }
             
-            WL.Render.Native.VkSubmitInfo Submit = new Render.Native.VkSubmitInfo{
-                sType = WL.Render.Native.VK_STRUCTURE_TYPE_SUBMIT_INFO,
-                commandBufferCount = 1,
-                pCommandBuffers = WL.System.Native.MemoryEmpty(IntPtr.Size)
-            };
-            Marshal.WriteIntPtr(Submit.pCommandBuffers, WL.Render.CommandBuffer);
+            Result = Show(ImageIndex);
 
-            Result = WL.Render.Native.vkQueueSubmit(WL.Render.GraphicQueue, 1, ref Submit, IntPtr.Zero);
-            if(Result != 0){ throw new Exception("Не получилось отправить запрос! Код: " + Result); }
+            WL.Render.Native.vkQueueWaitIdle(WL.Render.GraphicQueue);
+        }catch(Exception e){
+            if(__ThatResizeError(Result)){
+                __Resized = true;
+                return false;
+            }
             
+            throw new Exception("Произошла ошибка в рисовании/рендере!", e);
+        }
+
+        return true;
+    }
+    private bool __Resized = false;
+
+    /// <summary>
+    /// Это ошибка VK_ERROR_OUT_OF_DATE_KHR или VK_SUBOPTIMAL_KHR?
+    /// </summary>
+    public bool __ThatResizeError(int Result){ return Result is WL.Render.Native.VK_ERROR_OUT_OF_DATE_KHR or WL.Render.Native.VK_SUBOPTIMAL_KHR; }
+    
+    /// <summary>
+    /// Показывает нарисованное в контекст
+    /// </summary>
+    /// <param name="ImageIndex">Где нарисовано?</param>
+    private int Show(uint ImageIndex){
+        int Result = 0;
+        
+        try{
             WL.Render.Native.VkPresentInfoKHR PresentInfo = new Render.Native.VkPresentInfoKHR{
                 sType = WL.Render.Native.VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
                 swapchainCount = 1,
@@ -297,21 +324,14 @@ public class RenderContext{
             
             Result = WL.Render.Native.vkQueuePresentKHR(WL.Render.GraphicQueue, ref PresentInfo);
             if(Result != 0){ throw new Exception("Не получилось показать изображение! Код: " + Result); }
-
-            WL.Render.Native.vkQueueWaitIdle(WL.Render.GraphicQueue);
-            
-            WL.System.Native.Free(__BackgroundColor__);
-            WL.System.Native.Free(Submit.pCommandBuffers);
         }catch(Exception e){
-            if(Result == WL.Render.Native.VK_ERROR_OUT_OF_DATE_KHR || Result == WL.Render.Native.VK_SUBOPTIMAL_KHR){
-                __Resized = true;
-                return;
-            }
-            
-            throw new Exception("Произошла ошибка в рисовании/рендере!", e);
+            if(__ThatResizeError(Result)){ return Result; }
+
+            throw new Exception("Произошла ошибка при показе нарисованного в Surface через [" + this + "]!\nImageIndex: " + ImageIndex, e);
         }
+
+        return Result;
     }
-    private bool __Resized = false;
     
     public void __Destroy(){
         try{

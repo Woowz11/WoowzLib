@@ -4,14 +4,16 @@ using WLO;
 namespace WL.WLO;
 
 public abstract class WindowElement : WindowContext{
-    public WindowContext? Parent{ get; private set; }
-    public readonly List<WindowElement> Children = [];
-    
     public void __SetParent(Window Parent){
         try{
+                 Window = Parent;
             this.Parent = Parent;
+            
             if(!this.Parent.Alive){ throw new Exception("Окно не живое!"); }
             if(Created){ throw new Exception("Элемент уже созданный!"); }
+            
+            Window.__AddChildToAll(this);
+            
             __CreateElement(this);
             __CreateAndChild();
         }catch(Exception e){
@@ -21,16 +23,37 @@ public abstract class WindowElement : WindowContext{
     
     public void __SetParent(WindowElement Parent){
         try{
+                 Window = Parent.Window;
             this.Parent = Parent;
-            if(Parent.Created && !Parent.Alive){ throw new Exception("Родительский элемент уничтоженный!"); }
+            
+            if(Parent is{ Created: true, Alive: false }){ throw new Exception("Родительский элемент уничтоженный!"); }
 
+            Window.__AddChildToAll(this);
+            
             Parent.Children.Add(this);
 
+            Z = Parent.Z + 1;
+            
             if(Parent.Created){ __CreateElement(this); }
         }catch(Exception e){
             throw new Exception("Произошла ошибка при установке элементу [" + this + "] родителя [" + Parent + "]!", e);
         }
     }
+    
+    /// <summary>
+    /// Окно к которому привязан элемент
+    /// </summary>
+    public Window Window{ get; private set; }
+    
+    /// <summary>
+    /// Родитель элемента
+    /// </summary>
+    public WindowContext? Parent{ get; private set; }
+    
+    /// <summary>
+    /// Дети элемента
+    /// </summary>
+    public readonly List<WindowElement> Children = [];
 
     private void __CreateElement(WindowElement Element){
         try{
@@ -39,6 +62,8 @@ public abstract class WindowElement : WindowContext{
             if(Handle == IntPtr.Zero){ throw new Exception("Элемент не создался!"); }
 
             __Events__ = System.Native.ConnectEventsToWindow(Element.Handle, __Events);
+            
+            Window.__UpdateZOrder();
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании элемента [" + Element + "] у [" + this + "]!", e);
         }
@@ -171,4 +196,21 @@ public abstract class WindowElement : WindowContext{
             }
         }
     }
+
+    public double Z{
+        get => __Z;
+        set{
+            try{
+                if(Created){ CheckDestroyed(); }
+
+                if(__Z == value){ return; }
+                __Z = value;
+
+                if(Created){ Window.__UpdateZOrder(); }
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при изменении позиции по Z у пародии окна [" + this + "]!\nZ: " + value, e);
+            }
+        }
+    }
+    private double __Z;
 }
