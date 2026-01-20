@@ -4,7 +4,7 @@ namespace WL{
     /// <summary>
     /// Математические функции и т.д
     /// </summary>
-    [WLModule(-10000, 7)]
+    [WLModule(-10000, 8)]
     public static class Math{
         /// <summary>
         /// Получить среднее число между двумя (Поддерживает большие числа)

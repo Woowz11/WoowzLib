@@ -65,8 +65,6 @@ public class Window : WindowContext{
             }
 
             if(Handle == IntPtr.Zero){ throw new Exception("Ссылка на окно пустая!"); }
-
-            AllChildren.Clear();
             
             foreach(WindowElement Child in Children){
                 Child.Destroy();
@@ -168,18 +166,19 @@ public class Window : WindowContext{
                     
                     // Рисование внутри окна
                     case System.Native.Windows.WM_PAINT:
-                        IntPtr HDC = System.Native.Windows.BeginPaint(Handle, out System.Native.Windows.PAINTSTRUCT PS);
+                        if(__NeedUpdateRenderWindow){
+                            System.HDC.PaintWindow(Handle, (HDC) => {
+                                System.HDC.Fill(HDC, System.HDC.WindowSize(Handle), ColorF.Random.ToRGBiA());
+                            });
 
-                        try{
-                            System.Native.Windows.GetClientRect(Handle, out System.Native.Windows.RECT ClientRect);
-                            IntPtr Brush = System.Native.Windows.CreateSolidBrush(0x00808080); // пока-что так
-
-                            System.Native.Windows.FillRect(HDC, ref ClientRect, Brush);
-                            System.Native.Windows.DeleteObject(Brush);
-                        }finally{
-                            System.Native.Windows.EndPaint(Handle, ref PS);    
+                            foreach(WindowElement WE in Children){
+                                System.Native.Windows.InvalidateRect(WE.Handle, IntPtr.Zero, true);
+                                System.Native.Windows.SendMessage(WE.Handle, System.Native.Windows.WM_PAINT, IntPtr.Zero, IntPtr.Zero);
+                            }
+                            
+                            __NeedUpdateRenderWindow = false;
                         }
-                        
+
                         break;
                     
                     // Обработка элементов у окна
@@ -192,6 +191,7 @@ public class Window : WindowContext{
                 throw new Exception("Произошла ошибка при обработке ивентов [" + this + "]!", e);
             }
         }
+        private bool __NeedUpdateRenderWindow;
         
     #endregion
 
@@ -232,12 +232,6 @@ public class Window : WindowContext{
         private readonly List<WindowElement> Children = [];
 
         /// <summary>
-        /// Абсолютно все привязанные элементы к окну
-        /// </summary>
-        private readonly List<WindowElement> AllChildren = [];
-        public void __AddChildToAll(WindowElement WE){ AllChildren.Add(WE); }
-
-        /// <summary>
         /// Добавить элемент к окну
         /// </summary>
         /// <param name="Element">Элемент</param>
@@ -256,6 +250,11 @@ public class Window : WindowContext{
         }
 
     #endregion
+
+    /// <summary>
+    /// Обновляет рендер у окна и его детей, нужен для корректного отображения элементов и всего
+    /// </summary>
+    public void UpdateRender(){ __NeedUpdateRenderWindow = true; __UpdateRender(Children); }
     
     /// <summary>
     /// Обновляет размер окна
@@ -280,33 +279,7 @@ public class Window : WindowContext{
     /// <summary>
     /// Обновляет позиции у элементов по Z
     /// </summary>
-    public void __UpdateZOrder(){
-        try{
-            List<WindowElement> Sorted = AllChildren
-                 .Select((K, V) => new{ WE = K, I = V })
-                 .OrderBy(KVP => KVP.WE.Z)
-                 .ThenBy(KVP => KVP.I)
-                 .Select(KVP => KVP.WE)
-                 .ToList();
-
-            for(int i = 0; i < Sorted.Count; i++){
-                WindowElement WE = Sorted[i];
-                try{
-                    if(!WE.Created){ continue; }
-                    if(!WE.Alive){ throw new Exception("Элемент уничтоженный!"); }
-                    
-                    IntPtr InsertAfter = i == 0 ? System.Native.Windows.HWND_BOTTOM : Sorted[i - 1].Handle;
-
-                    WL.System.Native.Windows.SetWindowPos(WE.Handle, InsertAfter, 0, 0, 0, 0, WL.System.Native.Windows.SWP_NOMOVE | System.Native.Windows.SWP_NOSIZE);
-
-                }catch(Exception e){
-                    throw new Exception("Произошла ошибка при обновлении позиции у элемента [" + WE + "]!", e);
-                }
-            }
-        }catch(Exception e){
-            throw new Exception("Произошла ошибка при обновлении позиций у элементов по Z у окна [" + this + "]!", e);
-        }
-    }
+    public void __UpdateZOrder(){ __UpdateZOrder(Children); }
     
     public string Title{
         get => __Title;
@@ -413,6 +386,41 @@ public abstract class WindowContext{
         }catch(Exception e){
             throw new Exception("Произошла ошибка при обновлении позиции у пародии окна [" + this + "]!", e);
         }
+    }
+    
+    /// <summary>
+    /// Обновляет позиции у элементов по Z
+    /// </summary>
+    public void __UpdateZOrder(List<WindowElement> Children){
+        try{
+            List<WindowElement> Sorted = Children
+                 .Select((K, V) => new{ WE = K, I = V })
+                 .OrderBy(KVP => KVP.WE.Z)
+                 .ThenBy (KVP => KVP.I)
+                 .Select (KVP => KVP.WE)
+                 .ToList();
+
+            for(int i = 0; i < Sorted.Count; i++){
+                WindowElement WE = Sorted[i];
+                try{
+                    if(!WE.Created){ continue; }
+                    if(!WE.Alive){ throw new Exception("Элемент уничтоженный!"); }
+                    
+                    IntPtr InsertAfter = i == 0 ? Handle : Sorted[i - 1].Handle;
+
+                    WL.System.Native.Windows.SetWindowPos(WE.Handle, InsertAfter, 0, 0, 0, 0, WL.System.Native.Windows.SWP_NOMOVE | System.Native.Windows.SWP_NOSIZE);
+
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при обновлении позиции у элемента [" + WE + "]!", e);
+                }
+            }
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при обновлении позиций у элементов по Z у окна [" + this + "]!", e);
+        }
+    }
+
+    public void __UpdateRender(List<WindowElement> Children){
+        System.Native.Windows.InvalidateRect(Handle, IntPtr.Zero, true);
     }
     
     public uint Width{

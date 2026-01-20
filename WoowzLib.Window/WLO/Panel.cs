@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using WLO;
 
 namespace WL.WLO;
 
@@ -16,7 +17,7 @@ public class Panel : WindowElement{
                 0,
                 "STATIC",
                 "",
-                System.Native.Windows.WS_CHILD | System.Native.Windows.WS_VISIBLE,
+                System.Native.Windows.WS_CHILD | System.Native.Windows.WS_VISIBLE | System.Native.Windows.SS_OWNERDRAW,
                 __X, __Y, (int)__Width, (int)__Height,
                 Parent!.Handle,
                 IntPtr.Zero, 
@@ -41,8 +42,19 @@ public class Panel : WindowElement{
         switch(Message){
             case System.Native.Windows.WM_COMMAND:
                 return __UpdateCommand(WParam, LParam, Children);
+            
+            case System.Native.Windows.WM_PAINT:
+                WL.System.HDC.PaintWindow(Handle, (HDC) => {
+                    System.HDC.Fill(HDC, System.HDC.WindowSize(Handle), Color.ToRGBiA());        
+                });
+                break;
         }
         
         return System.Native.Windows.CallWindowProcW(__DefaultEvents__, OtherWindow, Message, WParam, LParam);
     }
+
+    /// <summary>
+    /// Цвет панели
+    /// </summary>
+    public ColorF Color = ColorF.White;
 }

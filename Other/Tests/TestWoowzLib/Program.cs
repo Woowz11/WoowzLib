@@ -1,4 +1,5 @@
-﻿using WL.WLO;
+﻿using System.Drawing;
+using WL.WLO;
 using WLO;
 using Logger = WLO.Logger;
 
@@ -29,9 +30,11 @@ public static class Program{
             };
             
             Panel P = new Panel();
-
+            P.Color = ColorF.Yellow;
+            
             Panel P2 = new Panel();
-
+            P2.Color = ColorF.Blue;
+            
             W1.Add(Test1);
 
             W1.Add(P);
@@ -87,6 +90,8 @@ public static class Program{
                         P.X = (int)(W1.Width / 2) + (int)(Math.Sin(TD.DeltaTick) * 200);
                         P2.X = (int)(W1.Width / 2);
 
+                        //P.Color = ColorF.Random;
+                        
                         Test1.Text = W1.Title;
 
                         Test2.Text = "Русский " + Test1.Text;
@@ -94,6 +99,8 @@ public static class Program{
                         R2.Render(ColorF.Random, () => {
                             
                         });
+                        
+                        W1.UpdateRender();
                     }
 
                     if(W2.Alive){
@@ -107,6 +114,8 @@ public static class Program{
                         R3.Render(ColorF.Random, () => {
                             
                         });
+                        
+                        W2.UpdateRender();
                     }
                 });
                 

@@ -12,8 +12,6 @@ public abstract class WindowElement : WindowContext{
             if(!this.Parent.Alive){ throw new Exception("Окно не живое!"); }
             if(Created){ throw new Exception("Элемент уже созданный!"); }
             
-            Window.__AddChildToAll(this);
-            
             __CreateElement(this);
             __CreateAndChild();
         }catch(Exception e){
@@ -27,12 +25,8 @@ public abstract class WindowElement : WindowContext{
             this.Parent = Parent;
             
             if(Parent is{ Created: true, Alive: false }){ throw new Exception("Родительский элемент уничтоженный!"); }
-
-            Window.__AddChildToAll(this);
             
             Parent.Children.Add(this);
-
-            Z = Parent.Z + 1;
             
             if(Parent.Created){ __CreateElement(this); }
         }catch(Exception e){
@@ -62,8 +56,8 @@ public abstract class WindowElement : WindowContext{
             if(Handle == IntPtr.Zero){ throw new Exception("Элемент не создался!"); }
 
             __Events__ = System.Native.ConnectEventsToWindow(Element.Handle, __Events);
-            
-            Window.__UpdateZOrder();
+
+            System.Native.Windows.SendMessage(Handle, System.Native.Windows.WM_SETREDRAW, IntPtr.Zero, IntPtr.Zero);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании элемента [" + Element + "] у [" + this + "]!", e);
         }
@@ -76,6 +70,7 @@ public abstract class WindowElement : WindowContext{
             foreach(WindowElement Child in Children){
                 __CreateElement(Child);
                 Child.__CreateAndChild();
+                Child.__UpdateZOrder();
             }
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании детей - детей у [" + this + "]!", e);
@@ -123,6 +118,15 @@ public abstract class WindowElement : WindowContext{
             throw new Exception("Произошла ошибка при добавлении элемента [" + Element + "] окну [" + this + "]!", e);
         }
     }
+
+    /// <summary>
+    /// Обновляет позиции у элементов по Z
+    /// </summary>
+    public void __UpdateZOrder(){ __UpdateZOrder(Children); }
+
+    public void __UpdateRender(){ if(__NeedUpdateRender()){ __UpdateRender(Children); } }
+
+    public virtual bool __NeedUpdateRender(){ return true; }
 
     #region Ивенты
 
@@ -206,7 +210,7 @@ public abstract class WindowElement : WindowContext{
                 if(__Z == value){ return; }
                 __Z = value;
 
-                if(Created){ Window.__UpdateZOrder(); }
+                if(Created){ __UpdateZOrder(); }
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при изменении позиции по Z у пародии окна [" + this + "]!\nZ: " + value, e);
             }

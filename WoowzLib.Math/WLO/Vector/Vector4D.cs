@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 18.01.2026 18:11
+/// Сгенерирован: 20.01.2026 15:55
 /// </summary>
 public struct Vector4D{
 	public static readonly int  Numbers = 4;

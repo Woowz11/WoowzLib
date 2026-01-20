@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 18.01.2026 18:11
+/// Сгенерирован: 20.01.2026 15:55
 /// </summary>
 public struct ColorB{
 	public static readonly Type Type = typeof(byte);
@@ -15,6 +15,16 @@ public struct ColorB{
 	public byte G;
 	public byte B;
 	public byte A;
+
+	public byte BR => WL.System.Byte.ToColorByte(R);
+	public byte BG => WL.System.Byte.ToColorByte(G);
+	public byte BB => WL.System.Byte.ToColorByte(B);
+	public byte BA => WL.System.Byte.ToColorByte(A);
+
+	public ColorB SetR(byte R){ this.R = R; return this; }
+	public ColorB SetG(byte G){ this.G = G; return this; }
+	public ColorB SetB(byte B){ this.B = B; return this; }
+	public ColorB SetA(byte A){ this.A = A; return this; }
 
 	public ColorB Set(byte R, byte G, byte B, byte A){ this.R = R; this.G = G; this.B = B; this.A = A; return this; }
 	
@@ -46,6 +56,12 @@ public struct ColorB{
 	public static ColorB Transparent => new ColorB().ToTransparent();
 	public ColorB ToRandom(){ return Set(WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), 1); }
 	public static ColorB Random => new ColorB().ToRandom();
+
+	public uint ToRGBA (){ return WL.System.Byte.RGBA(BR, BG, BB, BA); }
+	public uint ToRGBiA(){ return WL.System.Byte.RGBA(BR, BG, BB, (byte)(255 - BA)); }
+	public uint ToARGB (){ return WL.System.Byte.ABGR(BA, BB, BG, BR); }
+
+	public ColorB Clone(){ return new ColorB(R,G,B,A); }
 
 	#region Override
 

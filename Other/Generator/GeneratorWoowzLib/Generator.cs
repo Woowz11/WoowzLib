@@ -286,6 +286,8 @@ public static class Generator{
                                 }
                             
                             {{WL.String.Join("\tpublic " + Type + " $0;\n", Components)}}
+                            {{WL.String.Join("\tpublic byte B$0 => WL.System.Byte.ToColorByte($0);\n", Components)}}
+                            {{WL.String.Join("\tpublic " + Name + " Set$0(" + Type + " $0){ this.$0 = $0; return this; }\n", Components)}}
                                 public {{Name}} Set({{WL.String.Join(Type + " $0, ", Type + " $0", Components)}}){ {{WL.String.Join("this.$0 = $0; ", Components)}}return this; }
                                 
                             {{WL.String.Join((i, Obj, Last) => {
@@ -293,6 +295,12 @@ public static class Generator{
                                        "\tpublic static " + Name + " " + Obj.Key + " => new " + Name + "().To" + Obj.Key + "();\n";
                             }, Constants)}}    public {{Name}} ToRandom(){ return Set({{WL.System.Condition(ColorType == ColorType.Int,"WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255)", (ColorType == ColorType.Byte ? "WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte()" : "WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1()"))}}, 1); }
                                 public static {{Name}} Random => new {{Name}}().ToRandom();
+                            
+                                public uint ToRGBA (){ return WL.System.Byte.RGBA(BR, BG, BB, BA); }
+                                public uint ToRGBiA(){ return WL.System.Byte.RGBA(BR, BG, BB, (byte)(255 - BA)); }
+                                public uint ToARGB (){ return WL.System.Byte.ABGR(BA, BB, BG, BR); }
+                            
+                                public {{Name}} Clone(){ return new {{Name}}(R,G,B,A); }
                             
                                 #region Override
                             

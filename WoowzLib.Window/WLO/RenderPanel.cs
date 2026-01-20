@@ -30,7 +30,9 @@ public class RenderPanel : WindowElement, RenderSurface{
         }
     }
     private IntPtr __DefaultEvents__;
-    
+
+    public override bool __NeedUpdateRender(){ return false; }
+
     public override IntPtr __Destroy(){
         RenderDestroy?.Invoke();
         
