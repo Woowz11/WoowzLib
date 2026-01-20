@@ -4,7 +4,7 @@ using WLO;
 
 namespace WL;
 
-[WLModule(-50, 5)]
+[WLModule(-50, 6)]
 public class Render{
     static Render(){
         try{
@@ -52,20 +52,33 @@ public class Render{
 
             if(Debug.LogMain){ Logger.Info("Загружен Vulkan DLL!"); }
 
+            
+            
+            Native.vkQueueSubmit                             = System.Native.DelegateFunction<Native.D_vkQueueSubmit                            >("vkQueueSubmit"                            ,DLL);
             Native.vkCreateDevice                            = System.Native.DelegateFunction<Native.D_vkCreateDevice                           >("vkCreateDevice"                           ,DLL);
+            Native.vkQueueWaitIdle                           = System.Native.DelegateFunction<Native.D_vkQueueWaitIdle                          >("vkQueueWaitIdle"                          ,DLL);
             Native.vkDestroyDevice                           = System.Native.DelegateFunction<Native.D_vkDestroyDevice                          >("vkDestroyDevice"                          ,DLL);
             Native.vkGetDeviceQueue                          = System.Native.DelegateFunction<Native.D_vkGetDeviceQueue                         >("vkGetDeviceQueue"                         ,DLL);
             Native.vkCreateInstance                          = System.Native.DelegateFunction<Native.D_vkCreateInstance                         >("vkCreateInstance"                         ,DLL);
+            Native.vkQueuePresentKHR                         = System.Native.DelegateFunction<Native.D_vkQueuePresentKHR                        >("vkQueuePresentKHR"                        ,DLL);
+            Native.vkCreateImageView                         = System.Native.DelegateFunction<Native.D_vkCreateImageView                        >("vkCreateImageView"                        ,DLL);
             Native.vkDestroyInstance                         = System.Native.DelegateFunction<Native.D_vkDestroyInstance                        >("vkDestroyInstance"                        ,DLL);
             Native.vkEndCommandBuffer                        = System.Native.DelegateFunction<Native.D_vkEndCommandBuffer                       >("vkEndCommandBuffer"                       ,DLL);
+            Native.vkCmdEndRenderPass                        = System.Native.DelegateFunction<Native.D_vkCmdEndRenderPass                       >("vkCmdEndRenderPass"                       ,DLL);
+            Native.vkDestroyImageView                        = System.Native.DelegateFunction<Native.D_vkDestroyImageView                       >("vkDestroyImageView"                       ,DLL);
+            Native.vkCreateRenderPass                        = System.Native.DelegateFunction<Native.D_vkCreateRenderPass                       >("vkCreateRenderPass"                       ,DLL);
             Native.vkCreateCommandPool                       = System.Native.DelegateFunction<Native.D_vkCreateCommandPool                      >("vkCreateCommandPool"                      ,DLL);
             Native.vkDestroySurfaceKHR                       = System.Native.DelegateFunction<Native.D_vkDestroySurfaceKHR                      >("vkDestroySurfaceKHR"                      ,DLL);
+            Native.vkCreateFramebuffer                       = System.Native.DelegateFunction<Native.D_vkCreateFramebuffer                      >("vkCreateFramebuffer"                      ,DLL);
             Native.vkDestroyCommandPool                      = System.Native.DelegateFunction<Native.D_vkDestroyCommandPool                     >("vkDestroyCommandPool"                     ,DLL);
             Native.vkFreeCommandBuffers                      = System.Native.DelegateFunction<Native.D_vkFreeCommandBuffers                     >("vkFreeCommandBuffers"                     ,DLL);
             Native.vkBeginCommandBuffer                      = System.Native.DelegateFunction<Native.D_vkBeginCommandBuffer                     >("vkBeginCommandBuffer"                     ,DLL);
+            Native.vkCmdBeginRenderPass                      = System.Native.DelegateFunction<Native.D_vkCmdBeginRenderPass                     >("vkCmdBeginRenderPass"                     ,DLL);
             Native.vkResetCommandBuffer                      = System.Native.DelegateFunction<Native.D_vkResetCommandBuffer                     >("vkResetCommandBuffer"                     ,DLL);
+            Native.vkDestroyFramebuffer                      = System.Native.DelegateFunction<Native.D_vkDestroyFramebuffer                     >("vkDestroyFramebuffer"                     ,DLL);
             Native.vkCreateSwapchainKHR                      = System.Native.DelegateFunction<Native.D_vkCreateSwapchainKHR                     >("vkCreateSwapchainKHR"                     ,DLL);
             Native.vkDestroySwapchainKHR                     = System.Native.DelegateFunction<Native.D_vkDestroySwapchainKHR                    >("vkDestroySwapchainKHR"                    ,DLL);
+            Native.vkAcquireNextImageKHR                     = System.Native.DelegateFunction<Native.D_vkAcquireNextImageKHR                    >("vkAcquireNextImageKHR"                    ,DLL);
             Native.vkCreateWin32SurfaceKHR                   = System.Native.DelegateFunction<Native.D_vkCreateWin32SurfaceKHR                  >("vkCreateWin32SurfaceKHR"                  ,DLL);
             Native.vkGetSwapchainImagesKHR                   = System.Native.DelegateFunction<Native.D_vkGetSwapchainImagesKHR                  >("vkGetSwapchainImagesKHR"                  ,DLL);
             Native.vkAllocateCommandBuffers                  = System.Native.DelegateFunction<Native.D_vkAllocateCommandBuffers                 >("vkAllocateCommandBuffers"                 ,DLL);            
@@ -75,7 +88,6 @@ public class Render{
             Native.vkGetPhysicalDeviceQueueFamilyProperties  = System.Native.DelegateFunction<Native.D_vkGetPhysicalDeviceQueueFamilyProperties >("vkGetPhysicalDeviceQueueFamilyProperties" ,DLL);
             Native.vkGetPhysicalDeviceSurfaceCapabilitiesKHR = System.Native.DelegateFunction<Native.D_vkGetPhysicalDeviceSurfaceCapabilitiesKHR>("vkGetPhysicalDeviceSurfaceCapabilitiesKHR",DLL);
             Native.vkGetPhysicalDeviceSurfacePresentModesKHR = System.Native.DelegateFunction<Native.D_vkGetPhysicalDeviceSurfacePresentModesKHR>("vkGetPhysicalDeviceSurfacePresentModesKHR",DLL);
-            
             
             if(Debug.LogMain){ Logger.Info("Загружены функции Vulkan!"); }
 
@@ -340,39 +352,6 @@ public class Render{
     public static IntPtr CommandBuffer{ get; private set; }
 
     /// <summary>
-    /// Рисует указанные команды
-    /// <param name="Context">Куда рендерить?</param>
-    /// </summary>
-    public static void Draw(RenderContext Context, Action Action){
-        try{
-            Native.VkCommandBufferBeginInfo BeginInfo = new Native.VkCommandBufferBeginInfo{
-                sType = Native.VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-                pNext = IntPtr.Zero,
-                    
-                flags = Native.VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
-                pInheritanceInfo = IntPtr.Zero
-            };
-
-            int Result = Native.vkBeginCommandBuffer(CommandBuffer, ref BeginInfo);
-            if(Result != 0){ throw new Exception("Произошла ошибка в vkBeginCommandBuffer! Код: " + Result); }
-
-            Exception? e__ = null;
-            try{
-                Action.Invoke();
-            }catch(Exception e){
-                e__ = e;
-            }
-            
-            Result = Native.vkEndCommandBuffer(CommandBuffer);
-            if(Result != 0){ throw new Exception("Произошла ошибка в vkEndCommandBuffer! Код: " + Result); }
-
-            if(e__ != null){ throw e__; }
-        }catch(Exception e){
-            throw new Exception("Произошла ошибка в рисовании/рендере!\nКонтекст: " + Context, e);
-        }
-    }
-
-    /// <summary>
     /// Соединяет рендер с RenderSurface
     /// </summary>
     public static RenderContext Connect(RenderSurface RS){
@@ -525,6 +504,14 @@ public class Render{
         public static D_vkGetPhysicalDeviceSurfaceCapabilitiesKHR vkGetPhysicalDeviceSurfaceCapabilitiesKHR = null!;
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void D_vkDestroyFramebuffer(IntPtr device, IntPtr framebuffer, IntPtr pAllocator);
+        public static D_vkDestroyFramebuffer vkDestroyFramebuffer = null!;
+        
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void D_vkDestroyImageView(IntPtr device, IntPtr imageView, IntPtr pAllocator);
+        public static D_vkDestroyImageView vkDestroyImageView = null!;
+        
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate int D_vkGetPhysicalDeviceSurfaceFormatsKHR(
             IntPtr physicalDevice,
             IntPtr surface,
@@ -560,6 +547,189 @@ public class Render{
         );
         public static D_vkGetSwapchainImagesKHR vkGetSwapchainImagesKHR = null!;
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int D_vkCreateImageView(
+            IntPtr device,
+            ref VkImageViewCreateInfo createInfo,
+            IntPtr allocator,
+            out IntPtr imageView
+        );
+        public static D_vkCreateImageView vkCreateImageView = null!;
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int D_vkCreateRenderPass(
+            IntPtr device,
+            ref VkRenderPassCreateInfo createInfo,
+            IntPtr allocator,
+            out IntPtr renderPass
+        );
+        public static D_vkCreateRenderPass vkCreateRenderPass = null!;
+        
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int D_vkCreateFramebuffer(
+            IntPtr device,
+            ref VkFramebufferCreateInfo createInfo,
+            IntPtr allocator,
+            out IntPtr framebuffer
+        );
+        public static D_vkCreateFramebuffer vkCreateFramebuffer = null!;
+        
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int D_vkQueueSubmit(IntPtr queue, uint submitCount, ref VkSubmitInfo pSubmits, IntPtr fence);
+        public static D_vkQueueSubmit vkQueueSubmit = null!;
+        
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int D_vkQueueWaitIdle(IntPtr queue);
+        public static D_vkQueueWaitIdle vkQueueWaitIdle = null!;
+        
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void D_vkCmdBeginRenderPass(IntPtr commandBuffer, ref VkRenderPassBeginInfo pRenderPassBegin, uint contents);
+        public static D_vkCmdBeginRenderPass vkCmdBeginRenderPass = null!;
+        
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void D_vkCmdEndRenderPass(IntPtr commandBuffer);
+        public static D_vkCmdEndRenderPass vkCmdEndRenderPass = null!;
+        
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int D_vkQueuePresentKHR(IntPtr queue, ref VkPresentInfoKHR pPresentInfo);
+        public static D_vkQueuePresentKHR vkQueuePresentKHR = null!;
+        
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int D_vkAcquireNextImageKHR(
+            IntPtr device,
+            IntPtr swapchain,
+            ulong timeout,
+            IntPtr semaphore,
+            IntPtr fence,
+            out uint pImageIndex
+        );
+        public static D_vkAcquireNextImageKHR vkAcquireNextImageKHR = null!;
+        
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkSubmitInfo
+        {
+            public uint   sType;
+            public IntPtr pNext;
+
+            public uint   waitSemaphoreCount;
+            public IntPtr pWaitSemaphores;
+            public IntPtr pWaitDstStageMask;
+
+            public uint   commandBufferCount;
+            public IntPtr pCommandBuffers;
+
+            public uint   signalSemaphoreCount;
+            public IntPtr pSignalSemaphores;
+        }
+        
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkPresentInfoKHR
+        {
+            public uint   sType;
+            public IntPtr pNext;
+
+            public uint   waitSemaphoreCount;
+            public IntPtr pWaitSemaphores; 
+        
+            public uint   swapchainCount;
+            public IntPtr pSwapchains;     
+            public IntPtr pImageIndices;   
+            public IntPtr pResults;        
+        }
+        
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkAttachmentDescription
+        {
+            public uint flags;
+            public uint format; 
+            public uint samples;
+            public uint loadOp; 
+            public uint storeOp;
+            public uint stencilLoadOp; 
+            public uint stencilStoreOp;
+            public uint initialLayout;
+            public uint finalLayout;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkAttachmentReference
+        {
+            public uint attachment; 
+            public uint layout;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkSubpassDescription
+        {
+            public uint   flags;
+            public uint   pipelineBindPoint;
+            public uint   inputAttachmentCount;
+            public IntPtr pInputAttachments;
+            public uint   colorAttachmentCount;
+            public IntPtr pColorAttachments;
+            public IntPtr pResolveAttachments;
+            public IntPtr pDepthStencilAttachment;
+            public uint   preserveAttachmentCount;
+            public IntPtr pPreserveAttachments;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkRenderPassCreateInfo
+        {
+            public uint   sType;
+            public IntPtr pNext;
+            public uint   flags;
+            public uint   attachmentCount;
+            public IntPtr pAttachments;
+            public uint   subpassCount;
+            public IntPtr pSubpasses;
+            public uint   dependencyCount;
+            public IntPtr pDependencies;
+        }
+        
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkImageViewCreateInfo
+        {
+            public uint                    sType;
+            public IntPtr                  pNext;
+            public uint                    flags;
+            public IntPtr                  image;
+            public uint                    viewType;
+            public uint                    format;
+            public VkComponentMapping      components;
+            public VkImageSubresourceRange subresourceRange;
+        }
+        
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkFramebufferCreateInfo
+        {
+            public uint   sType;
+            public IntPtr pNext;
+            public uint   flags;
+            public IntPtr renderPass;
+            public uint   attachmentCount;
+            public IntPtr pAttachments;
+            public uint   width;
+            public uint   height;
+            public uint   layers;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkComponentMapping
+        {
+            public uint r, g, b, a;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkImageSubresourceRange
+        {
+            public uint aspectMask;
+            public uint baseMipLevel;
+            public uint levelCount;
+            public uint baseArrayLayer;
+            public uint layerCount;
+        }
+        
         [StructLayout(LayoutKind.Sequential)]
         public struct VkSurfaceFormatKHR{
             public uint format;
@@ -735,6 +905,58 @@ public class Render{
             public IntPtr hwnd;
         }
         
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkClearColorValue
+        {
+            public float float32_0;
+            public float float32_1;
+            public float float32_2;
+            public float float32_3;
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
+        public struct VkClearValue
+        {
+            [FieldOffset(0)]
+            public VkClearColorValue color;
+
+            [FieldOffset(0)]
+            public VkClearDepthStencilValue depthStencil;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkClearDepthStencilValue
+        {
+            public float depth;
+            public uint  stencil;
+        }
+        
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkRenderPassBeginInfo
+        {
+            public uint     sType;
+            public IntPtr   pNext;
+            public IntPtr   renderPass;
+            public IntPtr   framebuffer;
+            public VkRect2D renderArea;
+            public uint     clearValueCount;
+            public IntPtr   pClearValues;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkRect2D
+        {
+            public VkOffset2D offset;
+            public VkExtent2D extent;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VkOffset2D
+        {
+            public int x;
+            public int y;
+        }
+        
         [global::System.Flags]
         public enum VkQueueFlags : uint
         {
@@ -765,5 +987,52 @@ public class Render{
         public const uint VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT              = 0x00000010;
         public const uint VK_SHARING_MODE_EXCLUSIVE                        = 0;
         public const uint VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR                = 0x00000001;
+        public const uint VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO        = 38;
+        public const uint VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO        = 42;
+        public const uint VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL         = 2;
+        public const uint VK_IMAGE_LAYOUT_PRESENT_SRC_KHR                  = 1000001002;
+        public const uint VK_PIPELINE_BIND_POINT_GRAPHICS                  = 0;
+        public const uint VK_ATTACHMENT_LOAD_OP_CLEAR                      = 1;
+        public const uint VK_ATTACHMENT_STORE_OP_STORE                     = 0;
+        public const uint VK_SAMPLE_COUNT_1_BIT                            = 0x00000001;
+        public const uint VK_STRUCTURE_TYPE_SUBMIT_INFO                    = 4;
+        public const uint VK_ATTACHMENT_LOAD_OP_LOAD                       = 0;
+        public const uint VK_ATTACHMENT_LOAD_OP_DONT_CARE                  = 2;
+        public const uint VK_ATTACHMENT_STORE_OP_DONT_CARE                 = 1;
+        public const uint VK_IMAGE_LAYOUT_UNDEFINED                        = 0;
+        public const uint VK_IMAGE_LAYOUT_GENERAL                          = 1;
+        public const uint VK_SUBPASS_CONTENTS_INLINE                       = 0;
+        public const uint VK_IMAGE_ASPECT_COLOR_BIT                        = 0x00000001;
+        public const uint VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO         = 15;
+        public const uint VK_IMAGE_VIEW_TYPE_1D                            = 0;
+        public const uint VK_IMAGE_VIEW_TYPE_2D                            = 1;
+        public const uint VK_IMAGE_VIEW_TYPE_3D                            = 2;
+        public const uint VK_IMAGE_VIEW_TYPE_CUBE                          = 3;
+        public const uint VK_IMAGE_VIEW_TYPE_1D_ARRAY                      = 4;
+        public const uint VK_IMAGE_VIEW_TYPE_2D_ARRAY                      = 5;
+        public const uint VK_IMAGE_VIEW_TYPE_CUBE_ARRAY                    = 6;
+        public const uint VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO         = 38;
+        public const uint VK_STRUCTURE_TYPE_PRESENT_INFO_KHR               = 1000001000;
+        public const uint VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHR    = 1000001001;
+        public const int  VK_SUCCESS                                       = 0;
+        public const int  VK_NOT_READY                                     = 1;
+        public const int  VK_TIMEOUT                                       = 2;
+        public const int  VK_EVENT_SET                                     = 3;
+        public const int  VK_EVENT_RESET                                   = 4;
+        public const int  VK_INCOMPLETE                                    = 5;
+        public const int  VK_ERROR_OUT_OF_HOST_MEMORY                      = -1;
+        public const int  VK_ERROR_OUT_OF_DEVICE_MEMORY                    = -2;
+        public const int  VK_ERROR_INITIALIZATION_FAILED                   = -3;
+        public const int  VK_ERROR_DEVICE_LOST                             = -4;
+        public const int  VK_ERROR_MEMORY_MAP_FAILED                       = -5;
+        public const int  VK_ERROR_LAYER_NOT_PRESENT                       = -6;
+        public const int  VK_ERROR_EXTENSION_NOT_PRESENT                   = -7;
+        public const int  VK_ERROR_FEATURE_NOT_PRESENT                     = -8;
+        public const int  VK_ERROR_INCOMPATIBLE_DRIVER                     = -9;
+        public const int  VK_ERROR_TOO_MANY_OBJECTS                        = -10;
+        public const int  VK_ERROR_FORMAT_NOT_SUPPORTED                    = -11;
+        public const int  VK_ERROR_FRAGMENTED_POOL                         = -12;
+        public const int  VK_ERROR_OUT_OF_DATE_KHR                         = -1000001004;
+        public const int  VK_SUBOPTIMAL_KHR                                = 1000001003;
     }
 }

@@ -15,13 +15,46 @@ public class RenderContext{
                 hinstance = WL.System.Native.Windows.GetModuleHandle(null),
                 hwnd = HWND
             };
-
-            int Result = WL.Render.Native.vkCreateWin32SurfaceKHR(WL.Render.VK, ref SurfaceInfo, IntPtr.Zero, out IntPtr Surface);
-            if(Result != 0){ throw new Exception("Произошла ошибка при вызове vkCreateWin32SurfaceKHR! Код: " + Result); }
             
-            Result = WL.Render.Native.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(WL.Render.GPU, Surface, out WL.Render.Native.VkSurfaceCapabilitiesKHR Caps);
-            if(Result != 0){ throw new Exception("Не получилось узнать возможности поверхности через vkGetPhysicalDeviceSurfaceCapabilitiesKHR! Код: " + Result); }
+            int Result = WL.Render.Native.vkCreateWin32SurfaceKHR(WL.Render.VK, ref SurfaceInfo, IntPtr.Zero, out IntPtr Surface__);
+            if(Result != 0){ throw new Exception("Произошла ошибка при вызове vkCreateWin32SurfaceKHR! Код: " + Result); }
 
+            Surface = Surface__;
+            
+            __CreateSwapchain();
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при создании RenderContext [" + this + "]!", e);
+        }
+    }
+
+    public void __CreateSwapchain(){
+        try{
+            if(this.Swapchain != IntPtr.Zero){
+                if(Framebuffers != null){
+                    foreach(IntPtr Framebuffer in Framebuffers){
+                        WL.Render.Native.vkDestroyFramebuffer(WL.Render.Device, Framebuffer, IntPtr.Zero);
+                    }
+                    Framebuffers = null;
+                }
+
+                if(ImageViews != null){
+                    foreach(IntPtr ImageView in ImageViews){
+                        WL.Render.Native.vkDestroyImageView(WL.Render.Device, ImageView, IntPtr.Zero);
+                    }
+                    ImageViews = null;
+                }
+                
+                WL.Render.Native.vkDestroySwapchainKHR(WL.Render.Device, this.Swapchain, IntPtr.Zero);
+                this.Swapchain = IntPtr.Zero;
+            }
+            
+            int Result = WL.Render.Native.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(WL.Render.GPU, Surface, out WL.Render.Native.VkSurfaceCapabilitiesKHR Caps);
+            if(Result != 0){ throw new Exception("Не получилось узнать возможности поверхности через vkGetPhysicalDeviceSurfaceCapabilitiesKHR! Код: " + Result); }
+            
+            Logger.Debug(Caps.currentExtent.width, Caps.currentExtent.height);
+            
+            Extent = (Caps.currentExtent.width, Caps.currentExtent.height);
+            
             uint FormatTotal = 0;
             Result = WL.Render.Native.vkGetPhysicalDeviceSurfaceFormatsKHR(WL.Render.GPU, Surface, ref FormatTotal, IntPtr.Zero);
             if(Result != 0){ throw new Exception("Не получилось узнать кол-во форматов поверхности! Код: " + Result); }
@@ -32,6 +65,8 @@ public class RenderContext{
 
             WL.Render.Native.VkSurfaceFormatKHR Format = Marshal.PtrToStructure<WL.Render.Native.VkSurfaceFormatKHR>(Formats);
             WL.System.Native.Free(Formats);
+            
+             ImageFormat = Format.format;
 
             uint PresentModeTotal = 0;
             Result = WL.Render.Native.vkGetPhysicalDeviceSurfacePresentModesKHR(WL.Render.GPU, Surface, ref PresentModeTotal, IntPtr.Zero);
@@ -42,7 +77,7 @@ public class RenderContext{
             if(Result != 0){ throw new Exception("Не получилось получить список \"Как показывается кадр\"! Код: " + Result); }
 
             uint PresentMode = WL.Render.Native.VK_PRESENT_MODE_FIFO_KHR;
-
+            
             uint ImageTotal = Caps.minImageCount + 1;
             if(Caps.maxImageCount > 0 && ImageTotal > Caps.maxImageCount){ ImageTotal = Caps.maxImageCount; }
 
@@ -51,7 +86,7 @@ public class RenderContext{
                 surface = Surface,
                 
                 minImageCount   = ImageTotal,
-                imageFormat     = Format.format,
+                imageFormat     = ImageFormat,
                 imageColorSpace = Format.colorSpace,
                 
                 imageExtent      = Caps.currentExtent,
@@ -73,7 +108,7 @@ public class RenderContext{
             this.Swapchain = Swapchain;
             
             WL.System.Native.Free(PresentModes);
-
+            
             uint SwapchainImageTotal = 0;
             Result = WL.Render.Native.vkGetSwapchainImagesKHR(WL.Render.Device, Swapchain, ref SwapchainImageTotal, IntPtr.Zero);
             if(Result != 0){ throw new Exception("Не получилось узнать кол-во изображений Swapchain! Код: " + Result); }
@@ -87,11 +122,83 @@ public class RenderContext{
                 SwapchainImages[i] = Marshal.ReadIntPtr(SwapchainImages__, i * IntPtr.Size);
             }
             WL.System.Native.Free(SwapchainImages__);
+            
+            WL.Render.Native.VkAttachmentDescription ColorAttachment = new Render.Native.VkAttachmentDescription{
+                format         = ImageFormat,
+                samples        = WL.Render.Native.VK_SAMPLE_COUNT_1_BIT,
+                loadOp         = WL.Render.Native.VK_ATTACHMENT_LOAD_OP_CLEAR,
+                storeOp        = WL.Render.Native.VK_ATTACHMENT_STORE_OP_STORE,
+                stencilLoadOp  = WL.Render.Native.VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                stencilStoreOp = WL.Render.Native.VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                initialLayout  = WL.Render.Native.VK_IMAGE_LAYOUT_UNDEFINED,
+                finalLayout    = WL.Render.Native.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+            };
 
-            ImageFormat = Format.format;
-            Extent = (Caps.currentExtent.width, Caps.currentExtent.height);
+            WL.Render.Native.VkAttachmentReference ColorAttachmentReference = new Render.Native.VkAttachmentReference{
+                attachment = 0,
+                layout = WL.Render.Native.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+            };
+
+            WL.Render.Native.VkSubpassDescription Subpass = new Render.Native.VkSubpassDescription{
+                pipelineBindPoint = WL.Render.Native.VK_PIPELINE_BIND_POINT_GRAPHICS,
+                colorAttachmentCount = 1,
+                pColorAttachments = Marshal.UnsafeAddrOfPinnedArrayElement([ColorAttachmentReference], 0)
+            };
+
+            WL.Render.Native.VkRenderPassCreateInfo RenderPassInfo = new Render.Native.VkRenderPassCreateInfo{
+                sType = WL.Render.Native.VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+                attachmentCount = 1,
+                pAttachments = Marshal.UnsafeAddrOfPinnedArrayElement([ColorAttachment], 0),
+                subpassCount = 1,
+                pSubpasses = Marshal.UnsafeAddrOfPinnedArrayElement([Subpass], 0)
+            };
+            
+            Result = WL.Render.Native.vkCreateRenderPass(WL.Render.Device, ref RenderPassInfo, IntPtr.Zero, out IntPtr RenderPass__);
+            if(Result != 0){ throw new Exception("Произошла ошибка при создании RenderPass! Код: " + Result); }
+
+            RenderPass = RenderPass__;
+            
+            ImageViews = new IntPtr[SwapchainImages.Length];
+            
+            Framebuffers = new IntPtr[SwapchainImages.Length];
+            for(int i = 0; i < SwapchainImages.Length; i++){
+                WL.Render.Native.VkImageViewCreateInfo ViewInfo = new Render.Native.VkImageViewCreateInfo{
+                    sType = WL.Render.Native.VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+                    image = SwapchainImages[i],
+                    viewType = WL.Render.Native.VK_IMAGE_VIEW_TYPE_2D,
+                    format = ImageFormat,
+                    components = new WL.Render.Native.VkComponentMapping(),
+                    subresourceRange = new WL.Render.Native.VkImageSubresourceRange{
+                        aspectMask = WL.Render.Native.VK_IMAGE_ASPECT_COLOR_BIT,
+                        baseMipLevel = 0,
+                        levelCount = 1,
+                        baseArrayLayer = 0,
+                        layerCount = 1
+                    }
+                };
+
+                Result = WL.Render.Native.vkCreateImageView(WL.Render.Device, ref ViewInfo, IntPtr.Zero, out IntPtr ImageView__);
+                if(Result != 0){ throw new Exception("Не получилось создать ImageView! Код: " + Result); }
+
+                ImageViews[i] = ImageView__;
+
+                WL.Render.Native.VkFramebufferCreateInfo FramebufferInfo = new Render.Native.VkFramebufferCreateInfo{
+                    sType = WL.Render.Native.VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+                    renderPass = RenderPass__,
+                    attachmentCount = 1,
+                    pAttachments = Marshal.UnsafeAddrOfPinnedArrayElement([ImageView__], 0),
+                    width = Extent.Item1,
+                    height = Extent.Item2,
+                    layers = 1
+                };
+
+                Result = WL.Render.Native.vkCreateFramebuffer(WL.Render.Device, ref FramebufferInfo, IntPtr.Zero, out IntPtr Framebuffer);
+                if(Result != 0){ throw new Exception("Не получилось создать Framebuffer! Код: " + Result); }
+
+                Framebuffers[i] = Framebuffer;
+            }
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при создании RenderContext [" + this + "]!", e);
+            throw new Exception("Произошла ошибка при создании/пересоздании Swapchain!", e);
         }
     }
     
@@ -101,12 +208,128 @@ public class RenderContext{
     public IntPtr[]      SwapchainImages{ get; private set; }
     public uint          ImageFormat    { get; private set; }
     public (uint, uint)  Extent         { get; private set; }
+    public IntPtr        RenderPass     { get; private set; }
+    public IntPtr[]?     ImageViews     { get; private set; }
+    public IntPtr[]?     Framebuffers   { get; private set; }
 
-    public bool Alive => Surface != IntPtr.Zero && RenderSurface.RenderHandle() != IntPtr.Zero;
+    public bool Alive => RenderSurface.RenderHandle() != IntPtr.Zero;
 
+    /// <summary>
+    /// Рендерит
+    /// </summary>
+    public void Render(ColorF BackgroundColor, Action Action){
+        int Result = 0;
+        
+        try{
+            if(!Alive){ throw new Exception("Контекста не существует!"); }
+
+            if(__Resized){
+                __CreateSwapchain();
+                __Resized = false;
+            }
+            
+            Result = WL.Render.Native.vkAcquireNextImageKHR(WL.Render.Device, Swapchain, ulong.MaxValue, IntPtr.Zero, IntPtr.Zero, out uint ImageIndex);
+            if(Result != 0){ throw new Exception("Не удалось получить индекс изображения Swapchain! Код: " + Result); }
+
+            WL.Render.Native.VkCommandBufferBeginInfo CB_Begin = new WL.Render.Native.VkCommandBufferBeginInfo{
+                sType = WL.Render.Native.VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+                pNext = IntPtr.Zero,
+                    
+                flags = WL.Render.Native.VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
+                pInheritanceInfo = IntPtr.Zero
+            };
+
+            Result = WL.Render.Native.vkBeginCommandBuffer(WL.Render.CommandBuffer, ref CB_Begin);
+            if(Result != 0){ throw new Exception("Произошла ошибка в vkBeginCommandBuffer! Код: " + Result); }
+            
+            WL.Render.Native.VkClearValue BackgroundColor__ = new WL.Render.Native.VkClearValue{
+                color = new WL.Render.Native.VkClearColorValue{
+                    float32_0 = BackgroundColor.R,
+                    float32_1 = BackgroundColor.G,
+                    float32_2 = BackgroundColor.B,
+                    float32_3 = BackgroundColor.A
+                }
+            };
+
+            IntPtr __BackgroundColor__ = WL.System.Native.Memory<Render.Native.VkClearValue>(BackgroundColor__);
+            
+            WL.Render.Native.VkRenderPassBeginInfo RP_Begin = new Render.Native.VkRenderPassBeginInfo{
+                sType = WL.Render.Native.VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+                renderPass = RenderPass,
+                framebuffer = Framebuffers[0],
+                renderArea = new WL.Render.Native.VkRect2D{
+                    offset = new WL.Render.Native.VkOffset2D { x = 0, y = 0 },
+                    extent = new WL.Render.Native.VkExtent2D { width = Extent.Item1, height = Extent.Item2 }
+                },
+                clearValueCount = 1,
+                pClearValues = __BackgroundColor__
+            };
+            
+            WL.Render.Native.vkCmdBeginRenderPass(WL.Render.CommandBuffer, ref RP_Begin, WL.Render.Native.VK_SUBPASS_CONTENTS_INLINE);
+            
+            Exception? e__ = null;
+            try{ Action.Invoke(); }catch(Exception e){ e__ = e; }
+
+            WL.Render.Native.vkCmdEndRenderPass(WL.Render.CommandBuffer);
+            
+            Result = WL.Render.Native.vkEndCommandBuffer(WL.Render.CommandBuffer);
+            if(Result != 0){ throw new Exception("Произошла ошибка в vkEndCommandBuffer! Код: " + Result); }
+            
+            if(e__ != null){ throw e__; }
+            
+            WL.Render.Native.VkSubmitInfo Submit = new Render.Native.VkSubmitInfo{
+                sType = WL.Render.Native.VK_STRUCTURE_TYPE_SUBMIT_INFO,
+                commandBufferCount = 1,
+                pCommandBuffers = WL.System.Native.MemoryEmpty(IntPtr.Size)
+            };
+            Marshal.WriteIntPtr(Submit.pCommandBuffers, WL.Render.CommandBuffer);
+
+            Result = WL.Render.Native.vkQueueSubmit(WL.Render.GraphicQueue, 1, ref Submit, IntPtr.Zero);
+            if(Result != 0){ throw new Exception("Не получилось отправить запрос! Код: " + Result); }
+            
+            WL.Render.Native.VkPresentInfoKHR PresentInfo = new Render.Native.VkPresentInfoKHR{
+                sType = WL.Render.Native.VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+                swapchainCount = 1,
+                pSwapchains = Marshal.UnsafeAddrOfPinnedArrayElement([Swapchain], 0),
+                pImageIndices = Marshal.UnsafeAddrOfPinnedArrayElement([ImageIndex], 0),
+                pResults = IntPtr.Zero
+            };
+            
+            Result = WL.Render.Native.vkQueuePresentKHR(WL.Render.GraphicQueue, ref PresentInfo);
+            if(Result != 0){ throw new Exception("Не получилось показать изображение! Код: " + Result); }
+
+            WL.Render.Native.vkQueueWaitIdle(WL.Render.GraphicQueue);
+            
+            WL.System.Native.Free(__BackgroundColor__);
+            WL.System.Native.Free(Submit.pCommandBuffers);
+        }catch(Exception e){
+            if(Result == WL.Render.Native.VK_ERROR_OUT_OF_DATE_KHR || Result == WL.Render.Native.VK_SUBOPTIMAL_KHR){
+                __Resized = true;
+                return;
+            }
+            
+            throw new Exception("Произошла ошибка в рисовании/рендере!", e);
+        }
+    }
+    private bool __Resized = false;
+    
     public void __Destroy(){
         try{
             if(Swapchain != IntPtr.Zero){
+                if(Framebuffers != null){
+                    foreach(IntPtr Framebuffer in Framebuffers){
+                        WL.Render.Native.vkDestroyFramebuffer(WL.Render.Device, Framebuffer, IntPtr.Zero);
+                    }
+                    Framebuffers = null;
+                }
+
+                if(ImageViews != null){
+                    foreach(IntPtr ImageView in ImageViews){
+                        WL.Render.Native.vkDestroyImageView(WL.Render.Device, ImageView, IntPtr.Zero);
+                    }
+                    ImageViews = null;
+                }
+                
                 WL.Render.Native.vkDestroySwapchainKHR(WL.Render.Device, Swapchain, IntPtr.Zero);
                 Swapchain = IntPtr.Zero;
             }

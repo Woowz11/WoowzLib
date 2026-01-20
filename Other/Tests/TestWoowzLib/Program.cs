@@ -75,14 +75,14 @@ public static class Program{
                         Test1.Text = W1.Title;
 
                         Test2.Text = "Русский " + Test1.Text;
-                        
-                        WL.Render.Draw(R1, () => {
-                            
-                        });
                     }
 
                     if(W2.Alive){
                         W2.Title = TD.FPS.ToString();
+                        
+                        R1.Render(ColorF.Random, () => {
+                            
+                        });
                     }
                 });
                 
