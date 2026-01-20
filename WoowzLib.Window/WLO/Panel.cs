@@ -42,15 +42,13 @@ public class Panel : WindowElement{
         switch(Message){
             case System.Native.Windows.WM_COMMAND:
                 return __UpdateCommand(WParam, LParam, Children);
-            
-            case System.Native.Windows.WM_PAINT:
-                WL.System.HDC.PaintWindow(Handle, (HDC) => {
-                    System.HDC.Fill(HDC, System.HDC.WindowSize(Handle), Color.ToRGBiA());        
-                });
-                break;
         }
         
         return System.Native.Windows.CallWindowProcW(__DefaultEvents__, OtherWindow, Message, WParam, LParam);
+    }
+
+    public override void Render(IntPtr HDC){
+        System.HDC.Fill(HDC, System.HDC.WindowSize(Handle), Color.ToRGBiA());
     }
 
     /// <summary>

@@ -6,7 +6,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 13)]
+    [WLModule(int.MinValue + 1, 14)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -545,6 +545,27 @@ namespace WL{
                 [DllImport(DLL_User)]
                 public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
+                [DllImport(DLL_GDI)]
+                public static extern bool SetViewportOrgEx(
+                    IntPtr hdc,
+                    int x,
+                    int y,
+                    out POINT lpPoint
+                );
+                
+                [DllImport(DLL_GDI)]
+                public static extern bool BitBlt(
+                    IntPtr hDestDC,
+                    int xDest,
+                    int yDest,
+                    int nWidth,
+                    int nHeight,
+                    IntPtr hSrcDC,
+                    int xSrc,
+                    int ySrc,
+                    uint dwRop
+                );
+                
                 [DllImport(DLL_User)]
                 public static extern bool IsWindowVisible(IntPtr hWnd);
                 
@@ -658,9 +679,26 @@ namespace WL{
                 [DllImport(DLL_User)]
                 public static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
 
+                [DllImport(DLL_GDI, SetLastError = true)]
+                public static extern int SaveDC(IntPtr hdc);
+                
+                [DllImport(DLL_GDI, SetLastError = true)]
+                public static extern int IntersectClipRect(
+                    IntPtr hdc,
+                    int left,
+                    int top,
+                    int right,
+                    int bottom
+                );
+                
+                [DllImport(DLL_GDI, SetLastError = true)]
+                public static extern bool RestoreDC(
+                    IntPtr hdc,
+                    int savedDC
+                );
+                
                 [StructLayout(LayoutKind.Sequential)]
-                public struct RECT
-                {
+                public struct RECT{
                     public int left;
                     public int top;
                     public int right;
@@ -940,6 +978,7 @@ namespace WL{
                 public const uint CS_VREDRAW          = 0x0001;
                 public const uint WM_SETREDRAW        = 0x000B;
                 public const uint WM_ERASEBKGND       = 0x0014;
+                public const uint SRCCOPY             = 0x00CC0020;
             }
         }
     }

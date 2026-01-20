@@ -124,7 +124,7 @@ public abstract class WindowElement : WindowContext{
     /// </summary>
     public void __UpdateZOrder(){ __UpdateZOrder(Children); }
 
-    public void __UpdateRender(){ if(__NeedUpdateRender()){ __UpdateRender(Children); } }
+    public void __UpdateRender(IntPtr HDC){ __UpdateRender(HDC, Children); }
 
     public virtual bool __NeedUpdateRender(){ return true; }
 

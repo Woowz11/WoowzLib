@@ -54,4 +54,8 @@ public class RenderPanel : WindowElement, RenderSurface{
     public uint   RenderWidth () => Width ;
     public uint   RenderHeight() => Height;
     public event Action? RenderDestroy;
+
+    public override void Render(IntPtr HDC){
+        
+    }
 }

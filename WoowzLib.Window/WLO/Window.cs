@@ -166,19 +166,6 @@ public class Window : WindowContext{
                     
                     // Рисование внутри окна
                     case System.Native.Windows.WM_PAINT:
-                        if(__NeedUpdateRenderWindow){
-                            System.HDC.PaintWindow(Handle, (HDC) => {
-                                System.HDC.Fill(HDC, System.HDC.WindowSize(Handle), ColorF.Random.ToRGBiA());
-                            });
-
-                            foreach(WindowElement WE in Children){
-                                System.Native.Windows.InvalidateRect(WE.Handle, IntPtr.Zero, true);
-                                System.Native.Windows.SendMessage(WE.Handle, System.Native.Windows.WM_PAINT, IntPtr.Zero, IntPtr.Zero);
-                            }
-                            
-                            __NeedUpdateRenderWindow = false;
-                        }
-
                         break;
                     
                     // Обработка элементов у окна
@@ -191,9 +178,12 @@ public class Window : WindowContext{
                 throw new Exception("Произошла ошибка при обработке ивентов [" + this + "]!", e);
             }
         }
-        private bool __NeedUpdateRenderWindow;
-        
-    #endregion
+
+        public override void Render(IntPtr HDC){
+            System.HDC.Fill(HDC, System.HDC.WindowSize(Handle), ColorF.Orange.ToRGBiA());
+        }
+
+        #endregion
 
     #region Ивенты
 
@@ -254,7 +244,7 @@ public class Window : WindowContext{
     /// <summary>
     /// Обновляет рендер у окна и его детей, нужен для корректного отображения элементов и всего
     /// </summary>
-    public void UpdateRender(){ __NeedUpdateRenderWindow = true; __UpdateRender(Children); }
+    public void UpdateRender(){ IntPtr HDC = System.Native.Windows.GetDC(Handle); __UpdateRender(HDC, Children); System.Native.Windows.ReleaseDC(Handle, HDC); }
     
     /// <summary>
     /// Обновляет размер окна
@@ -350,11 +340,11 @@ public abstract class WindowContext{
         
         WindowElement? Element = Children.FirstOrDefault(E => E.Handle == ElementHandle);
 
-        if(Element is Button Button){
+        /*if(Element is Button Button){
             if(NotifyCode == System.Native.Windows.BN_CLICKED){
                 Button.__InvokeOnClick();
             }
-        }
+        }*/
         
         return IntPtr.Zero;
     }
@@ -391,6 +381,7 @@ public abstract class WindowContext{
     /// <summary>
     /// Обновляет позиции у элементов по Z
     /// </summary>
+    [Obsolete("надо доделать будет", false)]
     public void __UpdateZOrder(List<WindowElement> Children){
         try{
             List<WindowElement> Sorted = Children
@@ -418,9 +409,31 @@ public abstract class WindowContext{
             throw new Exception("Произошла ошибка при обновлении позиций у элементов по Z у окна [" + this + "]!", e);
         }
     }
+    
+    public abstract void Render(IntPtr HDC);
 
-    public void __UpdateRender(List<WindowElement> Children){
-        System.Native.Windows.InvalidateRect(Handle, IntPtr.Zero, true);
+    public void __UpdateRender(IntPtr HDC, List<WindowElement> Children){
+        try{
+            if(!Alive){ throw new Exception("Окно не живо!"); }
+
+            Render(HDC);
+            
+            foreach(WindowElement WE in Children){
+                //System.Native.Windows.SaveDC(HDC);
+                //System.Native.Windows.IntersectClipRect(HDC, X, Y, X + (int)Width, Y + (int)Height);
+                
+                System.Native.Windows.SetViewportOrgEx(HDC, WE.X, WE.Y, out System.Native.Windows.POINT _);
+                
+                WE.__UpdateRender(HDC);
+                
+                System.Native.Windows.SetViewportOrgEx(HDC, -WE.X, -WE.Y, out System.Native.Windows.POINT _);
+
+                //System.Native.Windows.RestoreDC(HDC, -1);
+
+            }  
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при рендере HDC у окна [" + Handle + "]!", e);
+        }
     }
     
     public uint Width{
