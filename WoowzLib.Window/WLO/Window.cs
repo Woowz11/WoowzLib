@@ -1,9 +1,10 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using WLO;
 
 namespace WL.WLO;
 
-public class Window : WindowContext{
+public class Window{
     /// <summary>
     /// Создаёт окно
     /// </summary>
@@ -30,7 +31,7 @@ public class Window : WindowContext{
             Handle = WL.System.Native.Windows.CreateWindowExW(
                 0,
                 WindowClassName,
-                Title,
+                Title ?? "",
                 WL.System.Native.Windows.WS_OVERLAPPEDWINDOW | WL.System.Native.Windows.WS_VISIBLE,
                 0, 0,
                 (int)Width, (int)Height,
@@ -48,7 +49,9 @@ public class Window : WindowContext{
             
             this.Width  = Width;
             this.Height = Height;
-            this.Title  = Title;
+            this.Title  = Title ?? "";
+
+            RenderMessage("Не начат рендер!", ColorF.Red);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании окна [" + this + "]!", e);
         }
@@ -83,14 +86,24 @@ public class Window : WindowContext{
     }
 
     /// <summary>
-    /// Окно должно уничтожиться?
+    /// Ссылка на окно
     /// </summary>
-    public bool ShouldDestroy{ get; private set; }
-
+    public IntPtr Handle{ get; protected set; }
+    
     /// <summary>
     /// Окно живое?
     /// </summary>
-    public new bool Alive => Handle != IntPtr.Zero && !ShouldDestroy;
+    public bool Alive => Handle != IntPtr.Zero && !ShouldDestroy;
+    
+    /// <summary>
+    /// Делает проверку, уничтожено окно или нет?
+    /// </summary>
+    public void CheckDestroyed(){ if(!Alive){ throw new Exception("Пародия окна [" + this + "] уничтожена!"); } }
+    
+    /// <summary>
+    /// Окно должно уничтожиться?
+    /// </summary>
+    public bool ShouldDestroy{ get; private set; }
     
     public void Destroy(){
         ShouldDestroy = true;
@@ -104,7 +117,7 @@ public class Window : WindowContext{
         /// <param name="Message">Ивент</param>
         /// <param name="WParam">Параметр 1</param>
         /// <param name="LParam">Параметр 2</param>
-        public override IntPtr __Events(IntPtr OtherWindow, uint Message, IntPtr WParam, IntPtr LParam){
+        private IntPtr __Events(IntPtr OtherWindow, uint Message, IntPtr WParam, IntPtr LParam){
             try{
                 long LP = (long)LParam;
                 short   LWord_L = (short) (LP        & 0xFFFF);
@@ -168,19 +181,18 @@ public class Window : WindowContext{
                     case System.Native.Windows.WM_PAINT:
                         break;
                     
+                    case System.Native.Windows.WM_ERASEBKGND:
+                        return (IntPtr)1;
+                    
                     // Обработка элементов у окна
                     case System.Native.Windows.WM_COMMAND:
-                        return __UpdateCommand(WParam, LParam, Children);
+                        return IntPtr.Zero;
                 }
 
                 return System.Native.Windows.DefWindowProcW(Handle, Message, WParam, LParam);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при обработке ивентов [" + this + "]!", e);
             }
-        }
-
-        public override void Render(IntPtr HDC){
-            System.HDC.Fill(HDC, System.HDC.WindowSize(Handle), ColorF.Orange.ToRGBiA());
         }
 
         #endregion
@@ -225,7 +237,7 @@ public class Window : WindowContext{
         /// Добавить элемент к окну
         /// </summary>
         /// <param name="Element">Элемент</param>
-        public override void Add(WindowElement Element){
+        public Window Add(WindowElement Element){
             try{
                 CheckDestroyed();
                 
@@ -237,19 +249,77 @@ public class Window : WindowContext{
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при добавлении элемента [" + Element + "] окну [" + this + "]!", e);
             }
+
+            return this;
+        }
+        
+        /// <summary>
+        /// Добавляет элементы к окну
+        /// </summary>
+        /// <param name="Elements">Элементы</param>
+        public Window Add(params WindowElement[] Elements){
+            try{
+                CheckDestroyed();
+                
+                if(Elements == null){ throw new Exception("Не указаны элементы!"); }
+
+                foreach(WindowElement Element in Elements){
+                    Add(Element);
+                }
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при добавлении элементов [" + Elements + "] окну [" + this + "]!", e);
+            }
+            
+            return this;
         }
 
     #endregion
 
-    /// <summary>
-    /// Обновляет рендер у окна и его детей, нужен для корректного отображения элементов и всего
-    /// </summary>
-    public void UpdateRender(){ IntPtr HDC = System.Native.Windows.GetDC(Handle); __UpdateRender(HDC, Children); System.Native.Windows.ReleaseDC(Handle, HDC); }
+    #region Рендер
+
+    private Window __Render(ColorF BackgroundColor, string? Message = null){
+        try{
+            IntPtr HDC = System.Native.Windows.GetDC(Handle);
+
+            IntPtr MDC = System.Native.Windows.CreateCompatibleDC(HDC);
+            IntPtr BM = System.Native.Windows.CreateCompatibleBitmap(HDC, (int)Width, (int)Height);
+            IntPtr OBM = System.Native.Windows.SelectObject(MDC, BM);
+            
+            System.HDC.Fill(MDC, new System.Native.Windows.RECT{right = (int)Width, bottom = (int)Height}, BackgroundColor.ToRGBiA());
+            
+            if(Message != null){
+                System.Native.Windows.SetBkMode(MDC, System.Native.Windows.TRANSPARENT);
+                System.HDC.Text(MDC, (int)(Width/2.0), (int)(Height/2.0), Message);
+            }
+
+            System.Native.Windows.BitBlt(HDC, 0, 0, (int)Width, (int)Height, MDC, 0, 0, System.Native.Windows.SRCCOPY);
+
+            System.Native.Windows.SelectObject(MDC, OBM);
+            System.Native.Windows.DeleteObject(BM);
+            System.Native.Windows.DeleteDC(MDC);
+            System.Native.Windows.ReleaseDC(Handle, HDC);
+
+            if(Message == null){ __RenderStarted = true; }
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при рендере окна [" + this + "]!", e);
+        }
+
+        return this;
+    }
+
+    public Window Render(){ return __Render(new ColorF(
+        0.5f + MathF.Sin(WL.Math.Time.ProgramLifeTick / 10000000f) / 2
+        )); }
+    public Window RenderMessage(string Message, ColorF BackgroundColor){ return __Render(BackgroundColor, Message); }
+
+    public bool __RenderStarted;
+
+    #endregion
     
     /// <summary>
     /// Обновляет размер окна
     /// </summary>
-    public override void __UpdateSize(){
+    private void __UpdateSize(){
         try{
             System.Native.Windows.RECT Rect = new System.Native.Windows.RECT{
                 left   = 0,
@@ -265,174 +335,15 @@ public class Window : WindowContext{
             throw new Exception("Произошла ошибка при обновлении размера у пародии окна [" + this + "]!", e);
         }
     }
-
-    /// <summary>
-    /// Обновляет позиции у элементов по Z
-    /// </summary>
-    public void __UpdateZOrder(){ __UpdateZOrder(Children); }
-    
-    public string Title{
-        get => __Title;
-        set{
-            try{
-                CheckDestroyed();
-                
-                if(__Title == value){ return; }
-                __Title = value;
-
-                System.Native.Windows.SetWindowTextW(Handle, __Title);
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении названия у окна [" + this + "]!\nНазвание: \"" + value + "\"", e);
-            }
-        }
-    }
-    private string __Title;
-}
-
-public abstract class WindowContext{
-    /// <summary>
-    /// Ссылка на окно
-    /// </summary>
-    public IntPtr Handle{ get; protected set; }
-
-    /// <summary>
-    /// Окно живое?
-    /// </summary>
-    public bool Alive => Handle != IntPtr.Zero;
-    
-    /// <summary>
-    /// Делает проверку, уничтожено окно или нет?
-    /// </summary>
-    public void CheckDestroyed(){ if(!Alive){ throw new Exception("Пародия окна [" + this + "] уничтожена!"); } }
-
-    /// <summary>
-    /// Добавить элемент к окну
-    /// </summary>
-    /// <param name="Element">Элемент</param>
-    public abstract void Add(WindowElement Element);
-        
-    /// <summary>
-    /// Добавляет элементы к окну
-    /// </summary>
-    /// <param name="Elements">Элементы</param>
-    public void Add(params WindowElement[] Elements){
-        try{
-            CheckDestroyed();
-                
-            if(Elements == null){ throw new Exception("Не указаны элементы!"); }
-
-            foreach(WindowElement Element in Elements){
-                Add(Element);
-            }
-        }catch(Exception e){
-            throw new Exception("Произошла ошибка при добавлении элементов [" + Elements + "] окну [" + this + "]!", e);
-        }
-    }
-    
-    public abstract IntPtr __Events(IntPtr OtherWindow, uint Message, IntPtr WParam, IntPtr LParam);
-
-    public IntPtr __UpdateCommand(IntPtr WParam, IntPtr LParam, List<WindowElement> Children){
-        ulong WP = (ulong)WParam;
-        ushort NotifyCode = (ushort)(WP & 0xFFFF);
-        ushort ElementID  = (ushort)(WP >> 16   );
-                        
-        IntPtr ElementHandle = LParam;
-        
-        WindowElement? Element = Children.FirstOrDefault(E => E.Handle == ElementHandle);
-
-        /*if(Element is Button Button){
-            if(NotifyCode == System.Native.Windows.BN_CLICKED){
-                Button.__InvokeOnClick();
-            }
-        }*/
-        
-        return IntPtr.Zero;
-    }
-    
-    /// <summary>
-    /// Обновляет размер окна
-    /// </summary>
-    public virtual void __UpdateSize(){
-        try{
-            System.Native.Windows.RECT Rect = new System.Native.Windows.RECT{
-                left   = 0,
-                top    = 0,
-                right  = (int)__Width,
-                bottom = (int)__Height
-            };
-
-            System.Native.Windows.SetWindowPos(Handle, IntPtr.Zero, 0, 0, Rect.right - Rect.left, Rect.bottom - Rect.top, System.Native.Windows.SWP_NOZORDER | System.Native.Windows.SWP_NOMOVE);
-        }catch(Exception e){
-            throw new Exception("Произошла ошибка при обновлении размера у пародии окна [" + this + "]!", e);
-        }
-    }
     
     /// <summary>
     /// Обновляет позицию окна
     /// </summary>
-    protected void __UpdatePosition(){
+    private void __UpdatePosition(){
         try{
             System.Native.Windows.SetWindowPos(Handle, IntPtr.Zero, __X, __Y, 0, 0, System.Native.Windows.SWP_NOZORDER | System.Native.Windows.SWP_NOSIZE);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при обновлении позиции у пародии окна [" + this + "]!", e);
-        }
-    }
-    
-    /// <summary>
-    /// Обновляет позиции у элементов по Z
-    /// </summary>
-    [Obsolete("надо доделать будет", false)]
-    public void __UpdateZOrder(List<WindowElement> Children){
-        try{
-            List<WindowElement> Sorted = Children
-                 .Select((K, V) => new{ WE = K, I = V })
-                 .OrderBy(KVP => KVP.WE.Z)
-                 .ThenBy (KVP => KVP.I)
-                 .Select (KVP => KVP.WE)
-                 .ToList();
-
-            for(int i = 0; i < Sorted.Count; i++){
-                WindowElement WE = Sorted[i];
-                try{
-                    if(!WE.Created){ continue; }
-                    if(!WE.Alive){ throw new Exception("Элемент уничтоженный!"); }
-                    
-                    IntPtr InsertAfter = i == 0 ? Handle : Sorted[i - 1].Handle;
-
-                    WL.System.Native.Windows.SetWindowPos(WE.Handle, InsertAfter, 0, 0, 0, 0, WL.System.Native.Windows.SWP_NOMOVE | System.Native.Windows.SWP_NOSIZE);
-
-                }catch(Exception e){
-                    throw new Exception("Произошла ошибка при обновлении позиции у элемента [" + WE + "]!", e);
-                }
-            }
-        }catch(Exception e){
-            throw new Exception("Произошла ошибка при обновлении позиций у элементов по Z у окна [" + this + "]!", e);
-        }
-    }
-    
-    public abstract void Render(IntPtr HDC);
-
-    public void __UpdateRender(IntPtr HDC, List<WindowElement> Children){
-        try{
-            if(!Alive){ throw new Exception("Окно не живо!"); }
-
-            Render(HDC);
-            
-            foreach(WindowElement WE in Children){
-                //System.Native.Windows.SaveDC(HDC);
-                //System.Native.Windows.IntersectClipRect(HDC, X, Y, X + (int)Width, Y + (int)Height);
-                
-                System.Native.Windows.SetViewportOrgEx(HDC, WE.X, WE.Y, out System.Native.Windows.POINT _);
-                
-                WE.__UpdateRender(HDC);
-                
-                System.Native.Windows.SetViewportOrgEx(HDC, -WE.X, -WE.Y, out System.Native.Windows.POINT _);
-
-                //System.Native.Windows.RestoreDC(HDC, -1);
-
-            }  
-        }catch(Exception e){
-            throw new Exception("Произошла ошибка при рендере HDC у окна [" + Handle + "]!", e);
         }
     }
     
@@ -503,4 +414,21 @@ public abstract class WindowContext{
         }
     }
     protected int __Y;
+    
+    public string Title{
+        get => __Title;
+        set{
+            try{
+                CheckDestroyed();
+                
+                if(__Title == value){ return; }
+                __Title = value;
+
+                System.Native.Windows.SetWindowTextW(Handle, __Title);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при изменении названия у окна [" + this + "]!\nНазвание: \"" + value + "\"", e);
+            }
+        }
+    }
+    private string __Title;
 }

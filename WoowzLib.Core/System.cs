@@ -6,7 +6,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 14)]
+    [WLModule(int.MinValue + 1, 15)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -317,6 +317,17 @@ namespace WL{
                 Fill(HDC, Rect, Brush);
                 DestroyBrush(Brush);
             }
+
+            /// <summary>
+            /// Рисует текст
+            /// </summary>
+            /// <param name="HDC">Куда рисовать?</param>
+            /// <param name="X">Позиция X</param>
+            /// <param name="Y">Позиция Y</param>
+            /// <param name="Text">Текст</param>
+            public static void Text(IntPtr HDC, int X, int Y, string Text){
+                Native.Windows.TextOutW(HDC, X, Y, Text, Text.Length);
+            }
         }
         
         public static class Native{
@@ -605,6 +616,31 @@ namespace WL{
                 [DllImport(DLL_User, SetLastError = true, CharSet = CharSet.Unicode)]
                 public static extern ushort RegisterClassExW(ref WNDCLASSEX lpwcx);
 
+                [DllImport(DLL_GDI, SetLastError = true)]
+                public static extern IntPtr CreateCompatibleDC(IntPtr Hdc);
+
+                [DllImport(DLL_GDI, SetLastError = true)]
+                public static extern IntPtr CreateCompatibleBitmap(
+                    IntPtr Hdc,
+                    int Width,
+                    int Height
+                );
+
+                [DllImport(DLL_GDI, SetLastError = true)]
+                public static extern IntPtr SelectObject(
+                    IntPtr Hdc,
+                    IntPtr GdiObject
+                );
+
+                [DllImport(DLL_GDI, SetLastError = true)]
+                public static extern bool DeleteDC(IntPtr Hdc);
+
+                [DllImport(DLL_GDI)]
+                public static extern int SetBkMode(
+                    IntPtr Hdc,
+                    int Mode
+                );
+                
                 [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
                 public struct WNDCLASSEX{
                     public uint   cbSize;
@@ -828,6 +864,9 @@ namespace WL{
                 [DllImport(DLL_User)]
                 public static extern int FillRect(IntPtr hDC, ref RECT lprc, IntPtr hbr);
 
+                [DllImport(DLL_GDI, CharSet = CharSet.Unicode)]
+                public static extern bool TextOutW(IntPtr Hdc, int X, int Y, string Text, int TextLength);
+                
                 [DllImport(DLL_GDI)]
                 public static extern IntPtr CreateSolidBrush(uint color);
 
@@ -979,6 +1018,8 @@ namespace WL{
                 public const uint WM_SETREDRAW        = 0x000B;
                 public const uint WM_ERASEBKGND       = 0x0014;
                 public const uint SRCCOPY             = 0x00CC0020;
+                public const int  TRANSPARENT         = 1;
+                public const int  OPAQUE              = 2;
             }
         }
     }

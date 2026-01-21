@@ -3,19 +3,18 @@ using WLO;
 
 namespace WL.WLO;
 
-public abstract class WindowElement : WindowContext{
-    public void __SetParent(Window Parent){
+public abstract class WindowElement{
+    public void __SetParent(Window Window){
         try{
-                 Window = Parent;
-            this.Parent = Parent;
+            this.Window = Window;
             
-            if(!this.Parent.Alive){ throw new Exception("Окно не живое!"); }
+            if(!Window.Alive){ throw new Exception("Окно не живое!"); }
             if(Created){ throw new Exception("Элемент уже созданный!"); }
             
             __CreateElement(this);
             __CreateAndChild();
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при установке элементу [" + this + "] родителя (окно) [" + Parent + "]!", e);
+            throw new Exception("Произошла ошибка при установке элементу [" + this + "] родителя (окно) [" + Window + "]!", e);
         }
     }
     
@@ -42,7 +41,17 @@ public abstract class WindowElement : WindowContext{
     /// <summary>
     /// Родитель элемента
     /// </summary>
-    public WindowContext? Parent{ get; private set; }
+    public WindowElement? Parent{ get; private set; }
+    
+    /// <summary>
+    /// Окно живое?
+    /// </summary>
+    public bool Alive => Window.Alive;
+    
+    /// <summary>
+    /// Делает проверку, уничтожено окно или нет?
+    /// </summary>
+    public void CheckDestroyed(){ if(!Alive){ throw new Exception("Пародия окна [" + this + "] уничтожена!"); } }
     
     /// <summary>
     /// Дети элемента
@@ -53,24 +62,16 @@ public abstract class WindowElement : WindowContext{
         try{
             Element.__Create();
             Element.Created = true;
-            if(Handle == IntPtr.Zero){ throw new Exception("Элемент не создался!"); }
-
-            __Events__ = System.Native.ConnectEventsToWindow(Element.Handle, __Events);
-
-            System.Native.Windows.SendMessage(Handle, System.Native.Windows.WM_SETREDRAW, IntPtr.Zero, IntPtr.Zero);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании элемента [" + Element + "] у [" + this + "]!", e);
         }
     }
-    // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
-    private System.Native.Windows.WndProcDelegate __Events__;
     
     private void __CreateAndChild(){
         try{
             foreach(WindowElement Child in Children){
                 __CreateElement(Child);
                 Child.__CreateAndChild();
-                Child.__UpdateZOrder();
             }
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании детей - детей у [" + this + "]!", e);
@@ -84,7 +85,7 @@ public abstract class WindowElement : WindowContext{
 
     public abstract void __Create();
 
-    public abstract IntPtr __Destroy();
+    public abstract void __Destroy();
     
     public void Destroy(){
         try{
@@ -99,15 +100,14 @@ public abstract class WindowElement : WindowContext{
                 }catch(Exception e){
                     Logger.Error("Произошла ошибка при вызове ивента уничтожения элемента [" + this + "]!", e);
                 }
-                Handle = __Destroy();
-                if(Handle != IntPtr.Zero){ throw new Exception("Неверно удалился элемент!"); }
+                __Destroy();
             }
         }catch(Exception e){
             throw new Exception("Произошла ошибка при уничтожении [" + this + "]!", e);
         }
     }
     
-    public override void Add(WindowElement Element){
+    public void Add(WindowElement Element){
         try{
             if(Created){ CheckDestroyed(); }
                 
@@ -119,15 +119,6 @@ public abstract class WindowElement : WindowContext{
         }
     }
 
-    /// <summary>
-    /// Обновляет позиции у элементов по Z
-    /// </summary>
-    public void __UpdateZOrder(){ __UpdateZOrder(Children); }
-
-    public void __UpdateRender(IntPtr HDC){ __UpdateRender(HDC, Children); }
-
-    public virtual bool __NeedUpdateRender(){ return true; }
-
     #region Ивенты
 
         /// <summary>
@@ -137,7 +128,7 @@ public abstract class WindowElement : WindowContext{
 
     #endregion
     
-    public new uint Width{
+    public uint Width{
         get => __Width;
         set{
             try{
@@ -145,15 +136,14 @@ public abstract class WindowElement : WindowContext{
 
                 if(__Width == value){ return; }
                 __Width = value;
-
-                if(Created){ __UpdateSize(); }
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при изменении ширины у пародии окна [" + this + "]!\nШирина: " + value, e);
             }
         }
     }
+    protected uint __Width;
     
-    public new uint Height{
+    public uint Height{
         get => __Height;
         set{
             try{
@@ -161,15 +151,14 @@ public abstract class WindowElement : WindowContext{
                 
                 if(__Height == value){ return; }
                 __Height = value;
-
-                if(Created){ __UpdateSize(); }
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при изменении высоты у пародии окна [" + this + "]!\nВысота: " + value, e);
             }
         }
     }
+    protected uint __Height;
 
-    public new int X{
+    public int X{
         get => __X;
         set{
             try{
@@ -177,15 +166,14 @@ public abstract class WindowElement : WindowContext{
 
                 if(__X == value){ return; }
                 __X = value;
-
-                if(Created){ __UpdatePosition(); }
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при изменении позиции по X у пародии окна [" + this + "]!\nX: " + value, e);
             }
         }
     }
+    protected int __X;
     
-    public new int Y{
+    public int Y{
         get => __Y;
         set{
             try{
@@ -193,13 +181,12 @@ public abstract class WindowElement : WindowContext{
 
                 if(__Y == value){ return; }
                 __Y = value;
-
-                if(Created){ __UpdatePosition(); }
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при изменении позиции по Y у пародии окна [" + this + "]!\nY: " + value, e);
             }
         }
     }
+    protected int __Y;
 
     public double Z{
         get => __Z;
@@ -209,8 +196,6 @@ public abstract class WindowElement : WindowContext{
 
                 if(__Z == value){ return; }
                 __Z = value;
-
-                if(Created){ __UpdateZOrder(); }
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при изменении позиции по Z у пародии окна [" + this + "]!\nZ: " + value, e);
             }

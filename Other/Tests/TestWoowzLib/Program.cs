@@ -62,8 +62,8 @@ public static class Program{
                             P.X = MP.X + ((int)(MP.Width/2) + (int)(Math.Sin(TD.DeltaTick + ((float)i/PANELS2.Length) * Math.PI * 2) * MP.Width/2)) - (int)(P.Width/2);
                             P.Y = MP.Y + ((int)(MP.Height/2) + (int)(-Math.Cos(TD.DeltaTick + ((float)i/PANELS2.Length) * Math.PI * 2) * MP.Height/2)) - (int)(P.Height/2);
                         }
-                        
-                        W1.UpdateRender();
+
+                        W1.Render();
                     }
                 });
                 
