@@ -23,6 +23,12 @@ public class Panel : WindowElement{
         
     }
 
+    public override void Render(IntPtr HDC){
+        System.HDC.Fill(HDC, new System.Native.Windows.RECT{left = X, top = Y, right = X + (int)Width, bottom = Y + (int)Height}, Color.ToRGBiA());
+        
+        base.Render(HDC);
+    }
+
     /// <summary>
     /// Цвет панели
     /// </summary>

@@ -30,7 +30,7 @@ public static class Program{
                 PANELS2[i] = P;
             }
             
-            Panel[] PANELS = new Panel[30];
+            Panel[] PANELS = new Panel[1000];
 
             for(int i = 0; i < PANELS.Length; i++){
                 Panel P = new Panel();
@@ -43,6 +43,8 @@ public static class Program{
             while(W1.Alive){
                 WL.System.Tick.LimitFPS(1, 300, TD => {
                     if(W1.Alive){
+                        W1.BackgroundColor = ColorF.Random;
+                        
                         d += TD.DeltaTimeS;
                         if(d > 0.5f){ W1.Title = TD.FPS.ToString(); d = 0; }
 

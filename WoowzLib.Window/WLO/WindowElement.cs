@@ -127,6 +127,22 @@ public abstract class WindowElement{
         public event Action? OnDestroy;
 
     #endregion
+
+    #region Рендер
+
+    public virtual void Render(IntPtr HDC){
+        int SHDC = System.Native.Windows.SaveDC(HDC);
+
+        System.Native.Windows.IntersectClipRect(HDC, X, Y, X + (int)Width, Y + (int)Height);
+        
+        foreach(WindowElement Child in Children){
+            Child.Render(HDC);
+        }
+
+        System.Native.Windows.RestoreDC(HDC, SHDC);
+    }
+
+    #endregion
     
     public uint Width{
         get => __Width;

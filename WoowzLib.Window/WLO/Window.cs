@@ -290,6 +290,10 @@ public class Window{
             if(Message != null){
                 System.Native.Windows.SetBkMode(MDC, System.Native.Windows.TRANSPARENT);
                 System.HDC.Text(MDC, (int)(Width/2.0), (int)(Height/2.0), Message);
+            }else{
+                foreach(WindowElement Child in Children){
+                    Child.Render(MDC);
+                }   
             }
 
             System.Native.Windows.BitBlt(HDC, 0, 0, (int)Width, (int)Height, MDC, 0, 0, System.Native.Windows.SRCCOPY);
@@ -307,9 +311,7 @@ public class Window{
         return this;
     }
 
-    public Window Render(){ return __Render(new ColorF(
-        0.5f + MathF.Sin(WL.Math.Time.ProgramLifeTick / 10000000f) / 2
-        )); }
+    public Window Render(){ return __Render(BackgroundColor); }
     public Window RenderMessage(string Message, ColorF BackgroundColor){ return __Render(BackgroundColor, Message); }
 
     public bool __RenderStarted;
@@ -431,4 +433,9 @@ public class Window{
         }
     }
     private string __Title;
+    
+    /// <summary>
+    /// Цвет заднего фона
+    /// </summary>
+    public ColorF BackgroundColor = ColorF.White;
 }
