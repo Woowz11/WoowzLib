@@ -9,10 +9,6 @@ public abstract class WindowElement{
             this.Window = Window;
             
             if(!Window.Alive){ throw new Exception("Окно не живое!"); }
-            if(Created){ throw new Exception("Элемент уже созданный!"); }
-            
-            __CreateElement(this);
-            __CreateAndChild();
         }catch(Exception e){
             throw new Exception("Произошла ошибка при установке элементу [" + this + "] родителя (окно) [" + Window + "]!", e);
         }
@@ -23,11 +19,7 @@ public abstract class WindowElement{
                  Window = Parent.Window;
             this.Parent = Parent;
             
-            if(Parent is{ Created: true, Alive: false }){ throw new Exception("Родительский элемент уничтоженный!"); }
-            
             Parent.Children.Add(this);
-            
-            if(Parent.Created){ __CreateElement(this); }
         }catch(Exception e){
             throw new Exception("Произошла ошибка при установке элементу [" + this + "] родителя [" + Parent + "]!", e);
         }
@@ -49,44 +41,11 @@ public abstract class WindowElement{
     public bool Alive => Window.Alive;
     
     /// <summary>
-    /// Делает проверку, уничтожено окно или нет?
-    /// </summary>
-    public void CheckDestroyed(){ if(!Alive){ throw new Exception("Пародия окна [" + this + "] уничтожена!"); } }
-    
-    /// <summary>
     /// Дети элемента
     /// </summary>
     public readonly List<WindowElement> Children = [];
-
-    private void __CreateElement(WindowElement Element){
-        try{
-            Element.__Create();
-            Element.Created = true;
-        }catch(Exception e){
-            throw new Exception("Произошла ошибка при создании элемента [" + Element + "] у [" + this + "]!", e);
-        }
-    }
     
-    private void __CreateAndChild(){
-        try{
-            foreach(WindowElement Child in Children){
-                __CreateElement(Child);
-                Child.__CreateAndChild();
-            }
-        }catch(Exception e){
-            throw new Exception("Произошла ошибка при создании детей - детей у [" + this + "]!", e);
-        }
-    }
-
-    /// <summary>
-    /// Элемент созданный?
-    /// </summary>
-    public bool Created{ get; private set; }
-
-    public abstract void __Create();
-
-    public abstract void __Destroy();
-    
+    [Obsolete("пока-что не работает", true)]
     public void Destroy(){
         try{
             foreach(WindowElement Child in Children){
@@ -100,7 +59,6 @@ public abstract class WindowElement{
                 }catch(Exception e){
                     Logger.Error("Произошла ошибка при вызове ивента уничтожения элемента [" + this + "]!", e);
                 }
-                __Destroy();
             }
         }catch(Exception e){
             throw new Exception("Произошла ошибка при уничтожении [" + this + "]!", e);
@@ -109,8 +67,6 @@ public abstract class WindowElement{
     
     public void Add(WindowElement Element){
         try{
-            if(Created){ CheckDestroyed(); }
-                
             if(Element.Parent != null){ throw new Exception("Этот элемент уже привязан к какому-то окну! Ссылка на окно: " + Element.Parent); }
                 
             Element.__SetParent(this);
@@ -130,92 +86,74 @@ public abstract class WindowElement{
 
     #region Рендер
 
+    public void BaseRender(IntPtr HDC){
+        if(Visible && Active){
+            Render(HDC);
+        }
+    }
+    
     public virtual void Render(IntPtr HDC){
-        int SHDC = System.Native.Windows.SaveDC(HDC);
+        if(!VisibleChild){ return; }
 
-        System.Native.Windows.IntersectClipRect(HDC, X, Y, X + (int)Width, Y + (int)Height);
+        int ClipResult = 0;
+
+        if(ClipChild){
+            ClipResult = System.HDC.Clip(HDC, X, Y, Width, Height);
+        }
         
         foreach(WindowElement Child in Children){
             Child.Render(HDC);
         }
 
-        System.Native.Windows.RestoreDC(HDC, SHDC);
+        if(ClipChild){
+            System.HDC.Unclip(HDC, ClipResult);
+        }
     }
 
     #endregion
+
+    /// <summary>
+    /// Делает элемент невидимым (но активным!)
+    /// </summary>
+    public bool Visible = true;
+
+    /// <summary>
+    /// Делает элемент не активным и невидимым!
+    /// </summary>
+    public bool Active = true;
+
+    /// <summary>
+    /// Обрезать детей внутри элемента?
+    /// </summary>
+    public bool ClipChild = true;
+
+    /// <summary>
+    /// Делает детей внутри элемента невидимыми (но активными!)
+    /// </summary>
+    public bool VisibleChild = true;
+
+    /// <summary>
+    /// Ширина элемента
+    /// </summary>
+    public uint Width;
+
+    /// <summary>
+    /// Высота элемента
+    /// </summary>
+    public uint Height;
+
+    /// <summary>
+    /// Позиция по X элемента
+    /// </summary>
+    public int X;
     
-    public uint Width{
-        get => __Width;
-        set{
-            try{
-                if(Created){ CheckDestroyed(); }
-
-                if(__Width == value){ return; }
-                __Width = value;
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении ширины у пародии окна [" + this + "]!\nШирина: " + value, e);
-            }
-        }
-    }
-    protected uint __Width;
+    /// <summary>
+    /// Позиция по Y элемента
+    /// </summary>
+    public int Y;
     
-    public uint Height{
-        get => __Height;
-        set{
-            try{
-                if(Created){ CheckDestroyed(); }
-                
-                if(__Height == value){ return; }
-                __Height = value;
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении высоты у пародии окна [" + this + "]!\nВысота: " + value, e);
-            }
-        }
-    }
-    protected uint __Height;
-
-    public int X{
-        get => __X;
-        set{
-            try{
-                if(Created){ CheckDestroyed(); }
-
-                if(__X == value){ return; }
-                __X = value;
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении позиции по X у пародии окна [" + this + "]!\nX: " + value, e);
-            }
-        }
-    }
-    protected int __X;
-    
-    public int Y{
-        get => __Y;
-        set{
-            try{
-                if(Created){ CheckDestroyed(); }
-
-                if(__Y == value){ return; }
-                __Y = value;
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении позиции по Y у пародии окна [" + this + "]!\nY: " + value, e);
-            }
-        }
-    }
-    protected int __Y;
-
-    public double Z{
-        get => __Z;
-        set{
-            try{
-                if(Created){ CheckDestroyed(); }
-
-                if(__Z == value){ return; }
-                __Z = value;
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении позиции по Z у пародии окна [" + this + "]!\nZ: " + value, e);
-            }
-        }
-    }
-    private double __Z;
+    /// <summary>
+    /// Расположение по Z элемента (слои)
+    /// </summary>
+    public double Z;
 }

@@ -6,7 +6,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 15)]
+    [WLModule(int.MinValue + 1, 16)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -303,18 +303,28 @@ namespace WL{
             /// Заполнить цветом область
             /// </summary>
             /// <param name="HDC">Куда рисовать?</param>
-            /// <param name="Rect">Область</param>
+            /// <param name="X">Позиция X</param>
+            /// <param name="Y">Позиция Y</param>
+            /// <param name="Width">Ширина</param>
+            /// <param name="Height">Высота</param>
             /// <param name="Brush">Кисть</param>
-            public static void Fill(IntPtr HDC, Native.Windows.RECT Rect, IntPtr Brush) => Native.Windows.FillRect(HDC, ref Rect, Brush);
+            public static void Fill(IntPtr HDC, int X, int Y, uint Width, uint Height, IntPtr Brush){
+                Native.Windows.RECT Rect = new Native.Windows.RECT{ left = X, top = Y, right = X + (int)Width, bottom = Y + (int)Height };
+                Native.Windows.FillRect(HDC, ref Rect, Brush);
+            }
 
             /// <summary>
             /// Заполнить цветом область
             /// </summary>
             /// <param name="HDC">Куда рисовать?</param>
+            /// <param name="X">Позиция X</param>
+            /// <param name="Y">Позиция Y</param>
+            /// <param name="Width">Ширина</param>
+            /// <param name="Height">Высота</param>
             /// <param name="Rect">Область</param>
-            public static void Fill(IntPtr HDC, Native.Windows.RECT Rect, uint Color){
+            public static void Fill(IntPtr HDC, int X, int Y, uint Width, uint Height, uint Color){
                 IntPtr Brush = CreateBrush(Color);
-                Fill(HDC, Rect, Brush);
+                Fill(HDC, X, Y, Width, Height, Brush);
                 DestroyBrush(Brush);
             }
 
@@ -327,6 +337,30 @@ namespace WL{
             /// <param name="Text">Текст</param>
             public static void Text(IntPtr HDC, int X, int Y, string Text){
                 Native.Windows.TextOutW(HDC, X, Y, Text, Text.Length);
+            }
+
+            /// <summary>
+            /// Обрезает последующий рендер в HDC (нужно вызвать в конце Unclip!)
+            /// </summary>
+            /// <param name="HDC">Куда применить?</param>
+            /// <param name="X">Позиция X</param>
+            /// <param name="Y">Позиция Y</param>
+            /// <param name="Width">Ширина</param>
+            /// <param name="Height">Высота</param>
+            /// <returns>ID обрезки, нужно вернуть в Unclip!</returns>
+            public static int Clip(IntPtr HDC, int X, int Y, uint Width, uint Height){
+                int ClipResult = Native.Windows.SaveDC(HDC);
+                Native.Windows.IntersectClipRect(HDC, X, Y, X + (int)Width, Y + (int)Height);
+                return ClipResult;
+            }
+
+            /// <summary>
+            /// Отключает обрезку рендера в HDC
+            /// </summary>
+            /// <param name="HDC">Куда применить?</param>
+            /// <param name="ClipResult">Результат Clip</param>
+            public static void Unclip(IntPtr HDC, int ClipResult){
+                Native.Windows.RestoreDC(HDC, ClipResult);
             }
         }
         

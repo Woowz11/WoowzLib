@@ -18,8 +18,6 @@ public static class Program{
             Window W1 = new Window();
 
             Panel MP = new Panel(Width: 256, Height: 256);
-
-            W1.Add(MP);
             
             Panel[] PANELS2 = new Panel[30];
 
@@ -29,6 +27,8 @@ public static class Program{
                 MP.Add(P);
                 PANELS2[i] = P;
             }
+            
+            W1.Add(MP);
             
             Panel[] PANELS = new Panel[1000];
 
@@ -50,9 +50,16 @@ public static class Program{
 
                         for(int i = 0; i < PANELS.Length; i++){
                             Panel P = PANELS[i];
+
+                            P.Active = WL.Math.Random.Fast_Bool(0.9f);
+
+                            double t = TD.DeltaTick + ((float)i / PANELS2.Length);
                             
-                            P.X = ((int)(W1.Width/2) + (int)(Math.Sin(TD.DeltaTick + ((float)i/PANELS.Length) * Math.PI * 2) * W1.Width/2)) - (int)(P.Width/2);
-                            P.Y = ((int)(W1.Height/2) + (int)(-Math.Cos(TD.DeltaTick + ((float)i/PANELS.Length) * Math.PI * 2) * W1.Height/2)) - (int)(P.Height/2);
+                            double x = Math.Cos(1 * t);
+                            double y = Math.Sin(3 * t);
+                            
+                            P.X = ((int)(W1.Width/2) + (int)(x * W1.Width/2)) - (int)(P.Width/2);
+                            P.Y = ((int)(W1.Height/2) + (int)(y * W1.Height/2)) - (int)(P.Height/2);
                         }
 
                         MP.X = (int)(W1.Width / 2) - (int)(MP.Width/2);

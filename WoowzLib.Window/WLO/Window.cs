@@ -69,9 +69,6 @@ public class Window{
 
             if(Handle == IntPtr.Zero){ throw new Exception("Ссылка на окно пустая!"); }
             
-            foreach(WindowElement Child in Children){
-                Child.Destroy();
-            } 
             Children.Clear();
             
             WL.System.Native.Windows.DestroyWindow(Handle);
@@ -285,14 +282,14 @@ public class Window{
             IntPtr BM = System.Native.Windows.CreateCompatibleBitmap(HDC, (int)Width, (int)Height);
             IntPtr OBM = System.Native.Windows.SelectObject(MDC, BM);
             
-            System.HDC.Fill(MDC, new System.Native.Windows.RECT{right = (int)Width, bottom = (int)Height}, BackgroundColor.ToRGBiA());
+            System.HDC.Fill(MDC, 0, 0, Width, Height, BackgroundColor.ToRGBiA());
             
             if(Message != null){
                 System.Native.Windows.SetBkMode(MDC, System.Native.Windows.TRANSPARENT);
                 System.HDC.Text(MDC, (int)(Width/2.0), (int)(Height/2.0), Message);
             }else{
                 foreach(WindowElement Child in Children){
-                    Child.Render(MDC);
+                    Child.BaseRender(MDC);
                 }   
             }
 

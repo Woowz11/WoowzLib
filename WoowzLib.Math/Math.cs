@@ -4,7 +4,7 @@ namespace WL{
     /// <summary>
     /// Математические функции и т.д
     /// </summary>
-    [WLModule(-10000, 8)]
+    [WLModule(-10000, 9)]
     public static class Math{
         /// <summary>
         /// Получить среднее число между двумя (Поддерживает большие числа)
@@ -120,7 +120,6 @@ namespace WL{
             /// <summary>
             /// Очень быстрое случайное число от 0 до 1 (Подходит для рендера, легко предугадать)
             /// </summary>
-            /// <returns></returns>
             public static float Fast_0_1(){
                 Fast_Seed ^= Fast_Seed << 13;
                 Fast_Seed ^= Fast_Seed >> 17;
@@ -132,7 +131,6 @@ namespace WL{
             /// Очень быстрое случайное число от 0 до 1 (Подходит для рендера, легко предугадать)
             /// </summary>
             /// <param name="Seed">Сид [<c>123456789</c>]</param>
-            /// <returns></returns>
             public static float Fast_0_1(uint Seed){
                 Seed ^= Seed << 13; 
                 Seed ^= Seed >> 17;
@@ -143,7 +141,6 @@ namespace WL{
             /// <summary>
             /// Очень быстрое случайное целое число от Min до Max (Подходит для рендера, легко предугадать)
             /// </summary>
-            /// <returns></returns>
             public static int Fast_Int(int Min, int Max){
                 if(Min > Max){ (Min, Max) = (Max, Min); }
 
@@ -163,6 +160,17 @@ namespace WL{
 
                 return (byte)(Fast_Seed & 0xFF);
             }
+
+            /// <summary>
+            /// Очень быстро возвращает случайно true или false 50/50 (Подходит для рендера, легко предугадать)
+            /// </summary>
+            public static bool Fast_Bool(){ return Fast_Byte() > 127; }
+
+            /// <summary>
+            /// Очень быстро возвращает случайно true или false (Подходит для рендера, легко предугадать)
+            /// </summary>
+            /// <param name="TrueChance">Шанс на true (0.5 = шанс 50/50)</param>
+            public static bool Fast_Bool(float TrueChance){ return Fast_0_1() < TrueChance; }
         }
     }
 }
