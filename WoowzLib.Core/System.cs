@@ -6,7 +6,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 16)]
+    [WLModule(int.MinValue + 1, 17)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -954,6 +954,55 @@ namespace WL{
                     }, IntPtr.Zero);
                 }
                 
+                [StructLayout(LayoutKind.Sequential)]
+                public struct BITMAPINFOHEADER{
+                    public uint   biSize;
+                    public int    biWidth;
+                    public int    biHeight;
+                    public ushort biPlanes;
+                    public ushort biBitCount;
+                    public uint   biCompression;
+                    public uint   biSizeImage;
+                    public int    biXPelsPerMeter;
+                    public int    biYPelsPerMeter;
+                    public uint   biClrUsed;
+                    public uint   biClrImportant;
+                }
+                
+                [StructLayout(LayoutKind.Sequential)]
+                public struct BITMAPINFO{
+                    public BITMAPINFOHEADER bmiHeader;
+
+                    public uint bmiColors;
+                }
+                
+                [DllImport(DLL_GDI, SetLastError = true)]
+                public static extern IntPtr CreateDIBSection(
+                    IntPtr hdc,
+                    ref BITMAPINFO pbmi,
+                    uint iUsage,
+                    out IntPtr ppvBits,
+                    IntPtr hSection,
+                    uint dwOffset
+                );
+                
+                [DllImport(DLL_GDI, SetLastError = true)]
+                public static extern int StretchDIBits(
+                    IntPtr hdc,
+                    int xDest,
+                    int yDest,
+                    int DestWidth,
+                    int DestHeight,
+                    int xSrc,
+                    int ySrc,
+                    int SrcWidth,
+                    int SrcHeight,
+                    IntPtr lpBits,
+                    ref BITMAPINFO lpbmi,
+                    uint iUsage,
+                    uint rop
+                );
+                
                 public static readonly IntPtr HWND_TOP       = new IntPtr(0);
                 public static readonly IntPtr HWND_BOTTOM    = new IntPtr(1);
                 public static readonly IntPtr HWND_TOPMOST   = new IntPtr(-1);
@@ -1054,6 +1103,8 @@ namespace WL{
                 public const uint SRCCOPY             = 0x00CC0020;
                 public const int  TRANSPARENT         = 1;
                 public const int  OPAQUE              = 2;
+                public const int  BI_RGB              = 0;
+                public const int  DIB_RGB_COLORS      = 0;
             }
         }
     }

@@ -2,7 +2,7 @@
 
 namespace WL;
 
-[WLModule(-100, 15)]
+[WLModule(-100, 16)]
 public class Window{
     public static readonly List<WLO.Window> Windows = [];
     
@@ -13,8 +13,6 @@ public class Window{
         try{
             foreach(WLO.Window W in Windows.ToArray()){
                 if(W.ShouldDestroy){ W.DestroyNow(); }
-
-                if(!W.__RenderStarted){ W.RenderMessage("Не начат рендер!", ColorF.Red); }
             }
             
             while(System.Native.Windows.PeekMessage(out System.Native.Windows.MSG Message, IntPtr.Zero, 0, 0, System.Native.Windows.PM_REMOVE)){
