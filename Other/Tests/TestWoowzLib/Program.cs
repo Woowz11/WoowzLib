@@ -16,7 +16,7 @@ public static class Program{
             ));
             
             Window W1 = new Window();
-
+            
             Panel P = new Panel();
 
             W1.Add(P);
@@ -24,15 +24,16 @@ public static class Program{
             W1.BackgroundColor = ColorF.Black;
             
             double d = 2;
+            string FPS = "";
             while(W1.Alive){
                 WL.System.Tick.LimitFPS(1, 300, TD => {
                     if(W1.Alive){
                         d += TD.DeltaTimeS;
-                        if(d > 0.5f){ W1.Title = TD.FPS.ToString(); d = 0; }
+                        if(d > 0.5f){ FPS = TD.FPS.ToString(); d = 0; }
 
-                        W1.Render();
+                        W1.Title = FPS + " | " + W1.CursorInside;
                         
-                        Logger.Info(W1.ToClient(WL.Input.Cursor.Position));
+                        W1.Render();
                     }
                 });
                 

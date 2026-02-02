@@ -6,7 +6,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 18)]
+    [WLModule(int.MinValue + 1, 19)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -946,6 +946,11 @@ namespace WL{
                 [DllImport(DLL_User)]
                 public static extern bool ClientToScreen(IntPtr hWnd, ref POINT point);
 
+                [DllImport(DLL_User, SetLastError = true)]
+                public static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
+
+                [DllImport(DLL_User)]
+                public static extern bool PtInRect(ref RECT rect, System.Native.Windows.POINT pt);
                 
                 public static void ThrowWin32Error(){
                     throw new Exception("Win32 ошибка: " + GetLastError());

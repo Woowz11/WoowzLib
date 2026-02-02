@@ -397,6 +397,7 @@ public static class Generator{
                                 public {{Name}}(){
                                     Width = 128; Height = 128;
                                 }
+                            {{WL.System.Condition(RectType == RectType.Int, "\tpublic " + Name + "(WL.System.Native.Windows.RECT Rect){ X = Rect.left; Y = Rect.top; Width = Rect.right - Rect.left; Height = Rect.bottom - Rect.top; }", "")}}
                             
                                 public {{Type}} X;
                                 public {{Type}} Y;
@@ -412,7 +413,7 @@ public static class Generator{
                                 public {{Type}} Width {
                                     get => __Width;
                                     set{
-                                        if(value <= 0){ throw new Exception("Ширина не может быть <= 0 у [" + this + "]!"); }
+                                        if(value < 0){ throw new Exception("Ширина не может быть < 0 у [" + this + "]!"); }
                                         __Width = value;
                                     }
                                 }
@@ -421,7 +422,7 @@ public static class Generator{
                                 public {{Type}} Height {
                                     get => __Height;
                                     set{
-                                        if(value <= 0){ throw new Exception("Высота не может быть <= 0 у [" + this + "]!"); }
+                                        if(value < 0){ throw new Exception("Высота не может быть < 0 у [" + this + "]!"); }
                                         __Height = value;
                                     }
                                 }
@@ -434,6 +435,18 @@ public static class Generator{
                                         Height = value.Y;
                                     }
                                 }
+                                
+                                public {{Type}} Left·· => X;
+                                public {{Type}} Top··· => Y;
+                                public {{Type}} Right· => X + Width ;
+                                public {{Type}} Bottom => Y + Height;
+                                
+                            {{WL.System.Condition(RectType == RectType.Int, "\tpublic WL.System.Native.Windows.RECT ToRect(){ return new WL.System.Native.Windows.RECT{ left = Left, top = Top, right = Right, bottom = Bottom }; }", "")}}
+                            
+                                /// <summary>
+                                /// Находится ли указанная точка внутри Rect?
+                                /// </summary>
+                                public bool Inside(Vector2{{TypeChar}} Vector){ return Vector.X >= Left && Vector.X < Right && Vector.Y >= Top && Vector.Y < Bottom; }
                             
                                 #region Override
                             

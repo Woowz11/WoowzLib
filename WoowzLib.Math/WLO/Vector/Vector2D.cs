@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 02.02.2026 18:51
+/// Сгенерирован: 02.02.2026 20:30
 /// </summary>
 public struct Vector2D{
 	public static readonly int  Numbers = 2;

@@ -2,7 +2,7 @@
 
 namespace WL;
 
-[WLModule(-100, 17)]
+[WLModule(-100, 18)]
 public class Window{
     public static readonly List<WLO.Window> Windows = [];
     
@@ -12,7 +12,7 @@ public class Window{
     public static void Update(){
         try{
             foreach(WLO.Window W in Windows.ToArray()){
-                if(W.ShouldDestroy){ W.DestroyNow(); }
+                W.__Update();
             }
             
             while(System.Native.Windows.PeekMessage(out System.Native.Windows.MSG Message, IntPtr.Zero, 0, 0, System.Native.Windows.PM_REMOVE)){

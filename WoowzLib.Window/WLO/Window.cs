@@ -51,10 +51,7 @@ public class Window{
             this.Height = Height;
             this.Title  = Title ?? "";
 
-            HDC = System.Native.Windows.GetDC(Handle);
-            
-            MDC = System.Native.Windows.CreateCompatibleDC(HDC);
-            __UpdateDIB();
+            __UpdateBuffer();
             
             RenderMessage("Не начат рендер!", ColorF.Red);
         }catch(Exception e){
@@ -73,15 +70,6 @@ public class Window{
             }
 
             if(Handle == IntPtr.Zero){ throw new Exception("Ссылка на окно пустая!"); }
-
-            if(MDC != IntPtr.Zero){
-                if(DIB != IntPtr.Zero){
-                    System.Native.Windows.SelectObject(MDC, BM);
-                    System.Native.Windows.DeleteObject(DIB);
-                }
-                System.Native.Windows.DeleteDC(MDC);
-            }
-            System.Native.Windows.ReleaseDC(Handle, HDC);
             
             Children.Clear();
             
@@ -121,6 +109,20 @@ public class Window{
     }
 
     #region Процессы окна
+
+        public void __Update(){
+            try{
+                if(ShouldDestroy){ DestroyNow(); return; }
+
+                if(!System.Native.Windows.GetCursorPos(out System.Native.Windows.POINT P)){ System.Native.Windows.ThrowWin32Error(); }
+                Vector2I CursorPosition = new Vector2I(P);
+                this.CursorPosition = ToClient(CursorPosition);
+                
+                CursorInside = Inside(CursorPosition);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при обновлении окна [" + this + "]!", e);
+            }
+        }
     
         /// <summary>
         /// Вызывает WinAPI ивенты для окна
@@ -154,12 +156,12 @@ public class Window{
                         __Width  = (uint)(LWord_L);
                         __Height = (uint)(HWord_L);
 
-                        __UpdateDIB();
+                        __UpdateBuffer();
                         
                         try{
                             OnResize?.Invoke(this, __Width, __Height);
                         }catch(Exception e){
-                            Logger.Error("Произошла ошибка при вызове ивентов на изменение размера окна [" + this + "]!", e);
+                            Logger.Error("Произошла ошибка при вызове ивентов на изменение размера окна [" + this + "]!\nШирина: " + __Width + "\nВысота: " + __Height, e);
                         }
                         break;
                     
@@ -173,9 +175,8 @@ public class Window{
 
                             try{
                                 OnMove?.Invoke(this, __X, __Y);
-                            }
-                            catch(Exception e){
-                                Logger.Error("Произошла ошибка при вызове ивентов на изменение позиции окна [" + this + "]!", e);
+                            }catch(Exception e){
+                                Logger.Error("Произошла ошибка при вызове ивентов на изменение позиции окна [" + this + "]!\nX: " + __X + "\nY: " + __Y, e);
                             }
                         }
 
@@ -188,6 +189,18 @@ public class Window{
                             System.Native.Windows.SetCursor(System.Native.Windows.CURSOR_Arrow);
                         }
                         
+                        break;
+                    
+                    // Сдвинулась мышь внутри окна
+                    case System.Native.Windows.WM_MOUSEMOVE:
+                        int X__ = LWord_L;
+                        int Y__ = HWord_L;
+                        
+                        try{
+                            OnCursorMove?.Invoke(this, X__, Y__);
+                        }catch(Exception e){
+                            Logger.Error("Произошла ошибка при вызове ивентов на изменение позиции мыши внутри окна [" + this + "]!\nX: " + X__ + "\nY: " + Y__, e);
+                        }
                         break;
                     
                     // Рисование внутри окна
@@ -236,6 +249,11 @@ public class Window{
         /// Вызывается когда окно сдвинулось [Окно, новая X, новая Y]
         /// </summary>
         public event Action<Window, int, int>? OnMove;
+
+        /// <summary>
+        /// Вызывается когда курсор внутри окна сдвинулся [Окно, X, Y]
+        /// </summary>
+        public event Action<Window, int, int>? OnCursorMove;
         
     #endregion
 
@@ -290,65 +308,64 @@ public class Window{
 
     #region Рендер
 
-        private IntPtr HDC;
+        private IntPtr HDC{
+            get{
+                try{
+                    CheckDestroyed();
 
-        private IntPtr MDC;
+                    IntPtr HDC = System.Native.Windows.GetDC(Handle);
+                    if(HDC == IntPtr.Zero){ throw new Exception("Не найден HDC у окна!"); }
+                    return HDC;
+                }
+                catch(Exception e){
+                    throw new Exception("Произошла ошибка при получении HDC у окна [" + this + "]!", e);
+                }
+            }   
+        }
+    
+        private IntPtr BackBuffer;
+        private IntPtr BackBufferBitMap;
 
-        private IntPtr BM;
-        
-        private IntPtr DIB;
-
-        private System.Native.Windows.BITMAPINFO DIB_Info;
-        
-        private IntPtr DIB_Bits;
-        
-        private void __UpdateDIB(){
+        private void __UpdateBuffer(){
+            IntPtr HDC = this.HDC;
             try{
-                if(MDC == IntPtr.Zero){ return; }
-
-                if(DIB != IntPtr.Zero){
-                    System.Native.Windows.SelectObject(MDC, BM);
-                    System.Native.Windows.DeleteObject(DIB); DIB = IntPtr.Zero;
+                if(BackBufferBitMap != IntPtr.Zero){ System.Native.Windows.DeleteObject(BackBufferBitMap); BackBufferBitMap = IntPtr.Zero; }
+                if(BackBuffer == IntPtr.Zero){
+                    BackBuffer = System.Native.Windows.CreateCompatibleDC(HDC);
+                    if(BackBuffer == IntPtr.Zero){ throw new Exception("Произошла ошибка при создании BackBuffer!"); }
                 }
 
-                DIB_Info = new System.Native.Windows.BITMAPINFO{
-                    bmiHeader = new System.Native.Windows.BITMAPINFOHEADER{
-                        biSize = (uint)Marshal.SizeOf<System.Native.Windows.BITMAPINFOHEADER>(),
-                        biWidth  =  (int)Width,
-                        biHeight = -(int)Height,
-                        biPlanes = 1,
-                        biBitCount = 32,
-                        biCompression = System.Native.Windows.BI_RGB,
-                        biSizeImage = Width * Height * 4
-                    },
-                    bmiColors = 0
-                };
+                BackBufferBitMap = System.Native.Windows.CreateCompatibleBitmap(HDC, (int)Width, (int)Height);
+                if(BackBufferBitMap == IntPtr.Zero){ throw new Exception("Произошла ошибка при создании BackBufferBitMap!"); }
 
-                DIB = System.Native.Windows.CreateDIBSection(MDC, ref DIB_Info, System.Native.Windows.DIB_RGB_COLORS, out DIB_Bits, IntPtr.Zero, 0);
-
-                if(DIB == IntPtr.Zero){ throw new Exception("Не получилось создать DIB через CreateDIBSection!"); }
-
-                BM = System.Native.Windows.SelectObject(MDC, DIB);
+                System.Native.Windows.SelectObject(BackBuffer, BackBufferBitMap);
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при создании DIB у окна [" + this + "]!", e);
+                throw new Exception("Произошла ошибка при обновлении буфера у окна [" + this + "]!", e);
+            }finally{
+                System.Native.Windows.ReleaseDC(Handle, HDC);
             }
         }
-        
+            
         public Window Render(ColorF BackgroundColor, bool RenderElements, Action<IntPtr>? PreRender, Action<IntPtr>? PostRender){
             try{
-                System.HDC.Fill(MDC, 0, 0, Width, Height, BackgroundColor.ToRGBiA());
+                System.HDC.Fill(BackBuffer, 0, 0, Width, Height, BackgroundColor.ToRGBiA());
                 
-                PreRender?.Invoke(MDC);
+                PreRender?.Invoke(BackBuffer);
                 
                 if(RenderElements){
                     foreach(WindowElement Child in Children){
-                        Child.BaseRender(MDC);
+                        Child.BaseRender(BackBuffer);
                     }   
                 }
                 
-                PostRender?.Invoke(MDC);
+                PostRender?.Invoke(BackBuffer);
 
-                System.Native.Windows.BitBlt(HDC, 0, 0, (int)Width, (int)Height, MDC, 0, 0, System.Native.Windows.SRCCOPY);
+                IntPtr HDC = this.HDC;
+                try{
+                    System.Native.Windows.BitBlt(HDC, 0, 0, (int)Width, (int)Height, BackBuffer, 0, 0, System.Native.Windows.SRCCOPY);   
+                }finally{
+                    System.Native.Windows.ReleaseDC(Handle, HDC);
+                }
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при рендере окна [" + this + "]!", e);
             }
@@ -363,8 +380,8 @@ public class Window{
                 false,
                 null,
                 HDC => {
-                    System.Native.Windows.SetBkMode(MDC, System.Native.Windows.TRANSPARENT);
-                    System.HDC.Text(MDC, (int)(Width * 0.5f), (int)(Height * 0.5f), Message);
+                    System.Native.Windows.SetBkMode(BackBuffer, System.Native.Windows.TRANSPARENT);
+                    System.HDC.Text(BackBuffer, (int)(Width * 0.5f), (int)(Height * 0.5f), Message);
                 }
             );
         }
@@ -387,7 +404,7 @@ public class Window{
 
             System.Native.Windows.SetWindowPos(Handle, IntPtr.Zero, 0, 0, Rect.right - Rect.left, Rect.bottom - Rect.top, System.Native.Windows.SWP_NOZORDER | System.Native.Windows.SWP_NOMOVE);
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при обновлении размера у пародии окна [" + this + "]!", e);
+            throw new Exception("Произошла ошибка при обновлении размера у окна [" + this + "]!", e);
         }
     }
     
@@ -398,7 +415,7 @@ public class Window{
         try{
             System.Native.Windows.SetWindowPos(Handle, IntPtr.Zero, __X, __Y, 0, 0, System.Native.Windows.SWP_NOZORDER | System.Native.Windows.SWP_NOSIZE);
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при обновлении позиции у пародии окна [" + this + "]!", e);
+            throw new Exception("Произошла ошибка при обновлении позиции у окна [" + this + "]!", e);
         }
     }
 
@@ -429,7 +446,21 @@ public class Window{
             throw new Exception("Произошла ошибка при изменении относительной от окна [" + this + "] координаты в мировую!\nКоордината: " + ClientVector, e);
         }
     }
+
+    /// <summary>
+    /// Указанная мировая позиция, находится внутри окна?
+    /// </summary>
+    public bool Inside(Vector2I WorldVector){
+        try{
+            return RectFull.Inside(WorldVector);
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при определении, находится ли позиция внутри окна [" + this + "]!\nКоордината: " + WorldVector, e);
+        }
+    }
     
+    /// <summary>
+    /// Ширина окна
+    /// </summary>
     public uint Width{
         get => __Width;
         set{
@@ -441,12 +472,15 @@ public class Window{
 
                 __UpdateSize();
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении ширины у пародии окна [" + this + "]!\nШирина: " + value, e);
+                throw new Exception("Произошла ошибка при изменении ширины у окна [" + this + "]!\nШирина: " + value, e);
             }
         }
     }
     protected uint __Width;
     
+    /// <summary>
+    /// Высота окна
+    /// </summary>
     public uint Height{
         get => __Height;
         set{
@@ -458,12 +492,35 @@ public class Window{
                 
                 __UpdateSize();
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении высоты у пародии окна [" + this + "]!\nВысота: " + value, e);
+                throw new Exception("Произошла ошибка при изменении высоты у окна [" + this + "]!\nВысота: " + value, e);
             }
         }
     }
     protected uint __Height;
 
+    /// <summary>
+    /// Размер окна
+    /// </summary>
+    public Vector2U Size{
+        get => new Vector2U(Width, Height);
+        set{
+            try{
+                CheckDestroyed();
+                
+                if(__Width == value.X && __Height == value.Y){ return; }
+                __Width  = value.X;
+                __Height = value.Y;
+                
+                __UpdateSize();
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при изменении размера у окна [" + this + "]!\nРазмер: " + value, e);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Позиция по X окна
+    /// </summary>
     public int X{
         get => __X;
         set{
@@ -475,12 +532,15 @@ public class Window{
                 
                 __UpdatePosition();
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении позиции по X у пародии окна [" + this + "]!\nX: " + value, e);
+                throw new Exception("Произошла ошибка при изменении позиции по X у окна [" + this + "]!\nX: " + value, e);
             }
         }
     }
     protected int __X;
     
+    /// <summary>
+    /// Позиция по Y окна
+    /// </summary>
     public int Y{
         get => __Y;
         set{
@@ -492,12 +552,75 @@ public class Window{
                 
                 __UpdatePosition();
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении позиции по Y у пародии окна [" + this + "]!\nY: " + value, e);
+                throw new Exception("Произошла ошибка при изменении позиции по Y у окна [" + this + "]!\nY: " + value, e);
             }
         }
     }
     protected int __Y;
     
+    /// <summary>
+    /// Позиция окна
+    /// </summary>
+    public Vector2I Position{
+        get => new Vector2I(X, Y);
+        set{
+            try{
+                CheckDestroyed();
+                
+                if(__X == value.X && __Y == value.Y){ return; }
+                __X = value.X;
+                __Y = value.Y;
+                
+                __UpdateSize();
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при изменении позиции у окна [" + this + "]!\nПозиция: " + value, e);
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Позиция и размер окна
+    /// </summary>
+    public RectI Rect{
+        get => new RectI(X, Y, (int)Width, (int)Height);
+        set{
+            try{
+                CheckDestroyed();
+                
+                if(__X == value.X && __Y == value.Y && __Width == value.Width && __Height == value.Height){ return; }
+                __X = value.X;
+                __Y = value.Y;
+                __Width  = (uint)value.Width ;
+                __Height = (uint)value.Height;
+                
+                __UpdatePosition();
+                __UpdateSize    ();
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при изменении позиции и размера у окна [" + this + "]!\nRect: " + value, e);
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Позиция и размер окна (полная, с учётом декораций и т.д)
+    /// </summary>
+    public RectI RectFull{
+        get{
+            try{
+                if(!System.Native.Windows.GetWindowRect(Handle, out System.Native.Windows.RECT Rect)){
+                    System.Native.Windows.ThrowWin32Error();
+                }
+
+                return new RectI(Rect);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при получении полной позиции и размера окна [" + this + "]!", e);
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Название окна
+    /// </summary>
     public string Title{
         get => __Title;
         set{
@@ -514,7 +637,17 @@ public class Window{
         }
     }
     private string __Title;
-    
+
+    /// <summary>
+    /// Курсор находится внутри окна?
+    /// </summary>
+    public bool CursorInside{ get; private set; }
+
+    /// <summary>
+    /// Позиция курсора относительно этого окна
+    /// </summary>
+    public Vector2I CursorPosition{ get; private set; }
+
     /// <summary>
     /// Цвет заднего фона
     /// </summary>

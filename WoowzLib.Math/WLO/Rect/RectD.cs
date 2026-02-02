@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 02.02.2026 18:51
+/// Сгенерирован: 02.02.2026 20:30
 /// </summary>
 public struct RectD{
 	public static readonly Type Type = typeof(double);
@@ -23,6 +23,7 @@ public struct RectD{
 		Width = 128; Height = 128;
 	}
 
+
 	public double X;
 	public double Y;
 	
@@ -37,7 +38,7 @@ public struct RectD{
 	public double Width {
 		get => __Width;
 		set{
-			if(value <= 0){ throw new Exception("Ширина не может быть <= 0 у [" + this + "]!"); }
+			if(value < 0){ throw new Exception("Ширина не может быть < 0 у [" + this + "]!"); }
 			__Width = value;
 		}
 	}
@@ -46,7 +47,7 @@ public struct RectD{
 	public double Height {
 		get => __Height;
 		set{
-			if(value <= 0){ throw new Exception("Высота не может быть <= 0 у [" + this + "]!"); }
+			if(value < 0){ throw new Exception("Высота не может быть < 0 у [" + this + "]!"); }
 			__Height = value;
 		}
 	}
@@ -59,6 +60,18 @@ public struct RectD{
 			Height = value.Y;
 		}
 	}
+	
+	public double Left   => X;
+	public double Top    => Y;
+	public double Right  => X + Width ;
+	public double Bottom => Y + Height;
+	
+
+
+	/// <summary>
+	/// Находится ли указанная точка внутри Rect?
+	/// </summary>
+	public bool Inside(Vector2D Vector){ return Vector.X >= Left && Vector.X < Right && Vector.Y >= Top && Vector.Y < Bottom; }
 
 	#region Override
 

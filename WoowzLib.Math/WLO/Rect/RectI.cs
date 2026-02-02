@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 02.02.2026 18:51
+/// Сгенерирован: 02.02.2026 20:30
 /// </summary>
 public struct RectI{
 	public static readonly Type Type = typeof(int);
@@ -22,6 +22,7 @@ public struct RectI{
 	public RectI(){
 		Width = 128; Height = 128;
 	}
+	public RectI(WL.System.Native.Windows.RECT Rect){ X = Rect.left; Y = Rect.top; Width = Rect.right - Rect.left; Height = Rect.bottom - Rect.top; }
 
 	public int X;
 	public int Y;
@@ -37,7 +38,7 @@ public struct RectI{
 	public int Width {
 		get => __Width;
 		set{
-			if(value <= 0){ throw new Exception("Ширина не может быть <= 0 у [" + this + "]!"); }
+			if(value < 0){ throw new Exception("Ширина не может быть < 0 у [" + this + "]!"); }
 			__Width = value;
 		}
 	}
@@ -46,7 +47,7 @@ public struct RectI{
 	public int Height {
 		get => __Height;
 		set{
-			if(value <= 0){ throw new Exception("Высота не может быть <= 0 у [" + this + "]!"); }
+			if(value < 0){ throw new Exception("Высота не может быть < 0 у [" + this + "]!"); }
 			__Height = value;
 		}
 	}
@@ -59,6 +60,18 @@ public struct RectI{
 			Height = value.Y;
 		}
 	}
+	
+	public int Left   => X;
+	public int Top    => Y;
+	public int Right  => X + Width ;
+	public int Bottom => Y + Height;
+	
+	public WL.System.Native.Windows.RECT ToRect(){ return new WL.System.Native.Windows.RECT{ left = Left, top = Top, right = Right, bottom = Bottom }; }
+
+	/// <summary>
+	/// Находится ли указанная точка внутри Rect?
+	/// </summary>
+	public bool Inside(Vector2I Vector){ return Vector.X >= Left && Vector.X < Right && Vector.Y >= Top && Vector.Y < Bottom; }
 
 	#region Override
 
