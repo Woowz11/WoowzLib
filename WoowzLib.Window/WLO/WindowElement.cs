@@ -186,7 +186,7 @@ public abstract class WindowElement{
     public int X_Location => Location switch{
         ElementLocation.InWindow => X,
         ElementLocation.InParent => X + (Parent?.X_Final ?? 0),
-        ElementLocation.InWorld => X - (Window?.X ?? 0),
+        ElementLocation.InWorld  => X - (Window?.X ?? 0),
         var _ => X
     };
     

@@ -259,28 +259,49 @@ public static class Generator{
                 string Type = ColorType.ToString().ToLower();
 
                 const string V_0 = "0";
-                string       V05 = ColorType is ColorType.Byte or ColorType.Int ? "127" : ("0.5" + (ColorType is ColorType.Float ? "f" : ""));
-                string       V_1  = ColorType is ColorType.Byte or ColorType.Int ? "255" : "1";
+                string       V25 = ColorType is ColorType.Byte or ColorType.Int ? "63"  : ("0.25" + (ColorType is ColorType.Float ? "f" : ""));
+                string       V05 = ColorType is ColorType.Byte or ColorType.Int ? "127" : ("0.5"  + (ColorType is ColorType.Float ? "f" : ""));
+                string       V75 = ColorType is ColorType.Byte or ColorType.Int ? "191" : ("0.75" + (ColorType is ColorType.Float ? "f" : ""));
+                string       V_1 = ColorType is ColorType.Byte or ColorType.Int ? "255" : "1";
 
                 Dictionary<string, string[]> Constants = new Dictionary<string, string[]>{
-                    {"Red"        , [ V_1, V_0, V_0, V_1 ]},
-                    {"Orange"     , [ V_1, V05, V_0, V_1 ]},
-                    {"Yellow"     , [ V_1, V_1, V_0, V_1 ]},
-                    {"Green"      , [ V_0, V_1, V_0, V_1 ]},
-                    {"Aqua"       , [ V_0, V_1, V_1, V_1 ]},
-                    {"Blue"       , [ V_0, V_0, V_1, V_1 ]},
-                    {"Purple"     , [ V05, V_0, V_1, V_1 ]},
-                    {"Magenta"    , [ V_1, V_0, V_1, V_1 ]},
-                    {"Pink"       , [ V_1, V05, V_1, V_1 ]},
-                    {"White"      , [ V_1, V_1, V_1, V_1 ]},
-                    {"Gray"       , [ V05, V05, V05, V_1 ]},
-                    {"Black"      , [ V_0, V_0, V_0, V_1 ]},
-                    {"DarkRed"    , [ V05, V_0, V_0, V_1 ]},
-                    {"DarkYellow" , [ V05, V05, V_0, V_1 ]},
-                    {"DarkGreen"  , [ V_0, V05, V_0, V_1 ]},
-                    {"DarkBlue"   , [ V_0, V_0, V05, V_1 ]},
-                    {"DarkMagenta", [ V05, V_0, V05, V_1 ]},
-                    {"Transparent", [ V_0, V_0, V_0, V_0 ]}
+                    {"LightRed"    , [ V_1, V25, V25, V_1 ]},
+                    {"Red"         , [ V_1, V_0, V_0, V_1 ]},
+                    {"DarkRed"     , [ V05, V_0, V_0, V_1 ]},
+                    {"LightOrange" , [ V_1, V75, V25, V_1 ]},
+                    {"Orange"      , [ V_1, V05, V_0, V_1 ]},
+                    {"DarkOrange"  , [ V05, V25, V_0, V_1 ]},
+                    {"Brown"       , [ V05, V25, V_0, V_1 ]},
+                    {"LightYellow" , [ V_1, V_1, V25, V_1 ]},
+                    {"Yellow"      , [ V_1, V_1, V_0, V_1 ]},
+                    {"DarkYellow"  , [ V05, V05, V_0, V_1 ]},
+                    {"LightGreen"  , [ V25, V_1, V25, V_1 ]},
+                    {"Green"       , [ V_0, V_1, V_0, V_1 ]},
+                    {"DarkGreen"   , [ V_0, V05, V_0, V_1 ]},
+                    {"LightAqua"   , [ V25, V_1, V_1, V_1 ]},
+                    {"Aqua"        , [ V_0, V_1, V_1, V_1 ]},
+                    {"DarkAqua"    , [ V_0, V05, V05, V_1 ]},
+                    {"LightBlue"   , [ V25, V25, V_1, V_1 ]},
+                    {"Blue"        , [ V_0, V_0, V_1, V_1 ]},
+                    {"DarkBlue"    , [ V_0, V_0, V05, V_1 ]},
+                    {"LightPurple" , [ V75, V25, V_1, V_1 ]},
+                    {"Purple"      , [ V05, V_0, V_1, V_1 ]},
+                    {"DarkPurple"  , [ V25, V_0, V05, V_1 ]},
+                    {"LightMagenta", [ V_1, V25, V_1, V_1 ]},
+                    {"Magenta"     , [ V_1, V_0, V_1, V_1 ]},
+                    {"DarkMagenta" , [ V05, V_0, V05, V_1 ]},
+                    {"LightPink"   , [ V_1, V75, V_1, V_1 ]},
+                    {"Pink"        , [ V_1, V05, V_1, V_1 ]},
+                    {"DarkPink"    , [ V05, V25, V05, V_1 ]},
+                    {"White"       , [ V_1, V_1, V_1, V_1 ]},
+                    {"LightGray"   , [ V75, V75, V75, V_1 ]},
+                    {"Gray"        , [ V05, V05, V05, V_1 ]},
+                    {"DarkGray"    , [ V25, V25, V25, V_1 ]},
+                    {"Black"       , [ V_0, V_0, V_0, V_1 ]},
+                    {"Transparent" , [ V_1, V_1, V_1, V_0 ]},
+                    {"One"         , [ V_1, V_1, V_1, V_1 ]},
+                    {"Half"        , [ V05, V05, V05, V05 ]},
+                    {"Zero"        , [ V_0, V_0, V_0, V_0 ]}
                 };
                 
                 string Result = Pre() + "\n";
@@ -304,6 +325,8 @@ public static class Generator{
                                        "\tpublic static " + Name + " " + Obj.Key + " => new " + Name + "().To" + Obj.Key + "();\n";
                             }, Constants)}}    public {{Name}} ToRandom(){ return Set({{WL.System.Condition(ColorType == ColorType.Int,"WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255)", (ColorType == ColorType.Byte ? "WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte()" : "WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1()"))}}, 1); }
                                 public static {{Name}} Random => new {{Name}}().ToRandom();
+                                public {{Name}} ToFullRandom(){ return Set({{WL.System.Condition(ColorType == ColorType.Int,"WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255)", (ColorType == ColorType.Byte ? "WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte()" : "WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1()"))}}); }
+                                public static {{Name}} FullRandom => new {{Name}}().ToFullRandom();
                             
                                 public uint ToRGBA (){ return WL.System.Byte.RGBA(BR, BG, BB, BA); }
                                 public uint ToRGBiA(){ return WL.System.Byte.RGBA(BR, BG, BB, (byte)(255 - BA)); }

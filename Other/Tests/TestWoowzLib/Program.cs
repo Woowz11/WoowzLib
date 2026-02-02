@@ -79,7 +79,7 @@ public static class Program{
             P12.Anchor_X = ElementAnchorX.Center;
             P12.Anchor_Y = ElementAnchorY.Center;
             
-            W1.BackgroundColor = ColorF.Red;
+            W1.BackgroundColor = ColorF.Brown;
             
             double d = 2;
             string FPS = "";
