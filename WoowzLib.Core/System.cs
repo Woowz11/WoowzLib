@@ -6,7 +6,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 17)]
+    [WLModule(int.MinValue + 1, 18)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -928,12 +928,29 @@ namespace WL{
                 
                 public delegate bool EnumChildProc(IntPtr hWnd, IntPtr lParam);
                 
-                [DllImport("user32.dll")]
+                [DllImport(DLL_User)]
                 public static extern int SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
                 
-                [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+                [DllImport(DLL_User, CharSet = CharSet.Unicode)]
                 public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
                 
+                [DllImport(DLL_User, SetLastError = true)]
+                public static extern bool GetCursorPos(out POINT point);
+                
+                [DllImport(DLL_User, SetLastError = true)]
+                public static extern bool SetCursorPos(int X, int Y);
+                
+                [DllImport(DLL_User)]
+                public static extern bool ScreenToClient(IntPtr hWnd, ref POINT point);
+
+                [DllImport(DLL_User)]
+                public static extern bool ClientToScreen(IntPtr hWnd, ref POINT point);
+
+                
+                public static void ThrowWin32Error(){
+                    throw new Exception("Win32 ошибка: " + GetLastError());
+                }
+
                 public static void SetChildRedraw(IntPtr parent, bool enable, string classFilter = null)
                 {
                     EnumChildWindows(parent, (hwnd, lParam) =>

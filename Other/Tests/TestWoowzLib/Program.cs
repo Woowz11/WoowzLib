@@ -31,6 +31,8 @@ public static class Program{
                         if(d > 0.5f){ W1.Title = TD.FPS.ToString(); d = 0; }
 
                         W1.Render();
+                        
+                        Logger.Info(W1.ToClient(WL.Input.Cursor.Position));
                     }
                 });
                 

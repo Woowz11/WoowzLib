@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 20.01.2026 15:55
+/// Сгенерирован: 02.02.2026 18:51
 /// </summary>
 public struct Vector2I{
 	public static readonly int  Numbers = 2;
@@ -11,12 +11,15 @@ public struct Vector2I{
 	public Vector2I(int X = 0, int Y = 0){
 		this.X = X; this.Y = Y; 
 	}
+	
+	public Vector2I(WL.System.Native.Windows.POINT Point){ Set(Point); }
 
 	public int X;
 	public int Y;
 
 	public Vector2I Set(int X, int Y){ this.X = X; this.Y = Y; return this; }
-		
+	public Vector2I Set(WL.System.Native.Windows.POINT Point){ X = (int)Point.x; Y = (int)Point.y; return this; }
+
 	public Vector2I ToZero(){ return Set(0, 0); }
 	public static Vector2I Zero => new Vector2I().ToZero();
 	public Vector2I ToOne(){ return Set(1, 1); }
@@ -31,6 +34,8 @@ public struct Vector2I{
 	public static Vector2I Up => new Vector2I().ToUp();
 	public Vector2I ToDown(){ return Set(0, -1); }
 	public static Vector2I Down => new Vector2I().ToDown();
+
+	public WL.System.Native.Windows.POINT ToPoint(){ return new WL.System.Native.Windows.POINT{x = (int)X, y = (int)Y}; }
 
 	#region Override
 

@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 20.01.2026 15:55
+/// Сгенерирован: 02.02.2026 18:51
 /// </summary>
 public struct Vector4U{
 	public static readonly int  Numbers = 4;
@@ -11,6 +11,8 @@ public struct Vector4U{
 	public Vector4U(uint X = 0, uint Y = 0, uint Z = 0, uint W = 0){
 		this.X = X; this.Y = Y; this.Z = Z; this.W = W; 
 	}
+	
+
 
 	public uint X;
 	public uint Y;
@@ -18,7 +20,8 @@ public struct Vector4U{
 	public uint W;
 
 	public Vector4U Set(uint X, uint Y, uint Z, uint W){ this.X = X; this.Y = Y; this.Z = Z; this.W = W; return this; }
-		
+
+
 	public Vector4U ToZero(){ return Set(0, 0, 0, 0); }
 	public static Vector4U Zero => new Vector4U().ToZero();
 	public Vector4U ToOne(){ return Set(1, 1, 1, 1); }
@@ -31,6 +34,7 @@ public struct Vector4U{
 	public static Vector4U Front => new Vector4U().ToFront();
 	public Vector4U ToAna(){ return Set(0, 0, 0, 1); }
 	public static Vector4U Ana => new Vector4U().ToAna();
+
 
 	#region Override
 

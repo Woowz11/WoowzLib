@@ -290,84 +290,84 @@ public class Window{
 
     #region Рендер
 
-    private IntPtr HDC;
+        private IntPtr HDC;
 
-    private IntPtr MDC;
+        private IntPtr MDC;
 
-    private IntPtr BM;
-    
-    private IntPtr DIB;
+        private IntPtr BM;
+        
+        private IntPtr DIB;
 
-    private System.Native.Windows.BITMAPINFO DIB_Info;
-    
-    private IntPtr DIB_Bits;
-    
-    private void __UpdateDIB(){
-        try{
-            if(MDC == IntPtr.Zero){ return; }
+        private System.Native.Windows.BITMAPINFO DIB_Info;
+        
+        private IntPtr DIB_Bits;
+        
+        private void __UpdateDIB(){
+            try{
+                if(MDC == IntPtr.Zero){ return; }
 
-            if(DIB != IntPtr.Zero){
-                System.Native.Windows.SelectObject(MDC, BM);
-                System.Native.Windows.DeleteObject(DIB); DIB = IntPtr.Zero;
+                if(DIB != IntPtr.Zero){
+                    System.Native.Windows.SelectObject(MDC, BM);
+                    System.Native.Windows.DeleteObject(DIB); DIB = IntPtr.Zero;
+                }
+
+                DIB_Info = new System.Native.Windows.BITMAPINFO{
+                    bmiHeader = new System.Native.Windows.BITMAPINFOHEADER{
+                        biSize = (uint)Marshal.SizeOf<System.Native.Windows.BITMAPINFOHEADER>(),
+                        biWidth  =  (int)Width,
+                        biHeight = -(int)Height,
+                        biPlanes = 1,
+                        biBitCount = 32,
+                        biCompression = System.Native.Windows.BI_RGB,
+                        biSizeImage = Width * Height * 4
+                    },
+                    bmiColors = 0
+                };
+
+                DIB = System.Native.Windows.CreateDIBSection(MDC, ref DIB_Info, System.Native.Windows.DIB_RGB_COLORS, out DIB_Bits, IntPtr.Zero, 0);
+
+                if(DIB == IntPtr.Zero){ throw new Exception("Не получилось создать DIB через CreateDIBSection!"); }
+
+                BM = System.Native.Windows.SelectObject(MDC, DIB);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при создании DIB у окна [" + this + "]!", e);
             }
-
-            DIB_Info = new System.Native.Windows.BITMAPINFO{
-                bmiHeader = new System.Native.Windows.BITMAPINFOHEADER{
-                    biSize = (uint)Marshal.SizeOf<System.Native.Windows.BITMAPINFOHEADER>(),
-                    biWidth  =  (int)Width,
-                    biHeight = -(int)Height,
-                    biPlanes = 1,
-                    biBitCount = 32,
-                    biCompression = System.Native.Windows.BI_RGB,
-                    biSizeImage = Width * Height * 4
-                },
-                bmiColors = 0
-            };
-
-            DIB = System.Native.Windows.CreateDIBSection(MDC, ref DIB_Info, System.Native.Windows.DIB_RGB_COLORS, out DIB_Bits, IntPtr.Zero, 0);
-
-            if(DIB == IntPtr.Zero){ throw new Exception("Не получилось создать DIB через CreateDIBSection!"); }
-
-            BM = System.Native.Windows.SelectObject(MDC, DIB);
-        }catch(Exception e){
-            throw new Exception("Произошла ошибка при создании DIB у окна [" + this + "]!", e);
         }
-    }
-    
-    public Window Render(ColorF BackgroundColor, bool RenderElements, Action<IntPtr>? PreRender, Action<IntPtr>? PostRender){
-        try{
-            System.HDC.Fill(MDC, 0, 0, Width, Height, BackgroundColor.ToRGBiA());
-            
-            PreRender?.Invoke(MDC);
-            
-            if(RenderElements){
-                foreach(WindowElement Child in Children){
-                    Child.BaseRender(MDC);
-                }   
-            }
-            
-            PostRender?.Invoke(MDC);
+        
+        public Window Render(ColorF BackgroundColor, bool RenderElements, Action<IntPtr>? PreRender, Action<IntPtr>? PostRender){
+            try{
+                System.HDC.Fill(MDC, 0, 0, Width, Height, BackgroundColor.ToRGBiA());
+                
+                PreRender?.Invoke(MDC);
+                
+                if(RenderElements){
+                    foreach(WindowElement Child in Children){
+                        Child.BaseRender(MDC);
+                    }   
+                }
+                
+                PostRender?.Invoke(MDC);
 
-            System.Native.Windows.BitBlt(HDC, 0, 0, (int)Width, (int)Height, MDC, 0, 0, System.Native.Windows.SRCCOPY);
-        }catch(Exception e){
-            throw new Exception("Произошла ошибка при рендере окна [" + this + "]!", e);
+                System.Native.Windows.BitBlt(HDC, 0, 0, (int)Width, (int)Height, MDC, 0, 0, System.Native.Windows.SRCCOPY);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при рендере окна [" + this + "]!", e);
+            }
+
+            return this;
         }
 
-        return this;
-    }
-
-    public Window Render(){ return Render(BackgroundColor, true, null, null); }
-    public Window RenderMessage(string Message, ColorF BackgroundColor){
-        return Render(
-            BackgroundColor,
-            false,
-            null,
-            HDC => {
-                System.Native.Windows.SetBkMode(MDC, System.Native.Windows.TRANSPARENT);
-                System.HDC.Text(MDC, (int)(Width * 0.5f), (int)(Height * 0.5f), Message);
-            }
-        );
-    }
+        public Window Render(){ return Render(BackgroundColor, true, null, null); }
+        public Window RenderMessage(string Message, ColorF BackgroundColor){
+            return Render(
+                BackgroundColor,
+                false,
+                null,
+                HDC => {
+                    System.Native.Windows.SetBkMode(MDC, System.Native.Windows.TRANSPARENT);
+                    System.HDC.Text(MDC, (int)(Width * 0.5f), (int)(Height * 0.5f), Message);
+                }
+            );
+        }
 
     #endregion
     
@@ -399,6 +399,34 @@ public class Window{
             System.Native.Windows.SetWindowPos(Handle, IntPtr.Zero, __X, __Y, 0, 0, System.Native.Windows.SWP_NOZORDER | System.Native.Windows.SWP_NOSIZE);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при обновлении позиции у пародии окна [" + this + "]!", e);
+        }
+    }
+
+    /// <summary>
+    /// Превращает мировую координату в относительную от окна
+    /// </summary>
+    public Vector2I ToClient(Vector2I WorldVector){
+        try{
+            CheckDestroyed();
+            System.Native.Windows.POINT P = WorldVector.ToPoint();
+            System.Native.Windows.ScreenToClient(Handle, ref P);
+            return new Vector2I(P);
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при изменении мировой координаты в относительную от окна [" + this + "]!\nКоордината: " + WorldVector, e);
+        }
+    }
+
+    /// <summary>
+    /// Превращает относительную от окна координату в мировую координату
+    /// </summary>
+    public Vector2I ToWorld(Vector2I ClientVector){
+        try{
+            CheckDestroyed();
+            System.Native.Windows.POINT P = ClientVector.ToPoint();
+            System.Native.Windows.ClientToScreen(Handle, ref P);
+            return new Vector2I(P);
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при изменении относительной от окна [" + this + "] координаты в мировую!\nКоордината: " + ClientVector, e);
         }
     }
     

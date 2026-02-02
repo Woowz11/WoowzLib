@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 20.01.2026 15:55
+/// Сгенерирован: 02.02.2026 18:51
 /// </summary>
 public struct Vector3U{
 	public static readonly int  Numbers = 3;
@@ -11,13 +11,16 @@ public struct Vector3U{
 	public Vector3U(uint X = 0, uint Y = 0, uint Z = 0){
 		this.X = X; this.Y = Y; this.Z = Z; 
 	}
+	
+
 
 	public uint X;
 	public uint Y;
 	public uint Z;
 
 	public Vector3U Set(uint X, uint Y, uint Z){ this.X = X; this.Y = Y; this.Z = Z; return this; }
-		
+
+
 	public Vector3U ToZero(){ return Set(0, 0, 0); }
 	public static Vector3U Zero => new Vector3U().ToZero();
 	public Vector3U ToOne(){ return Set(1, 1, 1); }
@@ -28,6 +31,7 @@ public struct Vector3U{
 	public static Vector3U Up => new Vector3U().ToUp();
 	public Vector3U ToFront(){ return Set(0, 0, 1); }
 	public static Vector3U Front => new Vector3U().ToFront();
+
 
 	#region Override
 

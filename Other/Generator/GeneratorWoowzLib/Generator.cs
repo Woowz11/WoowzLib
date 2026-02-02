@@ -133,14 +133,18 @@ public static class Generator{
                                 public {{Name}}({{WL.String.Join(Type + " $0 = 0, ", Type + " $0 = 0", Components)}}){
                                     {{WL.String.Join("this.$0 = $0; ", Components)}}
                                 }
+                                
+                            {{WL.System.Condition(N == 2 && (VectorType == VectorType.Int || VectorType == VectorType.UInt), "\tpublic " + Name + "(WL.System.Native.Windows.POINT Point){ Set(Point); }", "")}}
                             
                             {{WL.String.Join("\tpublic " + Type + " $0;\n", Components)}}
                                 public {{Name}} Set({{WL.String.Join(Type + " $0, ", Type + " $0", Components)}}){ {{WL.String.Join("this.$0 = $0; ", Components)}}return this; }
-                                    
+                            {{WL.System.Condition(N == 2 && (VectorType == VectorType.Int || VectorType == VectorType.UInt), "\tpublic " + Name + " Set(WL.System.Native.Windows.POINT Point){ X = (" + Type + ")Point.x; Y = (" + Type + ")Point.y; return this; }", "")}}
+                            
                             {{WL.String.Join((i, Obj, Last) => {
                                 return "\tpublic " + Name + " To" + Obj.Key + "(){ return Set(" + WL.String.Join(Obj.Value) + "); }\n" +
                                        "\tpublic static " + Name + " " + Obj.Key + " => new " + Name + "().To" + Obj.Key + "();\n";
                             }, AllConstants)}}
+                            {{WL.System.Condition(N == 2 && (VectorType == VectorType.Int || VectorType == VectorType.UInt), "\tpublic WL.System.Native.Windows.POINT ToPoint(){ return new WL.System.Native.Windows.POINT{x = (int)X, y = (int)Y}; }\n", "")}}
                                 #region Override
                             
                                     public override string ToString(){
@@ -200,11 +204,11 @@ public static class Generator{
                                         return B * A;
                                     }
                                     {{WL.System.Condition(VectorType == VectorType.UInt, $$"""
-                                                                                             
-                                                                                                     public static implicit operator Vector{{N}}I(Vector{{N}}U Other){
-                                                                                                         return new Vector{{N}}I({{WL.String.Join("(int)Other.$0, ", "(int)Other.$0", Components)}});
-                                                                                                     }
-                                                                                             """, "")}}
+
+                                                                                                   public static implicit operator Vector{{N}}I(Vector{{N}}U Other){
+                                                                                                       return new Vector{{N}}I({{WL.String.Join("(int)Other.$0, ", "(int)Other.$0", Components)}});
+                                                                                                   }
+                                                                                           """, "")}}
                                 #endregion
                             """;
                 
