@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 02.02.2026 20:30
+/// Сгенерирован: 02.02.2026 22:46
 /// </summary>
 public struct ColorD{
 	public static readonly Type Type = typeof(double);
@@ -52,6 +52,16 @@ public struct ColorD{
 	public static ColorD Gray => new ColorD().ToGray();
 	public ColorD ToBlack(){ return Set(0, 0, 0, 1); }
 	public static ColorD Black => new ColorD().ToBlack();
+	public ColorD ToDarkRed(){ return Set(0.5, 0, 0, 1); }
+	public static ColorD DarkRed => new ColorD().ToDarkRed();
+	public ColorD ToDarkYellow(){ return Set(0.5, 0.5, 0, 1); }
+	public static ColorD DarkYellow => new ColorD().ToDarkYellow();
+	public ColorD ToDarkGreen(){ return Set(0, 0.5, 0, 1); }
+	public static ColorD DarkGreen => new ColorD().ToDarkGreen();
+	public ColorD ToDarkBlue(){ return Set(0, 0, 0.5, 1); }
+	public static ColorD DarkBlue => new ColorD().ToDarkBlue();
+	public ColorD ToDarkMagenta(){ return Set(0.5, 0, 0.5, 1); }
+	public static ColorD DarkMagenta => new ColorD().ToDarkMagenta();
 	public ColorD ToTransparent(){ return Set(0, 0, 0, 0); }
 	public static ColorD Transparent => new ColorD().ToTransparent();
 	public ColorD ToRandom(){ return Set(WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), 1); }

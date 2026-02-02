@@ -4,7 +4,7 @@ namespace WL{
     /// <summary>
     /// Работа с байтами
     /// </summary>
-    [WLModule(-7500, 6)]
+    [WLModule(-7500, 7)]
     public static class Byte{
         /// <summary>
         /// Вычисляет размер объекта в байтах

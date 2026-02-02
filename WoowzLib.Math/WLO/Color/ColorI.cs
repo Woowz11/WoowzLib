@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 02.02.2026 20:30
+/// Сгенерирован: 02.02.2026 22:46
 /// </summary>
 public struct ColorI{
 	public static readonly Type Type = typeof(int);
@@ -52,6 +52,16 @@ public struct ColorI{
 	public static ColorI Gray => new ColorI().ToGray();
 	public ColorI ToBlack(){ return Set(0, 0, 0, 255); }
 	public static ColorI Black => new ColorI().ToBlack();
+	public ColorI ToDarkRed(){ return Set(127, 0, 0, 255); }
+	public static ColorI DarkRed => new ColorI().ToDarkRed();
+	public ColorI ToDarkYellow(){ return Set(127, 127, 0, 255); }
+	public static ColorI DarkYellow => new ColorI().ToDarkYellow();
+	public ColorI ToDarkGreen(){ return Set(0, 127, 0, 255); }
+	public static ColorI DarkGreen => new ColorI().ToDarkGreen();
+	public ColorI ToDarkBlue(){ return Set(0, 0, 127, 255); }
+	public static ColorI DarkBlue => new ColorI().ToDarkBlue();
+	public ColorI ToDarkMagenta(){ return Set(127, 0, 127, 255); }
+	public static ColorI DarkMagenta => new ColorI().ToDarkMagenta();
 	public ColorI ToTransparent(){ return Set(0, 0, 0, 0); }
 	public static ColorI Transparent => new ColorI().ToTransparent();
 	public ColorI ToRandom(){ return Set(WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255), 1); }

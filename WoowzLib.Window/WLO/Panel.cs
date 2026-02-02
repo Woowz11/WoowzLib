@@ -13,7 +13,7 @@ public class Panel : WindowElement{
     }
 
     public override void Render(IntPtr HDC){
-        System.HDC.Fill(HDC, X, Y, Width, Height, Color.ToRGBiA());
+        System.HDC.Fill(HDC, X_Final, Y_Final, Width_Final, Height_Final, Color.ToRGBiA());
         
         base.Render(HDC);
     }

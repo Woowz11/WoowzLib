@@ -110,6 +110,7 @@ public class Window{
 
     #region Процессы окна
 
+        private bool __CursorInside;
         public void __Update(){
             try{
                 if(ShouldDestroy){ DestroyNow(); return; }
@@ -119,6 +120,21 @@ public class Window{
                 this.CursorPosition = ToClient(CursorPosition);
                 
                 CursorInside = Inside(CursorPosition);
+                
+                if(__CursorInside != CursorInside){
+                    __CursorInside = CursorInside;
+                    try{
+                        OnCursorInside?.Invoke(this, CursorInside);
+                    }catch(Exception e){
+                        Logger.Error("Произошла ошибка при вызове ивентов на \"Курсор вошёл в окно?\" [" + this + "]!\nВошёл: " + CursorInside, e);
+                    }
+                }
+                
+                try{
+                    OnUpdate?.Invoke(this);
+                }catch(Exception e){
+                    Logger.Error("Произошла ошибка при вызове ивентов на обновление окна [" + this + "]!", e);
+                }
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при обновлении окна [" + this + "]!", e);
             }
@@ -167,11 +183,11 @@ public class Window{
                     
                     // Обновление позиции окна
                     case System.Native.Windows.WM_WINDOWPOSCHANGED:
-                        System.Native.Windows.WINDOWPOS Position = Marshal.PtrToStructure<System.Native.Windows.WINDOWPOS>(LParam);
+                        System.Native.Windows.WINDOWPOS Position__ = Marshal.PtrToStructure<System.Native.Windows.WINDOWPOS>(LParam);
 
-                        if((Position.flags & System.Native.Windows.SWP_NOMOVE) == 0){
-                            __X = Position.x;
-                            __Y = Position.y;
+                        if((Position__.flags & System.Native.Windows.SWP_NOMOVE) == 0){
+                            __X = Position__.x;
+                            __Y = Position__.y;
 
                             try{
                                 OnMove?.Invoke(this, __X, __Y);
@@ -208,7 +224,7 @@ public class Window{
                         break;
                     
                     case System.Native.Windows.WM_ERASEBKGND:
-                        return (IntPtr)1;
+                        return 1;
                     
                     // Обработка элементов у окна
                     case System.Native.Windows.WM_COMMAND:
@@ -241,12 +257,12 @@ public class Window{
         public event Action<Window>? OnDestroy;
 
         /// <summary>
-        /// Вызывается когда меняется размер у окна [Окно, новая ширина, новая высота]
+        /// Вызывается когда меняется размер у окна [Окно, Новая ширина, Новая высота]
         /// </summary>
         public event Action<Window, uint, uint>? OnResize;
 
         /// <summary>
-        /// Вызывается когда окно сдвинулось [Окно, новая X, новая Y]
+        /// Вызывается когда окно сдвинулось [Окно, Новый X, Новый Y]
         /// </summary>
         public event Action<Window, int, int>? OnMove;
 
@@ -254,6 +270,16 @@ public class Window{
         /// Вызывается когда курсор внутри окна сдвинулся [Окно, X, Y]
         /// </summary>
         public event Action<Window, int, int>? OnCursorMove;
+
+        /// <summary>
+        /// Вызывается когда курсор входит или выходиз из окна [Окно, Входит?]
+        /// </summary>
+        public event Action<Window, bool>? OnCursorInside;
+
+        /// <summary>
+        /// Вызывается при обновлении окна [Окно]
+        /// </summary>
+        public event Action<Window>? OnUpdate;
         
     #endregion
 

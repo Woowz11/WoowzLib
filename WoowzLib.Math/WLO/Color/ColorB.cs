@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 02.02.2026 20:30
+/// Сгенерирован: 02.02.2026 22:46
 /// </summary>
 public struct ColorB{
 	public static readonly Type Type = typeof(byte);
@@ -52,6 +52,16 @@ public struct ColorB{
 	public static ColorB Gray => new ColorB().ToGray();
 	public ColorB ToBlack(){ return Set(0, 0, 0, 255); }
 	public static ColorB Black => new ColorB().ToBlack();
+	public ColorB ToDarkRed(){ return Set(127, 0, 0, 255); }
+	public static ColorB DarkRed => new ColorB().ToDarkRed();
+	public ColorB ToDarkYellow(){ return Set(127, 127, 0, 255); }
+	public static ColorB DarkYellow => new ColorB().ToDarkYellow();
+	public ColorB ToDarkGreen(){ return Set(0, 127, 0, 255); }
+	public static ColorB DarkGreen => new ColorB().ToDarkGreen();
+	public ColorB ToDarkBlue(){ return Set(0, 0, 127, 255); }
+	public static ColorB DarkBlue => new ColorB().ToDarkBlue();
+	public ColorB ToDarkMagenta(){ return Set(127, 0, 127, 255); }
+	public static ColorB DarkMagenta => new ColorB().ToDarkMagenta();
 	public ColorB ToTransparent(){ return Set(0, 0, 0, 0); }
 	public static ColorB Transparent => new ColorB().ToTransparent();
 	public ColorB ToRandom(){ return Set(WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), 1); }

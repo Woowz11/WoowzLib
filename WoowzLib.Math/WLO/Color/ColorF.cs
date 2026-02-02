@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 02.02.2026 20:30
+/// Сгенерирован: 02.02.2026 22:46
 /// </summary>
 public struct ColorF{
 	public static readonly Type Type = typeof(float);
@@ -52,6 +52,16 @@ public struct ColorF{
 	public static ColorF Gray => new ColorF().ToGray();
 	public ColorF ToBlack(){ return Set(0, 0, 0, 1); }
 	public static ColorF Black => new ColorF().ToBlack();
+	public ColorF ToDarkRed(){ return Set(0.5f, 0, 0, 1); }
+	public static ColorF DarkRed => new ColorF().ToDarkRed();
+	public ColorF ToDarkYellow(){ return Set(0.5f, 0.5f, 0, 1); }
+	public static ColorF DarkYellow => new ColorF().ToDarkYellow();
+	public ColorF ToDarkGreen(){ return Set(0, 0.5f, 0, 1); }
+	public static ColorF DarkGreen => new ColorF().ToDarkGreen();
+	public ColorF ToDarkBlue(){ return Set(0, 0, 0.5f, 1); }
+	public static ColorF DarkBlue => new ColorF().ToDarkBlue();
+	public ColorF ToDarkMagenta(){ return Set(0.5f, 0, 0.5f, 1); }
+	public static ColorF DarkMagenta => new ColorF().ToDarkMagenta();
 	public ColorF ToTransparent(){ return Set(0, 0, 0, 0); }
 	public static ColorF Transparent => new ColorF().ToTransparent();
 	public ColorF ToRandom(){ return Set(WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), 1); }

@@ -275,6 +275,11 @@ public static class Generator{
                     {"White"      , [ V_1, V_1, V_1, V_1 ]},
                     {"Gray"       , [ V05, V05, V05, V_1 ]},
                     {"Black"      , [ V_0, V_0, V_0, V_1 ]},
+                    {"DarkRed"    , [ V05, V_0, V_0, V_1 ]},
+                    {"DarkYellow" , [ V05, V05, V_0, V_1 ]},
+                    {"DarkGreen"  , [ V_0, V05, V_0, V_1 ]},
+                    {"DarkBlue"   , [ V_0, V_0, V05, V_1 ]},
+                    {"DarkMagenta", [ V05, V_0, V05, V_1 ]},
                     {"Transparent", [ V_0, V_0, V_0, V_0 ]}
                 };
                 
