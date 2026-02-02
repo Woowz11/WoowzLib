@@ -16,6 +16,10 @@ public static class Program{
             ));
             
             Window W1 = new Window();
+
+            Panel P = new Panel();
+
+            W1.Add(P);
             
             W1.BackgroundColor = ColorF.Black;
             
@@ -26,15 +30,7 @@ public static class Program{
                         d += TD.DeltaTimeS;
                         if(d > 0.5f){ W1.Title = TD.FPS.ToString(); d = 0; }
 
-                        W1.Render(W1.BackgroundColor, true, null, HDC => {
-                            const int Size = 8;
-
-                            const int t = 100;
-                            
-                            for(int i = 0; i < 10000; i++){
-                                WL.System.HDC.Fill(HDC, (i - (int)Math.Floor((double)i / t) * t) * Size, (int)Math.Floor((double)i / t) * Size, Size, Size, ColorF.Random.ToRGBiA());
-                            }
-                        });
+                        W1.Render();
                     }
                 });
                 
