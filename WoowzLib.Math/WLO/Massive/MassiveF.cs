@@ -2,34 +2,34 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 04.02.2026 23:05
+/// Сгенерирован: 05.02.2026 2:02
 /// </summary>
-public struct MassiveL : ArrayByteObject{
+public struct MassiveF : ArrayByteObject{
 	// надо добавить sha256...
 
-	public MassiveL(){
+	public MassiveF(){
 		Data = [];
 		AutoSize = true;
 	}
 
-	public MassiveL(int Size, bool AutoSize = true){
+	public MassiveF(int Size, bool AutoSize = true){
 		if(Size < 0){ throw new Exception("Размер не может быть < 0!"); }
-		Data = new long[Size];
+		Data = new float[Size];
 		this.AutoSize = AutoSize;
 	}
 	
-	public MassiveL(long[] Data, bool AutoSize = true){
+	public MassiveF(float[] Data, bool AutoSize = true){
 		this.Data = Data ?? throw new Exception("Задан пустой массив!");
 		this.AutoSize = AutoSize;
 	}
 
-	public long[] Data;
+	public float[] Data;
 	
 	public int Size => Data.Length;
 	
 	public bool AutoSize;
 	
-	public ref long this[int Index]{
+	public ref float this[int Index]{
 		get{
 			if(Index < 0){ throw new Exception("Индекс < 0!"); }
 			if(Index >= Size){
@@ -43,9 +43,9 @@ public struct MassiveL : ArrayByteObject{
 		}
 	}
 	
-	public MassiveL Set(long[] Data){
+	public MassiveF Set(float[] Data){
 		try{
-			this.Data = new long[Data.Length];
+			this.Data = new float[Data.Length];
 			Array.Copy(Data, this.Data, Data.Length);
 			
 			return this;
@@ -54,7 +54,7 @@ public struct MassiveL : ArrayByteObject{
 		}
 	}
 	
-	public MassiveL SetSlice(int Index, long[] Data){
+	public MassiveF SetSlice(int Index, float[] Data){
 		try{
 			if(Index < 0){ throw new Exception("Индекс < 0!"); }
 
@@ -75,7 +75,7 @@ public struct MassiveL : ArrayByteObject{
 		}
 	}
 	
-	public long[] GetSlice(int Index, int EndIndex){
+	public float[] GetSlice(int Index, int EndIndex){
 		try{
 			if(Index < 0 || EndIndex < Index){ throw new Exception("Неверный диапазон! Index < 0 || EndIndex < Index"); }
 			if(EndIndex >= Size){
@@ -87,7 +87,7 @@ public struct MassiveL : ArrayByteObject{
 			}
 			
 			int L = EndIndex - Index + 1;
-			long[] Slice = new long[L];
+			float[] Slice = new float[L];
 			Array.Copy(Data, Index, Slice, 0, L);
 			return Slice;
 		}catch(Exception e){
@@ -95,7 +95,7 @@ public struct MassiveL : ArrayByteObject{
 		}
 	}
 	
-	public MassiveL Resize(int NewSize){
+	public MassiveF Resize(int NewSize){
 		try{
 			Array.Resize(ref Data, NewSize);
 		}catch(Exception e){
@@ -108,10 +108,10 @@ public struct MassiveL : ArrayByteObject{
 	/// <summary>
 	/// Увеличивает размер массива, если индекс выходит за края (в указанное кол-во раз)
 	/// </summary>
-	public MassiveL EnsureSize(int Index, int HowMuch = 2){
+	public MassiveF EnsureSize(int Index, int HowMuch = 2){
 		try{
 			int Required = Index + 1;
-			Resize(Size == 0 ? Required : Math.Max(Size * HowMuch, Required));
+			Resize(Size == 0 ? Required : WL.Math.MaxI(Size * HowMuch, Required));
 		}catch(Exception e){
 			throw new Exception("Произошла ошибка при увеличении размера у массива [" + this + "]!\nИндекс: " + Index + "\nНа сколько?: " + HowMuch, e);
 		}
@@ -119,7 +119,7 @@ public struct MassiveL : ArrayByteObject{
 		return this;
 	}
 
-	public Span<long> AsSpan{
+	public Span<float> AsSpan{
 		get => Data;
 		set{
 			if(value.Length != Size){
@@ -137,11 +137,11 @@ public struct MassiveL : ArrayByteObject{
 	#region Override
 
 	   public override string ToString(){
-		   return "MassiveL(0-" + (Size - 1) + ", " + AutoSize + ")";
+		   return "MassiveF(0-" + (Size - 1) + ", " + AutoSize + ")";
 	   }
 	   
 	   public int ElementBSize(){
-			return sizeof(long); 
+			return sizeof(float); 
 		}
 	   
 	   public int BSize(){

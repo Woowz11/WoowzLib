@@ -2,34 +2,34 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 04.02.2026 23:05
+/// Сгенерирован: 05.02.2026 2:02
 /// </summary>
-public struct MassiveUL : ArrayByteObject{
+public struct MassiveD : ArrayByteObject{
 	// надо добавить sha256...
 
-	public MassiveUL(){
+	public MassiveD(){
 		Data = [];
 		AutoSize = true;
 	}
 
-	public MassiveUL(int Size, bool AutoSize = true){
+	public MassiveD(int Size, bool AutoSize = true){
 		if(Size < 0){ throw new Exception("Размер не может быть < 0!"); }
-		Data = new ulong[Size];
+		Data = new double[Size];
 		this.AutoSize = AutoSize;
 	}
 	
-	public MassiveUL(ulong[] Data, bool AutoSize = true){
+	public MassiveD(double[] Data, bool AutoSize = true){
 		this.Data = Data ?? throw new Exception("Задан пустой массив!");
 		this.AutoSize = AutoSize;
 	}
 
-	public ulong[] Data;
+	public double[] Data;
 	
 	public int Size => Data.Length;
 	
 	public bool AutoSize;
 	
-	public ref ulong this[int Index]{
+	public ref double this[int Index]{
 		get{
 			if(Index < 0){ throw new Exception("Индекс < 0!"); }
 			if(Index >= Size){
@@ -43,9 +43,9 @@ public struct MassiveUL : ArrayByteObject{
 		}
 	}
 	
-	public MassiveUL Set(ulong[] Data){
+	public MassiveD Set(double[] Data){
 		try{
-			this.Data = new ulong[Data.Length];
+			this.Data = new double[Data.Length];
 			Array.Copy(Data, this.Data, Data.Length);
 			
 			return this;
@@ -54,7 +54,7 @@ public struct MassiveUL : ArrayByteObject{
 		}
 	}
 	
-	public MassiveUL SetSlice(int Index, ulong[] Data){
+	public MassiveD SetSlice(int Index, double[] Data){
 		try{
 			if(Index < 0){ throw new Exception("Индекс < 0!"); }
 
@@ -75,7 +75,7 @@ public struct MassiveUL : ArrayByteObject{
 		}
 	}
 	
-	public ulong[] GetSlice(int Index, int EndIndex){
+	public double[] GetSlice(int Index, int EndIndex){
 		try{
 			if(Index < 0 || EndIndex < Index){ throw new Exception("Неверный диапазон! Index < 0 || EndIndex < Index"); }
 			if(EndIndex >= Size){
@@ -87,7 +87,7 @@ public struct MassiveUL : ArrayByteObject{
 			}
 			
 			int L = EndIndex - Index + 1;
-			ulong[] Slice = new ulong[L];
+			double[] Slice = new double[L];
 			Array.Copy(Data, Index, Slice, 0, L);
 			return Slice;
 		}catch(Exception e){
@@ -95,7 +95,7 @@ public struct MassiveUL : ArrayByteObject{
 		}
 	}
 	
-	public MassiveUL Resize(int NewSize){
+	public MassiveD Resize(int NewSize){
 		try{
 			Array.Resize(ref Data, NewSize);
 		}catch(Exception e){
@@ -108,10 +108,10 @@ public struct MassiveUL : ArrayByteObject{
 	/// <summary>
 	/// Увеличивает размер массива, если индекс выходит за края (в указанное кол-во раз)
 	/// </summary>
-	public MassiveUL EnsureSize(int Index, int HowMuch = 2){
+	public MassiveD EnsureSize(int Index, int HowMuch = 2){
 		try{
 			int Required = Index + 1;
-			Resize(Size == 0 ? Required : Math.Max(Size * HowMuch, Required));
+			Resize(Size == 0 ? Required : WL.Math.MaxI(Size * HowMuch, Required));
 		}catch(Exception e){
 			throw new Exception("Произошла ошибка при увеличении размера у массива [" + this + "]!\nИндекс: " + Index + "\nНа сколько?: " + HowMuch, e);
 		}
@@ -119,7 +119,7 @@ public struct MassiveUL : ArrayByteObject{
 		return this;
 	}
 
-	public Span<ulong> AsSpan{
+	public Span<double> AsSpan{
 		get => Data;
 		set{
 			if(value.Length != Size){
@@ -137,11 +137,11 @@ public struct MassiveUL : ArrayByteObject{
 	#region Override
 
 	   public override string ToString(){
-		   return "MassiveUL(0-" + (Size - 1) + ", " + AutoSize + ")";
+		   return "MassiveD(0-" + (Size - 1) + ", " + AutoSize + ")";
 	   }
 	   
 	   public int ElementBSize(){
-			return sizeof(ulong); 
+			return sizeof(double); 
 		}
 	   
 	   public int BSize(){

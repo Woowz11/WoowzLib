@@ -22,12 +22,11 @@ public static class Generator{
                            """;
             
             string MathFolder = Path.GetFullPath(Path.Combine(BaseFolder, "WoowzLib.Math"));
-            string ByteFolder = Path.GetFullPath(Path.Combine(BaseFolder, "WoowzLib.Byte"));
             
             GenerateVector (Path.GetFullPath(Path.Combine(MathFolder, "WLO", "Vector" )));
             GenerateColor  (Path.GetFullPath(Path.Combine(MathFolder, "WLO", "Color"  )));
             GenerateRect   (Path.GetFullPath(Path.Combine(MathFolder, "WLO", "Rect"   )));
-            GenerateMassive(Path.GetFullPath(Path.Combine(ByteFolder, "WLO", "Massive")));
+            GenerateMassive(Path.GetFullPath(Path.Combine(MathFolder, "WLO", "Massive")));
         }catch(Exception e){
             throw new Exception("Произошла ошибка во время генерации!", e);
         }
@@ -117,7 +116,7 @@ public static class Generator{
                 };
 
                 Dictionary<string, string[]> AllConstants = new[]{ Constants2, Constants3, Constants4 }
-                                                            .Take(Math.Max(0, N - 1))
+                                                            .Take(WL.Math.MaxI(0, N - 1))
                                                             .SelectMany(D => D)
                                                             .Where(P => !NoMinus || !P.Value.Contains(VM1))
                                                             .ToDictionary(P => P.Key, P => P.Value.Take(N).ToArray());
@@ -671,7 +670,7 @@ public static class Generator{
                                 public {{Name}} EnsureSize(int Index, int HowMuch = 2){
                                     try{
                                         int Required = Index + 1;
-                                        Resize(Size == 0 ? Required : Math.Max(Size * HowMuch, Required));
+                                        Resize(Size == 0 ? Required : WL.Math.MaxI(Size * HowMuch, Required));
                                     }catch(Exception e){
                                         throw new Exception("Произошла ошибка при увеличении размера у массива [" + this + "]!\nИндекс: " + Index + "\nНа сколько?: " + HowMuch, e);
                                     }
@@ -701,7 +700,7 @@ public static class Generator{
                                    }
                                    
                                    public int ElementBSize(){
-                                        return {{WL.System.Condition(Custom, "WL.Byte.Size(typeof(T))", "sizeof(" + Type + ")")}}; 
+                                        return {{WL.System.Condition(Custom, "WL.System.Byte.Size(typeof(T))", "sizeof(" + Type + ")")}}; 
                                     }
                                    
                                    public int BSize(){

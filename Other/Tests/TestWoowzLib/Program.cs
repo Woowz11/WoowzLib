@@ -118,14 +118,11 @@ public static class Program{
 
                         W1.Title = FPS + " | " + W1.CursorInside;
                         
-                        //P.X = W1.CursorPosition.X - (int)(P.Width  / 2);
-                        //P.Y = W1.CursorPosition.Y - (int)(P.Height / 2);
-                        
-                        P3.Width  = (uint)((0.75f + Math.Sin(TD.DeltaTick * 2) / 4) * 512);
-                        P3.Height = (uint)((0.75f + Math.Sin(TD.DeltaTick * 2) / 4) * 512);
+                        P3.Width  = (uint)((0.75f + WL.Math.Sin((float)TD.DeltaTick * 2) / 4) * 512);
+                        P3.Height = (uint)((0.75f + WL.Math.Sin((float)TD.DeltaTick * 2) / 4) * 512);
 
-                        P3.Anchor_X = (float)Math.Sin(TD.DeltaTick);
-                        P3.Anchor_Y = -(float)Math.Cos(TD.DeltaTick);
+                        P3.Anchor_X = WL.Math.Sin((float)TD.DeltaTick);
+                        P3.Anchor_Y = -WL.Math.Cos((float)TD.DeltaTick);
                         
                         W1.Render();
                     }

@@ -2,34 +2,34 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 04.02.2026 23:05
+/// Сгенерирован: 05.02.2026 2:02
 /// </summary>
-public struct Massive<T> : ArrayByteObject where T : unmanaged{
+public struct MassiveI : ArrayByteObject{
 	// надо добавить sha256...
 
-	public Massive(){
+	public MassiveI(){
 		Data = [];
 		AutoSize = true;
 	}
 
-	public Massive(int Size, bool AutoSize = true){
+	public MassiveI(int Size, bool AutoSize = true){
 		if(Size < 0){ throw new Exception("Размер не может быть < 0!"); }
-		Data = new T[Size];
+		Data = new int[Size];
 		this.AutoSize = AutoSize;
 	}
 	
-	public Massive(T[] Data, bool AutoSize = true){
+	public MassiveI(int[] Data, bool AutoSize = true){
 		this.Data = Data ?? throw new Exception("Задан пустой массив!");
 		this.AutoSize = AutoSize;
 	}
 
-	public T[] Data;
+	public int[] Data;
 	
 	public int Size => Data.Length;
 	
 	public bool AutoSize;
 	
-	public ref T this[int Index]{
+	public ref int this[int Index]{
 		get{
 			if(Index < 0){ throw new Exception("Индекс < 0!"); }
 			if(Index >= Size){
@@ -43,9 +43,9 @@ public struct Massive<T> : ArrayByteObject where T : unmanaged{
 		}
 	}
 	
-	public Massive<T> Set(T[] Data){
+	public MassiveI Set(int[] Data){
 		try{
-			this.Data = new T[Data.Length];
+			this.Data = new int[Data.Length];
 			Array.Copy(Data, this.Data, Data.Length);
 			
 			return this;
@@ -54,7 +54,7 @@ public struct Massive<T> : ArrayByteObject where T : unmanaged{
 		}
 	}
 	
-	public Massive<T> SetSlice(int Index, T[] Data){
+	public MassiveI SetSlice(int Index, int[] Data){
 		try{
 			if(Index < 0){ throw new Exception("Индекс < 0!"); }
 
@@ -75,7 +75,7 @@ public struct Massive<T> : ArrayByteObject where T : unmanaged{
 		}
 	}
 	
-	public T[] GetSlice(int Index, int EndIndex){
+	public int[] GetSlice(int Index, int EndIndex){
 		try{
 			if(Index < 0 || EndIndex < Index){ throw new Exception("Неверный диапазон! Index < 0 || EndIndex < Index"); }
 			if(EndIndex >= Size){
@@ -87,7 +87,7 @@ public struct Massive<T> : ArrayByteObject where T : unmanaged{
 			}
 			
 			int L = EndIndex - Index + 1;
-			T[] Slice = new T[L];
+			int[] Slice = new int[L];
 			Array.Copy(Data, Index, Slice, 0, L);
 			return Slice;
 		}catch(Exception e){
@@ -95,7 +95,7 @@ public struct Massive<T> : ArrayByteObject where T : unmanaged{
 		}
 	}
 	
-	public Massive<T> Resize(int NewSize){
+	public MassiveI Resize(int NewSize){
 		try{
 			Array.Resize(ref Data, NewSize);
 		}catch(Exception e){
@@ -108,10 +108,10 @@ public struct Massive<T> : ArrayByteObject where T : unmanaged{
 	/// <summary>
 	/// Увеличивает размер массива, если индекс выходит за края (в указанное кол-во раз)
 	/// </summary>
-	public Massive<T> EnsureSize(int Index, int HowMuch = 2){
+	public MassiveI EnsureSize(int Index, int HowMuch = 2){
 		try{
 			int Required = Index + 1;
-			Resize(Size == 0 ? Required : Math.Max(Size * HowMuch, Required));
+			Resize(Size == 0 ? Required : WL.Math.MaxI(Size * HowMuch, Required));
 		}catch(Exception e){
 			throw new Exception("Произошла ошибка при увеличении размера у массива [" + this + "]!\nИндекс: " + Index + "\nНа сколько?: " + HowMuch, e);
 		}
@@ -119,7 +119,7 @@ public struct Massive<T> : ArrayByteObject where T : unmanaged{
 		return this;
 	}
 
-	public Span<T> AsSpan{
+	public Span<int> AsSpan{
 		get => Data;
 		set{
 			if(value.Length != Size){
@@ -137,11 +137,11 @@ public struct Massive<T> : ArrayByteObject where T : unmanaged{
 	#region Override
 
 	   public override string ToString(){
-		   return "Massive<T>(0-" + (Size - 1) + ", " + AutoSize + ")";
+		   return "MassiveI(0-" + (Size - 1) + ", " + AutoSize + ")";
 	   }
 	   
 	   public int ElementBSize(){
-			return WL.Byte.Size(typeof(T)); 
+			return sizeof(int); 
 		}
 	   
 	   public int BSize(){

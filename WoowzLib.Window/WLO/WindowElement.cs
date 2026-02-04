@@ -221,13 +221,13 @@ public abstract class WindowElement{
 
     public float Anchor_Width{
         get => __Anchor_Width;
-        set{ __Anchor_Width = float.Max(value, 0); }
+        set => __Anchor_Width = WL.Math.Max(value, 0);
     }
     private float __Anchor_Width = 0;
     
     public float Anchor_Height{
         get => __Anchor_Height;
-        set{ __Anchor_Height = float.Max(value, 0); }
+        set => __Anchor_Height = WL.Math.Max(value, 0);
     }
     private float __Anchor_Height = 0;
     

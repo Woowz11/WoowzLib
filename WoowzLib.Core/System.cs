@@ -6,7 +6,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 20)]
+    [WLModule(int.MinValue + 1, 21)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -227,42 +227,47 @@ namespace WL{
             /// <summary>
             /// Создаёт число из 4-х байтов (AA, BB, CC, DD) -> 0xAABBCCDD
             /// </summary>
-            public static uint Byte4(byte B1, byte B2, byte B3, byte B4){ return (uint)(B1 << 24 | B2 << 16 | B3 << 8 | B4); }
+            public static uint Byte4(byte B1, byte B2, byte B3, byte B4) => (uint)(B1 << 24 | B2 << 16 | B3 << 8 | B4);
 
-            public static byte Byte4_1(uint V){ return (byte)((V >> 24) & 0xFF); }
-            public static byte Byte4_2(uint V){ return (byte)((V >> 16) & 0xFF); }
-            public static byte Byte4_3(uint V){ return (byte)((V >> 8 ) & 0xFF); }
-            public static byte Byte4_4(uint V){ return (byte)( V        & 0xFF); }
+            public static byte Byte4_1(uint V) => (byte)((V >> 24) & 0xFF);
+            public static byte Byte4_2(uint V) => (byte)((V >> 16) & 0xFF);
+            public static byte Byte4_3(uint V) => (byte)((V >> 8 ) & 0xFF);
+            public static byte Byte4_4(uint V) => (byte)( V        & 0xFF);
 
             /// <summary>
             /// Создаёт RGBA
             /// </summary>
-            public static uint RGBA(byte R, byte G, byte B, byte A){ return Byte4(R, G, B, A); }
+            public static uint RGBA(byte R, byte G, byte B, byte A) => Byte4(R, G, B, A);
                 
             /// <summary>
             /// Создаёт ABGR
             /// </summary>
-            public static uint ABGR(byte A, byte B, byte G, byte R){ return Byte4(A, B, G, R); }
+            public static uint ABGR(byte A, byte B, byte G, byte R) => Byte4(A, B, G, R);
 
             /// <summary>
             /// Превращает 0xAABBCCDD -> 0xDDCCBBAA 
             /// </summary>
-            public static uint Byte4_Inverse(uint V){ return Byte4(Byte4_4(V), Byte4_3(V), Byte4_2(V), Byte4_1(V)); }
+            public static uint Byte4_Inverse(uint V) => Byte4(Byte4_4(V), Byte4_3(V), Byte4_2(V), Byte4_1(V));
 
             /// <summary>
             /// Превращает RGBA -> ABGR
             /// </summary>
-            public static uint RGBA_To_ABGR(uint RGBA){ return Byte.Byte4_Inverse(RGBA); }
+            public static uint RGBA_To_ABGR(uint RGBA) => Byte.Byte4_Inverse(RGBA);
 
             /// <summary>
             /// Превращает ABGR -> RGBA
             /// </summary>
-            public static uint ABGR_To_RGBA(uint ABGR){ return Byte.Byte4_Inverse(ABGR); }
+            public static uint ABGR_To_RGBA(uint ABGR) => Byte.Byte4_Inverse(ABGR);
 
-            public static byte ToColorByte(byte   V){ return        V       ; }
-            public static byte ToColorByte(int    V){ return (byte) V       ; }
-            public static byte ToColorByte(float  V){ return (byte)(V * 255); }
-            public static byte ToColorByte(double V){ return (byte)(V * 255); }
+            public static byte ToColorByte(byte   V) =>        V       ;
+            public static byte ToColorByte(int    V) => (byte) V       ;
+            public static byte ToColorByte(float  V) => (byte)(V * 255);
+            public static byte ToColorByte(double V) => (byte)(V * 255);
+
+            /// <summary>
+            /// Вычисляет размер объекта в байтах
+            /// </summary>
+            public static int Size(object Obj) => Marshal.SizeOf(Obj);
         }
         
         public static class HDC{
