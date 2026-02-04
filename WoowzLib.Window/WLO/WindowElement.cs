@@ -18,20 +18,6 @@ public enum ElementLocation{
     InWorld
 }
 
-public enum ElementAnchorX{
-    None,
-    Left,
-    Center,
-    Right
-}
-
-public enum ElementAnchorY{
-    None,
-    Top,
-    Center,
-    Bottom
-}
-
 public enum ElementAnchorSize{
     None,
     Horizon,
@@ -184,30 +170,20 @@ public abstract class WindowElement{
     /// Позиция по X элемента с учётом локации
     /// </summary>
     public int X_Location => Location switch{
-        ElementLocation.InWindow => X,
-        ElementLocation.InParent => X + (Parent?.X_Final ?? 0),
-        ElementLocation.InWorld  => X - (Window?.X ?? 0),
-        var _ => X
+        ElementLocation.InWindow => 0,
+        ElementLocation.InParent =>  (Parent?.X_Final ?? 0),
+        ElementLocation.InWorld  => -(Window?.X ?? 0)
     };
     
-    public int X_Anchor {
-        get{
-            if(Parent == null){ return X; }
+    /// <summary>
+    /// Позиция по X элемента с учётом точки привязки
+    /// </summary>
+    public int X_Anchor => (int)(((Anchor_X + 1) / 2f) * ((int)(Parent?.Width_Final ?? Window.Width) - (int)Width));
 
-            int ParentW = (int)Parent.Width_Final;
-            int Result = X;
-
-            switch(Anchor_X){
-                case ElementAnchorX.Left  : Result = 0                                 ; break;
-                case ElementAnchorX.Center: Result = (ParentW - (int)Width_Final)/2 + X; break;
-                case ElementAnchorX.Right : Result =  ParentW - (int)Width_Final    + X; break;
-            }
-            
-            return Result;
-        }
-    }
-
-    public int X_Final => X_Location + X_Anchor;
+    /// <summary>
+    /// Позиция по X элемента с учётом всего
+    /// </summary>
+    public int X_Final => X + X_Location + X_Anchor;
     
     /// <summary>
     /// Позиция по Y элемента
@@ -218,33 +194,29 @@ public abstract class WindowElement{
     /// Позиция по Y элемента с учётом локации
     /// </summary>
     public int Y_Location => Location switch{
-        ElementLocation.InWindow => Y,
-        ElementLocation.InParent => Y + (Parent?.Y_Final ?? 0),
-        ElementLocation.InWorld  => Y - (Window?.Y ?? 0),
-        var _ => Y
+        ElementLocation.InWindow => 0,
+        ElementLocation.InParent =>  (Parent?.Y_Final ?? 0),
+        ElementLocation.InWorld  => -(Window?.Y ?? 0)
     };
     
-    public int Y_Anchor {
-        get{
-            if(Parent == null){ return Y; }
+    /// <summary>
+    /// Позиция по Y элемента с учётом точки привязки
+    /// </summary>
+    public int Y_Anchor => (int)(((Anchor_Y + 1) / 2f) * ((int)(Parent?.Height_Final ?? Window.Height) - (int)Height));
 
-            int ParentH = (int)Parent.Height_Final;
-            int Result = Y;
+    /// <summary>
+    /// Позиция по Y элемента с учётом всего
+    /// </summary>
+    public int Y_Final => Y + Y_Location + Y_Anchor;
 
-            switch(Anchor_Y){
-                case ElementAnchorY.Top   : Result = 0                              ; break;
-                case ElementAnchorY.Center: Result = (ParentH - (int)Height_Final)/2; break;
-                case ElementAnchorY.Bottom: Result =  ParentH - (int)Height_Final   ; break;
-            }
-            
-            return Result;
-        }
-    }
-
-    public int Y_Final => Y_Location + Y_Anchor;
-
-    public ElementAnchorX Anchor_X = ElementAnchorX.None;
-    public ElementAnchorY Anchor_Y = ElementAnchorY.None;
+    /// <summary>
+    /// Относительно какой горизонтали располагать элемент? (-1: Лево, 0: Центр, 1: Право)
+    /// </summary>
+    public float Anchor_X = -1;
+    /// <summary>
+    /// Относительно какой вертикали располагать элемент? (-1: Вверх, 0: Центр, 1: Низ)
+    /// </summary>
+    public float Anchor_Y = -1;
     public ElementAnchorSize Anchor_Size = ElementAnchorSize.None;
     
     /// <summary>
@@ -253,11 +225,19 @@ public abstract class WindowElement{
     public uint Width;
 
     /// <summary>
-    /// Ширина элемент с учётом растягивания
+    /// Ширина элемента с учётом растягивания
     /// </summary>
     public uint Width_Final{
         get{
-            return Width;
+            if(Parent == null){ return Width; }
+
+            switch(Anchor_Size){
+                case ElementAnchorSize.Horizon:
+                case ElementAnchorSize.Both:
+                        return (uint)(Parent.Width_Final - X_Anchor);
+                default:
+                    return Width;
+            }
         }
     }
 
@@ -267,16 +247,19 @@ public abstract class WindowElement{
     public uint Height;
 
     /// <summary>
-    /// Высота элемент с учётом растягивания
+    /// Высота элемента с учётом растягивания
     /// </summary>
     public uint Height_Final{
         get{
-            return Height;
+            if(Parent == null){ return Height; }
+
+            switch(Anchor_Size){
+                case ElementAnchorSize.Vertical:
+                case ElementAnchorSize.Both:
+                    return (uint)(Parent.Height_Final - Y_Anchor);
+                default:
+                    return Height;
+            }
         }
     }
-    
-    /// <summary>
-    /// Расположение по Z элемента (слои)
-    /// </summary>
-    public double Z;
 }
