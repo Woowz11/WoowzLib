@@ -16,115 +16,51 @@ public static class Program{
             ));
             
             Window W1 = new Window();
-            
-            Panel P = new Panel(Width: W1.Width, Height: 512, Color: ColorF.Black);
+            Window W2 = new Window();
+
+            Panel P = new Panel(Color: ColorF.Gray);
+            W1.Add(P);
 
             P.Anchor_X = 0;
             P.Anchor_Y = 0;
+            
+            P.Anchor_Width  = 0.9f;
+            P.Anchor_Height = 0.9f;
 
-            Panel P17 = new Panel(Color: ColorF.DarkGray);
-            P.Add(P17);
-            P17.Anchor_X = 0;
-            P17.Anchor_Height = 1;
-            P17.Anchor_Width = 0.8f;
+            RenderPanel RP = new RenderPanel();
+            P.Add(RP);
             
-            W1.OnResize += (window, u, arg3) => {
-                P.Width = u;
-            };
+            RP.Anchor_X = 0;
+            RP.Anchor_Y = 0;
             
-            W1.Add(P);
-
-            Panel P3 = new Panel(Width: 512, Height: 512);
-            P3.Anchor_X = 0;
-            P3.Anchor_Y = 0;
-            
-            P17.Add(P3);
-
-            Panel P4 = new Panel(Color: ColorF.Red);
-            Panel P5 = new Panel(Color: ColorF.Blue);
-            
-            P3.Add(P4).Add(P5);
-
-            P4.Anchor_X = -1;
-            P5.Anchor_X = 1;
-            
-            Panel P6 = new Panel(Color: ColorF.Green);
-            Panel P7 = new Panel(Color: ColorF.Yellow);
-            
-            P3.Add(P6).Add(P7);
-
-            P6.Anchor_Y = 1;
-            P7.Anchor_Y = 1;
-            
-            P6.Anchor_X = -1;
-            P7.Anchor_X = 1;
-            
-            Panel P8 = new Panel(Color: ColorF.Magenta);
-            Panel P9 = new Panel(Color: ColorF.Orange);
-            
-            P3.Add(P8).Add(P9);
-
-            P8.Anchor_Y = -1;
-            P9.Anchor_Y = 1;
-            
-            P8.Anchor_X = 0;
-            P9.Anchor_X = 0;
-            
-            Panel P10 = new Panel(Color: ColorF.Pink);
-            Panel P11 = new Panel(Color: ColorF.DarkYellow);
-            
-            P3.Add(P10).Add(P11);
-
-            P10.Anchor_Y = 0;
-            P11.Anchor_Y = 0;
-            
-            P10.Anchor_X = -1;
-            P11.Anchor_X = 1;
-            
-            Panel P12 = new Panel(Color: ColorF.DarkRed);
-            
-            P3.Add(P12);
-
-            P12.Anchor_X = 0;
-            P12.Anchor_Y = 0;
-            
-            W1.BackgroundColor = ColorF.Brown;
-
-            Panel P13 = new Panel(Color: ColorF.DarkAqua, Width: 16);
-            P13.Anchor_Height = 1;
-            P3.Add(P13);
-            
-            Panel P14 = new Panel(Color: ColorF.DarkAqua, Width: 16);
-            P14.Anchor_Height = 1;
-            P14.Anchor_X = 1;
-            P3.Add(P14);
-            
-            Panel P15 = new Panel(Color: ColorF.DarkPink, Height: 16);
-            P15.Anchor_Width = 1;
-            P3.Add(P15);
-            
-            Panel P16 = new Panel(Color: ColorF.DarkPink, Height: 16);
-            P16.Anchor_Width = 1;
-            P16.Anchor_Y = 1;
-            P3.Add(P16);
+            RP.Anchor_Width  = 0.9f;
+            RP.Anchor_Height = 0.9f;
             
             double d = 2;
             string FPS = "";
-            while(W1.Alive){
+            bool dodo = false;
+            while(W1.Alive || W2.Alive){
                 WL.System.Tick.LimitFPS(1, 300, TD => {
                     if(W1.Alive){
                         d += TD.DeltaTimeS;
-                        if(d > 0.5f){ FPS = TD.FPS.ToString(); d = 0; }
+                        if(d > 0.5f){
+                            FPS = TD.FPS.ToString(); d = 0;
+                            
+                            if(W1.Alive && W2.Alive){
+                                dodo = !dodo;
+
+                                Logger.Info(dodo ? W2 : W1);
+                                P.ToWindow(dodo ? W2 : W1);
+                            }
+                        }
 
                         W1.Title = FPS + " | " + W1.CursorInside;
                         
-                        P3.Width  = (uint)((0.75f + WL.Math.Sin((float)TD.DeltaTick * 2) / 4) * 512);
-                        P3.Height = (uint)((0.75f + WL.Math.Sin((float)TD.DeltaTick * 2) / 4) * 512);
-
-                        P3.Anchor_X = WL.Math.Sin((float)TD.DeltaTick);
-                        P3.Anchor_Y = -WL.Math.Cos((float)TD.DeltaTick);
-                        
                         W1.Render();
+                    }
+                    if(W2.Alive){
+                        
+                        W2.Render();
                     }
                 });
                 

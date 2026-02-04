@@ -8,21 +8,6 @@ public class RenderContext{
         try{
             RenderSurface = RS;
             
-            IntPtr Handle = RS.RenderHandle();
-
-            if(Handle == IntPtr.Zero){ throw new Exception("Не найден Handle у RenderSurface!"); }
-
-            WL.Render.Native.VkWin32SurfaceCreateInfoKHR SurfaceInfo = new WL.Render.Native.VkWin32SurfaceCreateInfoKHR{
-                sType = WL.Render.Native.VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
-                hinstance = WL.System.Native.Windows.GetModuleHandle(null),
-                hwnd = Handle
-            };
-            
-            int Result = WL.Render.Native.vkCreateWin32SurfaceKHR(WL.Render.VK, ref SurfaceInfo, IntPtr.Zero, out IntPtr Surface__);
-            if(Result != 0){ throw new Exception("Произошла ошибка при вызове vkCreateWin32SurfaceKHR! Код: " + Result); }
-
-            Surface = Surface__;
-            
             __CreateSwapchain();
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании RenderContext [" + this + "]!", e);
@@ -227,7 +212,7 @@ public class RenderContext{
     /// <summary>
     /// Контекст ещё живой?
     /// </summary>
-    public bool Alive => RenderSurface.RenderHandle() != IntPtr.Zero;
+    public bool Alive => RenderSurface.RenderAlive();
 
     /// <summary>
     /// Рендерит

@@ -70,8 +70,10 @@ public class Window{
             }
 
             if(Handle == IntPtr.Zero){ throw new Exception("Ссылка на окно пустая!"); }
-            
-            Children.Clear();
+
+            foreach(WindowElement Child in __Children.ToArray()){
+                Child.ToMemory();
+            }
             
             WL.System.Native.Windows.DestroyWindow(Handle);
             
@@ -288,45 +290,14 @@ public class Window{
         /// <summary>
         /// Привязанные элементы к окну
         /// </summary>
-        private readonly List<WindowElement> Children = [];
+        public readonly List<WindowElement> __Children = [];
 
         /// <summary>
         /// Добавить элемент к окну
         /// </summary>
         /// <param name="Element">Элемент</param>
         public Window Add(WindowElement Element){
-            try{
-                CheckDestroyed();
-                
-                if(Element.Parent != null){ throw new Exception("Этот элемент уже привязан к какому-то окну! Ссылка на окно: " + Element.Parent); }
-                
-                Element.__SetParent(this);
-                
-                Children.Add(Element);
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при добавлении элемента [" + Element + "] окну [" + this + "]!", e);
-            }
-
-            return this;
-        }
-        
-        /// <summary>
-        /// Добавляет элементы к окну
-        /// </summary>
-        /// <param name="Elements">Элементы</param>
-        public Window Add(params WindowElement[] Elements){
-            try{
-                CheckDestroyed();
-                
-                if(Elements == null){ throw new Exception("Не указаны элементы!"); }
-
-                foreach(WindowElement Element in Elements){
-                    Add(Element);
-                }
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при добавлении элементов [" + Elements + "] окну [" + this + "]!", e);
-            }
-            
+            Element.ToWindow(this);
             return this;
         }
 
@@ -379,7 +350,7 @@ public class Window{
                 PreRender?.Invoke(BackBuffer);
                 
                 if(RenderElements){
-                    foreach(WindowElement Child in Children){
+                    foreach(WindowElement Child in __Children){
                         Child.BaseRender(BackBuffer);
                     }   
                 }

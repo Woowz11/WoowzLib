@@ -19,101 +19,115 @@ public enum ElementLocation{
 }
 
 public abstract class WindowElement{
-    public void __SetParent(Window Window){
+    /// <summary>
+    /// Окно к которому привязан элемент
+    /// </summary>
+    public Window? Window{ get; private set; }
+
+    /// <summary>
+    /// Привязать элемент к этому окну
+    /// </summary>
+    public WindowElement ToWindow(Window Window){
         try{
+            if(!Window.Alive){ throw new Exception("Окно не живое!"); }
+            if(this.Window == Window){ return this; }
+
+            if(this.Window != null){ this.Window.__Children.Remove(this); }
+            
+            if(Parent != null && Parent.Window != Window){
+                Parent = null;
+            }
+            
+            Window.__Children.Add(this);
+            
             this.Window = Window;
             
-            if(!Window.Alive){ throw new Exception("Окно не живое!"); }
+            return this;
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при установке элементу [" + this + "] родителя (окно) [" + Window + "]!", e);
-        }
-    }
-    
-    public void __SetParent(WindowElement Parent){
-        try{
-                 Window = Parent.Window;
-            this.Parent = Parent;
-            
-            Parent.Children.Add(this);
-        }catch(Exception e){
-            throw new Exception("Произошла ошибка при установке элементу [" + this + "] родителя [" + Parent + "]!", e);
+            throw new Exception("Произошла ошибка при привязке окна [" + Window + "] элементу [" + this + "]!", e);
         }
     }
     
     /// <summary>
-    /// Окно к которому привязан элемент
+    /// Выносит элемент обратно в память, считайте что удаляет
     /// </summary>
-    public Window Window{ get; private set; }
+    public WindowElement ToMemory(){
+        try{
+            if(InMemory){ return this; }
+            foreach(WindowElement Child in __Children.ToArray()){
+                Child.ToMemory();
+            }
+            
+            Parent = null;
+            Window!.__Children.Remove(this);
+            Window = null;
+            return this;
+        }catch(Exception e){
+            throw new Exception("Не получилось вынести элемент [" + this + "] в память!", e);
+        }
+    }
+    
+    /// <summary>
+    /// В памяти?
+    /// </summary>
+    public bool InMemory => Window == null;
     
     /// <summary>
     /// Родитель элемента
     /// </summary>
-    public WindowElement? Parent{ get; private set; }
-    
-    /// <summary>
-    /// Окно живое?
-    /// </summary>
-    public bool Alive => Window.Alive;
-    
+    public WindowElement? Parent{
+        get => __Parent;
+        set{
+            try{
+                if(__Parent == value){ return; }
+
+                if(value == null){
+                    if(__Parent != null){
+                        __Parent.__Children.Remove(this);
+                    }
+                }else{
+                    Window = value.Window;
+                    if(__Parent == null){
+                        value.__Children.Add(this);
+                    }
+                }
+                
+                __Parent = value;
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке родителя элементу [" + this + "]!\nРодитель: " + value, e);
+            }
+        }
+    }
+    private WindowElement? __Parent;
+
     /// <summary>
     /// Дети элемента
     /// </summary>
-    public readonly List<WindowElement> Children = [];
-    
-    [Obsolete("пока-что не работает", true)]
-    public void Destroy(){
-        try{
-            foreach(WindowElement Child in Children){
-                Child.Destroy();
-            }
-            Children.Clear();
-
-            if(Alive){
-                try{
-                    OnDestroy?.Invoke();   
-                }catch(Exception e){
-                    Logger.Error("Произошла ошибка при вызове ивента уничтожения элемента [" + this + "]!", e);
-                }
-            }
-        }catch(Exception e){
-            throw new Exception("Произошла ошибка при уничтожении [" + this + "]!", e);
-        }
-    }
+    private readonly List<WindowElement> __Children = [];
     
     /// <summary>
     /// Добавить ребёнка элементу
     /// </summary>
-    public WindowElement Add(WindowElement Element){
-        try{
-            if(Element.Parent != null){ throw new Exception("Этот элемент уже привязан к какому-то окну! Ссылка на окно: " + Element.Parent); }
-                
-            Element.__SetParent(this);
-
-            return this;
-        }catch(Exception e){
-            throw new Exception("Произошла ошибка при добавлении элемента [" + Element + "] окну [" + this + "]!", e);
-        }
-    }
-
-    /// <summary>
-    /// Установить родителя элементу
-    /// </summary>
-    public WindowElement SetParent(WindowElement Element) => Element.Add(this);
-
+    public WindowElement Add(WindowElement Element) => Element.Parent = this; 
+    
     #region Ивенты
 
         /// <summary>
         /// Вызывается при уничтожении
         /// </summary>
-        public event Action? OnDestroy;
+        //public event Action? OnDestroy;
 
     #endregion
 
     #region Рендер
 
         public void BaseRender(IntPtr HDC){
-            if(Visible && Active){
-                Render(HDC);
+            try{
+                if(Visible && Active){
+                    Render(HDC);
+                }
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при базовом рендере элемента [" + this + "]!\nHDC: " + HDC, e);
             }
         }
         
@@ -126,7 +140,7 @@ public abstract class WindowElement{
                 ClipResult = System.HDC.Clip(HDC, X_Final, Y_Final, Width_Final, Height_Final);
             }
             
-            foreach(WindowElement Child in Children){
+            foreach(WindowElement Child in __Children){
                 Child.Render(HDC);
             }
 

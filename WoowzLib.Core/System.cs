@@ -6,7 +6,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 21)]
+    [WLModule(int.MinValue + 1, 22)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
