@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 02.02.2026 23:01
+/// Сгенерирован: 04.02.2026 23:05
 /// </summary>
 public struct Vector4I{
 	public static readonly int  Numbers = 4;
@@ -50,6 +50,10 @@ public struct Vector4I{
 
 		public override string ToString(){
 			return "Vector4I(" + X + ", " + Y + ", " + Z + ", " + W + ")";
+		}
+		
+		public string ToShortString(){
+			return X + ":" + Y + ":" + Z + ":" + W;
 		}
 		
 		public override bool Equals(object? obj){

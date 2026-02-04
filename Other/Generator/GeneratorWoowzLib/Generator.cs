@@ -151,6 +151,10 @@ public static class Generator{
                                         return "{{Name}}(" + {{WL.String.Join("$0 + \", \" + ", "$0", Components)}} + ")";
                                     }
                                     
+                                    public string ToShortString(){
+                                        return {{WL.String.Join("$0 + \":\" + ", "$0", Components)}};
+                                    }
+                                    
                                     public override bool Equals(object? obj){
                                         if(obj is not {{Name}} other){ return false; }
                                         return {{WL.String.Join("$0 == other.$0 && ", "$0 == other.$0", Components)}};
@@ -479,7 +483,11 @@ public static class Generator{
                                 #region Override
                             
                                     public override string ToString(){
-                                        return "{{Name}}(" + X + ":" + Y + ", " + Width + "x" + Height + ")";
+                                        return "{{Name}}(" + ToShortString() + ")";
+                                    }
+                                    
+                                    public string ToShortString(){
+                                        return X + ":" + Y + ", " + Width + "x" + Height;
                                     }
                                     
                                     public override bool Equals(object? obj){

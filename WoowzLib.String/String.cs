@@ -5,10 +5,17 @@ namespace WL{
     /// <summary>
     /// Работа со строками
     /// </summary>
-    [WLModule(-5000, 3)]
+    [WLModule(-5000, 4)]
     public static class String{
         private static readonly Regex Regex1 = new Regex(@"\$(\d+)", RegexOptions.Compiled);
-        
+
+        public const string StringNull = WL.System.StringNull;
+
+        /// <summary>
+        /// Возвращает Obj или если он пустой то StringNull
+        /// </summary>
+        public static object CheckNull(object? Obj){ return Obj ?? StringNull; }
+
         /// <summary>
         /// Форматирование строки, заменяет '$0', '$1', '$2', ... на элементы из массива
         /// <br />Если передан 1 элемент, заменяет всё на этот элемент
@@ -23,11 +30,11 @@ namespace WL{
                 M => {
                     int i = int.Parse(M.Groups[1].Value);
                     if(Values.Length == 1){
-                        return Values[0]?.ToString() ?? "";
+                        return CheckNull(Values[0]).ToString();
                     }
                     
                     if(i < Values.Length){
-                        return Values[i]?.ToString() ?? "";
+                        return CheckNull(Values[i]).ToString();
                     }
                     
                     return M.Value;
@@ -49,17 +56,17 @@ namespace WL{
                     case 0:
                         return Func(0, "", true);
                     case 1:
-                        return Func(0, Values[0], true);
+                        return Func(0, CheckNull(Values[0]), true);
                 }
 
                 StringBuilder SB = new StringBuilder();
                 int LastIndex = Values.Length - 1;
 
                 for(int i = 0; i < LastIndex; i++){
-                    SB.Append(Func(i, Values[i], false));
+                    SB.Append(Func(i, CheckNull(Values[i]), false));
                 }
 
-                SB.Append(Func(LastIndex, Values[LastIndex], true));
+                SB.Append(Func(LastIndex, CheckNull(Values[LastIndex]), true));
                 return SB.ToString();
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при объединении объектов в строку!\nФункция: " + Func+ "\nЭлементы: (" + Join(Values) + ")");
@@ -105,7 +112,7 @@ namespace WL{
         /// <param name="Values">Элементы [<c>new object[]{"A", "B", "C"}</c>]</param>
         /// <returns>[<c>"A, B, C"</c>]</returns>
         public static string Join(object[]? Values){
-            return Values == null ? "NULL" : string.Join(", ", Values);
+            return Values == null ? StringNull : Join("$0, ", "$0", Values);
         }
         
         /// <summary>

@@ -18,13 +18,6 @@ public enum ElementLocation{
     InWorld
 }
 
-public enum ElementAnchorSize{
-    None,
-    Horizon,
-    Vertical,
-    Both
-}
-
 public abstract class WindowElement{
     public void __SetParent(Window Window){
         try{
@@ -87,6 +80,9 @@ public abstract class WindowElement{
         }
     }
     
+    /// <summary>
+    /// Добавить ребёнка элементу
+    /// </summary>
     public WindowElement Add(WindowElement Element){
         try{
             if(Element.Parent != null){ throw new Exception("Этот элемент уже привязан к какому-то окну! Ссылка на окно: " + Element.Parent); }
@@ -98,6 +94,11 @@ public abstract class WindowElement{
             throw new Exception("Произошла ошибка при добавлении элемента [" + Element + "] окну [" + this + "]!", e);
         }
     }
+
+    /// <summary>
+    /// Установить родителя элементу
+    /// </summary>
+    public WindowElement SetParent(WindowElement Element) => Element.Add(this);
 
     #region Ивенты
 
@@ -178,7 +179,7 @@ public abstract class WindowElement{
     /// <summary>
     /// Позиция по X элемента с учётом точки привязки
     /// </summary>
-    public int X_Anchor => (int)(((Anchor_X + 1) / 2f) * ((int)(Parent?.Width_Final ?? Window.Width) - (int)Width));
+    public int X_Anchor => (int)(((Anchor_X + 1) / 2f) * ((int)(Parent?.Width_Final ?? Window.Width) - (int)Width_Final));
 
     /// <summary>
     /// Позиция по X элемента с учётом всего
@@ -198,11 +199,11 @@ public abstract class WindowElement{
         ElementLocation.InParent =>  (Parent?.Y_Final ?? 0),
         ElementLocation.InWorld  => -(Window?.Y ?? 0)
     };
-    
+
     /// <summary>
     /// Позиция по Y элемента с учётом точки привязки
     /// </summary>
-    public int Y_Anchor => (int)(((Anchor_Y + 1) / 2f) * ((int)(Parent?.Height_Final ?? Window.Height) - (int)Height));
+    public int Y_Anchor => (int)(((Anchor_Y + 1) / 2f) * ((int)(Parent?.Height_Final ?? Window.Height) - (int)Height_Final));
 
     /// <summary>
     /// Позиция по Y элемента с учётом всего
@@ -217,7 +218,18 @@ public abstract class WindowElement{
     /// Относительно какой вертикали располагать элемент? (-1: Вверх, 0: Центр, 1: Низ)
     /// </summary>
     public float Anchor_Y = -1;
-    public ElementAnchorSize Anchor_Size = ElementAnchorSize.None;
+
+    public float Anchor_Width{
+        get => __Anchor_Width;
+        set{ __Anchor_Width = float.Max(value, 0); }
+    }
+    private float __Anchor_Width = 0;
+    
+    public float Anchor_Height{
+        get => __Anchor_Height;
+        set{ __Anchor_Height = float.Max(value, 0); }
+    }
+    private float __Anchor_Height = 0;
     
     /// <summary>
     /// Ширина элемента
@@ -227,19 +239,7 @@ public abstract class WindowElement{
     /// <summary>
     /// Ширина элемента с учётом растягивания
     /// </summary>
-    public uint Width_Final{
-        get{
-            if(Parent == null){ return Width; }
-
-            switch(Anchor_Size){
-                case ElementAnchorSize.Horizon:
-                case ElementAnchorSize.Both:
-                        return (uint)(Parent.Width_Final - X_Anchor);
-                default:
-                    return Width;
-            }
-        }
-    }
+    public uint Width_Final => Anchor_Width > 0 ? (uint)((Parent?.Width_Final ?? Window.Width) * Anchor_Width) : Width;
 
     /// <summary>
     /// Высота элемента
@@ -249,17 +249,5 @@ public abstract class WindowElement{
     /// <summary>
     /// Высота элемента с учётом растягивания
     /// </summary>
-    public uint Height_Final{
-        get{
-            if(Parent == null){ return Height; }
-
-            switch(Anchor_Size){
-                case ElementAnchorSize.Vertical:
-                case ElementAnchorSize.Both:
-                    return (uint)(Parent.Height_Final - Y_Anchor);
-                default:
-                    return Height;
-            }
-        }
-    }
+    public uint Height_Final => Anchor_Height > 0 ? (uint)((Parent?.Height_Final ?? Window.Height) * Anchor_Height) : Height;
 }

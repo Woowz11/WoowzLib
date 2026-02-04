@@ -3,7 +3,7 @@ using WLO;
 
 namespace WL;
 
-[WLModule(-500, 3)]
+[WLModule(-500, 4)]
 public class Logger{
     static Logger(){
         WL.WoowzLib.OnStart += () => {
@@ -30,7 +30,7 @@ public class Logger{
         public override Encoding Encoding => OriginalOut.Encoding;
 
         public override void WriteLine(string? Message){
-            Print(MessageType.Info, [string.IsNullOrEmpty(Message) ? "NULL" : Message]);
+            Print(MessageType.Info, [Message]);
         }
 
         public override void Write(char Message){
@@ -59,6 +59,8 @@ public class Logger{
     
     private static void Print(MessageType Type, object[]? Message){
         try{
+            if(Message == null){ Message = [null]; }
+
             string FullMessage = WL.String.Join(Message);
             string[] Lines = FullMessage.Split('\n');
             

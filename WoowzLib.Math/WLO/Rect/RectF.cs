@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 02.02.2026 23:01
+/// Сгенерирован: 04.02.2026 23:05
 /// </summary>
 public struct RectF{
 	public static readonly Type Type = typeof(float);
@@ -76,7 +76,11 @@ public struct RectF{
 	#region Override
 
 		public override string ToString(){
-			return "RectF(" + X + ":" + Y + ", " + Width + "x" + Height + ")";
+			return "RectF(" + ToShortString() + ")";
+		}
+		
+		public string ToShortString(){
+			return X + ":" + Y + ", " + Width + "x" + Height;
 		}
 		
 		public override bool Equals(object? obj){

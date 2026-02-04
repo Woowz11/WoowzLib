@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 02.02.2026 23:01
+/// Сгенерирован: 04.02.2026 23:05
 /// </summary>
 public struct Vector3I{
 	public static readonly int  Numbers = 3;
@@ -45,6 +45,10 @@ public struct Vector3I{
 
 		public override string ToString(){
 			return "Vector3I(" + X + ", " + Y + ", " + Z + ")";
+		}
+		
+		public string ToShortString(){
+			return X + ":" + Y + ":" + Z;
 		}
 		
 		public override bool Equals(object? obj){

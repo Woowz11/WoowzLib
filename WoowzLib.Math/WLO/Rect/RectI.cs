@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 02.02.2026 23:01
+/// Сгенерирован: 04.02.2026 23:05
 /// </summary>
 public struct RectI{
 	public static readonly Type Type = typeof(int);
@@ -76,7 +76,11 @@ public struct RectI{
 	#region Override
 
 		public override string ToString(){
-			return "RectI(" + X + ":" + Y + ", " + Width + "x" + Height + ")";
+			return "RectI(" + ToShortString() + ")";
+		}
+		
+		public string ToShortString(){
+			return X + ":" + Y + ", " + Width + "x" + Height;
 		}
 		
 		public override bool Equals(object? obj){

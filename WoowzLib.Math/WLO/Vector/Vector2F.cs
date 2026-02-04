@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 02.02.2026 23:01
+/// Сгенерирован: 04.02.2026 23:05
 /// </summary>
 public struct Vector2F{
 	public static readonly int  Numbers = 2;
@@ -40,6 +40,10 @@ public struct Vector2F{
 
 		public override string ToString(){
 			return "Vector2F(" + X + ", " + Y + ")";
+		}
+		
+		public string ToShortString(){
+			return X + ":" + Y;
 		}
 		
 		public override bool Equals(object? obj){

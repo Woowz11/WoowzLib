@@ -6,7 +6,7 @@ using System.Text;
 using WLO;
 
 namespace WL{
-    [WLModule(int.MinValue, 27)]
+    [WLModule(int.MinValue, 28)]
     public static class WoowzLib{
         static WoowzLib(){
             try{
@@ -17,7 +17,7 @@ namespace WL{
                     e.SetObserved();
                 };
 
-                global::System.Console.CancelKeyPress += (_, e) => {
+                Console.CancelKeyPress += (_, e) => {
                     __Stop();
                     e.Cancel = false;
                 };
@@ -33,10 +33,10 @@ namespace WL{
                         _ => "",
                     };
 
-                    global::System.Console.WriteLine(Prefix + (Message[0]?.ToString() ?? "NULL"));
+                    Console.WriteLine(Prefix + (Message[0]?.ToString() ?? WL.System.StringNull));
 
                     for(int i = 1; i < Message.Length; i++){
-                        global::System.Console.WriteLine(Message[i]?.ToString() ?? "NULL");
+                        Console.WriteLine(Message[i]?.ToString() ?? WL.System.StringNull);
                     }
                 };
             }catch(Exception e){

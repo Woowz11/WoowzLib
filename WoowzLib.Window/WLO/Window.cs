@@ -678,4 +678,21 @@ public class Window{
     /// Цвет заднего фона
     /// </summary>
     public ColorF BackgroundColor = ColorF.White;
+    
+    #region Override
+
+        public override string ToString(){
+            return "Window(" + Handle + ", \"" + Title + "\", " + Rect.ToShortString() + ")";
+        }
+		    
+        public override bool Equals(object? obj){
+            if(obj is not Window other){ return false; }
+            return Handle == other.Handle;
+        }
+		    
+        public override int GetHashCode(){
+            return Handle.GetHashCode();
+        }
+		
+    #endregion
 }

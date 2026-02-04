@@ -6,7 +6,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 19)]
+    [WLModule(int.MinValue + 1, 20)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -41,6 +41,8 @@ namespace WL{
         public static object? Condition(bool Condition, object? IfTrue, object? IfFalse){
             return Condition ? IfTrue : IfFalse;
         }
+        
+        public const string StringNull = "NULL";
         
         public static class Console{
             /// <summary>

@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 02.02.2026 23:01
+/// Сгенерирован: 04.02.2026 23:05
 /// </summary>
 public struct RectD{
 	public static readonly Type Type = typeof(double);
@@ -76,7 +76,11 @@ public struct RectD{
 	#region Override
 
 		public override string ToString(){
-			return "RectD(" + X + ":" + Y + ", " + Width + "x" + Height + ")";
+			return "RectD(" + ToShortString() + ")";
+		}
+		
+		public string ToShortString(){
+			return X + ":" + Y + ", " + Width + "x" + Height;
 		}
 		
 		public override bool Equals(object? obj){
