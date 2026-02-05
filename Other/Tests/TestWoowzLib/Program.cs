@@ -1,5 +1,4 @@
-﻿using WL.WLO;
-using WLO;
+﻿using WLO;
 using File = WLO.File;
 using Logger = WLO.Logger;
 
@@ -15,9 +14,28 @@ public static class Program{
 
             Image Img = new Image();
 
-            File F = new File("W:/Other/WoowzLib/Other/Tests/TestWoowzLib/img.png");
+            const string FilesPath = "W:/Other/WoowzLib/Other/Tests/TestWoowzLib/FILES/img.";
+            
+            byte[] PNG = new File(FilesPath + "png").ReadByte();
+            Logger.Info(WL.Parser.Detect.WhatFormat(PNG));
+            
+            byte[] JPEG = new File(FilesPath + "jpg").ReadByte();
+            Logger.Info(WL.Parser.Detect.WhatFormat(JPEG));
+            
+            byte[] WEBP = new File(FilesPath + "webp").ReadByte();
+            Logger.Info(WL.Parser.Detect.WhatFormat(WEBP));
+            
+            byte[] TIFF = new File(FilesPath + "tiff").ReadByte();
+            Logger.Info(WL.Parser.Detect.WhatFormat(TIFF));
+            
+            byte[] BMP = new File(FilesPath + "bmp").ReadByte();
+            Logger.Info(WL.Parser.Detect.WhatFormat(BMP));
+            
+            byte[] GIF = new File(FilesPath + "gif").ReadByte();
+            Logger.Info(WL.Parser.Detect.WhatFormat(GIF));
 
-            F.ReadByte();
+            ParsedContainer_BMP PC_BMP = (ParsedContainer_BMP)WL.Parser.Parse(BMP);
+            Logger.Info(PC_BMP);
             
             Window W1 = new Window();
 

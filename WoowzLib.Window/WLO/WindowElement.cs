@@ -1,7 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using WLO;
-
-namespace WL.WLO;
+﻿namespace WLO;
 
 public enum ElementLocation{
     /// <summary>
@@ -43,7 +40,7 @@ public abstract class WindowElement{
                 }
             
                 value.__Children.Add(this);
-            
+                
                 __Window = value;
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при привязке окна [" + value + "] элементу [" + this + "]!", e);
@@ -142,7 +139,7 @@ public abstract class WindowElement{
                 int ClipResult = 0;
 
                 if(ClipChild){
-                    ClipResult = System.HDC.Clip(HDC, X_Final, Y_Final, Width_Final, Height_Final);
+                    ClipResult = WL.System.HDC.Clip(HDC, X_Final, Y_Final, Width_Final, Height_Final);
                 }
 
                 foreach(WindowElement Child in __Children){
@@ -150,7 +147,7 @@ public abstract class WindowElement{
                 }
 
                 if(ClipChild){
-                    System.HDC.Unclip(HDC, ClipResult);
+                    WL.System.HDC.Unclip(HDC, ClipResult);
                 }
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при рендере детей [" + this + "]!\nHDC: " + HDC, e);

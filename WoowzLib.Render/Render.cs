@@ -1,10 +1,9 @@
 ﻿using System.Runtime.InteropServices;
-using WL.WLO;
 using WLO;
 
 namespace WL;
 
-[WLModule(-50, 8)]
+[WLModule(-50, 9)]
 public class Render{
     static Render(){
         try{

@@ -6,7 +6,7 @@ using System.Text;
 using WLO;
 
 namespace WL{
-    [WLModule(int.MinValue, 30)]
+    [WLModule(int.MinValue, 31)]
     public static class WoowzLib{
         static WoowzLib(){
             try{
@@ -88,7 +88,7 @@ namespace WL{
                 
                 #region Детект типа программы
 
-                    WLO.ProgramType ProgramType = ProgramType.None;
+                    ProgramType ProgramType = ProgramType.None;
                     
                     if(Assembly.GetEntryAssembly() != null){
                         ProgramType = WL.System.Native.Windows.GetConsoleWindow() != IntPtr.Zero ? ProgramType.Console : ProgramType.Window;

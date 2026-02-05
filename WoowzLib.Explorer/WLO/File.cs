@@ -14,11 +14,18 @@ public class File{
     /// Получение или создание пустого файла
     /// </summary>
     /// <param name="Path">Путь [<c>"../example/file.txt"</c>]</param>
-    public File(string Path){
+    /// <param name="Require">Файл обязан существовать? (если нет, то создаст)</param>
+    public File(string Path, bool Require = true){
         if(string.IsNullOrWhiteSpace(Path)){ throw new Exception("Указан пустой путь для создания файла!"); }
         __Path = Path;
 
-        if(!Exist){ Create(); }
+        if(!Exist){
+            if(Require){
+                throw new Exception("Файл [" + this + "] не найден!");
+            }else{
+                Create();
+            }
+        }
     }
 
     /// <summary>

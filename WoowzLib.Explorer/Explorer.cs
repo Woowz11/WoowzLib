@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 
 namespace WL{
-    [WLModule(-1000, 5)]
+    [WLModule(-1000, 6)]
     public static class Explorer{
         /// <summary>
         /// Для работы с файлами
@@ -136,8 +136,8 @@ namespace WL{
             /// </summary>
             /// <param name="Path">Путь до файла (с поддержкой папок) [<c>"test/file.txt"</c>]</param>
             /// <returns>Файл</returns>
-            public static global::WLO.File Create(string Path){
-                global::WLO.File TempFile = new global::WLO.File(global::System.IO.Path.Combine(TempFolder, Path));
+            public static WLO.File Create(string Path){
+                WLO.File TempFile = new WLO.File(global::System.IO.Path.Combine(TempFolder, Path), false);
 
                 TempFiles.Add(TempFile);
                 
@@ -170,7 +170,7 @@ namespace WL{
                         ResourceName = Parts__[^2] + "." + Parts__[^1];
                     }
 
-                    global::WLO.File File = WL.Explorer.Temp.Create("WL\\Explorer.Resources\\" + (ProjectName ?? "Unknown") + "\\" + ResourceName);
+                    global::WLO.File File = Temp.Create("WL\\Explorer.Resources\\" + (ProjectName ?? "Unknown") + "\\" + ResourceName);
 
                     using FileStream FS = new FileStream(File.Path, FileMode.Create, FileAccess.Write, FileShare.None);
                     Stream.CopyTo(FS);

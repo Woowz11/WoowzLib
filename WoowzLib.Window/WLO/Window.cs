@@ -1,8 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
-using WLO;
+﻿using System.Runtime.InteropServices;
 
-namespace WL.WLO;
+namespace WLO;
 
 public class Window{
     /// <summary>
@@ -17,9 +15,9 @@ public class Window{
             
             IntPtr Instance = WL.System.Native.Windows.GetModuleHandle(null);
             
-            System.Native.Windows.WNDCLASSEX WindowClass = new System.Native.Windows.WNDCLASSEX{
-                cbSize        = (uint)Marshal.SizeOf<System.Native.Windows.WNDCLASSEX>(),
-                lpfnWndProc   = Marshal.GetFunctionPointerForDelegate(new System.Native.Windows.WndProcDelegate(System.Native.Windows.EmptyWindowProc)),
+            WL.System.Native.Windows.WNDCLASSEX WindowClass = new WL.System.Native.Windows.WNDCLASSEX{
+                cbSize        = (uint)Marshal.SizeOf<WL.System.Native.Windows.WNDCLASSEX>(),
+                lpfnWndProc   = Marshal.GetFunctionPointerForDelegate(new WL.System.Native.Windows.WndProcDelegate(WL.System.Native.Windows.EmptyWindowProc)),
                 hInstance     = Instance,
                 lpszClassName = WindowClassName,
                 hCursor       = IntPtr.Zero,
@@ -46,7 +44,7 @@ public class Window{
             ID = __IDs;
             __IDs++;
             
-            __Events__ = System.Native.ConnectEventsToWindow(Handle, __Events);
+            __Events__ = WL.System.Native.ConnectEventsToWindow(Handle, __Events);
             
             WL.Window.Windows.Add(this);
             
@@ -62,7 +60,7 @@ public class Window{
         }
     }
     // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
-    private readonly System.Native.Windows.WndProcDelegate __Events__;
+    private readonly WL.System.Native.Windows.WndProcDelegate __Events__;
     
     public void DestroyNow(){
         try{
@@ -127,7 +125,7 @@ public class Window{
             try{
                 if(ShouldDestroy){ DestroyNow(); return; }
 
-                if(!System.Native.Windows.GetCursorPos(out System.Native.Windows.POINT P)){ System.Native.Windows.ThrowWin32Error(); }
+                if(!WL.System.Native.Windows.GetCursorPos(out WL.System.Native.Windows.POINT P)){ WL.System.Native.Windows.ThrowWin32Error(); }
                 Vector2I CursorPosition = new Vector2I(P);
                 this.CursorPosition = ToClient(CursorPosition);
 
@@ -192,7 +190,7 @@ public class Window{
                 
                 switch(Message){
                     // Закрытие окна (через крестик например)
-                    case System.Native.Windows.WM_CLOSE:
+                    case WL.System.Native.Windows.WM_CLOSE:
                         try{
                             OnClose?.Invoke(this);
                         }catch(Exception e){
@@ -202,7 +200,7 @@ public class Window{
                         return IntPtr.Zero;
                     
                     // Обновление размера у окна
-                    case System.Native.Windows.WM_SIZE:
+                    case WL.System.Native.Windows.WM_SIZE:
                         __Width  = (uint)(LWord_L);
                         __Height = (uint)(HWord_L);
 
@@ -216,10 +214,10 @@ public class Window{
                         break;
                     
                     // Обновление позиции окна
-                    case System.Native.Windows.WM_WINDOWPOSCHANGED:
-                        System.Native.Windows.WINDOWPOS Position__ = Marshal.PtrToStructure<System.Native.Windows.WINDOWPOS>(LParam);
+                    case WL.System.Native.Windows.WM_WINDOWPOSCHANGED:
+                        WL.System.Native.Windows.WINDOWPOS Position__ = Marshal.PtrToStructure<WL.System.Native.Windows.WINDOWPOS>(LParam);
 
-                        if((Position__.flags & System.Native.Windows.SWP_NOMOVE) == 0){
+                        if((Position__.flags & WL.System.Native.Windows.SWP_NOMOVE) == 0){
                             __X = Position__.x;
                             __Y = Position__.y;
 
@@ -233,16 +231,16 @@ public class Window{
                         break;
                     
                     // Обновление курсора внутри окна
-                    case System.Native.Windows.WM_SETCURSOR:
+                    case WL.System.Native.Windows.WM_SETCURSOR:
                         int HitTest = (short)(LParam.ToInt64() & 0xFFFF);
-                        if(HitTest == System.Native.Windows.HTCLIENT){
-                            System.Native.Windows.SetCursor(System.Native.Windows.CURSOR_Arrow);
+                        if(HitTest == WL.System.Native.Windows.HTCLIENT){
+                            WL.System.Native.Windows.SetCursor(WL.System.Native.Windows.CURSOR_Arrow);
                         }
                         
                         break;
                     
                     // Сдвинулась мышь внутри окна
-                    case System.Native.Windows.WM_MOUSEMOVE:
+                    case WL.System.Native.Windows.WM_MOUSEMOVE:
                         int X__ = LWord_L;
                         int Y__ = HWord_L;
                         
@@ -254,18 +252,18 @@ public class Window{
                         break;
                     
                     // Рисование внутри окна
-                    case System.Native.Windows.WM_PAINT:
+                    case WL.System.Native.Windows.WM_PAINT:
                         break;
                     
-                    case System.Native.Windows.WM_ERASEBKGND:
+                    case WL.System.Native.Windows.WM_ERASEBKGND:
                         return 1;
                     
                     // Обработка элементов у окна
-                    case System.Native.Windows.WM_COMMAND:
+                    case WL.System.Native.Windows.WM_COMMAND:
                         return IntPtr.Zero;
                 }
 
-                return System.Native.Windows.DefWindowProcW(Handle, Message, WParam, LParam);
+                return WL.System.Native.Windows.DefWindowProcW(Handle, Message, WParam, LParam);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при обработке ивентов [" + this + "]!", e);
             }
@@ -342,7 +340,7 @@ public class Window{
                 try{
                     CheckDestroyed();
 
-                    IntPtr HDC = System.Native.Windows.GetDC(Handle);
+                    IntPtr HDC = WL.System.Native.Windows.GetDC(Handle);
                     if(HDC == IntPtr.Zero){ throw new Exception("Не найден HDC у окна!"); }
                     return HDC;
                 }
@@ -358,26 +356,26 @@ public class Window{
         private void __UpdateBuffer(){
             IntPtr HDC = this.HDC;
             try{
-                if(BackBufferBitMap != IntPtr.Zero){ System.Native.Windows.DeleteObject(BackBufferBitMap); BackBufferBitMap = IntPtr.Zero; }
+                if(BackBufferBitMap != IntPtr.Zero){ WL.System.Native.Windows.DeleteObject(BackBufferBitMap); BackBufferBitMap = IntPtr.Zero; }
                 if(BackBuffer == IntPtr.Zero){
-                    BackBuffer = System.Native.Windows.CreateCompatibleDC(HDC);
+                    BackBuffer = WL.System.Native.Windows.CreateCompatibleDC(HDC);
                     if(BackBuffer == IntPtr.Zero){ throw new Exception("Произошла ошибка при создании BackBuffer!"); }
                 }
 
-                BackBufferBitMap = System.Native.Windows.CreateCompatibleBitmap(HDC, (int)Width, (int)Height);
+                BackBufferBitMap = WL.System.Native.Windows.CreateCompatibleBitmap(HDC, (int)Width, (int)Height);
                 if(BackBufferBitMap == IntPtr.Zero){ throw new Exception("Произошла ошибка при создании BackBufferBitMap!"); }
 
-                System.Native.Windows.SelectObject(BackBuffer, BackBufferBitMap);
+                WL.System.Native.Windows.SelectObject(BackBuffer, BackBufferBitMap);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при обновлении буфера у окна [" + this + "]!", e);
             }finally{
-                System.Native.Windows.ReleaseDC(Handle, HDC);
+                WL.System.Native.Windows.ReleaseDC(Handle, HDC);
             }
         }
             
         public Window Render(ColorF BackgroundColor, bool RenderElements, Action<IntPtr>? PreRender, Action<IntPtr>? PostRender){
             try{
-                System.HDC.Fill(BackBuffer, 0, 0, Width, Height, BackgroundColor.ToRGBiA());
+                WL.System.HDC.Fill(BackBuffer, 0, 0, Width, Height, BackgroundColor.ToRGBiA());
                 
                 PreRender?.Invoke(BackBuffer);
                 
@@ -391,9 +389,9 @@ public class Window{
 
                 IntPtr HDC = this.HDC;
                 try{
-                    System.Native.Windows.BitBlt(HDC, 0, 0, (int)Width, (int)Height, BackBuffer, 0, 0, System.Native.Windows.SRCCOPY);   
+                    WL.System.Native.Windows.BitBlt(HDC, 0, 0, (int)Width, (int)Height, BackBuffer, 0, 0, WL.System.Native.Windows.SRCCOPY);   
                 }finally{
-                    System.Native.Windows.ReleaseDC(Handle, HDC);
+                    WL.System.Native.Windows.ReleaseDC(Handle, HDC);
                 }
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при рендере окна [" + this + "]!", e);
@@ -409,8 +407,8 @@ public class Window{
                 false,
                 null,
                 HDC => {
-                    System.Native.Windows.SetBkMode(BackBuffer, System.Native.Windows.TRANSPARENT);
-                    System.HDC.Text(BackBuffer, (int)(Width * 0.5f), (int)(Height * 0.5f), Message);
+                    WL.System.Native.Windows.SetBkMode(BackBuffer, WL.System.Native.Windows.TRANSPARENT);
+                    WL.System.HDC.Text(BackBuffer, (int)(Width * 0.5f), (int)(Height * 0.5f), Message);
                 }
             );
         }
@@ -438,8 +436,8 @@ public class Window{
     public Vector2I ToClient(Vector2I WorldVector){
         try{
             CheckDestroyed();
-            System.Native.Windows.POINT P = WorldVector.ToPoint();
-            System.Native.Windows.ScreenToClient(Handle, ref P);
+            WL.System.Native.Windows.POINT P = WorldVector.ToPoint();
+            WL.System.Native.Windows.ScreenToClient(Handle, ref P);
             return new Vector2I(P);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при изменении мировой координаты в относительную (клиентскую) от окна [" + this + "]!\nW. Вектор: " + WorldVector, e);
@@ -452,8 +450,8 @@ public class Window{
     public Vector2I ToWorld(Vector2I ClientVector){
         try{
             CheckDestroyed();
-            System.Native.Windows.POINT P = ClientVector.ToPoint();
-            System.Native.Windows.ClientToScreen(Handle, ref P);
+            WL.System.Native.Windows.POINT P = ClientVector.ToPoint();
+            WL.System.Native.Windows.ClientToScreen(Handle, ref P);
             return new Vector2I(P);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при изменении относительной от окна [" + this + "] координаты в мировую!\nC. Вектор: " + ClientVector, e);
@@ -556,7 +554,7 @@ public class Window{
             /// </summary>
             private void __UpdatePosition(){
                 try{
-                    System.Native.Windows.SetWindowPos(Handle, IntPtr.Zero, __X, __Y, 0, 0, System.Native.Windows.SWP_NOZORDER | System.Native.Windows.SWP_NOSIZE);
+                    WL.System.Native.Windows.SetWindowPos(Handle, IntPtr.Zero, __X, __Y, 0, 0, WL.System.Native.Windows.SWP_NOZORDER | WL.System.Native.Windows.SWP_NOSIZE);
                 }catch(Exception e){
                     throw new Exception("Произошла ошибка при обновлении позиции у окна [" + this + "]!", e);
                 }
@@ -631,16 +629,16 @@ public class Window{
             /// </summary>
             private void __UpdateSize(){
                 try{
-                    System.Native.Windows.RECT Rect = new System.Native.Windows.RECT{
+                    WL.System.Native.Windows.RECT Rect = new WL.System.Native.Windows.RECT{
                         left   = 0,
                         top    = 0,
                         right  = (int)__Width,
                         bottom = (int)__Height
                     };
 
-                    System.Native.Windows.AdjustWindowRectEx(ref Rect, System.Native.Windows.WS_OVERLAPPEDWINDOW, false, 0);
+                    WL.System.Native.Windows.AdjustWindowRectEx(ref Rect, WL.System.Native.Windows.WS_OVERLAPPEDWINDOW, false, 0);
 
-                    System.Native.Windows.SetWindowPos(Handle, IntPtr.Zero, 0, 0, Rect.right - Rect.left, Rect.bottom - Rect.top, System.Native.Windows.SWP_NOZORDER | System.Native.Windows.SWP_NOMOVE);
+                    WL.System.Native.Windows.SetWindowPos(Handle, IntPtr.Zero, 0, 0, Rect.right - Rect.left, Rect.bottom - Rect.top, WL.System.Native.Windows.SWP_NOZORDER | WL.System.Native.Windows.SWP_NOMOVE);
                 }catch(Exception e){
                     throw new Exception("Произошла ошибка при обновлении размера у окна [" + this + "]!", e);
                 }
@@ -677,8 +675,8 @@ public class Window{
         public RectI RectFull{
             get{
                 try{
-                    if(!System.Native.Windows.GetWindowRect(Handle, out System.Native.Windows.RECT Rect)){
-                        System.Native.Windows.ThrowWin32Error();
+                    if(!WL.System.Native.Windows.GetWindowRect(Handle, out WL.System.Native.Windows.RECT Rect)){
+                        WL.System.Native.Windows.ThrowWin32Error();
                     }
 
                     return new RectI(Rect);
@@ -702,7 +700,7 @@ public class Window{
                 if(__Title == value){ return; }
                 __Title = value;
 
-                System.Native.Windows.SetWindowTextW(Handle, __Title);
+                WL.System.Native.Windows.SetWindowTextW(Handle, __Title);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при изменении названия у окна [" + this + "]!\nНазвание: \"" + value + "\"", e);
             }

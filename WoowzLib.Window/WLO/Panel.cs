@@ -1,7 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using WLO;
-
-namespace WL.WLO;
+﻿namespace WLO;
 
 public class Panel : WindowElement{
     public Panel(int X = 0, int Y = 0, uint Width = 128, uint Height = 128, ColorF? Color = null){
@@ -13,7 +10,7 @@ public class Panel : WindowElement{
     }
 
     public override void Render(IntPtr HDC){
-        System.HDC.Fill(HDC, X_Final, Y_Final, Width_Final, Height_Final, Color.ToRGBiA());
+        WL.System.HDC.Fill(HDC, X_Final, Y_Final, Width_Final, Height_Final, Color.ToRGBiA());
         
         base.Render(HDC);
     }

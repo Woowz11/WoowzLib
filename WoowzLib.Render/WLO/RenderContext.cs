@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using WLO;
 
-namespace WL.WLO;
+namespace WLO;
 
 public class RenderContext{
     public RenderContext(RenderSurface RS){
@@ -120,7 +120,7 @@ public class RenderContext{
             }
             WL.System.Native.Free(SwapchainImages__);
             
-            WL.Render.Native.VkAttachmentDescription ColorAttachment = new Render.Native.VkAttachmentDescription{
+            WL.Render.Native.VkAttachmentDescription ColorAttachment = new WL.Render.Native.VkAttachmentDescription{
                 format         = ImageFormat,
                 samples        = WL.Render.Native.VK_SAMPLE_COUNT_1_BIT,
                 loadOp         = WL.Render.Native.VK_ATTACHMENT_LOAD_OP_CLEAR,
@@ -131,18 +131,18 @@ public class RenderContext{
                 finalLayout    = WL.Render.Native.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
             };
 
-            WL.Render.Native.VkAttachmentReference ColorAttachmentReference = new Render.Native.VkAttachmentReference{
+            WL.Render.Native.VkAttachmentReference ColorAttachmentReference = new WL.Render.Native.VkAttachmentReference{
                 attachment = 0,
                 layout = WL.Render.Native.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
             };
 
-            WL.Render.Native.VkSubpassDescription Subpass = new Render.Native.VkSubpassDescription{
+            WL.Render.Native.VkSubpassDescription Subpass = new WL.Render.Native.VkSubpassDescription{
                 pipelineBindPoint = WL.Render.Native.VK_PIPELINE_BIND_POINT_GRAPHICS,
                 colorAttachmentCount = 1,
                 pColorAttachments = Marshal.UnsafeAddrOfPinnedArrayElement([ColorAttachmentReference], 0)
             };
 
-            WL.Render.Native.VkRenderPassCreateInfo RenderPassInfo = new Render.Native.VkRenderPassCreateInfo{
+            WL.Render.Native.VkRenderPassCreateInfo RenderPassInfo = new WL.Render.Native.VkRenderPassCreateInfo{
                 sType = WL.Render.Native.VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
                 attachmentCount = 1,
                 pAttachments = Marshal.UnsafeAddrOfPinnedArrayElement([ColorAttachment], 0),
@@ -159,7 +159,7 @@ public class RenderContext{
             
             Framebuffers = new IntPtr[SwapchainImages.Length];
             for(int i = 0; i < SwapchainImages.Length; i++){
-                WL.Render.Native.VkImageViewCreateInfo ViewInfo = new Render.Native.VkImageViewCreateInfo{
+                WL.Render.Native.VkImageViewCreateInfo ViewInfo = new WL.Render.Native.VkImageViewCreateInfo{
                     sType = WL.Render.Native.VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
                     image = SwapchainImages[i],
                     viewType = WL.Render.Native.VK_IMAGE_VIEW_TYPE_2D,
@@ -179,7 +179,7 @@ public class RenderContext{
 
                 ImageViews[i] = ImageView__;
 
-                WL.Render.Native.VkFramebufferCreateInfo FramebufferInfo = new Render.Native.VkFramebufferCreateInfo{
+                WL.Render.Native.VkFramebufferCreateInfo FramebufferInfo = new WL.Render.Native.VkFramebufferCreateInfo{
                     sType = WL.Render.Native.VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
                     renderPass = RenderPass__,
                     attachmentCount = 1,
@@ -243,11 +243,11 @@ public class RenderContext{
                 }
             };
 
-            IntPtr __BackgroundColor__ = WL.System.Native.Memory<Render.Native.VkClearValue>(BackgroundColor__);
+            IntPtr __BackgroundColor__ = WL.System.Native.Memory<WL.Render.Native.VkClearValue>(BackgroundColor__);
             
             Exception? e__ = null;
             WL.Render.UseCommandBuffer(() => {
-                WL.Render.Native.VkRenderPassBeginInfo RP_Begin = new Render.Native.VkRenderPassBeginInfo{
+                WL.Render.Native.VkRenderPassBeginInfo RP_Begin = new WL.Render.Native.VkRenderPassBeginInfo{
                     sType = WL.Render.Native.VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
                     renderPass = RenderPass,
                     framebuffer = Framebuffers![ImageIndex],
@@ -299,7 +299,7 @@ public class RenderContext{
         int Result = 0;
         
         try{
-            WL.Render.Native.VkPresentInfoKHR PresentInfo = new Render.Native.VkPresentInfoKHR{
+            WL.Render.Native.VkPresentInfoKHR PresentInfo = new WL.Render.Native.VkPresentInfoKHR{
                 sType = WL.Render.Native.VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
                 swapchainCount = 1,
                 pSwapchains = Marshal.UnsafeAddrOfPinnedArrayElement([Swapchain], 0),
