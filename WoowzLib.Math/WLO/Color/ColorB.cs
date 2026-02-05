@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 05.02.2026 2:02
+/// Сгенерирован: 05.02.2026 12:49
 /// </summary>
 public struct ColorB{
 	public static readonly Type Type = typeof(byte);
@@ -119,9 +119,9 @@ public struct ColorB{
 			return "ColorB(" + R + ", " + G + ", " + B + (A == 255 ? "" : ", " + A) + ")";
 		}
 		
-		public override bool Equals(object? obj){
-			if(obj is not ColorB other){ return false; }
-			return R == other.R && G == other.G && B == other.B && A == other.A;
+		public override bool Equals(object? Obj){
+			if(Obj is not ColorB Other){ return false; }
+			return R == Other.R && G == Other.G && B == Other.B && A == Other.A;
 		}
 		
 		public override int GetHashCode(){

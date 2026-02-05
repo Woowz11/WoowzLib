@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 05.02.2026 2:02
+/// Сгенерирован: 05.02.2026 12:49
 /// </summary>
 public struct Vector4I{
 	public static readonly int  Numbers = 4;
@@ -56,9 +56,9 @@ public struct Vector4I{
 			return X + ":" + Y + ":" + Z + ":" + W;
 		}
 		
-		public override bool Equals(object? obj){
-			if(obj is not Vector4I other){ return false; }
-			return X == other.X && Y == other.Y && Z == other.Z && W == other.W;
+		public override bool Equals(object? Obj){
+			if(Obj is not Vector4I Other){ return false; }
+			return X == Other.X && Y == Other.Y && Z == Other.Z && W == Other.W;
 		}
 		
 		public override int GetHashCode(){
@@ -108,6 +108,8 @@ public struct Vector4I{
 		public static Vector4I operator *(int A, Vector4I B){
 			return B * A;
 		}
+		
+															   
 		
 	#endregion
 }

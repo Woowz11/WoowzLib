@@ -1,11 +1,8 @@
-﻿using System.Drawing;
-using System.Globalization;
-using WL.WLO;
+﻿using WL.WLO;
 using WLO;
 using Logger = WLO.Logger;
 
 public static class Program{
-    
     public static int Main(string[] Args){
         try{
             WL.Render.Debug.LogMain = true;
@@ -16,10 +13,13 @@ public static class Program{
             ));
             
             Window W1 = new Window();
-            Window W2 = new Window();
 
             Panel P = new Panel(Color: ColorF.Gray);
             W1.Add(P);
+
+            P.OnCursorInside += (element, b) => {
+                P.Color = b ? ColorF.Green : ColorF.Gray;
+            };
 
             P.Anchor_X = 0;
             P.Anchor_Y = 0;
@@ -35,32 +35,30 @@ public static class Program{
             
             RP.Anchor_Width  = 0.9f;
             RP.Anchor_Height = 0.9f;
+
+            Panel P2 = new Panel(Color: ColorF.LightBlue);
+            P2.Parent = RP;
+            P2.Anchor_X = 0;
+            P2.Anchor_Y = 0;
+            
+            P2.OnCursorInside += (element, b) => {
+                P2.Size = new Vector2U(128, 128) * (b ? 2U : 1U);
+            };
             
             double d = 2;
             string FPS = "";
             bool dodo = false;
-            while(W1.Alive || W2.Alive){
+            while(W1.Alive){
                 WL.System.Tick.LimitFPS(1, 300, TD => {
                     if(W1.Alive){
                         d += TD.DeltaTimeS;
                         if(d > 0.5f){
                             FPS = TD.FPS.ToString(); d = 0;
-                            
-                            if(W1.Alive && W2.Alive){
-                                dodo = !dodo;
-
-                                Logger.Info(dodo ? W2 : W1);
-                                P.ToWindow(dodo ? W2 : W1);
-                            }
                         }
 
                         W1.Title = FPS + " | " + W1.CursorInside;
                         
                         W1.Render();
-                    }
-                    if(W2.Alive){
-                        
-                        W2.Render();
                     }
                 });
                 

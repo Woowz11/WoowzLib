@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 05.02.2026 2:02
+/// Сгенерирован: 05.02.2026 12:49
 /// </summary>
 public struct Vector3I{
 	public static readonly int  Numbers = 3;
@@ -51,9 +51,9 @@ public struct Vector3I{
 			return X + ":" + Y + ":" + Z;
 		}
 		
-		public override bool Equals(object? obj){
-			if(obj is not Vector3I other){ return false; }
-			return X == other.X && Y == other.Y && Z == other.Z;
+		public override bool Equals(object? Obj){
+			if(Obj is not Vector3I Other){ return false; }
+			return X == Other.X && Y == Other.Y && Z == Other.Z;
 		}
 		
 		public override int GetHashCode(){
@@ -103,6 +103,8 @@ public struct Vector3I{
 		public static Vector3I operator *(int A, Vector3I B){
 			return B * A;
 		}
+		
+															   
 		
 	#endregion
 }

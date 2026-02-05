@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 05.02.2026 2:02
+/// Сгенерирован: 05.02.2026 12:49
 /// </summary>
 public struct Vector2I{
 	public static readonly int  Numbers = 2;
@@ -47,9 +47,9 @@ public struct Vector2I{
 			return X + ":" + Y;
 		}
 		
-		public override bool Equals(object? obj){
-			if(obj is not Vector2I other){ return false; }
-			return X == other.X && Y == other.Y;
+		public override bool Equals(object? Obj){
+			if(Obj is not Vector2I Other){ return false; }
+			return X == Other.X && Y == Other.Y;
 		}
 		
 		public override int GetHashCode(){
@@ -100,5 +100,21 @@ public struct Vector2I{
 			return B * A;
 		}
 		
+															   
+		public static implicit operator WL.System.Native.Windows.POINT(Vector2I Other){
+			return new WL.System.Native.Windows.POINT{ x = Other.X, y = Other.Y };
+		}
+		
+		public static implicit operator Vector2I(WL.System.Native.Windows.POINT Other){
+			return new Vector2I(Other.x, Other.y);
+		}
+		
+		public static implicit operator System.Drawing.Point(Vector2I Other){
+			return new System.Drawing.Point{ X = Other.X, Y = Other.Y };
+		}
+		
+		public static implicit operator Vector2I(System.Drawing.Point Other){
+			return new Vector2I(Other.X, Other.Y);
+		}
 	#endregion
 }

@@ -154,9 +154,9 @@ public static class Generator{
                                         return {{WL.String.Join("$0 + \":\" + ", "$0", Components)}};
                                     }
                                     
-                                    public override bool Equals(object? obj){
-                                        if(obj is not {{Name}} other){ return false; }
-                                        return {{WL.String.Join("$0 == other.$0 && ", "$0 == other.$0", Components)}};
+                                    public override bool Equals(object? Obj){
+                                        if(Obj is not {{Name}} Other){ return false; }
+                                        return {{WL.String.Join("$0 == Other.$0 && ", "$0 == Other.$0", Components)}};
                                     }
                                     
                                     public override int GetHashCode(){
@@ -212,6 +212,24 @@ public static class Generator{
                                                                                                        return new Vector{{N}}I({{WL.String.Join("(int)Other.$0, ", "(int)Other.$0", Components)}});
                                                                                                    }
                                                                                            """, "")}}
+                                                                                           
+                                    {{WL.System.Condition(VectorType == VectorType.Int && N == 2, $$"""
+                                                                                            public static implicit operator WL.System.Native.Windows.POINT(Vector2I Other){
+                                                                                            	        return new WL.System.Native.Windows.POINT{ x = Other.X, y = Other.Y };
+                                                                                                    }
+                                                                                                    
+                                                                                                    public static implicit operator Vector2I(WL.System.Native.Windows.POINT Other){
+                                                                                            	        return new Vector2I(Other.x, Other.y);
+                                                                                                    }
+                                                                                                    
+                                                                                                    public static implicit operator System.Drawing.Point(Vector2I Other){
+                                                                                            	        return new System.Drawing.Point{ X = Other.X, Y = Other.Y };
+                                                                                                    }
+                                                                                                    
+                                                                                                    public static implicit operator Vector2I(System.Drawing.Point Other){
+                                                                                            	        return new Vector2I(Other.X, Other.Y);
+                                                                                                    }
+                                                                                            """, "")}}
                                 #endregion
                             """;
                 
@@ -343,9 +361,9 @@ public static class Generator{
                                         return "{{Name}}(" + {{WL.String.Join("$0", " + \", \" + $0", " + ($0 == " + V_1 + " ? \"\" : \", \" + $0)", Components)}} + ")";
                                     }
                                     
-                                    public override bool Equals(object? obj){
-                                        if(obj is not {{Name}} other){ return false; }
-                                        return {{WL.String.Join("$0 == other.$0 && ", "$0 == other.$0", Components)}};
+                                    public override bool Equals(object? Obj){
+                                        if(Obj is not {{Name}} Other){ return false; }
+                                        return {{WL.String.Join("$0 == Other.$0 && ", "$0 == Other.$0", Components)}};
                                     }
                                     
                                     public override int GetHashCode(){
@@ -489,9 +507,9 @@ public static class Generator{
                                         return X + ":" + Y + ", " + Width + "x" + Height;
                                     }
                                     
-                                    public override bool Equals(object? obj){
-                                        if(obj is not {{Name}} other){ return false; }
-                                        return X == other.X && Y == other.Y && Width == other.Width && Height == other.Height;
+                                    public override bool Equals(object? Obj){
+                                        if(Obj is not {{Name}} Other){ return false; }
+                                        return X == Other.X && Y == Other.Y && Width == Other.Width && Height == Other.Height;
                                     }
                                     
                                     public override int GetHashCode(){

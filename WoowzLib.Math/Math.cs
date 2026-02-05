@@ -6,7 +6,7 @@ namespace WL{
     /// <summary>
     /// Математические функции и т.д
     /// </summary>
-    [WLModule(-10000, 15)]
+    [WLModule(-10000, 16)]
     public static class Math{
         /// <summary>
         /// Ноль

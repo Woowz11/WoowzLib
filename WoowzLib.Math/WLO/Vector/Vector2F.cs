@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 05.02.2026 2:02
+/// Сгенерирован: 05.02.2026 12:49
 /// </summary>
 public struct Vector2F{
 	public static readonly int  Numbers = 2;
@@ -46,9 +46,9 @@ public struct Vector2F{
 			return X + ":" + Y;
 		}
 		
-		public override bool Equals(object? obj){
-			if(obj is not Vector2F other){ return false; }
-			return X == other.X && Y == other.Y;
+		public override bool Equals(object? Obj){
+			if(Obj is not Vector2F Other){ return false; }
+			return X == Other.X && Y == Other.Y;
 		}
 		
 		public override int GetHashCode(){
@@ -98,6 +98,8 @@ public struct Vector2F{
 		public static Vector2F operator *(float A, Vector2F B){
 			return B * A;
 		}
+		
+															   
 		
 	#endregion
 }

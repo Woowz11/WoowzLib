@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 05.02.2026 2:02
+/// Сгенерирован: 05.02.2026 12:49
 /// </summary>
 public struct RectF{
 	public static readonly Type Type = typeof(float);
@@ -83,9 +83,9 @@ public struct RectF{
 			return X + ":" + Y + ", " + Width + "x" + Height;
 		}
 		
-		public override bool Equals(object? obj){
-			if(obj is not RectF other){ return false; }
-			return X == other.X && Y == other.Y && Width == other.Width && Height == other.Height;
+		public override bool Equals(object? Obj){
+			if(Obj is not RectF Other){ return false; }
+			return X == Other.X && Y == Other.Y && Width == Other.Width && Height == Other.Height;
 		}
 		
 		public override int GetHashCode(){
