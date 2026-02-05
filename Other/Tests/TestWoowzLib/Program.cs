@@ -1,5 +1,6 @@
 ﻿using WL.WLO;
 using WLO;
+using File = WLO.File;
 using Logger = WLO.Logger;
 
 public static class Program{
@@ -11,6 +12,12 @@ public static class Program{
                 Name  : "Test WoowzLib",
                 Author: "Woowz11"
             ));
+
+            Image Img = new Image();
+
+            File F = new File("W:/Other/WoowzLib/Other/Tests/TestWoowzLib/img.png");
+
+            F.ReadByte();
             
             Window W1 = new Window();
 
