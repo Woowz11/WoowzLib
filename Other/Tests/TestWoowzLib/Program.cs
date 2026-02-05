@@ -12,8 +12,6 @@ public static class Program{
                 Author: "Woowz11"
             ));
 
-            Image Img = new Image();
-
             const string FilesPath = "W:/Other/WoowzLib/Other/Tests/TestWoowzLib/FILES/img.";
             
             byte[] PNG = new File(FilesPath + "png").ReadByte();
@@ -36,6 +34,8 @@ public static class Program{
 
             ParsedContainer_BMP PC_BMP = (ParsedContainer_BMP)WL.Parser.Parse(BMP);
             Logger.Info(PC_BMP);
+
+            Image Img = PC_BMP.ToImage();
             
             Window W1 = new Window();
 
@@ -61,10 +61,12 @@ public static class Program{
             RP.Anchor_Width  = 0.9f;
             RP.Anchor_Height = 0.9f;
 
-            Panel P2 = new Panel(Color: ColorF.LightBlue);
+            Panel P2 = new Panel();
             P2.Parent = RP;
             P2.Anchor_X = 0;
             P2.Anchor_Y = 0;
+
+            P2.Image = Img;
             
             P2.OnCursorInside += (element, b) => {
                 P2.Size = new Vector2U(128, 128) * (b ? 2U : 1U);

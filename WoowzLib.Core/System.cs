@@ -6,7 +6,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 23)]
+    [WLModule(int.MinValue + 1, 24)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -268,6 +268,11 @@ namespace WL{
             /// Вычисляет размер объекта в байтах
             /// </summary>
             public static int Size(object Obj) => Marshal.SizeOf(Obj);
+            
+            /// <summary>
+            /// Вычисляет размер объекта в байтах
+            /// </summary>
+            public static int Size<T>() => Marshal.SizeOf<T>();
         }
         
         public static class HDC{
@@ -333,6 +338,39 @@ namespace WL{
                 IntPtr Brush = CreateBrush(Color);
                 Fill(HDC, X, Y, Width, Height, Brush);
                 DestroyBrush(Brush);
+            }
+
+            /// <summary>
+            /// Заполнить область изображением
+            /// </summary>
+            /// <param name="HDC">Куда рисовать?</param>
+            /// <param name="X">Позиция X</param>
+            /// <param name="Y">Позиция Y</param>
+            /// <param name="Width">Ширина</param>
+            /// <param name="Height">Высота</param>
+            /// <param name="Image">Изображение (текстура)</param>
+            public static void Image(IntPtr HDC, int X, int Y, uint Width, uint Height, Image Image){
+                /*if(Image.PixelsBGRA.Length == 0){ return; }
+
+                Native.Windows.BITMAPINFO BMI = new Native.Windows.BITMAPINFO();
+                BMI.bmiHeader.biSize = (uint)Byte.Size<Native.Windows.BITMAPINFOHEADER>();
+                BMI.bmiHeader.biWidth = (int)Image.Width;
+                BMI.bmiHeader.biHeight = (int)Image.Height;
+                BMI.bmiHeader.biPlanes = 1;
+                BMI.bmiHeader.biBitCount = Image.BitsPerPixel;
+                BMI.bmiHeader.biCompression = Native.Windows.BI_RGB;
+                BMI.bmiHeader.biSizeImage = (uint)Image.PixelsBGRA.Length;
+
+                Native.Windows.SetStretchBltMode(HDC, Native.Windows.STRETCH_ANDSCANS);
+                Native.Windows.StretchDIBits(HDC, X, Y, (int)Width, (int)Height, 0, 0, (int)Image.Width, (int)Image.Height, Image.PixelsBGRA, ref BMI, 0, Native.Windows.SRCCOPY);*/
+                //Native.Windows.SetDIBitsToDevice(HDC, X, Y, Width, Height, 0, 0, 0, Image.Height, Image.Pixels, ref BMI, 0);
+                
+                Native.Windows.AlphaBlend(HDC, X, Y, (int)Width, (int)Height, Image.HDCMem, 0, 0, (int)Image.Width, (int)Image.Height, new Native.Windows.BLENDFUNCTION{
+                    BlendOp = Native.Windows.AC_SRC_OVER,
+                    BlendFlags = 0,
+                    SourceConstantAlpha = 255,
+                    AlphaFormat = Native.Windows.AC_SRC_ALPHA
+                });
             }
 
             /// <summary>
@@ -572,6 +610,7 @@ namespace WL{
                 private const string DLL_Kernel = "kernel32.dll";
                 private const string DLL_User   = "user32.dll";
                 private const string DLL_GDI    = "gdi32.dll";
+                private const string DLL_MSimg  = "msimg32.dll";
                 
                 [DllImport(DLL_Kernel)]
                 public static extern IntPtr GetConsoleWindow();
@@ -905,6 +944,9 @@ namespace WL{
                 [DllImport(DLL_User)]
                 public static extern int FillRect(IntPtr hDC, ref RECT lprc, IntPtr hbr);
 
+                [DllImport(DLL_GDI, SetLastError = true)]
+                public static extern int SetDIBitsToDevice(IntPtr hdc, int xDest, int yDest, uint dwWidth, uint dwHeight, int xSrc, int ySrc, uint uStartScan, uint cScanLines, byte[] lpvBits, ref BITMAPINFO lpbmi, uint fuColorUse);
+                
                 [DllImport(DLL_GDI, CharSet = CharSet.Unicode)]
                 public static extern bool TextOutW(IntPtr Hdc, int X, int Y, string Text, int TextLength);
                 
@@ -1002,7 +1044,9 @@ namespace WL{
                 public struct BITMAPINFO{
                     public BITMAPINFOHEADER bmiHeader;
 
-                    public uint bmiColors;
+                    public uint redMask;
+                    public uint greenMask;
+                    public uint blueMask;
                 }
                 
                 [DllImport(DLL_GDI, SetLastError = true)]
@@ -1026,11 +1070,29 @@ namespace WL{
                     int ySrc,
                     int SrcWidth,
                     int SrcHeight,
-                    IntPtr lpBits,
+                    [In] byte[] lpBits,
                     ref BITMAPINFO lpbmi,
                     uint iUsage,
                     uint rop
                 );
+                
+                [DllImport(DLL_GDI)]
+                public static extern int SetStretchBltMode(IntPtr hdc, int iStretchMode);
+                
+                [DllImport(DLL_MSimg, ExactSpelling = true, SetLastError = true)]
+                public static extern bool AlphaBlend(
+                    IntPtr hdcDest, int xDest, int yDest, int wDest, int hDest,
+                    IntPtr hdcSrc, int xSrc, int ySrc, int wSrc, int hSrc,
+                    BLENDFUNCTION blend
+                );
+                
+                [StructLayout(LayoutKind.Sequential)]
+                public struct BLENDFUNCTION{
+                    public byte BlendOp;
+                    public byte BlendFlags;
+                    public byte SourceConstantAlpha;
+                    public byte AlphaFormat;
+                }
                 
                 public static readonly IntPtr HWND_TOP       = new IntPtr(0);
                 public static readonly IntPtr HWND_BOTTOM    = new IntPtr(1);
@@ -1134,6 +1196,12 @@ namespace WL{
                 public const int  OPAQUE              = 2;
                 public const int  BI_RGB              = 0;
                 public const int  DIB_RGB_COLORS      = 0;
+                public const int  BI_BITFIELDS        = 3;
+                public const int  STRETCH_DELETESCANS = 1;
+                public const int  STRETCH_HALFTONE    = 2;
+                public const int  STRETCH_ANDSCANS    = 3;
+                public const byte AC_SRC_OVER         = 0;
+                public const byte AC_SRC_ALPHA        = 1;
             }
         }
     }

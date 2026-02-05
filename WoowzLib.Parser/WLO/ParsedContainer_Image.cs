@@ -22,9 +22,14 @@ public abstract class ParsedContainer_Image : ParsedContainer{
     public ushort BitsPerPixel;
 
     /// <summary>
-    /// Цвета
+    /// Цвета (R...G...B...A)
     /// </summary>
     public byte[] Pixels;
+
+    /// <summary>
+    /// Превращает в изображение
+    /// </summary>
+    public Image ToImage() => new Image(Width, Height, BitsPerPixel, Pixels);
 
     public override string ToString() => Format + "(" + Width + "x" + Height + "x" + Channels + ")";
 }

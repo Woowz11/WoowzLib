@@ -6,7 +6,7 @@ public enum FileFormat{
     Unknown, PNG, JPEG, BMP, WEBP, TIFF, GIF
 }
 
-[WLModule(0, 1)]
+[WLModule(0, 2)]
 public class Parser{
     /// <summary>
     /// Парсит формат данных
@@ -57,11 +57,11 @@ public class Parser{
                 int RowStart = PixelOffset + y * RowSize;
                 for(int x = 0; x < Result.Width; x++){
                     int PixelStart = RowStart + x * Channels;
-                    int IDX = (((int)Result.Height - 1 - y) * (int)Result.Width + x) * Channels;
+                    int IDX = (y * (int)Result.Width + x) * Channels;
 
-                                            Result.Pixels[IDX + 0] = Data[PixelStart + 2]; /* R */
-                                            Result.Pixels[IDX + 1] = Data[PixelStart + 1]; /* G */
-                                            Result.Pixels[IDX + 2] = Data[PixelStart + 0]; /* B */
+                                       Result.Pixels[IDX + 0] = Data[PixelStart + 2]; /* R */
+                                       Result.Pixels[IDX + 1] = Data[PixelStart + 1]; /* G */
+                                       Result.Pixels[IDX + 2] = Data[PixelStart + 0]; /* B */
                     if(Channels == 4){ Result.Pixels[IDX + 3] = Data[PixelStart + 3]; /* B */ }
                 }
             }
