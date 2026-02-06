@@ -54,7 +54,7 @@ public class Window{
 
             __UpdateBuffer();
             
-            RenderMessage("Не начат рендер!", ColorF.Red);
+            RenderMessage("Не начат рендер!", ColorB.Red);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании окна [" + this + "]!", e);
         }
@@ -373,9 +373,9 @@ public class Window{
             }
         }
             
-        public Window Render(ColorF BackgroundColor, bool RenderElements, Action<IntPtr>? PreRender, Action<IntPtr>? PostRender){
+        public Window Render(ColorB BackgroundColor, bool RenderElements, Action<IntPtr>? PreRender, Action<IntPtr>? PostRender){
             try{
-                WL.System.HDC.Fill(BackBuffer, 0, 0, Width, Height, BackgroundColor.ToRGBiA());
+                WL.System.HDC.Fill(BackBuffer, 0, 0, Width, Height, BackgroundColor);
                 
                 PreRender?.Invoke(BackBuffer);
                 
@@ -403,7 +403,7 @@ public class Window{
         }
 
         public Window Render(){ return Render(BackgroundColor, true, null, null); }
-        public Window RenderMessage(string Message, ColorF BackgroundColor){
+        public Window RenderMessage(string Message, ColorB BackgroundColor){
             return Render(
                 BackgroundColor,
                 false,
@@ -713,7 +713,7 @@ public class Window{
     /// <summary>
     /// Цвет заднего фона
     /// </summary>
-    public ColorF BackgroundColor = ColorF.White;
+    public ColorB BackgroundColor = ColorB.White;
     
     #region Override
 

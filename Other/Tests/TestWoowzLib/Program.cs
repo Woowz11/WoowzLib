@@ -18,11 +18,11 @@ public static class Program{
             
             Window W1 = new Window();
 
-            Panel P = new Panel(Color: ColorF.Gray);
+            Panel P = new Panel(Color: ColorB.Gray);
             W1.Add(P);
 
             P.OnCursorInside += (element, b) => {
-                P.Color = b ? ColorF.Green : ColorF.Gray;
+                P.Color = b ? ColorB.Green : ColorB.Gray;
             };
 
             P.Anchor_X = 0;
@@ -67,16 +67,14 @@ public static class Program{
             P5.Anchor_Y = -0.75f;
 
             P5.Image = WL.Parser.ParseBMP(new File(FilesPath + "img32.bmp").ReadByte()).ToImage();
-
-            bool DO = false;
-            P2.OnCursorInside += (element, b) => {
-                DO = b;
-            };
             
             double d = 2;
             string FPS = "";
             bool dodo = false;
-            Vector2F t = new Vector2F(P2.Width, P2.Height);
+            Vector2F t2 = new Vector2F(P2.Width, P2.Height);
+            Vector2F t3 = new Vector2F(P3.Width, P3.Height);
+            Vector2F t4 = new Vector2F(P4.Width, P4.Height);
+            Vector2F t5 = new Vector2F(P5.Width, P5.Height);
             while(W1.Alive){
                 WL.System.Tick.LimitFPS(1, 300, TD => {
                     if(W1.Alive){
@@ -87,9 +85,18 @@ public static class Program{
 
                         W1.Title = FPS + " | " + W1.CursorInside;
 
-                        P2.Color = ColorF.Lerp(P2.Color, DO ? ColorF.Black : ColorF.White, (float)TD.DeltaTimeS * 2);
-                        t = Vector2F.Lerp(t, new Vector2F(128, 128) * (DO ? 5 : 1), (float)TD.DeltaTimeS * 2);
-                        P2.Size = new Vector2U((uint)t.X, (uint)t.Y);
+                        //P2.Color = ColorB.Lerp(P2.Color, DO ? ColorB.Black : ColorB.White, (float)TD.DeltaTimeS * 2);
+                        t2 = Vector2F.Lerp(t2, new Vector2F(128, 128) * (W1.CursorElement == P2 ? 5 : 1), (float)TD.DeltaTimeS * 2);
+                        P2.Size = new Vector2U((uint)t2.X, (uint)t2.Y);
+                        
+                        t3 = Vector2F.Lerp(t3, new Vector2F(128, 128) * (W1.CursorElement == P3 ? 5 : 1), (float)TD.DeltaTimeS * 2);
+                        P3.Size = new Vector2U((uint)t3.X, (uint)t3.Y);
+                        
+                        t4 = Vector2F.Lerp(t4, new Vector2F(128, 128) * (W1.CursorElement == P4 ? 5 : 1), (float)TD.DeltaTimeS * 2);
+                        P4.Size = new Vector2U((uint)t4.X, (uint)t4.Y);
+                        
+                        t5 = Vector2F.Lerp(t5, new Vector2F(128, 128) * (W1.CursorElement == P5 ? 5 : 1), (float)TD.DeltaTimeS * 2);
+                        P5.Size = new Vector2U((uint)t5.X, (uint)t5.Y);
                         
                         W1.Render();
                     }

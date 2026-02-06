@@ -1,7 +1,7 @@
 ﻿namespace WLO;
 
 public class Panel : WindowElement{
-    public Panel(int X = 0, int Y = 0, uint Width = 128, uint Height = 128, ColorF? Color = null, Image? Image = null){
+    public Panel(int X = 0, int Y = 0, uint Width = 128, uint Height = 128, ColorB? Color = null, Image? Image = null){
         this.X = X;
         this.Y = Y;
         this.Width  = Width;
@@ -12,9 +12,9 @@ public class Panel : WindowElement{
 
     public override void Render(IntPtr HDC){
         if(Image != null){
-            WL.System.HDC.Image(HDC, X_Final, Y_Final, Width_Final, Height_Final, Image, Color.ToRGBiA());
+            WL.System.HDC.Image(HDC, X_Final, Y_Final, Width_Final, Height_Final, Image, Color);
         }else{
-            WL.System.HDC.Fill(HDC, X_Final, Y_Final, Width_Final, Height_Final, Color.ToRGBiA());   
+            WL.System.HDC.Fill(HDC, X_Final, Y_Final, Width_Final, Height_Final, Color);   
         }
         
         base.Render(HDC);
@@ -23,7 +23,7 @@ public class Panel : WindowElement{
     /// <summary>
     /// Цвет панели
     /// </summary>
-    public ColorF Color = ColorF.White;
+    public ColorB Color = ColorB.White;
 
     /// <summary>
     /// Текстура

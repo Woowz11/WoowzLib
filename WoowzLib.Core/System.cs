@@ -6,7 +6,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 26)]
+    [WLModule(int.MinValue + 1, 27)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -259,7 +259,7 @@ namespace WL{
             /// Создаёт кисть с цветом (Нужно уничтожать!)
             /// </summary>
             /// <param name="Color">Цвет RGBA</param>
-            public static IntPtr CreateBrush(uint Color){ return Native.Windows.CreateSolidBrush(Math.Byte.RGBA_To_ABGR(Color)); }
+            public static IntPtr CreateBrush(ColorB? Color = null) => Native.Windows.CreateSolidBrush(Math.Byte.RGBA_To_ABGR((Color ?? ColorB.White).ToRGBiA()));
 
             public static void DestroyBrush(IntPtr Brush){ Native.Windows.DeleteObject(Brush); }
 
@@ -287,7 +287,7 @@ namespace WL{
             /// <param name="Height">Высота</param>
             /// <param name="Rect">Область</param>
             /// <param name="Color">Цвет</param>
-            public static void Fill(IntPtr HDC, int X, int Y, uint Width, uint Height, uint Color = 0xFFFFFFFF){
+            public static void Fill(IntPtr HDC, int X, int Y, uint Width, uint Height, ColorB? Color = null){
                 IntPtr Brush = CreateBrush(Color);
                 Fill(HDC, X, Y, Width, Height, Brush);
                 DestroyBrush(Brush);
@@ -303,13 +303,14 @@ namespace WL{
             /// <param name="Height">Высота</param>
             /// <param name="Image">Изображение (текстура)</param>
             /// <param name="Color">Умножить на этот цвет</param>
-            public static void Image(IntPtr HDC, int X, int Y, uint Width, uint Height, Image Image, uint Color = 0xFFFFFFFF){
-                Image.__ApplyColor(Math.Byte.Byte4_3(Color) / 255f, Math.Byte.Byte4_2(Color) / 255f, Math.Byte.Byte4_1(Color) / 255f);
+            public static void Image(IntPtr HDC, int X, int Y, uint Width, uint Height, Image Image, ColorB? Color = null){
+                if(!Color.HasValue){ Color = ColorB.White; }
+                Image.__ApplyColor(Color.Value.R, Color.Value.G, Color.Value.B);
                 
                 Native.Windows.AlphaBlend(HDC, X, Y, (int)Width, (int)Height, Image.__HDC, 0, 0, (int)Image.Width, (int)Image.Height, new Native.Windows.BLENDFUNCTION{
                     BlendOp = Native.Windows.AC_SRC_OVER,
                     BlendFlags = 0,
-                    SourceConstantAlpha = (byte)(255 - Math.Byte.Byte4_4(Color)),
+                    SourceConstantAlpha = Color.Value.A,
                     AlphaFormat = Native.Windows.AC_SRC_ALPHA
                 });
             }
