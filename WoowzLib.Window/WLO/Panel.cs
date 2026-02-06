@@ -12,7 +12,7 @@ public class Panel : WindowElement{
 
     public override void Render(IntPtr HDC){
         if(Image != null){
-            WL.System.HDC.Image(HDC, X_Final, Y_Final, Width_Final, Height_Final, Image);
+            WL.System.HDC.Image(HDC, X_Final, Y_Final, Width_Final, Height_Final, Image, Color.ToRGBiA());
         }else{
             WL.System.HDC.Fill(HDC, X_Final, Y_Final, Width_Final, Height_Final, Color.ToRGBiA());   
         }

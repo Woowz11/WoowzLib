@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 05.02.2026 12:49
+/// Сгенерирован: 06.02.2026 2:08
 /// </summary>
 public struct Vector2D{
 	public static readonly int  Numbers = 2;
@@ -35,7 +35,9 @@ public struct Vector2D{
 	public Vector2D ToDown(){ return Set(0, -1); }
 	public static Vector2D Down => new Vector2D().ToDown();
 
-
+	
+	public static Vector2D Lerp(Vector2D A, Vector2D B, float T) => new Vector2D(WL.Math.LerpD(A.X, B.X, T), WL.Math.LerpD(A.Y, B.Y, T));
+	
 	#region Override
 
 		public override string ToString(){

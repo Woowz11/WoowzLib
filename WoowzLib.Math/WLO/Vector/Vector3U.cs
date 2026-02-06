@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 05.02.2026 12:49
+/// Сгенерирован: 06.02.2026 2:08
 /// </summary>
 public struct Vector3U{
 	public static readonly int  Numbers = 3;
@@ -32,7 +32,9 @@ public struct Vector3U{
 	public Vector3U ToFront(){ return Set(0, 0, 1); }
 	public static Vector3U Front => new Vector3U().ToFront();
 
-
+	
+	public static Vector3U Lerp(Vector3U A, Vector3U B, float T) => new Vector3U(WL.Math.LerpU(A.X, B.X, T), WL.Math.LerpU(A.Y, B.Y, T), WL.Math.LerpU(A.Z, B.Z, T));
+	
 	#region Override
 
 		public override string ToString(){

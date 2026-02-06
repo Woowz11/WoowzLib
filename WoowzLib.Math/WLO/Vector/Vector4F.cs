@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 05.02.2026 12:49
+/// Сгенерирован: 06.02.2026 2:08
 /// </summary>
 public struct Vector4F{
 	public static readonly int  Numbers = 4;
@@ -45,7 +45,9 @@ public struct Vector4F{
 	public Vector4F ToKata(){ return Set(0, 0, 0, -1); }
 	public static Vector4F Kata => new Vector4F().ToKata();
 
-
+	
+	public static Vector4F Lerp(Vector4F A, Vector4F B, float T) => new Vector4F(WL.Math.Lerp(A.X, B.X, T), WL.Math.Lerp(A.Y, B.Y, T), WL.Math.Lerp(A.Z, B.Z, T), WL.Math.Lerp(A.W, B.W, T));
+	
 	#region Override
 
 		public override string ToString(){

@@ -6,7 +6,7 @@ namespace WL{
     /// <summary>
     /// Математические функции и т.д
     /// </summary>
-    [WLModule(-10000, 16)]
+    [WLModule(-10000, 17)]
     public static class Math{
         /// <summary>
         /// Ноль
@@ -99,7 +99,6 @@ namespace WL{
         /// Возвращает минимальное число из 2 чисел
         /// </summary>
         public static float Min(float A, float B) => float.Min(A, B);
-        
         /// <summary>
         /// Возвращает минимальное число из 2 чисел
         /// </summary>
@@ -128,9 +127,26 @@ namespace WL{
         public static float Clamp01(float V) => Clamp(V, 0, 1);
 
         /// <summary>
-        /// Возвращает число между A и B по T (0-1)
+        /// Возвращает число между A и B по T (0-1 (нет ограничений!))
         /// </summary>
         public static float Lerp(float A, float B, float T) => float.Lerp(A, B, T);
+        /// <summary>
+        /// Возвращает число между A и B по T (0-1 (нет ограничений!))
+        /// </summary>
+        [Obsolete("ХЗЗЗЗЗЗ, хуйня какая-то, надо подумать как правильно это сделать")]
+        public static int LerpI(int A, int B, float T) => (int)(Lerp(A, B, T));
+        /// <summary>
+        /// Возвращает число между A и B по T (0-1 (нет ограничений!))
+        /// </summary>
+        public static double LerpD(double A, double B, float T) => double.Lerp(A, B, T);
+        /// <summary>
+        /// Возвращает число между A и B по T (0-1 (нет ограничений!))
+        /// </summary>
+        public static byte LerpB(byte A, byte B, float T) => (byte)LerpI(A, B, T);
+        /// <summary>
+        /// Возвращает число между A и B по T (0-1 (нет ограничений!))
+        /// </summary>
+        public static uint LerpU(uint A, uint B, float T) => (uint)LerpI((int)A, (int)B, T);
 
         /// <summary>
         /// Убирает отрицание
@@ -146,6 +162,11 @@ namespace WL{
         /// Число отрицательное?
         /// </summary>
         public static bool IsNegative(float V) => V < 0;
+
+        /// <summary>
+        /// Знак числа (+ или -)
+        /// </summary>
+        public static int Sign(float V) => IsNegative(V) ? -1 : 1;
         
         /// <summary>
         /// Добавляет число B числу A (A + B)
@@ -228,6 +249,11 @@ namespace WL{
         /// Убирает дробную часть из числа (0.3 -> 0, -2.6 -> -2, 0.99 -> 0)
         /// </summary>
         public static float Truncate(float V) => (float)global::System.Math.Truncate(V);
+
+        /// <summary>
+        /// Если есть дробное число, то делает целым и на 1 больше (0.1 -> 1, -0.1 -> -1, 0 -> 0)
+        /// </summary>
+        public static float Above(float V) => Ceil(Abs(V)) * Sign(V);
         
         /// <summary>
         /// Получить среднее число между двумя (Поддерживает большие числа)

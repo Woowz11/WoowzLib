@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 05.02.2026 12:49
+/// Сгенерирован: 06.02.2026 2:08
 /// </summary>
 public struct Vector2U{
 	public static readonly int  Numbers = 2;
@@ -29,8 +29,9 @@ public struct Vector2U{
 	public Vector2U ToUp(){ return Set(0, 1); }
 	public static Vector2U Up => new Vector2U().ToUp();
 
-	public WL.System.Native.Windows.POINT ToPoint(){ return new WL.System.Native.Windows.POINT{x = (int)X, y = (int)Y}; }
-
+	
+	public static Vector2U Lerp(Vector2U A, Vector2U B, float T) => new Vector2U(WL.Math.LerpU(A.X, B.X, T), WL.Math.LerpU(A.Y, B.Y, T));
+	
 	#region Override
 
 		public override string ToString(){

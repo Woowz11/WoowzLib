@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using WLO;
 using File = WLO.File;
 
@@ -143,7 +144,18 @@ public static class Generator{
                                 return "\tpublic " + Name + " To" + Obj.Key + "(){ return Set(" + WL.String.Join(Obj.Value) + "); }\n" +
                                        "\tpublic static " + Name + " " + Obj.Key + " => new " + Name + "().To" + Obj.Key + "();\n";
                             }, AllConstants)}}
-                            {{WL.System.Condition(N == 2 && (VectorType == VectorType.Int || VectorType == VectorType.UInt), "\tpublic WL.System.Native.Windows.POINT ToPoint(){ return new WL.System.Native.Windows.POINT{x = (int)X, y = (int)Y}; }\n", "")}}
+                                
+                                public static {{Name}} Lerp({{Name}} A, {{Name}} B, float T) => new {{Name}}({{WL.System.ConditionCustom(() => {
+                                    string LerpFunc = "WL.Math.Lerp" + (VectorType switch{
+                                        VectorType.Int    => "I",
+                                        VectorType.Double => "D",
+                                        VectorType.UInt   => "U",
+                                        var _             => ""
+                                    });
+
+                                    return WL.String.Join(LerpFunc + "(A.$0, B.$0, T), ", LerpFunc + "(A.$0, B.$0, T)", Components);
+                                })}});
+                                
                                 #region Override
                             
                                     public override string ToString(){
@@ -214,28 +226,28 @@ public static class Generator{
                                                                                            """, "")}}
                                                                                            
                                     {{WL.System.Condition(VectorType == VectorType.Int && N == 2, $$"""
-                                                                                            public static implicit operator WL.System.Native.Windows.POINT(Vector2I Other){
-                                                                                            	        return new WL.System.Native.Windows.POINT{ x = Other.X, y = Other.Y };
-                                                                                                    }
-                                                                                                    
-                                                                                                    public static implicit operator Vector2I(WL.System.Native.Windows.POINT Other){
-                                                                                            	        return new Vector2I(Other.x, Other.y);
-                                                                                                    }
-                                                                                                    
-                                                                                                    public static implicit operator System.Drawing.Point(Vector2I Other){
-                                                                                            	        return new System.Drawing.Point{ X = Other.X, Y = Other.Y };
-                                                                                                    }
-                                                                                                    
-                                                                                                    public static implicit operator Vector2I(System.Drawing.Point Other){
-                                                                                            	        return new Vector2I(Other.X, Other.Y);
-                                                                                                    }
-                                                                                            """, "")}}
+                                                                                                    public static implicit operator WL.System.Native.Windows.POINT(Vector2I Other){
+                                                                                                                return new WL.System.Native.Windows.POINT{ x = Other.X, y = Other.Y };
+                                                                                                            }
+                                                                                                            
+                                                                                                            public static implicit operator Vector2I(WL.System.Native.Windows.POINT Other){
+                                                                                                                return new Vector2I(Other.x, Other.y);
+                                                                                                            }
+                                                                                                            
+                                                                                                            public static implicit operator System.Drawing.Point(Vector2I Other){
+                                                                                                                return new System.Drawing.Point{ X = Other.X, Y = Other.Y };
+                                                                                                            }
+                                                                                                            
+                                                                                                            public static implicit operator Vector2I(System.Drawing.Point Other){
+                                                                                                                return new Vector2I(Other.X, Other.Y);
+                                                                                                            }
+                                                                                                    """, "")}}
                                 #endregion
                             """;
                 
                 Result += "\n}";
 
-                File F = new File(Path.Combine(OutputFolder, Name + ".cs")).WriteString(Result.Replace("    ", "\t").Replace('·',' '));
+                File F = new File(Path.Combine(OutputFolder, Name + ".cs"), false).WriteString(Result.Replace("    ", "\t").Replace('·',' '));
             }catch(Exception e){
                 throw new Exception("Произошла ошибка во время генерации вектора [" + VectorType + ", " + N + "]!", e);
             }
@@ -342,24 +354,33 @@ public static class Generator{
                                 public {{Name}} Set({{WL.String.Join(Type + " $0, ", Type + " $0", Components)}}){ {{WL.String.Join("this.$0 = $0; ", Components)}}return this; }
                                 
                             {{WL.String.Join((i, Obj, Last) => {
-                                return "\tpublic " + Name + " To" + Obj.Key + "(){ return Set(" + WL.String.Join(Obj.Value) + "); }\n" +
+                                return "\tpublic " + Name + " To" + Obj.Key + "() => Set(" + WL.String.Join(Obj.Value) + ");\n" +
                                        "\tpublic static " + Name + " " + Obj.Key + " => new " + Name + "().To" + Obj.Key + "();\n";
-                            }, Constants)}}    public {{Name}} ToRandom(){ return Set({{WL.System.Condition(ColorType == ColorType.Int,"WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255)", (ColorType == ColorType.Byte ? "WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte()" : "WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1()"))}}, 1); }
+                            }, Constants)}}    public {{Name}} ToRandom() => Set({{WL.System.Condition(ColorType == ColorType.Int,"WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255)", (ColorType == ColorType.Byte ? "WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte()" : "WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1()"))}}, 1);
                                 public static {{Name}} Random => new {{Name}}().ToRandom();
-                                public {{Name}} ToFullRandom(){ return Set({{WL.System.Condition(ColorType == ColorType.Int,"WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255)", (ColorType == ColorType.Byte ? "WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte()" : "WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1()"))}}); }
+                                public {{Name}} ToFullRandom() => Set({{WL.System.Condition(ColorType == ColorType.Int,"WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255)", (ColorType == ColorType.Byte ? "WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte()" : "WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1()"))}});
                                 public static {{Name}} FullRandom => new {{Name}}().ToFullRandom();
                             
-                                public uint ToRGBA (){ return WL.System.Byte.RGBA(BR, BG, BB, BA); }
-                                public uint ToRGBiA(){ return WL.System.Byte.RGBA(BR, BG, BB, (byte)(255 - BA)); }
-                                public uint ToARGB (){ return WL.System.Byte.ABGR(BA, BB, BG, BR); }
+                                public uint ToRGBA () => WL.System.Byte.RGBA(BR, BG, BB, ············ BA);
+                                public uint ToRGBiA() => WL.System.Byte.RGBA(BR, BG, BB, (byte)(255 - BA));
+                                public uint ToARGB () => WL.System.Byte.ABGR(BA, BB, BG, ············ BR);
                             
-                                public {{Name}} Clone(){ return new {{Name}}(R,G,B,A); }
+                                public {{Name}} Clone() => new {{Name}}(R, G, B, A);
+                            
+                                public static {{Name}} Lerp({{Name}} A, {{Name}} B, float T) => new {{Name}}({{WL.System.ConditionCustom(() => {
+                                    string LerpFunc = "WL.Math.Lerp" + (ColorType switch{
+                                        ColorType.Int    => "I",
+                                        ColorType.Double => "D",
+                                        ColorType.Byte   => "B",
+                                        var _            => ""
+                                    });
+                                    return LerpFunc + "(A.R, B.R, T), " + LerpFunc + "(A.G, B.G, T), " + LerpFunc + "(A.B, B.B, T), " + LerpFunc + "(A.A, B.A, T)";
+                                })}});
                             
                                 #region Override
                             
-                                    public override string ToString(){
-                                        return "{{Name}}(" + {{WL.String.Join("$0", " + \", \" + $0", " + ($0 == " + V_1 + " ? \"\" : \", \" + $0)", Components)}} + ")";
-                                    }
+                                    // ReSharper disable once CompareOfFloatsByEqualityOperator
+                                    public override string ToString() => "{{Name}}(" + {{WL.String.Join("$0", " + \", \" + $0", " + ($0 == " + V_1 + " ? \"\" : \", \" + $0)", Components)}} + ")";
                                     
                                     public override bool Equals(object? Obj){
                                         if(Obj is not {{Name}} Other){ return false; }
@@ -383,7 +404,7 @@ public static class Generator{
                 
                 Result += "\n}";
 
-                File F = new File(Path.Combine(OutputFolder, Name + ".cs")).WriteString(Result.Replace("    ", "\t"));
+                File F = new File(Path.Combine(OutputFolder, Name + ".cs"), false).WriteString(Result.Replace("    ", "\t").Replace('·',' '));
             }catch(Exception e){
                 throw new Exception("Произошла ошибка во время генерации цвета [" + ColorType + "]!", e);
             }
@@ -528,7 +549,7 @@ public static class Generator{
                 
                 Result += "\n}";
 
-                File F = new File(Path.Combine(OutputFolder, Name + ".cs")).WriteString(Result.Replace("    ", "\t").Replace('·',' '));
+                File F = new File(Path.Combine(OutputFolder, Name + ".cs"), false).WriteString(Result.Replace("    ", "\t").Replace('·',' '));
             }catch(Exception e){
                 throw new Exception("Произошла ошибка во время генерации Rect [" + RectType + "]!", e);
             }
@@ -730,7 +751,7 @@ public static class Generator{
                 
                 Result += "\n}";
 
-                File F = new File(Path.Combine(OutputFolder, NameWithoutT + ".cs")).WriteString(Result.Replace("    ", "\t").Replace('·',' '));
+                File F = new File(Path.Combine(OutputFolder, NameWithoutT + ".cs"), false).WriteString(Result.Replace("    ", "\t").Replace('·',' '));
             }catch(Exception e){
                 throw new Exception("Произошла ошибка во время генерации массива [" + MassiveType + "]!", e);
             }

@@ -381,7 +381,9 @@ public class Window{
                 
                 if(RenderElements){
                     foreach(WindowElement Child in __Children){
-                        Child.BaseRender(BackBuffer);
+                        if(Child.Parent == null){
+                            Child.BaseRender(BackBuffer);
+                        }
                     }   
                 }
                 
@@ -436,7 +438,7 @@ public class Window{
     public Vector2I ToClient(Vector2I WorldVector){
         try{
             CheckDestroyed();
-            WL.System.Native.Windows.POINT P = WorldVector.ToPoint();
+            WL.System.Native.Windows.POINT P = WorldVector;
             WL.System.Native.Windows.ScreenToClient(Handle, ref P);
             return new Vector2I(P);
         }catch(Exception e){
@@ -450,7 +452,7 @@ public class Window{
     public Vector2I ToWorld(Vector2I ClientVector){
         try{
             CheckDestroyed();
-            WL.System.Native.Windows.POINT P = ClientVector.ToPoint();
+            WL.System.Native.Windows.POINT P = ClientVector;
             WL.System.Native.Windows.ClientToScreen(Handle, ref P);
             return new Vector2I(P);
         }catch(Exception e){

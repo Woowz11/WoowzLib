@@ -1,6 +1,8 @@
-﻿using WLO;
+﻿using System.Drawing;
+using WLO;
 using File = WLO.File;
 using Logger = WLO.Logger;
+using Math = WL.Math;
 
 public static class Program{
     public static int Main(string[] Args){
@@ -12,30 +14,7 @@ public static class Program{
                 Author: "Woowz11"
             ));
 
-            const string FilesPath = "W:/Other/WoowzLib/Other/Tests/TestWoowzLib/FILES/img.";
-            
-            byte[] PNG = new File(FilesPath + "png").ReadByte();
-            Logger.Info(WL.Parser.Detect.WhatFormat(PNG));
-            
-            byte[] JPEG = new File(FilesPath + "jpg").ReadByte();
-            Logger.Info(WL.Parser.Detect.WhatFormat(JPEG));
-            
-            byte[] WEBP = new File(FilesPath + "webp").ReadByte();
-            Logger.Info(WL.Parser.Detect.WhatFormat(WEBP));
-            
-            byte[] TIFF = new File(FilesPath + "tiff").ReadByte();
-            Logger.Info(WL.Parser.Detect.WhatFormat(TIFF));
-            
-            byte[] BMP = new File(FilesPath + "bmp").ReadByte();
-            Logger.Info(WL.Parser.Detect.WhatFormat(BMP));
-            
-            byte[] GIF = new File(FilesPath + "gif").ReadByte();
-            Logger.Info(WL.Parser.Detect.WhatFormat(GIF));
-
-            ParsedContainer_BMP PC_BMP = (ParsedContainer_BMP)WL.Parser.Parse(BMP);
-            Logger.Info(PC_BMP);
-
-            Image Img = PC_BMP.ToImage();
+            const string FilesPath = "W:/Other/WoowzLib/Other/Tests/TestWoowzLib/FILES/";
             
             Window W1 = new Window();
 
@@ -66,15 +45,38 @@ public static class Program{
             P2.Anchor_X = 0;
             P2.Anchor_Y = 0;
 
-            P2.Image = Img;
+            P2.Image = WL.Parser.ParseBMP(new File(FilesPath + "img24.bmp").ReadByte()).ToImage();
             
+            Panel P3 = new Panel();
+            P3.Parent = RP;
+            P3.Anchor_X = -0.5f;
+            P3.Anchor_Y = 0;
+
+            P3.Image = WL.Parser.ParseBMP(new File(FilesPath + "img8.bmp").ReadByte()).ToImage();
+            
+            Panel P4 = new Panel();
+            P4.Parent = RP;
+            P4.Anchor_X = 0.5f;
+            P4.Anchor_Y = 0;
+
+            P4.Image = WL.Parser.ParseBMP(new File(FilesPath + "img1.bmp").ReadByte()).ToImage();
+            
+            Panel P5 = new Panel();
+            P5.Parent = RP;
+            P5.Anchor_X = 0;
+            P5.Anchor_Y = -0.75f;
+
+            P5.Image = WL.Parser.ParseBMP(new File(FilesPath + "img32.bmp").ReadByte()).ToImage();
+
+            bool DO = false;
             P2.OnCursorInside += (element, b) => {
-                P2.Size = new Vector2U(128, 128) * (b ? 2U : 1U);
+                DO = b;
             };
             
             double d = 2;
             string FPS = "";
             bool dodo = false;
+            Vector2F t = new Vector2F(P2.Width, P2.Height);
             while(W1.Alive){
                 WL.System.Tick.LimitFPS(1, 300, TD => {
                     if(W1.Alive){
@@ -84,6 +86,10 @@ public static class Program{
                         }
 
                         W1.Title = FPS + " | " + W1.CursorInside;
+
+                        P2.Color = ColorF.Lerp(P2.Color, DO ? ColorF.Black : ColorF.White, (float)TD.DeltaTimeS * 2);
+                        t = Vector2F.Lerp(t, new Vector2F(128, 128) * (DO ? 5 : 1), (float)TD.DeltaTimeS * 2);
+                        P2.Size = new Vector2U((uint)t.X, (uint)t.Y);
                         
                         W1.Render();
                     }

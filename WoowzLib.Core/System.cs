@@ -6,7 +6,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 24)]
+    [WLModule(int.MinValue + 1, 25)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -38,9 +38,13 @@ namespace WL{
         /// <param name="IfTrue">Если равно true</param>
         /// <param name="IfFalse">Если равно false</param>
         /// <returns><c>Condition ? IfTrue : IfFalse</c></returns>
-        public static object? Condition(bool Condition, object? IfTrue, object? IfFalse){
-            return Condition ? IfTrue : IfFalse;
-        }
+        public static object? Condition(bool Condition, object? IfTrue, object? IfFalse) => Condition ? IfTrue : IfFalse;
+
+        /// <summary>
+        /// Условие с функцией
+        /// </summary>
+        /// <param name="Func">Функция возвращающая результат</param>
+        public static object? ConditionCustom(Func<object?> Func) => Func();
         
         public const string StringNull = "NULL";
         
@@ -334,7 +338,8 @@ namespace WL{
             /// <param name="Width">Ширина</param>
             /// <param name="Height">Высота</param>
             /// <param name="Rect">Область</param>
-            public static void Fill(IntPtr HDC, int X, int Y, uint Width, uint Height, uint Color){
+            /// <param name="Color">Цвет</param>
+            public static void Fill(IntPtr HDC, int X, int Y, uint Width, uint Height, uint Color = 0xFFFFFFFF){
                 IntPtr Brush = CreateBrush(Color);
                 Fill(HDC, X, Y, Width, Height, Brush);
                 DestroyBrush(Brush);
@@ -349,26 +354,14 @@ namespace WL{
             /// <param name="Width">Ширина</param>
             /// <param name="Height">Высота</param>
             /// <param name="Image">Изображение (текстура)</param>
-            public static void Image(IntPtr HDC, int X, int Y, uint Width, uint Height, Image Image){
-                /*if(Image.PixelsBGRA.Length == 0){ return; }
-
-                Native.Windows.BITMAPINFO BMI = new Native.Windows.BITMAPINFO();
-                BMI.bmiHeader.biSize = (uint)Byte.Size<Native.Windows.BITMAPINFOHEADER>();
-                BMI.bmiHeader.biWidth = (int)Image.Width;
-                BMI.bmiHeader.biHeight = (int)Image.Height;
-                BMI.bmiHeader.biPlanes = 1;
-                BMI.bmiHeader.biBitCount = Image.BitsPerPixel;
-                BMI.bmiHeader.biCompression = Native.Windows.BI_RGB;
-                BMI.bmiHeader.biSizeImage = (uint)Image.PixelsBGRA.Length;
-
-                Native.Windows.SetStretchBltMode(HDC, Native.Windows.STRETCH_ANDSCANS);
-                Native.Windows.StretchDIBits(HDC, X, Y, (int)Width, (int)Height, 0, 0, (int)Image.Width, (int)Image.Height, Image.PixelsBGRA, ref BMI, 0, Native.Windows.SRCCOPY);*/
-                //Native.Windows.SetDIBitsToDevice(HDC, X, Y, Width, Height, 0, 0, 0, Image.Height, Image.Pixels, ref BMI, 0);
+            /// <param name="Color">Умножить на этот цвет</param>
+            public static void Image(IntPtr HDC, int X, int Y, uint Width, uint Height, Image Image, uint Color = 0xFFFFFFFF){
+                Image.__ApplyColor(Byte.Byte4_3(Color) / 255f, Byte.Byte4_2(Color) / 255f, Byte.Byte4_1(Color) / 255f);
                 
-                Native.Windows.AlphaBlend(HDC, X, Y, (int)Width, (int)Height, Image.HDCMem, 0, 0, (int)Image.Width, (int)Image.Height, new Native.Windows.BLENDFUNCTION{
+                Native.Windows.AlphaBlend(HDC, X, Y, (int)Width, (int)Height, Image.__HDC, 0, 0, (int)Image.Width, (int)Image.Height, new Native.Windows.BLENDFUNCTION{
                     BlendOp = Native.Windows.AC_SRC_OVER,
                     BlendFlags = 0,
-                    SourceConstantAlpha = 255,
+                    SourceConstantAlpha = (byte)(255 - Byte.Byte4_4(Color)),
                     AlphaFormat = Native.Windows.AC_SRC_ALPHA
                 });
             }
@@ -1044,9 +1037,7 @@ namespace WL{
                 public struct BITMAPINFO{
                     public BITMAPINFOHEADER bmiHeader;
 
-                    public uint redMask;
-                    public uint greenMask;
-                    public uint blueMask;
+                    public uint[] bmiColors;
                 }
                 
                 [DllImport(DLL_GDI, SetLastError = true)]

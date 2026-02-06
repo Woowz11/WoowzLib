@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 05.02.2026 12:49
+/// Сгенерирован: 06.02.2026 2:08
 /// </summary>
 public struct Vector3F{
 	public static readonly int  Numbers = 3;
@@ -40,7 +40,9 @@ public struct Vector3F{
 	public Vector3F ToBack(){ return Set(0, 0, -1); }
 	public static Vector3F Back => new Vector3F().ToBack();
 
-
+	
+	public static Vector3F Lerp(Vector3F A, Vector3F B, float T) => new Vector3F(WL.Math.Lerp(A.X, B.X, T), WL.Math.Lerp(A.Y, B.Y, T), WL.Math.Lerp(A.Z, B.Z, T));
+	
 	#region Override
 
 		public override string ToString(){

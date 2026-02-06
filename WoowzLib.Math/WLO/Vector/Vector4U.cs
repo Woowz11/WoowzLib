@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 05.02.2026 12:49
+/// Сгенерирован: 06.02.2026 2:08
 /// </summary>
 public struct Vector4U{
 	public static readonly int  Numbers = 4;
@@ -35,7 +35,9 @@ public struct Vector4U{
 	public Vector4U ToAna(){ return Set(0, 0, 0, 1); }
 	public static Vector4U Ana => new Vector4U().ToAna();
 
-
+	
+	public static Vector4U Lerp(Vector4U A, Vector4U B, float T) => new Vector4U(WL.Math.LerpU(A.X, B.X, T), WL.Math.LerpU(A.Y, B.Y, T), WL.Math.LerpU(A.Z, B.Z, T), WL.Math.LerpU(A.W, B.W, T));
+	
 	#region Override
 
 		public override string ToString(){

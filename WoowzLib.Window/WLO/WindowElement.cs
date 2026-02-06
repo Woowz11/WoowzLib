@@ -134,8 +134,8 @@ public abstract class WindowElement{
         
         public virtual void Render(IntPtr HDC){
             try{
-                if(!InMemory_Final || !VisibleChild){ return; }
-
+                if(InMemory_Final || !VisibleChild){ return; }
+                
                 int ClipResult = 0;
 
                 if(ClipChild){
@@ -216,7 +216,7 @@ public abstract class WindowElement{
             /// <summary>
             /// Позиция по X элемента с учётом точки привязки
             /// </summary>
-            public int X_Anchor => (int)(((Anchor_X + 1) / 2f) * ((int)(Parent?.Width_Final ?? Window.Width) - (int)Width_Final));
+            public int X_Anchor => (int)(((Anchor_X + 1) / 2f) * ((int)(Parent != null && Location == ElementLocation.InParent ? Parent.Width_Final : Window?.Width ?? 0) - (int)Width_Final));
 
             /// <summary>
             /// Позиция по X элемента с учётом всего
@@ -240,7 +240,7 @@ public abstract class WindowElement{
             /// <summary>
             /// Позиция по Y элемента с учётом точки привязки
             /// </summary>
-            public int Y_Anchor => (int)(((Anchor_Y + 1) / 2f) * ((int)(Parent?.Height_Final ?? Window.Height) - (int)Height_Final));
+            public int Y_Anchor => (int)(((Anchor_Y + 1) / 2f) * ((int)(Parent != null && Location == ElementLocation.InParent ? Parent.Height_Final : Window?.Height ?? 0) - (int)Height_Final));
 
             /// <summary>
             /// Позиция по Y элемента с учётом всего
@@ -287,7 +287,7 @@ public abstract class WindowElement{
             /// <summary>
             /// Ширина элемента с учётом растягивания
             /// </summary>
-            public uint Width_Final => Anchor_Width > 0 ? (uint)((Parent?.Width_Final ?? Window.Width) * Anchor_Width) : Width;
+            public uint Width_Final => Anchor_Width > 0 ? (uint)((Parent != null && Location == ElementLocation.InParent ? Parent.Width_Final : Window?.Width ?? 0) * Anchor_Width) : Width;
 
             /// <summary>
             /// Высота элемента
@@ -297,7 +297,7 @@ public abstract class WindowElement{
             /// <summary>
             /// Высота элемента с учётом растягивания
             /// </summary>
-            public uint Height_Final => Anchor_Height > 0 ? (uint)((Parent?.Height_Final ?? Window.Height) * Anchor_Height) : Height;
+            public uint Height_Final => Anchor_Height > 0 ? (uint)((Parent != null && Location == ElementLocation.InParent ? Parent.Height_Final : Window?.Height ?? 0) * Anchor_Height) : Height;
         
             /// <summary>
             /// Размер элемента
