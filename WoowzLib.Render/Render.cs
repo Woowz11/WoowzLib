@@ -3,7 +3,7 @@ using WLO;
 
 namespace WL;
 
-[WLModule(-50, 9)]
+[WLModule(-50, 10)]
 public class Render{
     static Render(){
         try{

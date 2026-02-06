@@ -22,12 +22,12 @@ public static class Generator{
                            /// Сгенерирован: {{WL.Math.Time.Format("g")}}
                            """;
             
-            string MathFolder = Path.GetFullPath(Path.Combine(BaseFolder, "WoowzLib.Math"));
+            string CoreFolder = Path.GetFullPath(Path.Combine(BaseFolder, "WoowzLib.Core"));
             
-            GenerateVector (Path.GetFullPath(Path.Combine(MathFolder, "WLO", "Vector" )));
-            GenerateColor  (Path.GetFullPath(Path.Combine(MathFolder, "WLO", "Color"  )));
-            GenerateRect   (Path.GetFullPath(Path.Combine(MathFolder, "WLO", "Rect"   )));
-            GenerateMassive(Path.GetFullPath(Path.Combine(MathFolder, "WLO", "Massive")));
+            GenerateVector (Path.GetFullPath(Path.Combine(CoreFolder, "WLO", "Vector" )));
+            GenerateColor  (Path.GetFullPath(Path.Combine(CoreFolder, "WLO", "Color"  )));
+            GenerateRect   (Path.GetFullPath(Path.Combine(CoreFolder, "WLO", "Rect"   )));
+            GenerateMassive(Path.GetFullPath(Path.Combine(CoreFolder, "WLO", "Massive")));
         }catch(Exception e){
             throw new Exception("Произошла ошибка во время генерации!", e);
         }
@@ -349,7 +349,7 @@ public static class Generator{
                                 }
                             
                             {{WL.String.Join("\tpublic " + Type + " $0;\n", Components)}}
-                            {{WL.String.Join("\tpublic byte B$0 => WL.System.Byte.ToColorByte($0);\n", Components)}}
+                            {{WL.String.Join("\tpublic byte B$0 => WL.Math.Byte.ToColorByte($0);\n", Components)}}
                             {{WL.String.Join("\tpublic " + Name + " Set$0(" + Type + " $0){ this.$0 = $0; return this; }\n", Components)}}
                                 public {{Name}} Set({{WL.String.Join(Type + " $0, ", Type + " $0", Components)}}){ {{WL.String.Join("this.$0 = $0; ", Components)}}return this; }
                                 
@@ -361,9 +361,9 @@ public static class Generator{
                                 public {{Name}} ToFullRandom() => Set({{WL.System.Condition(ColorType == ColorType.Int,"WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255), WL.Math.Random.Fast_Int(0, 255)", (ColorType == ColorType.Byte ? "WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte(), WL.Math.Random.Fast_Byte()" : "WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1(), WL.Math.Random.Fast_0_1()"))}});
                                 public static {{Name}} FullRandom => new {{Name}}().ToFullRandom();
                             
-                                public uint ToRGBA () => WL.System.Byte.RGBA(BR, BG, BB, ············ BA);
-                                public uint ToRGBiA() => WL.System.Byte.RGBA(BR, BG, BB, (byte)(255 - BA));
-                                public uint ToARGB () => WL.System.Byte.ABGR(BA, BB, BG, ············ BR);
+                                public uint ToRGBA () => WL.Math.Byte.RGBA(BR, BG, BB, ············ BA);
+                                public uint ToRGBiA() => WL.Math.Byte.RGBA(BR, BG, BB, (byte)(255 - BA));
+                                public uint ToARGB () => WL.Math.Byte.ABGR(BA, BB, BG, ············ BR);
                             
                                 public {{Name}} Clone() => new {{Name}}(R, G, B, A);
                             
@@ -739,7 +739,7 @@ public static class Generator{
                                    }
                                    
                                    public int ElementBSize(){
-                                        return {{WL.System.Condition(Custom, "WL.System.Byte.Size(typeof(T))", "sizeof(" + Type + ")")}}; 
+                                        return {{WL.System.Condition(Custom, "WL.Math.Byte.Size(typeof(T))", "sizeof(" + Type + ")")}}; 
                                     }
                                    
                                    public int BSize(){

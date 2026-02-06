@@ -6,7 +6,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 25)]
+    [WLModule(int.MinValue + 1, 26)]
     public class System{
         /// <summary>
         /// Папка, где запущено приложение
@@ -227,58 +227,6 @@ namespace WL{
             }
         }
         
-        public static class Byte{
-            /// <summary>
-            /// Создаёт число из 4-х байтов (AA, BB, CC, DD) -> 0xAABBCCDD
-            /// </summary>
-            public static uint Byte4(byte B1, byte B2, byte B3, byte B4) => (uint)(B1 << 24 | B2 << 16 | B3 << 8 | B4);
-
-            public static byte Byte4_1(uint V) => (byte)((V >> 24) & 0xFF);
-            public static byte Byte4_2(uint V) => (byte)((V >> 16) & 0xFF);
-            public static byte Byte4_3(uint V) => (byte)((V >> 8 ) & 0xFF);
-            public static byte Byte4_4(uint V) => (byte)( V        & 0xFF);
-
-            /// <summary>
-            /// Создаёт RGBA
-            /// </summary>
-            public static uint RGBA(byte R, byte G, byte B, byte A) => Byte4(R, G, B, A);
-                
-            /// <summary>
-            /// Создаёт ABGR
-            /// </summary>
-            public static uint ABGR(byte A, byte B, byte G, byte R) => Byte4(A, B, G, R);
-
-            /// <summary>
-            /// Превращает 0xAABBCCDD -> 0xDDCCBBAA 
-            /// </summary>
-            public static uint Byte4_Inverse(uint V) => Byte4(Byte4_4(V), Byte4_3(V), Byte4_2(V), Byte4_1(V));
-
-            /// <summary>
-            /// Превращает RGBA -> ABGR
-            /// </summary>
-            public static uint RGBA_To_ABGR(uint RGBA) => Byte.Byte4_Inverse(RGBA);
-
-            /// <summary>
-            /// Превращает ABGR -> RGBA
-            /// </summary>
-            public static uint ABGR_To_RGBA(uint ABGR) => Byte.Byte4_Inverse(ABGR);
-
-            public static byte ToColorByte(byte   V) =>        V       ;
-            public static byte ToColorByte(int    V) => (byte) V       ;
-            public static byte ToColorByte(float  V) => (byte)(V * 255);
-            public static byte ToColorByte(double V) => (byte)(V * 255);
-
-            /// <summary>
-            /// Вычисляет размер объекта в байтах
-            /// </summary>
-            public static int Size(object Obj) => Marshal.SizeOf(Obj);
-            
-            /// <summary>
-            /// Вычисляет размер объекта в байтах
-            /// </summary>
-            public static int Size<T>() => Marshal.SizeOf<T>();
-        }
-        
         public static class HDC{
             /// <summary>
             /// Рисование в окне
@@ -311,7 +259,7 @@ namespace WL{
             /// Создаёт кисть с цветом (Нужно уничтожать!)
             /// </summary>
             /// <param name="Color">Цвет RGBA</param>
-            public static IntPtr CreateBrush(uint Color){ return Native.Windows.CreateSolidBrush(Byte.RGBA_To_ABGR(Color)); }
+            public static IntPtr CreateBrush(uint Color){ return Native.Windows.CreateSolidBrush(Math.Byte.RGBA_To_ABGR(Color)); }
 
             public static void DestroyBrush(IntPtr Brush){ Native.Windows.DeleteObject(Brush); }
 
@@ -356,12 +304,12 @@ namespace WL{
             /// <param name="Image">Изображение (текстура)</param>
             /// <param name="Color">Умножить на этот цвет</param>
             public static void Image(IntPtr HDC, int X, int Y, uint Width, uint Height, Image Image, uint Color = 0xFFFFFFFF){
-                Image.__ApplyColor(Byte.Byte4_3(Color) / 255f, Byte.Byte4_2(Color) / 255f, Byte.Byte4_1(Color) / 255f);
+                Image.__ApplyColor(Math.Byte.Byte4_3(Color) / 255f, Math.Byte.Byte4_2(Color) / 255f, Math.Byte.Byte4_1(Color) / 255f);
                 
                 Native.Windows.AlphaBlend(HDC, X, Y, (int)Width, (int)Height, Image.__HDC, 0, 0, (int)Image.Width, (int)Image.Height, new Native.Windows.BLENDFUNCTION{
                     BlendOp = Native.Windows.AC_SRC_OVER,
                     BlendFlags = 0,
-                    SourceConstantAlpha = (byte)(255 - Byte.Byte4_4(Color)),
+                    SourceConstantAlpha = (byte)(255 - Math.Byte.Byte4_4(Color)),
                     AlphaFormat = Native.Windows.AC_SRC_ALPHA
                 });
             }

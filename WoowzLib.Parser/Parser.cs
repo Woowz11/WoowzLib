@@ -6,7 +6,7 @@ public enum FileFormat{
     Unknown, PNG, JPEG, BMP, WEBP, TIFF, GIF
 }
 
-[WLModule(0, 3)]
+[WLModule(0, 4)]
 public class Parser{
     /// <summary>
     /// Парсит формат данных
@@ -43,22 +43,22 @@ public class Parser{
             // Заголовок
             Result.Width        = (uint  )BitConverter.ToInt32(Data, 0x12);
             Result.Height       = (uint  )BitConverter.ToInt32(Data, 0x16);
-            Result.BitsPerPixel = (ushort)BitConverter.ToInt16(Data, 0x1C);
+            ushort BitsPerPixel = (ushort)BitConverter.ToInt16(Data, 0x1C);
 
-            if(Result.BitsPerPixel != 1 && Result.BitsPerPixel != 8 && Result.BitsPerPixel != 24 && Result.BitsPerPixel != 32){ throw new Exception("Поддерживаются только 1 или 8 или 24 или 32 битные BMP! Сейчас: " + Result.BitsPerPixel); }
+            if(BitsPerPixel != 1 && BitsPerPixel != 8 && BitsPerPixel != 24 && BitsPerPixel != 32){ throw new Exception("Поддерживаются только 1 или 8 или 24 или 32 битные BMP! Сейчас: " + BitsPerPixel); }
 
             const int OutChannels = 4;
-            int BytesPerPixel = Result.BitsPerPixel / 8;
+            int Channels = BitsPerPixel / 8;
             
             Result.Pixels_RGBA = new byte[Result.Width * Result.Height * OutChannels];
 
-            int RowSize = (int)((Result.BitsPerPixel * Result.Width + 31) / 32) * 4;
+            int RowSize = (int)((BitsPerPixel * Result.Width + 31) / 32) * 4;
 
             byte[]? Palette = null;
-            if(Result.BitsPerPixel == 1){
+            if(BitsPerPixel == 1){
                 Palette = new byte[2 * 4];
                 Buffer.BlockCopy(Data, 14 + 40, Palette, 0, 2 * 4);
-            }else if(Result.BitsPerPixel == 8){
+            }else if(BitsPerPixel == 8){
                 Palette = new byte[256 * 4];
                 Buffer.BlockCopy(Data, 14 + 40, Palette, 0, 256 * 4);
             }
@@ -68,7 +68,7 @@ public class Parser{
                 for(int X = 0; X < Result.Width; X++){
                     int OutIndex = ((int)(Result.Height - 1 - Y) * (int)Result.Width + X) * OutChannels;
 
-                    if(Result.BitsPerPixel == 1){
+                    if(BitsPerPixel == 1){
                         int ByteIndex = RowStart + (X >> 3);
                         int BitIndex = 7 - (X & 7);
 
@@ -81,7 +81,7 @@ public class Parser{
                         Result.Pixels_RGBA[OutIndex + 1] = Palette![P + 1]; // G
                         Result.Pixels_RGBA[OutIndex + 2] = Palette![P + 0]; // B
                         Result.Pixels_RGBA[OutIndex + 3] = 255            ; // A
-                    }else if(Result.BitsPerPixel == 8){
+                    }else if(BitsPerPixel == 8){
                         byte PaletteIndex = Data[RowStart + X];
                         int P = PaletteIndex * 4;
                         
@@ -90,17 +90,15 @@ public class Parser{
                         Result.Pixels_RGBA[OutIndex + 2] = Palette![P + 0]; // B
                         Result.Pixels_RGBA[OutIndex + 3] = 255            ; // A
                     }else{
-                        int PixelStart = RowStart + X * BytesPerPixel;
+                        int PixelStart = RowStart + X * Channels;
                         
-                        Result.Pixels_RGBA[OutIndex + 0] =                        Data[PixelStart + 2]            ; /* R */
-                        Result.Pixels_RGBA[OutIndex + 1] =                        Data[PixelStart + 1]            ; /* G */
-                        Result.Pixels_RGBA[OutIndex + 2] =                        Data[PixelStart + 0]            ; /* B */
-                        Result.Pixels_RGBA[OutIndex + 3] = Result.Channels == 4 ? Data[PixelStart + 3] : (byte)255; /* A */
+                        Result.Pixels_RGBA[OutIndex + 0] =                 Data[PixelStart + 2]            ; /* R */
+                        Result.Pixels_RGBA[OutIndex + 1] =                 Data[PixelStart + 1]            ; /* G */
+                        Result.Pixels_RGBA[OutIndex + 2] =                 Data[PixelStart + 0]            ; /* B */
+                        Result.Pixels_RGBA[OutIndex + 3] = Channels == 4 ? Data[PixelStart + 3] : (byte)255; /* A */
                     }
                 }
             }
-
-            Result.BitsPerPixel = 32;
             
             return Result;
         }catch(Exception e){

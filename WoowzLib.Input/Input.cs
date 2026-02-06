@@ -4,7 +4,7 @@ namespace WL{
     /// <summary>
     /// Управление с вводом
     /// </summary>
-    [WLModule(-150, 1)]
+    [WLModule(-150, 2)]
     public static class Input{
         public static class Cursor{
             /// <summary>

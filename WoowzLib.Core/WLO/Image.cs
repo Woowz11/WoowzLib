@@ -1,14 +1,21 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
 
 namespace WLO;
 
-[Obsolete("Думаю надо сделать так, что-бы он всегда был RGBA, без BitsPerPixel")]
 public class Image : IDisposable{
-    public Image(uint Width, uint Height, ushort BitsPerPixel, byte[]? Pixels = null){
+    /// <summary>
+    /// Создаёт изображение
+    /// </summary>
+    /// <param name="Width">Ширина</param>
+    /// <param name="Height">Высота</param>
+    /// <param name="Pixels">Принимает только RGBA!</param>
+    public Image(uint Width, uint Height, byte[]? Pixels = null){
         __Width = Width;
         __Height = Height;
-        __BitsPerPixel = BitsPerPixel;
-        __Pixels_RGBA = Pixels == null ? new byte[Width * Height * BitsPerPixel] : (byte[])Pixels.Clone();
+        __Pixels_RGBA = Pixels == null ? new byte[Width * Height * 4] : (byte[])Pixels.Clone();
 
         __Update(true);
     }
@@ -24,17 +31,6 @@ public class Image : IDisposable{
     /// </summary>
     public uint Height => __Height;
     private uint __Height;
-
-    /// <summary>
-    /// Кол-во каналов (байтов на пиксель)
-    /// </summary>
-    public ushort Channels => (ushort)(__BitsPerPixel / 8);
-    
-    /// <summary>
-    /// Кол-во бит на пиксель (1: Чёрный и белый (0.125), 8: Градации чёрно-белого (1), 24: RGB (3), 32: RGBA (4))
-    /// </summary>
-    public ushort BitsPerPixel => __BitsPerPixel;
-    private ushort __BitsPerPixel;
 
     /// <summary>
     /// Цвета (R...G...B...A)
@@ -60,34 +56,11 @@ public class Image : IDisposable{
             // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
             if(__Pixels_BGRA == null || __Pixels_RGBA.Length != __Pixels_BGRA.Length){ __Pixels_BGRA = new byte[__Pixels_RGBA.Length]; }
 
-                for(int i = 0; i < __Pixels_RGBA.Length; i += Channels){
-                    switch(Channels){
-                        case 1:
-                            __Pixels_BGRA[i + 0] = __Pixels_RGBA[i + 0];
-                            break;
-
-                        case 2:
-                            __Pixels_BGRA[i + 0] = __Pixels_RGBA[i + 1];
-                            __Pixels_BGRA[i + 1] = __Pixels_RGBA[i + 0];
-                            break;
-
-                        case 3:
-                            __Pixels_BGRA[i + 0] = __Pixels_RGBA[i + 2];
-                            __Pixels_BGRA[i + 1] = __Pixels_RGBA[i + 1];
-                            __Pixels_BGRA[i + 2] = __Pixels_RGBA[i + 0];
-                            break;
-
-                        case 4:
-                            __Pixels_BGRA[i + 0] = __Pixels_RGBA[i + 2];
-                            __Pixels_BGRA[i + 1] = __Pixels_RGBA[i + 1];
-                            __Pixels_BGRA[i + 2] = __Pixels_RGBA[i + 0];
-                            __Pixels_BGRA[i + 3] = __Pixels_RGBA[i + 3];
-                            break;
-
-                        default:
-                            throw new Exception("Неподдерживаемое количество каналов! Каналов: " + Channels);
-                    }
-
+                for(int i = 0; i < __Pixels_RGBA.Length; i += 4){
+                    __Pixels_BGRA[i + 0] = __Pixels_RGBA[i + 2];
+                    __Pixels_BGRA[i + 1] = __Pixels_RGBA[i + 1];
+                    __Pixels_BGRA[i + 2] = __Pixels_RGBA[i + 0];
+                    __Pixels_BGRA[i + 3] = __Pixels_RGBA[i + 3];
                 }
 
             #endregion
@@ -98,11 +71,11 @@ public class Image : IDisposable{
                     __HDC = WL.System.Native.Windows.CreateCompatibleDC(IntPtr.Zero);
 
                     WL.System.Native.Windows.BITMAPINFO BMI = new WL.System.Native.Windows.BITMAPINFO();
-                    BMI.bmiHeader.biSize        = (uint)WL.System.Byte.Size<WL.System.Native.Windows.BITMAPINFOHEADER>();
+                    BMI.bmiHeader.biSize        = (uint)WL.Math.Byte.Size<WL.System.Native.Windows.BITMAPINFOHEADER>();
                     BMI.bmiHeader.biWidth       =  (int)Width;
                     BMI.bmiHeader.biHeight      = -(int)Height;
                     BMI.bmiHeader.biPlanes      = 1;
-                    BMI.bmiHeader.biBitCount    = BitsPerPixel;
+                    BMI.bmiHeader.biBitCount    = 4 * 8;
                     BMI.bmiHeader.biCompression = WL.System.Native.Windows.BI_RGB;
                     BMI.bmiHeader.biSizeImage   = (uint)(__Pixels_BGRA.Length);
                     
@@ -118,53 +91,31 @@ public class Image : IDisposable{
         }
     }
 
+    private float __R;
+    private float __G;
+    private float __B;
     public void __ApplyColor(float R, float G, float B){
+        if(WL.Math.IsNear(__R, R) && WL.Math.IsNear(__G, G) && WL.Math.IsNear(__B, B)){ return; }
+        __R = R; __G = G; __B = B;
+        
         unsafe{
-            byte* Link = (byte*)__PixelsStart;
-            int PixelCount = (int)(Width * Height);
-
-            switch(Channels){
-                case 1:
-                    for(int i = 0; i < PixelCount * 1; i += 1){
-                        Link[i + 0] = (byte)(Pixels_BGRA[i + 0] * R);
-                    }
-
-                    break;
-
-                case 2:
-                    for(int i = 0; i < PixelCount * 2; i += 2){
-                        Link[i + 0] = (byte)(Pixels_BGRA[i + 0] * R);
-                        Link[i + 1] = Pixels_BGRA[i + 1];
-                    }
-
-                    break;
-
-                case 3:
-                    for(int i = 0; i < PixelCount * 3; i += 3){
-                        Link[i + 0] = (byte)(Pixels_BGRA[i + 0] * B);
-                        Link[i + 1] = (byte)(Pixels_BGRA[i + 1] * G);
-                        Link[i + 2] = (byte)(Pixels_BGRA[i + 2] * R);
-                    }
-
-                    break;
-                
-                case 4:
-                    for(int i = 0; i < PixelCount * 4; i += 4){
-                        Link[i + 0] = (byte)(Pixels_BGRA[i + 0] * B);
-                        Link[i + 1] = (byte)(Pixels_BGRA[i + 1] * G);
-                        Link[i + 2] = (byte)(Pixels_BGRA[i + 2] * R);
-                        Link[i + 3] =        Pixels_BGRA[i + 3];
-                    }
-
-                    break;
-
-                default:
-                    throw new Exception("Неподдерживаемое количество каналов! Каналов: " + Channels);
-            }
+            byte* Link       = (byte*)__PixelsStart;
+            byte* Source     = (byte*)Unsafe.AsPointer(ref __Pixels_BGRA[0]);
+            int   PixelCount = (int)(__Width * __Height);
+            
+            // мб добавить систему выполнения на gpu? сделать проверку есть ли вулкан, и делать так...
+            
+            Parallel.For(0, PixelCount, i => {
+                int IDX      = i * 4;
+                Link[IDX + 0] = (byte)(Source[IDX + 0] * B);
+                Link[IDX + 1] = (byte)(Source[IDX + 1] * G);
+                Link[IDX + 2] = (byte)(Source[IDX + 2] * R);
+                Link[IDX + 3] =        Source[IDX + 3]     ;
+            });
         }
     }
     
-    public override string ToString() => "Image(" + __Width + "x" + __Height + "x" + Channels + ")";
+    public override string ToString() => "Image(" + __Width + "x" + __Height + ")";
     
     public void Dispose(){
         if (__HDC != IntPtr.Zero){
