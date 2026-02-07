@@ -6,8 +6,13 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 1, 27)]
+    [WLModule(int.MinValue + 1, 28)]
     public class System{
+        /// <summary>
+        /// Обозначение для null в виде строки
+        /// </summary>
+        public const string StringNull = "NULL";
+        
         /// <summary>
         /// Папка, где запущено приложение
         /// </summary>
@@ -45,8 +50,29 @@ namespace WL{
         /// </summary>
         /// <param name="Func">Функция возвращающая результат</param>
         public static object? ConditionCustom(Func<object?> Func) => Func();
-        
-        public const string StringNull = "NULL";
+
+        /// <summary>
+        /// Делает тест, если аргумент равен значению
+        /// </summary>
+        /// <param name="Name">Название теста</param>
+        /// <param name="Argument">Аргумент</param>
+        /// <param name="Result">Значение</param>
+        /// <param name="Exact">Учитывать дробные числа?</param>
+        /// <returns>Прошёл тест?</returns>
+        public static bool Test(string Name, object? Argument, object? Result, bool Exact = false){
+            bool Successfully;
+            if(Argument is IConvertible && Result is IConvertible){
+                double A = Convert.ToDouble(Argument);
+                double B = Convert.ToDouble(Result  );
+                Successfully = Exact ? A == B : Math.IsNearD(A, B, Math.Epsilon_Strong, true);
+            }else{
+                Successfully = object.Equals(Argument, Result);
+            }
+            string Message = "[" + (Successfully ? "+" : "-") + "] Тест [\"" + Name + "\"]: (" + Argument?.GetType() + ") " + Argument + " == (" + Result?.GetType() + ") " + Result + " = " + Successfully;
+            if(Successfully){ Logger.Info(Message); }else{ Logger.Error(Message); }
+
+            return Successfully;
+        }
         
         public static class Console{
             /// <summary>

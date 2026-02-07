@@ -7,7 +7,7 @@ namespace WL{
     /// <summary>
     /// Математические функции и т.д
     /// </summary>
-    [WLModule(-10000, 19)]
+    [WLModule(-10000, 20)]
     public static class Math{
         /// <summary>
         /// Ноль
@@ -18,27 +18,72 @@ namespace WL{
         /// Один
         /// </summary>
         public const float One = 1;
-
+        
         /// <summary>
         /// Минус один
         /// </summary>
         public const float NegativeOne = -1;
         
         /// <summary>
-        /// Возвращается как ошибочное значение Float
+        /// Ошибочное значение
         /// </summary>
-        public const float ErrorFloat = float.NaN;
+        public const float Error = float.NaN;
+        /// <summary>
+        /// Ошибочное значение
+        /// </summary>
+        public const double ErrorD = double.NaN;
 
         /// <summary>
-        /// Максимальное значение Float
+        /// Это ошибочное значение?
         /// </summary>
-        public const float MaxFloat = float.MaxValue;
+        public static bool IsError(float V) => float.IsNaN(V);
+        /// <summary>
+        /// Это ошибочное значение?
+        /// </summary>
+        public static bool IsErrorD(double V) => double.IsNaN(V);
+
+        /// <summary>
+        /// Это не простое значение?
+        /// </summary>
+        public static bool IsSpecial(float V) => IsError(V) || IsInfinity(V);
+        /// <summary>
+        /// Это не простое значение?
+        /// </summary>
+        public static bool IsSpecialD(double V) => IsErrorD(V) || IsInfinityD(V);
         
         /// <summary>
-        /// Минимальное значение Float
+        /// Максимальное значение
         /// </summary>
-        public const float MinFloat = float.MinValue;
+        public const float MaxValue = float.MaxValue;
+        
+        /// <summary>
+        /// Минимальное значение
+        /// </summary>
+        public const float MinValue = float.MinValue;
 
+        /// <summary>
+        /// Бесконечное значение
+        /// </summary>
+        public const float Infinity = float.PositiveInfinity;
+        /// <summary>
+        /// Бесконечное значение
+        /// </summary>
+        public const double InfinityD = double.PositiveInfinity;
+
+        /// <summary>
+        /// Это бесконечность?
+        /// </summary>
+        public static bool IsInfinity(float V) => float.IsInfinity(V);
+        /// <summary>
+        /// Это бесконечность?
+        /// </summary>
+        public static bool IsInfinityD(double V) => double.IsInfinity(V);
+        
+        /// <summary>
+        /// Бесконечно отрицательное значение
+        /// </summary>
+        public const float NegativeInfinity = float.NegativeInfinity;
+        
         /// <summary>
         /// Число PI (~3.14)
         /// </summary>
@@ -88,7 +133,7 @@ namespace WL{
         /// Возвращает максимальное число из нескольких чисел
         /// </summary>
         public static float Max(params float[] Values){
-            if(Values.Length == 0){ return ErrorFloat; }
+            if(Values.Length == 0){ return Error; }
             float Max = Values[0];
             for(int i = 1; i < Values.Length; i++){
                 Max = Math.Max(Max, Values[i]);
@@ -109,7 +154,7 @@ namespace WL{
         /// Возвращает минимальное число из нескольких чисел
         /// </summary>
         public static float Min(params float[] Values){
-            if(Values.Length == 0){ return ErrorFloat; }
+            if(Values.Length == 0){ return Error; }
             float Min = Values[0];
             for(int i = 1; i < Values.Length; i++){
                 Min = Math.Min(Min, Values[i]);
@@ -152,7 +197,11 @@ namespace WL{
         /// <summary>
         /// Убирает отрицание
         /// </summary>
-        public static float Abs(float V) => global::System.Math.Abs(V);
+        public static float Abs(float V) => float.Abs(V);
+        /// <summary>
+        /// Убирает отрицание
+        /// </summary>
+        public static double AbsD(double V) => double.Abs(V);
 
         /// <summary>
         /// Число положительное?
@@ -183,6 +232,11 @@ namespace WL{
         /// Умножает число B на число A (A * B)
         /// </summary>
         public static float Mul(float A, float B) => A * B;
+
+        /// <summary>
+        /// Умножает число B на число A (A * B) (Но очень точно! т.е: 0.1f * 0.1f = 0.01f, а не 0,010000001f)
+        /// </summary>
+        public static float MulExact(float A, float B) => (float)((decimal)A * (decimal)B);
         
         /// <summary>
         /// Делит число B на число A (A / B)
@@ -193,11 +247,17 @@ namespace WL{
         /// Возводит в степень число V на Exponent
         /// </summary>
         public static float Pow(float V, float Exponent){
-            V        = Round(V, 2);
-            Exponent = Round(Exponent, 2);
             (float, float) Key = (V, Exponent);
 
-            return __Pow.GetOrAdd(Key, K => (float)global::System.Math.Pow(K.Item1, K.Item2));
+            return __Pow.GetOrAdd(Key,
+                K => {
+                    if(IsNegative(K.Item1) && Frac(K.Item2) != 0){
+                        int Sign = Math.Sign(K.Item1);
+                        return Sign * float.Pow(Abs(K.Item1), K.Item2);
+                    }
+
+                    return float.Pow(K.Item1, K.Item2);
+                });
         }
         private static readonly ConcurrentDictionary<(float, float), float> __Pow = new ConcurrentDictionary<(float, float), float>();
         
@@ -216,7 +276,7 @@ namespace WL{
         /// Корень N степени числа V
         /// </summary>
         public static float Root(float V, float N){
-            if(IsZero(N) || IsNegative(V) && Mod(N, 2) == 0){ return ErrorFloat; } // Невозможен корень чётной степени из отрицательного числа
+            if(IsZero(N) || (IsNegative(V) && Mod(N, 2) == 0)){ return Error; } // Невозможен корень чётной степени из отрицательного числа
             return Pow(V, 1f / N);
         }
 
@@ -231,25 +291,25 @@ namespace WL{
         public static float Cbrt(float V) => Root(V, 3);
         
         /// <summary>
-        /// Округляет число (0.3 -> 0, 0.5 -> 1, 0.7 -> 1, -0.3 -> 0)
+        /// Округляет число (0.3 -> 0, 0.5 -> 1, 0.7 -> 1, -0.3 -> 0, 2.5 -> 3)
         /// <param name="Digits">До скольки округлять: 4 -> 0.0001</param>
         /// </summary>
-        public static float Round(float V, int Digits = 0) => (float)global::System.Math.Round(V, Digits);
+        public static float Round(float V, int Digits = 0) => float.Round(V, Digits, MidpointRounding.AwayFromZero);
         
         /// <summary>
         /// Округляет число (0.3 -> 1, 0.5 -> 1, 0.7 -> 1, -0.3 -> 0)
         /// </summary>
-        public static float Ceil(float V) => (float)global::System.Math.Ceiling(V);
+        public static float Ceil(float V) => float.Ceiling(V);
         
         /// <summary>
         /// Округляет число (0.3 -> 0, 0.5 -> 0, 0.7 -> 0, -0.3 -> -1)
         /// </summary>
-        public static float Floor(float V) => (float)global::System.Math.Floor(V);
+        public static float Floor(float V) => float.Floor(V);
 
         /// <summary>
         /// Убирает дробную часть из числа (0.3 -> 0, -2.6 -> -2, 0.99 -> 0)
         /// </summary>
-        public static float Truncate(float V) => (float)global::System.Math.Truncate(V);
+        public static float Truncate(float V) => float.Truncate(V);
 
         /// <summary>
         /// Если есть дробное число, то делает целым и на 1 больше (0.1 -> 1, -0.1 -> -1, 0 -> 0)
@@ -271,7 +331,7 @@ namespace WL{
 
             float Key = Round(Rad, 2);
 
-            return __Sin.GetOrAdd(Key, K => (float)global::System.Math.Sin(K));
+            return __Sin.GetOrAdd(Key, K => IsNear(Rad, HalfPI) ? 1 : float.Sin(K));
         }
         private static readonly ConcurrentDictionary<float, float> __Sin = new ConcurrentDictionary<float, float>();
 
@@ -285,7 +345,7 @@ namespace WL{
         /// </summary>
         public static float Tan(float Rad){
             float Cos = Math.Cos(Rad);
-            if(IsZero(Cos)){ return ErrorFloat; }
+            if(IsZero(Cos)){ return Error; }
             return Sin(Rad) / Cos;
         }
         
@@ -294,7 +354,7 @@ namespace WL{
         /// </summary>
         public static float Cot(float Rad){
             float Sin = Math.Sin(Rad);
-            if(IsZero(Sin)){ return ErrorFloat; }
+            if(IsZero(Sin)){ return Error; }
             return Cos(Rad) / Sin;
         }
 
@@ -321,12 +381,30 @@ namespace WL{
         /// <summary>
         /// Число A близко к числу B?
         /// </summary>
-        public static bool IsNear(float A, float B, float Epsilon) => Abs(A - B) < Epsilon;
+        /// <param name="ConsiderError">Учитывать IsError(A) && IsError(B)</param>>
+        public static bool IsNear(float A, float B, float Epsilon, bool ConsiderError = false){
+            if(IsError(A) && IsError(B)){ return ConsiderError; }
+            if(IsInfinity(A) || IsInfinity(B)){ return A == B; }
+            return Abs(A - B) < Epsilon;
+        }
+        /// <summary>
+        /// Число A близко к числу B?
+        /// </summary>
+        /// <param name="ConsiderError">Учитывать IsError(A) && IsError(B)</param>>
+        public static bool IsNearD(double A, double B, double Epsilon, bool ConsiderError = false){
+            if(IsErrorD(A) && IsErrorD(B)){ return ConsiderError; }
+            if(IsInfinityD(A) || IsInfinityD(B)){ return A == B; }
+            return AbsD(A - B) < Epsilon;
+        }
         
         /// <summary>
         /// Число A близко к числу B?
         /// </summary>
         public static bool IsNear(float A, float B) => IsNear(A, B, Epsilon_Strong);
+        /// <summary>
+        /// Число A близко к числу B?
+        /// </summary>
+        public static bool IsNearD(double A, double B) => IsNearD(A, B, Epsilon_Strong);
 
         /// <summary>
         /// Дробная часть числа (3.75 -> 0.75, -1.25 -> -0.25) [Сохраняет знак]
