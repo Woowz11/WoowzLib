@@ -8,13 +8,19 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         
         <PackageId>Woowz11.WoowzLib</PackageId>
-        <Version>0.0.0</Version>
+        <Version>0.0.2</Version>
         <Authors>Woowz11</Authors>
-        <Product>WoowzLib Core</Product>
-        <Description>Help me please...</Description>
+        <Description>The core for WoowzLib</Description>
         <PackageLicenseExpression>CC-BY-SA-4.0</PackageLicenseExpression>
-        <PackageProjectUrl>https://github.com/Woowz11/WoowzLib</PackageProjectUrl>
-        <PackageTags>Woowz;Library;Math;Windows;System;Byte</PackageTags>
+        <RepositoryUrl>https://github.com/Woowz11/WoowzLib/tree/main/WoowzLib.Core</RepositoryUrl>
+        <PackageTags>Woowz;Library;Math;Windows;System;Byte;Vector;Color;Rect</PackageTags>
+        <PackageIcon>Icon.png</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
+    
+    <ItemGroup>
+        <None Include="Icon.png" Pack="true" PackagePath="/" />
+        <None Include="README.md" Pack="true" PackagePath="/" />
+    </ItemGroup>
 
 </Project>
