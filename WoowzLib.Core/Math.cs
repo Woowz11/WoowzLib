@@ -7,7 +7,7 @@ namespace WL{
     /// <summary>
     /// Математические функции и т.д
     /// </summary>
-    [WLModule(-10000, 20)]
+    [WLModule(int.MinValue + 1, 21)]
     public static class Math{
         /// <summary>
         /// Ноль
