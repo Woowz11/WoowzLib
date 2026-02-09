@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 
 namespace WL{
-    [WLModule(-1000, 7)]
+    [WLModule(int.MinValue + 5, 8)]
     public static class Explorer{
         /// <summary>
         /// Для работы с файлами
@@ -20,10 +20,10 @@ namespace WL{
             /// <param name="Path">Путь [<c>"test/file.json"</c>]</param>
             public static void Destroy(string Path){
                 try{
-                    if(!Exist(Path)){ throw new Exception(global::WLO.File.Error_FileAlreadyDestroyed); }
+                    if(!Exist(Path)){ throw new Exception("Файл уже уничтожен!"); }
                     global::System.IO.File.Delete(Path);
                 }catch(Exception e){
-                    throw new Exception("Не получилось уничтожить файл по пути [" + Path + "]!");
+                    throw new Exception("Не получилось уничтожить файл по пути [" + Path + "]!", e);
                 }
             }
 
@@ -59,7 +59,7 @@ namespace WL{
                         Directory.CreateDirectory(Path);
                     }
                 }catch(Exception e){
-                    throw new Exception("Не получилось создать папки по пути [" + Path + "]!");
+                    throw new Exception("Не получилось создать папки по пути [" + Path + "]!", e);
                 }
             }
             
@@ -72,7 +72,7 @@ namespace WL{
                     if(!Exist(Path)){ throw new Exception("Папка не найдена!"); }
                     global::System.IO.Directory.Delete(Path, true);
                 }catch(Exception e){
-                    throw new Exception("Не получилось уничтожить папку по пути [" + Path + "]!");
+                    throw new Exception("Не получилось уничтожить папку по пути [" + Path + "]!", e);
                 }
             }
 
@@ -93,7 +93,7 @@ namespace WL{
                         Directory.Delete(Folder, true);
                     }
                 }catch(Exception e){
-                    throw new Exception("Не получилось уничтожить файлы внутри папки по пути [" + Path + "]!");
+                    throw new Exception("Не получилось уничтожить файлы внутри папки по пути [" + Path + "]!", e);
                 }
             }
         }
@@ -155,8 +155,8 @@ namespace WL{
             /// <param name="ID">ID ресурса [<c>"WoowzLib.GLFW.Native.win-x64.glfw3.dll"</c>]</param>
             /// <param name="Assembly">Сборка, где искать ресурс (если null, значит в текущей)</param>
             /// <returns>Ресурс (сохранённый во временной папке)</returns>
-            public static global::WLO.File Load(string ID, Assembly? Assembly = null){
-                Assembly Assembly__ = Assembly ?? global::System.Reflection.Assembly.GetExecutingAssembly();
+            public static WLO.File Load(string ID, Assembly? Assembly = null){
+                Assembly Assembly__ = Assembly ?? Assembly.GetExecutingAssembly();
 
                 string? ProjectName = Assembly__.GetName().Name;
                 
@@ -170,7 +170,7 @@ namespace WL{
                         ResourceName = Parts__[^2] + "." + Parts__[^1];
                     }
 
-                    global::WLO.File File = Temp.Create("WL\\Explorer.Resources\\" + (ProjectName ?? "Unknown") + "\\" + ResourceName);
+                    WLO.File File = Temp.Create($@"WL\Explorer.Resources\${(ProjectName ?? "Unknown")}\${ResourceName}");
 
                     using FileStream FS = new FileStream(File.Path, FileMode.Create, FileAccess.Write, FileShare.None);
                     Stream.CopyTo(FS);

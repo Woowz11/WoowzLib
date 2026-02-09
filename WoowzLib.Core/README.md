@@ -2,7 +2,7 @@
 
 ![Иконка](Icon.png)
 
-![Typing SVG](https://readme-typing-svg.demolab.com?font=Science+Gothic+&weight=900&size=70&duration=1&pause=100000&color=E6E6E6&center=true&vCenter=true&width=500&height=60&lines=WoowzLib.Core)
+![Typing SVG](https://readme-typing-svg.demolab.com?font=Science+Gothic+&weight=900&size=70&duration=1&pause=100000&color=E6E6E6&center=true&vCenter=true&width=700&height=70&lines=WoowzLib.Core)
 
 [![License](https://img.shields.io/badge/License-CC_BY_SA_4.0-blue)](https://creativecommons.org/licenses/by-sa/4.0/)
 
@@ -43,6 +43,9 @@
 |System.Native        | Работа с Native кодом, загрузка DLL файлов и т.д |
 |System.Native.Windows| Функции из ``kernel32.dll``, ``user32.dll``, ``gdi32.dll``, ``msimg32.dll`` |
 |Input                | Работа с вводом |
+|Explorer.File        | Работа с файлами |
+|Explorer.Folder      | Работа с папками |
+|Explorer.Temp        | Работа с временными файлами |
 
 ## Больше информации
 
@@ -260,5 +263,32 @@ while(...){
 <details><summary>Смотреть...</summary>
 
 Пока-что только получение позиции курсора, в будущем можно будет и за клавишами следить
+
+</details>
+<div align="center">
+
+### Explorer.File
+</div>
+<details><summary>Смотреть...</summary>
+
+Взаимодействие с файлами
+
+</details>
+<div align="center">
+
+### Explorer.Folder
+</div>
+<details><summary>Смотреть...</summary>
+
+Взаимодействие с папками
+
+</details>
+<div align="center">
+
+### Explorer.Temp
+</div>
+<details><summary>Смотреть...</summary>
+
+Взаимодействие с временными файлами
 
 </details>

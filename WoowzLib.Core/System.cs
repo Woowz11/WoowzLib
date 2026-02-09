@@ -5,7 +5,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 3, 32)]
+    [WLModule(int.MinValue + 3, 33)]
     public class System{
         /// <summary>
         /// Обозначение для null в виде строки
@@ -316,11 +316,10 @@ namespace WL{
             /// <param name="Height">Высота</param>
             /// <param name="Rect">Область</param>
             /// <param name="Color">Цвет</param>
-            public static int Fill(IntPtr HDC, int X, int Y, uint Width, uint Height, ColorB? Color = null){
+            public static void Fill(IntPtr HDC, int X, int Y, uint Width, uint Height, ColorB? Color = null){
                 IntPtr Brush = CreateBrush(Color);
                 int R = Fill(HDC, X, Y, Width, Height, Brush);
-                DestroyBrush(Brush);
-                return R;
+                DestroyBrush(Brush); // плз добавь детект ошибок
             }
 
             /// <summary>

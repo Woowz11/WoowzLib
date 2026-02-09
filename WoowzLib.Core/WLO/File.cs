@@ -6,10 +6,6 @@ namespace WLO;
 /// Файл
 /// </summary>
 public class File{
-    public const string Error_FileNotExist         = "Файл не найден!";
-    public const string Error_FileAlreadyDestroyed = "Файл уже уничтожен!";
-    public const string Error_FileAlreadyCreated   = "Файл уже создан!";
-
     /// <summary>
     /// Получение или создание пустого файла
     /// </summary>
@@ -78,7 +74,7 @@ public class File{
     /// <returns>Текстовое содержимое файла</returns>
     public string ReadString(Encoding? Encoding = null){
         try{
-            return Exist ? System.IO.File.ReadAllText(Path, Encoding ?? Encoding.UTF8) : throw new Exception(Error_FileNotExist);
+            return Exist ? System.IO.File.ReadAllText(Path, Encoding ?? Encoding.UTF8) : throw new Exception("Файл не найден!");
         }
         catch(Exception e){
             throw new Exception("Не получилось прочитать файл [" + this + "]!\nТип: Текст\nКодировка: " + Encoding, e);
@@ -123,7 +119,7 @@ public class File{
     /// <returns>Байтовое содержимое файла</returns>
     public byte[] ReadByte(){
         try{
-            return Exist ? System.IO.File.ReadAllBytes(Path) : throw new Exception(Error_FileNotExist);
+            return Exist ? System.IO.File.ReadAllBytes(Path) : throw new Exception("Файл не найден!");
         }catch(Exception e){
             throw new Exception("Не получилось прочитать файл [" + this + "]!\nТип: Байт", e);
         }
@@ -164,7 +160,7 @@ public class File{
     public File Move(string NewPath, bool Overwrite = false){
         try{
             if(string.IsNullOrWhiteSpace(NewPath)){ throw new Exception("Новый путь не может быть пустым!"); }
-            if(!Exist){ throw new Exception(Error_FileNotExist); }
+            if(!Exist){ throw new Exception("Файл не найден!"); }
 
             WL.Explorer.Folder.Create(WL.Explorer.File.OnlyFolder(NewPath));
 
@@ -193,7 +189,7 @@ public class File{
     public File Clone(string NewPath, bool Overwrite = false){
         try{
             if(string.IsNullOrWhiteSpace(NewPath)){ throw new Exception("Новый путь не может быть пустым!"); }
-            if(!Exist){ throw new Exception(Error_FileNotExist); }
+            if(!Exist){ throw new Exception("Файл не найден!"); }
 
             WL.Explorer.Folder.Create(WL.Explorer.File.OnlyFolder(NewPath));
 
@@ -220,7 +216,7 @@ public class File{
     /// <returns>FileStream для чтения/записи</returns>
     public FileStream Stream(FileMode Mode = FileMode.OpenOrCreate, FileAccess Access = FileAccess.ReadWrite, FileShare Share = FileShare.None){
         try{
-            if(!Exist){ throw new Exception(Error_FileNotExist); }
+            if(!Exist){ throw new Exception("Файл не найден!"); }
             WL.Explorer.Folder.Create(ParentPath);
             return new FileStream(Path, Mode, Access, Share);
         }catch(Exception e){
@@ -233,7 +229,7 @@ public class File{
     /// </summary>
     public File Create(){
         try{
-            if(Exist){ throw new Exception(Error_FileAlreadyCreated); }
+            if(Exist){ throw new Exception("Файл уже создан!"); }
 
             WL.Explorer.Folder.Create(ParentPath);
 

@@ -12,8 +12,6 @@ public static class Program{
                 Name  : "Test WoowzLib",
                 Author: "Woowz11"
             ));
-
-            Logger.Error("", new Exception("hi"));
             
             const string FilesPath = "W:/Other/WoowzLib/Other/Tests/TestWoowzLib/FILES/";
             

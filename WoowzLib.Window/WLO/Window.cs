@@ -404,15 +404,18 @@ public class Window{
 
         public Window Render(){ return Render(BackgroundColor, true, null, null); }
         public Window RenderMessage(string Message, ColorB BackgroundColor){
-            return Render(
-                BackgroundColor,
-                false,
-                null,
-                HDC => {
-                    WL.System.Native.Windows.SetBkMode(BackBuffer, WL.System.Native.Windows.TRANSPARENT);
-                    WL.System.HDC.Text(BackBuffer, (int)(Width * 0.5f), (int)(Height * 0.5f), Message);
-                }
-            );
+            try{
+                return Render(BackgroundColor,
+                    false,
+                    null,
+                    HDC => {
+                        WL.System.Native.Windows.SetBkMode(BackBuffer, WL.System.Native.Windows.TRANSPARENT);
+                        WL.System.HDC.Text(BackBuffer, (int)(Width * 0.5f), (int)(Height * 0.5f), Message);
+                    });
+            }
+            catch(Exception e){
+                throw new Exception("Произошла ошибка при рендере сообщения в окне ["+ this + "]!\nСообщение: \"" + Message + "\"", e);
+            }
         }
 
     #endregion

@@ -9,7 +9,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\WoowzLib.Core\WoowzLib.Core.csproj" />
-      <ProjectReference Include="..\..\..\WoowzLib.Explorer\WoowzLib.Explorer.csproj" />
     </ItemGroup>
 
 </Project>
