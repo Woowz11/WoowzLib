@@ -6,7 +6,7 @@ using System.Text;
 using WLO;
 
 namespace WL{
-    [WLModule(int.MinValue, 38)]
+    [WLModule(int.MinValue, 39)]
     public static class WoowzLib{
         static WoowzLib(){
             try{
@@ -26,10 +26,10 @@ namespace WL{
                     Message ??= [null!];
 
                     string Prefix = Type switch{
-                        MessageType.Warn  => "[WARN] ",
-                        MessageType.Error => "[ERROR] ",
-                        MessageType.Fatal => "[FATAL] ",
-                        MessageType.Debug => "[DEBUG] ",
+                        Logger.MessageType.Warn  => "[WARN] ",
+                        Logger.MessageType.Error => "[ERROR] ",
+                        Logger.MessageType.Fatal => "[FATAL] ",
+                        Logger.MessageType.Debug => "[DEBUG] ",
                         _ => "",
                     };
 
@@ -161,14 +161,14 @@ namespace WL{
         /// <summary>
         /// Ивент вызывается при отправке сообщений через Logger
         /// </summary>
-        public static event Action<MessageType, object[]?>? OnMessage;
+        public static event Action<Logger.MessageType, object[]?>? OnMessage;
 
         /// <summary>
         /// Отправляет сообщение в OnMessage
         /// </summary>
         /// <param name="Type">Тип сообщения</param>
         /// <param name="Message">Сообщение</param>
-        public static void __Print(MessageType Type, object[]? Message){
+        public static void __Print(Logger.MessageType Type, object[]? Message){
             OnMessage?.Invoke(Type, Message);
         }
 
@@ -191,7 +191,7 @@ namespace WLO{
         /// <summary>
         /// Версия проекта
         /// </summary>
-        public readonly uint Version;
+        public readonly uint Version = Version;
         
         /// <summary>
         /// Движок проекта
@@ -201,7 +201,7 @@ namespace WLO{
         /// <summary>
         /// Версия движка проекта
         /// </summary>
-        public readonly uint EngineVersion;
+        public readonly uint EngineVersion = EngineVersion;
         
         /// <summary>
         /// Автор проекта

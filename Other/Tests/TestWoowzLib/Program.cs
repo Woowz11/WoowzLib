@@ -1,7 +1,6 @@
 ﻿using System.Drawing;
 using WLO;
 using File = WLO.File;
-using Logger = WLO.Logger;
 using Math = WL.Math;
 
 public static class Program{
@@ -14,6 +13,8 @@ public static class Program{
                 Author: "Woowz11"
             ));
 
+            Logger.Error("", new Exception("hi"));
+            
             const string FilesPath = "W:/Other/WoowzLib/Other/Tests/TestWoowzLib/FILES/";
             
             Window W1 = new Window();

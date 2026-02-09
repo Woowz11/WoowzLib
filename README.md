@@ -4,54 +4,15 @@
 
 [![License](https://img.shields.io/badge/License-CC_BY_SA_4.0-blue)](https://creativecommons.org/licenses/by-sa/4.0/)
 
-## Информация
-
-</div>
-
-``WoowzLib`` — Это модульная библиотека для C#
-
-Добавляет различные модули для упращение работы, добавляет кеширование, и предупреждает если где-то что-то не так, к примеру имеет авто-очистки, содержит комментарии и try/catch и всё на Русском языке
-
-Использует Net 8.0
-
-<div align="center">
-
 ## Модули
 
-|Название     |Что делает?|
-|:-----------:|:---------|
-|Core + System|Основа для всех модулей, работа с Console, Windows и т.д|
-|Math         |Математика, Random, время, вектора, цвета, и т.д|
-|String       |Работа со строками|
-|Explorer     |Работа с файлами и папками|
-|Byte         |Работа с байтами, собственные массивы|
-|Logger       |Собственный обработчик сообщений (с цветами, временем и т.д)|
-|Window       |WIP Для работы с окнами, основаны на WinAPI|
-|Render       |WIP Рендер API (Vulkan)|
-
-## Пример
+|Название     |Информация |
+|:-----------:|:---------:|
+|Core         |[README.md](https://github.com/Woowz11/WoowzLib/blob/main/WoowzLib.Core/README.md)|
+|Logger       |[README.md](https://github.com/Woowz11/WoowzLib/blob/main/WoowzLib.Logger/README.md)|
+|Explorer     |[README.md](https://github.com/Woowz11/WoowzLib/blob/main/WoowzLib.Explorer/README.md)|
+|Window       |[README.md](https://github.com/Woowz11/WoowzLib/blob/main/WoowzLib.Window/README.md)|
+|Render       |[README.md](https://github.com/Woowz11/WoowzLib/blob/main/WoowzLib.Render/README.md)|
+|Parser       |[README.md](https://github.com/Woowz11/WoowzLib/blob/main/WoowzLib.Parser/README.md)|
 
 </div>
-
-В начале кода нужно написать ``WL.WoowzLib.Start();``, что-бы модули правильно инициализировались <-- WIP
-
-<div align="center">
-
-## Установка
-
-</div>
-
-пока-что не придумал...
-
-<div align="center">
-
-## Предупреждение
-
-</div>
-
-Библиотека находится в разработке
-
-<details>
-<summary>Что это?</summary>
-просто смотрю что это
-</details>

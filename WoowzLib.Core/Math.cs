@@ -7,7 +7,7 @@ namespace WL{
     /// <summary>
     /// Математические функции и т.д
     /// </summary>
-    [WLModule(int.MinValue + 1, 22)]
+    [WLModule(int.MinValue + 1, 23)]
     public static class Math{
         /// <summary>
         /// Ноль
@@ -273,7 +273,7 @@ namespace WL{
         public static float Cube(float V) => V * V * V;
 
         /// <summary>
-        /// Корень N степени числа V
+        /// Корень N степени числа V (Выдаст ошибку если N == 0 или V &lt; 0 &amp;&amp; N чётное 2)
         /// </summary>
         public static float Root(float V, float N){
             if(IsZero(N) || (IsNegative(V) && Mod(N, 2) == 0)){ return Error; } // Невозможен корень чётной степени из отрицательного числа
