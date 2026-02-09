@@ -3,7 +3,7 @@ using WLO;
 
 namespace WL;
 
-[WLModule(-500, 6)]
+[WLModule(-500, 7)]
 public class Logger{
     static Logger(){
         WL.WoowzLib.OnStart += () => {
@@ -30,7 +30,7 @@ public class Logger{
         public override Encoding Encoding => OriginalOut.Encoding;
 
         public override void WriteLine(string? Message){
-            Print(MessageType.Info, [Message]);
+            Print(global::Logger.MessageType.Info, [Message]);
         }
 
         public override void Write(char Message){
@@ -38,16 +38,16 @@ public class Logger{
         }
     }
 
-    private static string MessagePrefix(MessageType Type, bool First){
+    private static string MessagePrefix(global::Logger.MessageType Type, bool First){
         try{
             string Char = "~";
             if(First){
                 Char = Type switch{
-                    MessageType.Info  => "I",
-                    MessageType.Warn  => "W",
-                    MessageType.Error => "E",
-                    MessageType.Fatal => "F",
-                    MessageType.Debug => "D"
+                    global::Logger.MessageType.Info  => "I",
+                    global::Logger.MessageType.Warn  => "W",
+                    global::Logger.MessageType.Error => "E",
+                    global::Logger.MessageType.Fatal => "F",
+                    global::Logger.MessageType.Debug => "D"
                 };
             }
 
@@ -57,7 +57,7 @@ public class Logger{
         }
     }
     
-    private static void Print(MessageType Type, object[]? Message){
+    private static void Print(global::Logger.MessageType Type, object[]? Message){
         try{
             if(Message == null){ Message = [null]; }
 
@@ -65,18 +65,18 @@ public class Logger{
             string[] Lines = FullMessage.Split('\n');
             
             ConsoleColor ColorD = Type switch{
-                MessageType.Info  => ConsoleColor.Gray,
-                MessageType.Warn  => ConsoleColor.DarkYellow,
-                MessageType.Error => ConsoleColor.DarkRed,
-                MessageType.Fatal => ConsoleColor.DarkMagenta,
-                MessageType.Debug => ConsoleColor.DarkGreen
-            };;
+                global::Logger.MessageType.Info  => ConsoleColor.Gray,
+                global::Logger.MessageType.Warn  => ConsoleColor.DarkYellow,
+                global::Logger.MessageType.Error => ConsoleColor.DarkRed,
+                global::Logger.MessageType.Fatal => ConsoleColor.DarkMagenta,
+                global::Logger.MessageType.Debug => ConsoleColor.DarkGreen
+            };
             ConsoleColor ColorL = Type switch{
-                MessageType.Info  => ConsoleColor.White,
-                MessageType.Warn  => ConsoleColor.Yellow,
-                MessageType.Error => ConsoleColor.Red,
-                MessageType.Fatal => ConsoleColor.Magenta,
-                MessageType.Debug => ConsoleColor.Green
+                global::Logger.MessageType.Info  => ConsoleColor.White,
+                global::Logger.MessageType.Warn  => ConsoleColor.Yellow,
+                global::Logger.MessageType.Error => ConsoleColor.Red,
+                global::Logger.MessageType.Fatal => ConsoleColor.Magenta,
+                global::Logger.MessageType.Debug => ConsoleColor.Green
             };
 
             for(int i = 0; i < Lines.Length; i++){

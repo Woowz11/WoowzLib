@@ -1,12 +1,11 @@
 ﻿using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
 using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 3, 31)]
+    [WLModule(int.MinValue + 3, 32)]
     public class System{
         /// <summary>
         /// Обозначение для null в виде строки
@@ -64,6 +63,7 @@ namespace WL{
             if(Argument is IConvertible && Result is IConvertible){
                 double A = Convert.ToDouble(Argument);
                 double B = Convert.ToDouble(Result  );
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
                 Successfully = Exact ? A == B : Math.IsNearD(A, B, Math.Epsilon_Strong, true);
             }else{
                 Successfully = object.Equals(Argument, Result);
@@ -85,8 +85,8 @@ namespace WL{
             /// Название окна консоли
             /// </summary>
             public static string Title{
-                get => System.Console.Title;
-                set => System.Console.Title = value;
+                get => global::System.Console.Title;
+                set => global::System.Console.Title = value;
             }
 
             /// <summary>
@@ -110,9 +110,7 @@ namespace WL{
             /// </summary>
             public static bool Visible{
                 get => Native.Windows.IsWindowVisible(Handle);
-                set{
-                    Native.Windows.ShowWindow(Handle, value ? Native.Windows.SW_SHOW : Native.Windows.SW_HIDE);
-                }
+                set => Native.Windows.ShowWindow(Handle, value ? Native.Windows.SW_SHOW : Native.Windows.SW_HIDE);
             }
         }
 
@@ -144,13 +142,15 @@ namespace WL{
             }
 
             /// <summary>
-            /// Ограничивает скорость потока по указанному DeltaTime (Стоит учитывать, что TickData берётся прошлого кадра!)
+            /// Ограничивает скорость потока по-указанному DeltaTime (Стоит учитывать, что TickData берётся прошлого кадра!)
             /// </summary>
             /// <param name="UniqueID">Уникальный ID, не должны совпадать с другими функциями</param>
             /// <param name="TargetDeltaTime">Целевое время между кадрами</param>
             /// <param name="Action">Действие, которое выполняется если DeltaTime совпадает</param>
             public static void Limit(int UniqueID, double TargetDeltaTime, Action<TickData> Action){
                 try{
+                    if(TargetDeltaTime < 0){ throw new Exception("TargetDeltaTime не может быть < 0!"); }
+
                     bool Do = false;
 
                     double Time = ProgramLifeTime;
@@ -168,8 +168,8 @@ namespace WL{
                         if(!__TickData.TryGetValue(UniqueID, out TickData TD)){
                             TD = new TickData();
                         }else{
-                            if(TD.Tick      == -1){ TD.Tick      = 0; }
-                            if(TD.DeltaTick == -1){ TD.DeltaTick = 0; }
+                            if(TD.Tick                    == -1 ){ TD.Tick      = 0; }
+                            if(WL.Math.IsNearD(TD.DeltaTick, -1)){ TD.DeltaTick = 0; }
 
                             TD.Tick++;
                             TD.DeltaTick += TD.DeltaTimeS;
@@ -187,7 +187,7 @@ namespace WL{
             }
 
             /// <summary>
-            /// Ограничивает скорость потока по указанному FPS (Стоит учитывать, что TickData берётся прошлого кадра!)
+            /// Ограничивает скорость потока по-указанному FPS (Стоит учитывать, что TickData берётся прошлого кадра!)
             /// </summary>
             /// <param name="UniqueID">Уникальный ID, не должны совпадать с другими функциями</param>
             /// <param name="TargetFPS">Целевое FPS</param>
@@ -287,7 +287,10 @@ namespace WL{
             /// <param name="Color">Цвет RGBA</param>
             public static IntPtr CreateBrush(ColorB? Color = null) => Native.Windows.CreateSolidBrush(Math.Byte.RGBA_To_ABGR((Color ?? ColorB.White).ToRGBiA()));
 
-            public static void DestroyBrush(IntPtr Brush){ Native.Windows.DeleteObject(Brush); }
+            /// <summary>
+            /// Уничтожает кисть с цветом
+            /// </summary>
+            public static bool DestroyBrush(IntPtr Brush) => Native.Windows.DeleteObject(Brush);
 
             /// <summary>
             /// Заполнить цветом область
@@ -298,9 +301,9 @@ namespace WL{
             /// <param name="Width">Ширина</param>
             /// <param name="Height">Высота</param>
             /// <param name="Brush">Кисть</param>
-            public static void Fill(IntPtr HDC, int X, int Y, uint Width, uint Height, IntPtr Brush){
+            public static int Fill(IntPtr HDC, int X, int Y, uint Width, uint Height, IntPtr Brush){
                 Native.Windows.RECT Rect = new Native.Windows.RECT{ left = X, top = Y, right = X + (int)Width, bottom = Y + (int)Height };
-                Native.Windows.FillRect(HDC, ref Rect, Brush);
+                return Native.Windows.FillRect(HDC, ref Rect, Brush);
             }
 
             /// <summary>
@@ -313,10 +316,11 @@ namespace WL{
             /// <param name="Height">Высота</param>
             /// <param name="Rect">Область</param>
             /// <param name="Color">Цвет</param>
-            public static void Fill(IntPtr HDC, int X, int Y, uint Width, uint Height, ColorB? Color = null){
+            public static int Fill(IntPtr HDC, int X, int Y, uint Width, uint Height, ColorB? Color = null){
                 IntPtr Brush = CreateBrush(Color);
-                Fill(HDC, X, Y, Width, Height, Brush);
+                int R = Fill(HDC, X, Y, Width, Height, Brush);
                 DestroyBrush(Brush);
+                return R;
             }
 
             /// <summary>
@@ -330,15 +334,15 @@ namespace WL{
             /// <param name="Image">Изображение (текстура)</param>
             /// <param name="Color">Умножить на этот цвет</param>
             public static void Image(IntPtr HDC, int X, int Y, uint Width, uint Height, Image Image, ColorB? Color = null){
-                if(!Color.HasValue){ Color = ColorB.White; }
+                Color ??= ColorB.White;
                 Image.__ApplyColor(Color.Value.R, Color.Value.G, Color.Value.B);
                 
-                Native.Windows.AlphaBlend(HDC, X, Y, (int)Width, (int)Height, Image.__HDC, 0, 0, (int)Image.Width, (int)Image.Height, new Native.Windows.BLENDFUNCTION{
+                if(!Native.Windows.AlphaBlend(HDC, X, Y, (int)Width, (int)Height, Image.__HDC, 0, 0, (int)Image.Width, (int)Image.Height, new Native.Windows.BLENDFUNCTION{
                     BlendOp = Native.Windows.AC_SRC_OVER,
                     BlendFlags = 0,
                     SourceConstantAlpha = Color.Value.A,
                     AlphaFormat = Native.Windows.AC_SRC_ALPHA
-                });
+                })){ throw new Exception("Произошла ошибка при рисовании изображения в HDC!\nHDC: " + HDC); }
             }
 
             /// <summary>
@@ -349,7 +353,7 @@ namespace WL{
             /// <param name="Y">Позиция Y</param>
             /// <param name="Text">Текст</param>
             public static void Text(IntPtr HDC, int X, int Y, string Text){
-                Native.Windows.TextOutW(HDC, X, Y, Text, Text.Length);
+                if(!Native.Windows.TextOutW(HDC, X, Y, Text, Text.Length)){ throw new Exception("Произошла ошибка при рисовании текста в HDC!\nHDC: " + HDC + "\nX: " + X + "\nY: " + Y + "\nТекст: \"" + Text + "\""); }
             }
 
             /// <summary>

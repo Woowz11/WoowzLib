@@ -1,5 +1,7 @@
 <div align="center">
 
+![Иконка](Icon.png)
+
 ![Typing SVG](https://readme-typing-svg.demolab.com?font=Science+Gothic+&weight=900&size=70&duration=1&pause=100000&color=E6E6E6&center=true&vCenter=true&width=500&height=60&lines=WoowzLib.Core)
 
 [![License](https://img.shields.io/badge/License-CC_BY_SA_4.0-blue)](https://creativecommons.org/licenses/by-sa/4.0/)
@@ -87,7 +89,7 @@ public static int Main(string[] Args){
 Info  - Информационное сообщение, белого цвета
 Warn  - Предупреждение, жёлтого цвета
 Error - Ошибка, красного цвета,
-Fatal - Фатальная ошибка, фиолетового цвета
+Fatal - Фатальная ошибка, пурпурного цвета
 Debug - Отладочное сообщение, зелёного цвета
 
 Сами по себе функции ничего полезного не дают, только префикс в начале, типо [INFO]
