@@ -3,7 +3,7 @@ using WLO;
 
 namespace WL;
 
-[WLModule(-500, 8)]
+[WLModule(-500, 9)]
 public class Logger{
     static Logger(){
         WL.WoowzLib.OnStart += () => {

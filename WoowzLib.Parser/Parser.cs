@@ -6,7 +6,7 @@ public enum FileFormat{
     Unknown, PNG, JPEG, BMP, WEBP, TIFF, GIF
 }
 
-[WLModule(0, 5)]
+[WLModule(0, 6)]
 public class Parser{
     /// <summary>
     /// Парсит формат данных
@@ -15,7 +15,7 @@ public class Parser{
     /// <param name="Format">Указать свой формат</param>
     public static ParsedContainer Parse(byte[] Data, FileFormat? Format = null){
         try{
-            if(Format == null){ Format = Detect.WhatFormat(Data); }
+            Format ??= Detect.WhatFormat(Data);
 
             if(Format == FileFormat.Unknown){ throw new Exception("Неизвестный формат данных!"); }
 
@@ -55,12 +55,15 @@ public class Parser{
             int RowSize = (int)((BitsPerPixel * Result.Width + 31) / 32) * 4;
 
             byte[]? Palette = null;
-            if(BitsPerPixel == 1){
-                Palette = new byte[2 * 4];
-                Buffer.BlockCopy(Data, 14 + 40, Palette, 0, 2 * 4);
-            }else if(BitsPerPixel == 8){
-                Palette = new byte[256 * 4];
-                Buffer.BlockCopy(Data, 14 + 40, Palette, 0, 256 * 4);
+            switch(BitsPerPixel){
+                case 1:
+                    Palette = new byte[2 * 4];
+                    Buffer.BlockCopy(Data, 14 + 40, Palette, 0, 2 * 4);
+                    break;
+                case 8:
+                    Palette = new byte[256 * 4];
+                    Buffer.BlockCopy(Data, 14 + 40, Palette, 0, 256 * 4);
+                    break;
             }
             
             for(int Y = 0; Y < Result.Height; Y++){
@@ -68,34 +71,43 @@ public class Parser{
                 for(int X = 0; X < Result.Width; X++){
                     int OutIndex = ((int)(Result.Height - 1 - Y) * (int)Result.Width + X) * OutChannels;
 
-                    if(BitsPerPixel == 1){
-                        int ByteIndex = RowStart + (X >> 3);
-                        int BitIndex = 7 - (X & 7);
+                    switch(BitsPerPixel){
+                        case 1:{
+                            int ByteIndex = RowStart + (X >> 3);
+                            int BitIndex = 7 - (X & 7);
 
-                        byte Packed = Data[ByteIndex];
-                        int PaletteIndex = (Packed >> BitIndex) & 1;
+                            byte Packed = Data[ByteIndex];
+                            int PaletteIndex = (Packed >> BitIndex) & 1;
 
-                        int P = PaletteIndex * 4;
+                            int P = PaletteIndex * 4;
                         
-                        Result.Pixels_RGBA[OutIndex + 0] = Palette![P + 2]; // R
-                        Result.Pixels_RGBA[OutIndex + 1] = Palette![P + 1]; // G
-                        Result.Pixels_RGBA[OutIndex + 2] = Palette![P + 0]; // B
-                        Result.Pixels_RGBA[OutIndex + 3] = 255            ; // A
-                    }else if(BitsPerPixel == 8){
-                        byte PaletteIndex = Data[RowStart + X];
-                        int P = PaletteIndex * 4;
+                            Result.Pixels_RGBA[OutIndex + 0] = Palette![P + 2]; // R
+                            Result.Pixels_RGBA[OutIndex + 1] = Palette![P + 1]; // G
+                            Result.Pixels_RGBA[OutIndex + 2] = Palette![P + 0]; // B
+                            Result.Pixels_RGBA[OutIndex + 3] = 255            ; // A
+                            break;
+                        }
                         
-                        Result.Pixels_RGBA[OutIndex + 0] = Palette![P + 2]; // R
-                        Result.Pixels_RGBA[OutIndex + 1] = Palette![P + 1]; // G
-                        Result.Pixels_RGBA[OutIndex + 2] = Palette![P + 0]; // B
-                        Result.Pixels_RGBA[OutIndex + 3] = 255            ; // A
-                    }else{
-                        int PixelStart = RowStart + X * Channels;
+                        case 8:{
+                            byte PaletteIndex = Data[RowStart + X];
+                            int P = PaletteIndex * 4;
                         
-                        Result.Pixels_RGBA[OutIndex + 0] =                 Data[PixelStart + 2]            ; // R
-                        Result.Pixels_RGBA[OutIndex + 1] =                 Data[PixelStart + 1]            ; // G
-                        Result.Pixels_RGBA[OutIndex + 2] =                 Data[PixelStart + 0]            ; // B
-                        Result.Pixels_RGBA[OutIndex + 3] = Channels == 4 ? Data[PixelStart + 3] : (byte)255; // A
+                            Result.Pixels_RGBA[OutIndex + 0] = Palette![P + 2]; // R
+                            Result.Pixels_RGBA[OutIndex + 1] = Palette![P + 1]; // G
+                            Result.Pixels_RGBA[OutIndex + 2] = Palette![P + 0]; // B
+                            Result.Pixels_RGBA[OutIndex + 3] = 255            ; // A
+                            break;
+                        }
+                        
+                        default:{
+                            int PixelStart = RowStart + X * Channels;
+                        
+                            Result.Pixels_RGBA[OutIndex + 0] =                 Data[PixelStart + 2]            ; // R
+                            Result.Pixels_RGBA[OutIndex + 1] =                 Data[PixelStart + 1]            ; // G
+                            Result.Pixels_RGBA[OutIndex + 2] =                 Data[PixelStart + 0]            ; // B
+                            Result.Pixels_RGBA[OutIndex + 3] = Channels == 4 ? Data[PixelStart + 3] : (byte)255; // A
+                            break;
+                        }
                     }
                 }
             }
@@ -110,7 +122,7 @@ public class Parser{
         /// <summary>
         /// Определяет формат по данным
         /// </summary>
-        public static FileFormat WhatFormat(byte[] Data){
+        public static FileFormat WhatFormat(byte[]? Data){
             try{
                 if(Data == null || Data.Length == 0){ return FileFormat.Unknown; }
 
@@ -150,11 +162,11 @@ public class Parser{
         /// <summary>
         /// Это TIFF?
         /// </summary>
-        public static bool IsTIFF(byte[] Data) => Data is [0x49, 0x49, 0x2A, 0x00, ..] || Data is [0x4D, 0x4D, 0x00, 0x2A, ..];
+        public static bool IsTIFF(byte[] Data) => Data is [0x49, 0x49, 0x2A, 0x00, ..] or [0x4D, 0x4D, 0x00, 0x2A, ..];
 
         /// <summary>
         /// Это GIF?
         /// </summary>
-        public static bool IsGIF(byte[] Data) => Data is [0x47, 0x49, 0x46, 0x38, 0x37, 0x61, ..] || Data is [0x47, 0x49, 0x46, 0x38, 0x39, 0x61, ..];
+        public static bool IsGIF(byte[] Data) => Data is [0x47, 0x49, 0x46, 0x38, 0x37, 0x61, ..] or [0x47, 0x49, 0x46, 0x38, 0x39, 0x61, ..];
     }
 }
