@@ -6,7 +6,7 @@ using System.Text;
 using WLO;
 
 namespace WL{
-    [WLModule(int.MinValue, 42)]
+    [WLModule(int.MinValue, 43)]
     public static class WoowzLib{
         static WoowzLib(){
             try{
@@ -118,7 +118,8 @@ namespace WL{
                 Logger.Info("Установка WL [" + OSType + " : \"" + ProjectInfo.Name + " " + ProjectInfo.Version + "\" на \"" + ProjectInfo.Engine + " " + ProjectInfo.EngineVersion + "\"] [\"" + WL.System.RunFolder + "\"]:");
                 
                 foreach(string DLL in Directory.GetFiles( WL.System.RunFolder, "WoowzLib.*.dll")){
-                    Assembly.LoadFrom(DLL);
+                    Assembly Assembly = Assembly.LoadFrom(DLL);
+                    LoadedModules[Assembly.GetName().Name!.Replace("WoowzLib.", "") ] = Assembly;
                 }
 
                 var Modules = AppDomain.CurrentDomain.GetAssemblies()
@@ -147,6 +148,16 @@ namespace WL{
                 throw new Exception("Произошла ошибка при запуске WoowzLib!", e);
             }
         }
+
+        /// <summary>
+        /// Все загруженные модули
+        /// </summary>
+        public static readonly Dictionary<string, Assembly> LoadedModules = new Dictionary<string, Assembly>();
+
+        /// <summary>
+        /// Версия модуля
+        /// </summary>
+        public static string Version => WL.System.GetVersion(LoadedModules["Core"]);
 
         /// <summary>
         /// Ивент вызывается при остановке всего приложения

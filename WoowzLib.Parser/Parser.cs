@@ -6,7 +6,7 @@ public enum FileFormat{
     Unknown, PNG, JPEG, BMP, WEBP, TIFF, GIF
 }
 
-[WLModule(0, 6)]
+[WLModule(0, 7)]
 public class Parser{
     /// <summary>
     /// Парсит формат данных
@@ -169,4 +169,9 @@ public class Parser{
         /// </summary>
         public static bool IsGIF(byte[] Data) => Data is [0x47, 0x49, 0x46, 0x38, 0x37, 0x61, ..] or [0x47, 0x49, 0x46, 0x38, 0x39, 0x61, ..];
     }
+    
+    /// <summary>
+    /// Версия модуля
+    /// </summary>
+    public static string Version => WL.System.GetVersion(WL.WoowzLib.LoadedModules["Parser"]);
 }

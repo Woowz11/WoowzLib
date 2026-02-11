@@ -11,7 +11,7 @@
         <IncludeDocumentationFile>true</IncludeDocumentationFile>
 
         <PackageId>Woowz11.WoowzLib.Window</PackageId>
-        <Version>0.0.0</Version>
+        <Version>0.0.1.32</Version>
         <Authors>Woowz11</Authors>
         <Description>WinAPI Windows</Description>
         <PackageLicenseExpression>CC-BY-SA-4.0</PackageLicenseExpression>
@@ -22,8 +22,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <!--<ProjectReference Include="..\WoowzLib.Core\WoowzLib.Core.csproj" />-->
-        <PackageReference Include="Woowz11.WoowzLib" Version="0.0.3" />
+        <ProjectReference Include="..\WoowzLib.Core\WoowzLib.Core.csproj" />
+        <!--<PackageReference Include="Woowz11.WoowzLib" Version="0.0.3" />-->
 
         <None Include="Icon.png" Pack="true" PackagePath="/" />
         <None Include="README.md" Pack="true" PackagePath="/" />

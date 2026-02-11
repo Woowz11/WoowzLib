@@ -3,7 +3,7 @@ using WLO;
 
 namespace WL;
 
-[WLModule(-50, 11)]
+[WLModule(-50, 12)]
 public class Render{
     static Render(){
         try{
@@ -309,6 +309,11 @@ public class Render{
             throw new Exception("Произошла ошибка при инициализации рендера!", e);
         }
     }
+    
+    /// <summary>
+    /// Версия модуля
+    /// </summary>
+    public static string Version => WL.System.GetVersion(WL.WoowzLib.LoadedModules["Render"]);
     
     /// <summary>
     /// Ссылка на vulkan-1.dll

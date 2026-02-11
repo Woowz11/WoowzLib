@@ -1,11 +1,12 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 3, 34)]
+    [WLModule(int.MinValue + 3, 35)]
     public class System{
         /// <summary>
         /// Обозначение для null в виде строки
@@ -72,6 +73,29 @@ namespace WL{
             if(Successfully){ Logger.Info(Message); }else{ Logger.Error(Message); }
 
             return Successfully;
+        }
+
+        /// <summary>
+        /// Получает версию из указанного проекта
+        /// </summary>
+        /// <param name="Assembly">Проект</param>
+        public static string GetVersion(Assembly? Assembly){
+            try{
+                if(Assembly == null){ return ""; }
+
+                string? NameVersion = Assembly.GetName().Version?.ToString();
+                if(!string.IsNullOrEmpty(NameVersion)){ return NameVersion; }
+
+                string? InfoVersion = Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+                if(!string.IsNullOrEmpty(InfoVersion)){ return InfoVersion; }
+
+                string? FileVersion = Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version;
+                if(!string.IsNullOrEmpty(FileVersion)){ return FileVersion; }
+
+                return "";
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при получении версии из проекта [" + Assembly?.FullName + "]!", e);
+            }
         }
         
         public static class Console{

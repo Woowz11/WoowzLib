@@ -5,7 +5,7 @@ namespace WL{
     /// <summary>
     /// Работа со строками
     /// </summary>
-    [WLModule(int.MinValue + 2, 9)]
+    [WLModule(int.MinValue + 2, 10)]
     public static class String{
         private static readonly Regex Regex1 = new Regex(@"\$(\d+)", RegexOptions.Compiled);
 
@@ -137,6 +137,20 @@ namespace WL{
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при объединении объектов с ключами в строку!\nФункция: " + Func+ "\nЭлементы: " + Values + "");
             }
+        }
+
+        /// <summary>
+        /// Превращает любой массив в массив строк
+        /// </summary>
+        public static string[] Array<T>(T[] Array){
+            return Array.Select(X => X?.ToString() ?? StringNull).ToArray();
+        }
+        
+        /// <summary>
+        /// Превращает любой массив в массив строк (в виде object)
+        /// </summary>
+        public static object[] ArrayObject<T>(T[] Array){
+            return Array<T>(Array).Cast<object>().ToArray();
         }
     }
 }

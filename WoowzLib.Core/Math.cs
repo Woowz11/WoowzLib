@@ -7,7 +7,7 @@ namespace WL{
     /// <summary>
     /// Математические функции и т.д
     /// </summary>
-    [WLModule(int.MinValue + 1, 26)]
+    [WLModule(int.MinValue + 1, 27)]
     public static class Math{
         /// <summary>
         /// Ноль
@@ -479,6 +479,49 @@ namespace WL{
             public static byte ToColorByte(float  V) => (byte)(V * 255);
             public static byte ToColorByte(double V) => (byte)(V * 255);
 
+            /// <summary>
+            /// Создаёт массив byte[] указанного кол-во, с повторяющимся значениями
+            /// </summary>
+            /// <param name="Count">Кол-во повторений</param>
+            /// <param name="Value">Значения</param>
+            /// <returns>CreateArray(3, 255, 128, 0) => [255, 128, 0, 255, 128, 0, 255, 128, 0]</returns>
+            public static byte[] CreateArray(uint Count, params byte[]? Value){
+                try{
+                    if(Value == null || Value.Length == 0){ return []; }
+
+                    int Stride = Value.Length;
+                    byte[] Result = new byte[Count * Stride];
+
+                    for(int i = 0; i < Count; i++){ Array.Copy(Value, 0, Result, i * Stride, Stride); }
+
+                    return Result;
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при создании массива с повторяющимся значениями!\nКол-во: " + Count + "\nЗначения: [" + WL.String.Join(WL.String.ArrayObject(Value)) + "]", e);
+                }
+            }
+            
+            /// <summary>
+            /// Заполняет существующий массив byte[] повторяющимися значениями
+            /// </summary>
+            /// <param name="Target">Массив для заполнения</param>
+            /// <param name="Count">Кол-во повторений</param>
+            /// <param name="Value">Значения</param>
+            public static void FillArray(byte[] Target, uint Count, params byte[]? Value){
+                try{
+                    if(Target == null){ throw new Exception("Нет цели!"); }
+                    if(Value == null || Value.Length == 0){ return; }
+
+                    int Stride = Value.Length;
+                    uint TotalSize = Count * (uint)Stride;
+
+                    if(Target.Length < TotalSize){ throw new Exception("Не хватает места у цели! " + Target.Length + " < " + TotalSize + " (" + Count + " * " + Stride + ")"); }
+
+                    for(int i = 0; i < Count; i++){ Array.Copy(Value, 0, Target, i * Stride, Stride); }
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при заполнении массива с повторяющимся значениями!\nКол-во: " + Count + "\nЗначения: [" + WL.String.Join(WL.String.ArrayObject(Value)) + "]", e);
+                }
+            }
+            
             /// <summary>
             /// Вычисляет размер объекта в байтах
             /// </summary>

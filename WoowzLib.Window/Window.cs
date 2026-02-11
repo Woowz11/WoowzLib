@@ -1,6 +1,6 @@
 ﻿namespace WL;
 
-[WLModule(-100, 32)]
+[WLModule(-100, 33)]
 public class Window{
     public static readonly List<WLO.Window> Windows = [];
     
@@ -21,4 +21,9 @@ public class Window{
             throw new Exception("Произошла ошибка при обновлении всех окон!", e);
         }
     }
+    
+    /// <summary>
+    /// Версия модуля
+    /// </summary>
+    public static string Version => WL.System.GetVersion(WL.WoowzLib.LoadedModules["Window"]);
 }
