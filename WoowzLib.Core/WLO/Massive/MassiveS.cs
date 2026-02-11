@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 06.02.2026 13:08
+/// Сгенерирован: 11.02.2026 18:25
 /// </summary>
 public struct MassiveS : ArrayByteObject{
 	// надо добавить sha256...

@@ -1,7 +1,9 @@
 ﻿using System.Drawing;
+using WL;
 using WLO;
 using File = WLO.File;
 using Math = WL.Math;
+using Window = WLO.Window;
 
 public static class Program{
     public static int Main(string[] Args){
@@ -17,10 +19,25 @@ public static class Program{
             
             Window W1 = new Window();
 
+            /*W1.OnKeyboardDown += (window, key, arg3) => {
+                Logger.Info(arg3, key);
+            };
+            
+            W1.OnKeyboardUp += (window, key, arg3) => {
+                Logger.Info("UP", arg3, key);
+            };*/
+
+            WL.Input.Keyboard.OnDown += (key, i) => {
+                Logger.Info(key, i);
+            };
+            WL.Input.Keyboard.OnUp += (key, i) => {
+                Logger.Info("UP", key, i);
+            };
+            
             Panel P = new Panel(Color: ColorB.Gray);
             W1.Add(P);
             
-            P.OnCursorInside += (element, b) => {
+            P.OnMouseInside += (element, b) => {
                 P.Color = b ? ColorB.Green : ColorB.Gray;
             };
 
@@ -61,23 +78,23 @@ public static class Program{
 
                         IMAGEPANEL.Image.Change(C => {
                             C.Fill(ColorB.Random);
-
+                            
                             C.For((X, Y, W, H) => {
-                                //C[X, Y] = new ColorB((byte)(((float)X / W) * 255), (byte)(((float)Y / H) * 255), (byte)(WL.Math.DSin((float)TD.DeltaTick) * 255));
+                                C[X, Y] = new ColorB((byte)(((float)X / W) * 255), (byte)(((float)Y / H) * 255), (byte)(WL.Math.DSin((float)TD.DeltaTick) * 255));
                                 
-                                float fx = (float)X / W * 200;
-                                float fy = (float)Y / H * 200;
+                                float fx = (float)X / W * 5;
+                                float fy = (float)Y / H * 5;
                                 float t = (float)TD.DeltaTick * 10;
 
-                                byte r = (byte)((WL.Math.DSin(fx * 10 + t)) * 255);
-                                byte g = (byte)((WL.Math.DCos(fy * 10 + t)) * 255);
-                                byte b = (byte)((WL.Math.DSin((fx + fy) * 5 + t)) * 255);
+                                byte r = (byte)((WL.Math.DSin(WL.Math.DCos(fx + t) * 50 + fy)) * 255);
+                                byte g = (byte)((WL.Math.DCos(WL.Math.Tan(fy + t)) + fx) * 255);
+                                byte b = (byte)((WL.Math.DSin((fx * fy) * 5 + t)) * 255);
 
-                                C[X, Y] = new ColorB(r, g, b);
+                                C[X, Y] -= new ColorB(g, b, r);
                             });
                         });
 
-                        W1.Title = FPS + " | " + W1.CursorInside;
+                        W1.Title = FPS + " | " + W1.KeyboardKeyPressed(Key.Up);
                         
                         W1.Render();
                     }

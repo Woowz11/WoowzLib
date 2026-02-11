@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 06.02.2026 13:08
+/// Сгенерирован: 11.02.2026 18:25
 /// </summary>
 public struct ColorB{
 	public static readonly Type Type = typeof(byte);
@@ -125,17 +125,19 @@ public struct ColorB{
 			return R == Other.R && G == Other.G && B == Other.B && A == Other.A;
 		}
 		
-		public override int GetHashCode(){
-			return HashCode.Combine(R, G, B, A);
-		}
+		public override int GetHashCode() => HashCode.Combine(R, G, B, A);
 		
-		public static bool operator ==(ColorB A, ColorB B){
-			return A.R == B.R && A.G == B.G && A.B == B.B && A.A == B.A;
-		}
+		public static bool operator ==(ColorB A, ColorB B) => A.R == B.R && A.G == B.G && A.B == B.B && A.A == B.A;
 		
-		public static bool operator !=(ColorB A, ColorB B){
-			return !(A == B);
-		}
+		public static bool operator !=(ColorB A, ColorB B) => !(A == B);
+		
+		public static ColorB operator +(ColorB A, ColorB B) => new ColorB(WL.Math.AddB(A.R, B.R), WL.Math.AddB(A.G, B.G), WL.Math.AddB(A.B, B.B), A.A);
+		
+		public static ColorB operator -(ColorB A, ColorB B) => new ColorB(WL.Math.SubB(A.R, B.R), WL.Math.SubB(A.G, B.G), WL.Math.SubB(A.B, B.B), A.A);
+		
+		public static ColorB operator *(ColorB A, ColorB B) => new ColorB(WL.Math.MulB(A.R, B.R), WL.Math.MulB(A.G, B.G), WL.Math.MulB(A.B, B.B), A.A);
+		
+		public static ColorB operator *(ColorB A, byte B) => new ColorB(WL.Math.MulB(A.R, B), WL.Math.MulB(A.G, B), WL.Math.MulB(A.B, B), A.A);
 	
 	#endregion
 }

@@ -113,10 +113,10 @@ public abstract class WindowElement{
     #region Ивенты
 
         /// <summary>
-        /// Вызывается когда курсор входит или выходиз из элемента [Элемент, Входит?]
+        /// Вызывается когда мышь входит или выходит из элемента [Элемент, Входит?]
         /// </summary>
-        public event Action<WindowElement, bool>? OnCursorInside;
-        public void __OnCursorInsideInvoke(bool B){ OnCursorInside?.Invoke(this, B); }
+        public event Action<WindowElement, bool>? OnMouseInside;
+        public void __InvokeOnMouseInside(bool B){ OnMouseInside?.Invoke(this, B); }
 
         #endregion
 

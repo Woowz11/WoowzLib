@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 06.02.2026 13:08
+/// Сгенерирован: 11.02.2026 18:25
 /// </summary>
 public struct ColorI{
 	public static readonly Type Type = typeof(int);
@@ -125,17 +125,19 @@ public struct ColorI{
 			return R == Other.R && G == Other.G && B == Other.B && A == Other.A;
 		}
 		
-		public override int GetHashCode(){
-			return HashCode.Combine(R, G, B, A);
-		}
+		public override int GetHashCode() => HashCode.Combine(R, G, B, A);
 		
-		public static bool operator ==(ColorI A, ColorI B){
-			return A.R == B.R && A.G == B.G && A.B == B.B && A.A == B.A;
-		}
+		public static bool operator ==(ColorI A, ColorI B) => A.R == B.R && A.G == B.G && A.B == B.B && A.A == B.A;
 		
-		public static bool operator !=(ColorI A, ColorI B){
-			return !(A == B);
-		}
+		public static bool operator !=(ColorI A, ColorI B) => !(A == B);
+		
+		public static ColorI operator +(ColorI A, ColorI B) => new ColorI(A.R + B.R, A.G + B.G, A.B + B.B, A.A);
+		
+		public static ColorI operator -(ColorI A, ColorI B) => new ColorI(A.R - B.R, A.G - B.G, A.B - B.B, A.A);
+		
+		public static ColorI operator *(ColorI A, ColorI B) => new ColorI(A.R * B.R, A.G * B.G, A.B * B.B, A.A);
+		
+		public static ColorI operator *(ColorI A, int B) => new ColorI(A.R * B, A.G * B, A.B * B, A.A);
 	
 	#endregion
 }

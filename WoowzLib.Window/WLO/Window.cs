@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using WL;
 
 namespace WLO;
 
@@ -119,46 +120,46 @@ public class Window{
 
     #region Процессы окна
 
-        private bool           __CursorInside;
-        private WindowElement? __CursorElement;
+        private bool           __MouseInside;
+        private WindowElement? __MouseElement;
         public void __Update(){
             try{
                 if(ShouldDestroy){ DestroyNow(); return; }
 
-                if(!WL.System.Native.Windows.GetCursorPos(out WL.System.Native.Windows.POINT P)){ WL.System.Native.Windows.ThrowWin32Error(); }
-                Vector2I CursorPosition = new Vector2I(P);
-                this.CursorPosition = ToClient(CursorPosition);
+                if(!WL.System.Native.Windows.GetCursorPos(out WL.System.Native.Windows.POINT P)){ WL.System.Native.Windows.ThrowWin32Error("Получение позиции мыши"); }
+                Vector2I MousePosition = new Vector2I(P);
+                this.MousePosition = ToClient(MousePosition);
 
-                CursorElement = Hit(this.CursorPosition);
+                MouseElement = Hit(this.MousePosition);
                 
-                if(__CursorElement != CursorElement){
-                    if(__CursorElement != null){
+                if(__MouseElement != MouseElement){
+                    if(__MouseElement != null){
                         try{
-                            __CursorElement.__OnCursorInsideInvoke(false);
+                            __MouseElement.__InvokeOnMouseInside(false);
                         }catch(Exception e){
-                            Logger.Error("Произошла ошибка при вызове ивентов на \"Курсор вошёл в элемент [" + CursorElement + "]?\" [" + this + "]!\nВошёл: false", e);
+                            Logger.Error("Произошла ошибка при вызове ивентов на \"Мышь вошла в элемент [" + MouseElement + "]?\" [" + this + "]!\nВошла: false", e);
                         }
                     }
 
-                    if(CursorElement != null){
+                    if(MouseElement != null){
                         try{
-                            CursorElement.__OnCursorInsideInvoke(true);
+                            MouseElement.__InvokeOnMouseInside(true);
                         }catch(Exception e){
-                            Logger.Error("Произошла ошибка при вызове ивентов на \"Курсор вошёл в элемент [" + CursorElement + "]?\" [" + this + "]!\nВошёл: true", e);
+                            Logger.Error("Произошла ошибка при вызове ивентов на \"Мышь вошла в элемент [" + MouseElement + "]?\" [" + this + "]!\nВошла: true", e);
                         }
                     }
                     
-                    __CursorElement = CursorElement;
+                    __MouseElement = MouseElement;
                 }
                 
-                CursorInside = Inside(CursorPosition);
+                MouseInside = Inside(MousePosition);
                 
-                if(__CursorInside != CursorInside){
-                    __CursorInside = CursorInside;
+                if(__MouseInside != MouseInside){
+                    __MouseInside = MouseInside;
                     try{
-                        OnCursorInside?.Invoke(this, CursorInside);
+                        OnMouseInside?.Invoke(this, MouseInside);
                     }catch(Exception e){
-                        Logger.Error("Произошла ошибка при вызове ивентов на \"Курсор вошёл в окно?\" [" + this + "]!\nВошёл: " + CursorInside, e);
+                        Logger.Error("Произошла ошибка при вызове ивентов на \"Мышь вошла в окно?\" [" + this + "]!\nВошла: " + MouseInside, e);
                     }
                 }
                 
@@ -171,50 +172,57 @@ public class Window{
                 throw new Exception("Произошла ошибка при обновлении окна [" + this + "]!", e);
             }
         }
-    
+
         /// <summary>
         /// Вызывает WinAPI ивенты для окна
         /// </summary>
+        /// <param name="Window">Вызываемое окно</param>
         /// <param name="Message">Ивент</param>
         /// <param name="WParam">Параметр 1</param>
         /// <param name="LParam">Параметр 2</param>
-        private IntPtr __Events(IntPtr OtherWindow, uint Message, IntPtr WParam, IntPtr LParam){
+        private IntPtr __Events(IntPtr Window, uint Message, IntPtr WParam, IntPtr LParam){
             try{
-                long LP = (long)LParam;
-                short   LWord_L = (short) (LP        & 0xFFFF);
-                short   HWord_L = (short)((LP >> 16) & 0xFFFF);
+                long  LP      = (long)LParam;
+                short LWord_L = (short) (LP        & 0xFFFF);
+                short HWord_L = (short)((LP >> 16) & 0xFFFF);
 
-                ulong WP = (ulong)WParam;
+                ulong  WP      = (ulong)WParam;
                 ushort LWord_W = (ushort)(WP & 0xFFFF);
                 ushort HWord_W = (ushort)(WP >> 16   );
                 
                 switch(Message){
                     // Закрытие окна (через крестик например)
-                    case WL.System.Native.Windows.WM_CLOSE:
+                    case WL.System.Native.Windows.WM_CLOSE:{
                         try{
                             OnClose?.Invoke(this);
-                        }catch(Exception e){
+                        }
+                        catch(Exception e){
                             Logger.Error("Произошла ошибка при вызове ивентов на закрытие окна на крестик [" + this + "]!", e);
                         }
+
                         if(DefaultOnClose){ Destroy(); }
                         return IntPtr.Zero;
+                    }
                     
                     // Обновление размера у окна
-                    case WL.System.Native.Windows.WM_SIZE:
-                        __Width  = (uint)(LWord_L);
+                    case WL.System.Native.Windows.WM_SIZE:{
+                        __Width = (uint)(LWord_L);
                         __Height = (uint)(HWord_L);
 
                         __UpdateBuffer();
-                        
+
                         try{
                             OnResize?.Invoke(this, __Width, __Height);
-                        }catch(Exception e){
+                        }
+                        catch(Exception e){
                             Logger.Error("Произошла ошибка при вызове ивентов на изменение размера окна [" + this + "]!\nШирина: " + __Width + "\nВысота: " + __Height, e);
                         }
+
                         break;
+                    }
                     
                     // Обновление позиции окна
-                    case WL.System.Native.Windows.WM_WINDOWPOSCHANGED:
+                    case WL.System.Native.Windows.WM_WINDOWPOSCHANGED:{
                         WL.System.Native.Windows.WINDOWPOS Position__ = Marshal.PtrToStructure<WL.System.Native.Windows.WINDOWPOS>(LParam);
 
                         if((Position__.flags & WL.System.Native.Windows.SWP_NOMOVE) == 0){
@@ -223,44 +231,85 @@ public class Window{
 
                             try{
                                 OnMove?.Invoke(this, __X, __Y);
-                            }catch(Exception e){
+                            }
+                            catch(Exception e){
                                 Logger.Error("Произошла ошибка при вызове ивентов на изменение позиции окна [" + this + "]!\nX: " + __X + "\nY: " + __Y, e);
                             }
                         }
 
                         break;
+                    }
                     
                     // Обновление курсора внутри окна
-                    case WL.System.Native.Windows.WM_SETCURSOR:
+                    case WL.System.Native.Windows.WM_SETCURSOR:{
                         int HitTest = (short)(LParam.ToInt64() & 0xFFFF);
                         if(HitTest == WL.System.Native.Windows.HTCLIENT){
                             WL.System.Native.Windows.SetCursor(WL.System.Native.Windows.CURSOR_Arrow);
                         }
-                        
+
                         break;
+                    }
                     
                     // Сдвинулась мышь внутри окна
-                    case WL.System.Native.Windows.WM_MOUSEMOVE:
+                    case WL.System.Native.Windows.WM_MOUSEMOVE:{
                         int X__ = LWord_L;
                         int Y__ = HWord_L;
-                        
+
                         try{
-                            OnCursorMove?.Invoke(this, X__, Y__);
-                        }catch(Exception e){
+                            OnMouseMove?.Invoke(this, X__, Y__);
+                        }
+                        catch(Exception e){
                             Logger.Error("Произошла ошибка при вызове ивентов на изменение позиции мыши внутри окна [" + this + "]!\nX: " + X__ + "\nY: " + Y__, e);
                         }
+
                         break;
+                    }
+                    
+                    // Нажали клавишу
+                    case WL.System.Native.Windows.WM_KEYDOWN:{
+                        int Code = WParam.ToInt32();
+                        Key Key  = Input.Keyboard.GetKey(Code);
+                        
+                        if(!__PressedKeys.Add(Code)){ break; }
+
+                        try{
+                            OnKeyboardDown?.Invoke(this, Key, Code);
+                        }
+                        catch(Exception e){
+                            Logger.Error("Произошла ошибка при вызове ивентов на нажатии клавиши [" + Key + " (" + Code + ")] внутри окна [" + this + "]!", e);
+                        }
+
+                        break;
+                    }
+                    
+                    // Отпустили клавишу
+                    case WL.System.Native.Windows.WM_KEYUP: {
+                        int Code = WParam.ToInt32();
+                        Key Key  = Input.Keyboard.GetKey(Code);
+
+                        __PressedKeys.Remove(Code);
+                        
+                        try{
+                            OnKeyboardUp?.Invoke(this, Key, Code);   
+                        }catch(Exception e){
+                            Logger.Error("Произошла ошибка при вызове ивентов на отжатии клавиши [" + Key + " (" + Code + ")] внутри окна [" + this + "]!", e);
+                        }
+                        break;
+                    }
                     
                     // Рисование внутри окна
-                    case WL.System.Native.Windows.WM_PAINT:
+                    case WL.System.Native.Windows.WM_PAINT:{
                         break;
+                    }
                     
-                    case WL.System.Native.Windows.WM_ERASEBKGND:
+                    case WL.System.Native.Windows.WM_ERASEBKGND:{
                         return 1;
+                    }
                     
                     // Обработка элементов у окна
-                    case WL.System.Native.Windows.WM_COMMAND:
+                    case WL.System.Native.Windows.WM_COMMAND:{
                         return IntPtr.Zero;
+                    }
                 }
 
                 return WL.System.Native.Windows.DefWindowProcW(Handle, Message, WParam, LParam);
@@ -299,19 +348,29 @@ public class Window{
         public event Action<Window, int, int>? OnMove;
 
         /// <summary>
-        /// Вызывается когда курсор внутри окна сдвинулся [Окно, X, Y]
+        /// Вызывается когда мышь внутри окна сдвинулась [Окно, X, Y]
         /// </summary>
-        public event Action<Window, int, int>? OnCursorMove;
+        public event Action<Window, int, int>? OnMouseMove;
 
         /// <summary>
-        /// Вызывается когда курсор входит или выходиз из окна [Окно, Входит?]
+        /// Вызывается когда мышь входит или выходит из окна [Окно, Входит?]
         /// </summary>
-        public event Action<Window, bool>? OnCursorInside;
+        public event Action<Window, bool>? OnMouseInside;
 
         /// <summary>
         /// Вызывается при обновлении окна [Окно]
         /// </summary>
         public event Action<Window>? OnUpdate;
+
+        /// <summary>
+        /// Вызывается при нажатии клавиши [Окно, Клавиша, Код клавиши]
+        /// </summary>
+        public event Action<Window, Key, int>? OnKeyboardDown;
+        
+        /// <summary>
+        /// Вызывается при отжатии клавиши [Окно, Клавиша, Код клавиши]
+        /// </summary>
+        public event Action<Window, Key, int>? OnKeyboardUp;
         
     #endregion
 
@@ -421,19 +480,33 @@ public class Window{
     #endregion
 
     /// <summary>
-    /// Курсор находится внутри окна?
+    /// Нажатые клавиши
     /// </summary>
-    public bool CursorInside{ get; private set; }
+    private readonly HashSet<int> __PressedKeys = new HashSet<int>();
 
     /// <summary>
-    /// Позиция курсора относительно этого окна
+    /// Клавиша зажатая?
     /// </summary>
-    public Vector2I CursorPosition{ get; private set; }
+    public bool KeyboardKeyPressed(int Code) => __PressedKeys.Contains(Code);
+    /// <summary>
+    /// Клавиша зажатая?
+    /// </summary>
+    public bool KeyboardKeyPressed(Key Key) => KeyboardKeyPressed((int)Key);
+    
+    /// <summary>
+    /// Мышь находится внутри окна?
+    /// </summary>
+    public bool MouseInside{ get; private set; }
 
     /// <summary>
-    /// Элемент на котором сейчас курсор
+    /// Позиция мыши относительно этого окна
     /// </summary>
-    public WindowElement? CursorElement{ get; private set; }
+    public Vector2I MousePosition{ get; private set; }
+
+    /// <summary>
+    /// Элемент на котором сейчас мышь
+    /// </summary>
+    public WindowElement? MouseElement{ get; private set; }
 
     /// <summary>
     /// Превращает мировую координату в относительную (клиентскую) от окна
@@ -475,7 +548,7 @@ public class Window{
     }
 
     /// <summary>
-    /// Находит элемент на котором сейчас курсор в окне
+    /// Находит элемент на котором сейчас мышь в окне
     /// </summary>
     public WindowElement? Hit(Vector2I ClientVector){
         try{

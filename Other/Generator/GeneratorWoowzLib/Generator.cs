@@ -280,7 +280,8 @@ public static class Generator{
             try{
                 Logger.Info("\tСоздание цвета [" + ColorType + "]");
 
-                object[] Components = ColorComponents.Cast<object>().ToArray();
+                object[] Components             = ColorComponents.Cast<object>().ToArray();
+                object[] ComponentsWithoutAlpha = ColorComponents.Cast<object>().Take(ColorComponents.Length - 1).ToArray();
                 
                 // Первая буква типа (I, B, U, D)
                 string TypeChar = ColorType.ToString()[0].ToString();
@@ -387,17 +388,19 @@ public static class Generator{
                                         return {{WL.String.Join("$0 == Other.$0 && ", "$0 == Other.$0", Components)}};
                                     }
                                     
-                                    public override int GetHashCode(){
-                                        return HashCode.Combine({{WL.String.Join(Components)}});
-                                    }
+                                    public override int GetHashCode() => HashCode.Combine({{WL.String.Join(Components)}});
                                     
-                                    public static bool operator ==({{Name}} A, {{Name}} B){
-                                        return {{WL.String.Join("A.$0 == B.$0 && ", "A.$0 == B.$0", Components)}};
-                                    }
+                                    public static bool operator ==({{Name}} A, {{Name}} B) => {{WL.String.Join("A.$0 == B.$0 && ", "A.$0 == B.$0", Components)}};
                                     
-                                    public static bool operator !=({{Name}} A, {{Name}} B){
-                                        return !(A == B);
-                                    }
+                                    public static bool operator !=({{Name}} A, {{Name}} B) => !(A == B);
+                                    
+                                    public static {{Name}} operator +({{Name}} A, {{Name}} B) => new {{Name}}({{WL.System.Condition(ColorType == ColorType.Byte, WL.String.Join("WL.Math.AddB(A.$0, B.$0), ", "WL.Math.AddB(A.$0, B.$0)", ComponentsWithoutAlpha), WL.String.Join("A.$0 + B.$0, ", "A.$0 + B.$0", ComponentsWithoutAlpha))}}, A.A);
+                                    
+                                    public static {{Name}} operator -({{Name}} A, {{Name}} B) => new {{Name}}({{WL.System.Condition(ColorType == ColorType.Byte, WL.String.Join("WL.Math.SubB(A.$0, B.$0), ", "WL.Math.SubB(A.$0, B.$0)", ComponentsWithoutAlpha), WL.String.Join("A.$0 - B.$0, ", "A.$0 - B.$0", ComponentsWithoutAlpha))}}, A.A);
+                                    
+                                    public static {{Name}} operator *({{Name}} A, {{Name}} B) => new {{Name}}({{WL.System.Condition(ColorType == ColorType.Byte, WL.String.Join("WL.Math.MulB(A.$0, B.$0), ", "WL.Math.MulB(A.$0, B.$0)", ComponentsWithoutAlpha), WL.String.Join("A.$0 * B.$0, ", "A.$0 * B.$0", ComponentsWithoutAlpha))}}, A.A);
+                                    
+                                    public static {{Name}} operator *({{Name}} A, {{Type}} B) => new {{Name}}({{WL.System.Condition(ColorType == ColorType.Byte, WL.String.Join("WL.Math.MulB(A.$0, B), ", "WL.Math.MulB(A.$0, B)", ComponentsWithoutAlpha), WL.String.Join("A.$0 * B, ", "A.$0 * B", ComponentsWithoutAlpha))}}, A.A);
                                 
                                 #endregion
                             """;

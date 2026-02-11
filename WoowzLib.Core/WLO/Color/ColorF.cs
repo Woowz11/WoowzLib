@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 06.02.2026 13:08
+/// Сгенерирован: 11.02.2026 18:25
 /// </summary>
 public struct ColorF{
 	public static readonly Type Type = typeof(float);
@@ -125,17 +125,19 @@ public struct ColorF{
 			return R == Other.R && G == Other.G && B == Other.B && A == Other.A;
 		}
 		
-		public override int GetHashCode(){
-			return HashCode.Combine(R, G, B, A);
-		}
+		public override int GetHashCode() => HashCode.Combine(R, G, B, A);
 		
-		public static bool operator ==(ColorF A, ColorF B){
-			return A.R == B.R && A.G == B.G && A.B == B.B && A.A == B.A;
-		}
+		public static bool operator ==(ColorF A, ColorF B) => A.R == B.R && A.G == B.G && A.B == B.B && A.A == B.A;
 		
-		public static bool operator !=(ColorF A, ColorF B){
-			return !(A == B);
-		}
+		public static bool operator !=(ColorF A, ColorF B) => !(A == B);
+		
+		public static ColorF operator +(ColorF A, ColorF B) => new ColorF(A.R + B.R, A.G + B.G, A.B + B.B, A.A);
+		
+		public static ColorF operator -(ColorF A, ColorF B) => new ColorF(A.R - B.R, A.G - B.G, A.B - B.B, A.A);
+		
+		public static ColorF operator *(ColorF A, ColorF B) => new ColorF(A.R * B.R, A.G * B.G, A.B * B.B, A.A);
+		
+		public static ColorF operator *(ColorF A, float B) => new ColorF(A.R * B, A.G * B, A.B * B, A.A);
 	
 	#endregion
 }

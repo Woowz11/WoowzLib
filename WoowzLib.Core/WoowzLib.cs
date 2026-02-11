@@ -6,7 +6,7 @@ using System.Text;
 using WLO;
 
 namespace WL{
-    [WLModule(int.MinValue, 43)]
+    [WLModule(int.MinValue, 44)]
     public static class WoowzLib{
         static WoowzLib(){
             try{
@@ -53,6 +53,8 @@ namespace WL{
             }catch(Exception e){
                 Logger.Error("Произошла ошибка при вызове ивентов на остановку приложения!", e);
             }
+            
+            WL.System.__DisconnectWoowzLib();
             
             Logger.Info("Остановлен WL!");
         }

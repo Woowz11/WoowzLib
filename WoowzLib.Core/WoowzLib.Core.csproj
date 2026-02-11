@@ -12,7 +12,7 @@
         <IncludeDocumentationFile>true</IncludeDocumentationFile>
         
         <PackageId>Woowz11.WoowzLib</PackageId>
-        <Version>0.0.4.42</Version>
+        <Version>0.0.4.44</Version>
         <Authors>Woowz11</Authors>
         <Description>The core for WoowzLib</Description>
         <PackageLicenseExpression>CC-BY-SA-4.0</PackageLicenseExpression>

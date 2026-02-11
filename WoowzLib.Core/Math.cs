@@ -7,7 +7,7 @@ namespace WL{
     /// <summary>
     /// Математические функции и т.д
     /// </summary>
-    [WLModule(int.MinValue + 1, 27)]
+    [WLModule(int.MinValue + 1, 28)]
     public static class Math{
         /// <summary>
         /// Ноль
@@ -165,12 +165,29 @@ namespace WL{
         /// <summary>
         /// Ограничить число между Min и Max
         /// </summary>
-        public static float Clamp(float V, float Min, float Max) => global::System.Math.Clamp(V, Min, Max);
+        public static float Clamp(float V, float Min, float Max) => float.Clamp(V, Min, Max);
+        /// <summary>
+        /// Ограничить число между Min и Max
+        /// </summary>
+        public static int ClampI(int V, int Min, int Max) => int.Clamp(V, Min, Max);
+        /// <summary>
+        /// Ограничить число между Min и Max
+        /// </summary>
+        public static byte ClampB(byte V, byte Min, byte Max) => byte.Clamp(V, Min, Max);
 
         /// <summary>
         /// Ограничить число между 0 и 1
         /// </summary>
         public static float Clamp01(float V) => Clamp(V, 0, 1);
+        
+        /// <summary>
+        /// Ограничить байт между 0 и 255
+        /// </summary>
+        public static int ClampByteI(int V) => ClampI(V, 0, 255);
+        /// <summary>
+        /// Ограничить байт между 0 и 255
+        /// </summary>
+        public static byte ClampByteB(byte V) => ClampB(V, 0, 255);
 
         /// <summary>
         /// Возвращает число между A и B по T (0-1 (нет ограничений!))
@@ -222,16 +239,28 @@ namespace WL{
         /// Добавляет число B числу A (A + B)
         /// </summary>
         public static float Add(float A, float B) => A + B;
+        /// <summary>
+        /// Добавляет число B числу A (A + B)
+        /// </summary>
+        public static byte AddB(byte A, byte B) => (byte)ClampByteI(A + B);
         
         /// <summary>
         /// Вычитает число B из числа A (A - B)
         /// </summary>
         public static float Sub(float A, float B) => A - B;
+        /// <summary>
+        /// Вычитает число B из числа A (A - B)
+        /// </summary>
+        public static byte SubB(byte A, byte B) => (byte)ClampByteI(A - B);
         
         /// <summary>
         /// Умножает число B на число A (A * B)
         /// </summary>
         public static float Mul(float A, float B) => A * B;
+        /// <summary>
+        /// Умножает число B на число A (A * B)
+        /// </summary>
+        public static byte MulB(byte A, byte B) => (byte)ClampByteI(A * B);
 
         /// <summary>
         /// Умножает число B на число A (A * B) (Но очень точно! т.е: 0.1f * 0.1f = 0.01f, а не 0,010000001f)
@@ -242,6 +271,10 @@ namespace WL{
         /// Делит число B на число A (A / B)
         /// </summary>
         public static float Div(float A, float B) => A / B;
+        /// <summary>
+        /// Делит число B на число A (A / B)
+        /// </summary>
+        public static byte DivB(byte A, byte B) => (byte)ClampByteI(A / B);
 
         /// <summary>
         /// Возводит в степень число V на Exponent

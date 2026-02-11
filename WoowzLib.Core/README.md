@@ -42,7 +42,8 @@
 |System.HDC           | Работа с HDC рисованием |
 |System.Native        | Работа с Native кодом, загрузка DLL файлов и т.д |
 |System.Native.Windows| Функции из ``kernel32.dll``, ``user32.dll``, ``gdi32.dll``, ``msimg32.dll`` |
-|Input                | Работа с вводом |
+|Input.Mouse          | Работа с мышью |
+|Input.Keyboard       | Работа с клавиатурой |
 |Explorer.File        | Работа с файлами |
 |Explorer.Folder      | Работа с папками |
 |Explorer.Temp        | Работа с временными файлами |
@@ -258,11 +259,30 @@ while(...){
 </details>
 <div align="center">
 
-### Input
+### Input.Mouse
 </div>
 <details><summary>Смотреть...</summary>
 
-Пока-что только получение позиции курсора, в будущем можно будет и за клавишами следить
+Пока-что можно только получить позицию мыши
+
+</details>
+<div align="center">
+
+### Input.Keyboard
+</div>
+<details><summary>Смотреть...</summary>
+
+Узнать какие клавиши сейчас нажимаются
+
+```csharp
+WL.Input.Keyboard.OnDown += (Key, Code) => {
+	Logger.Info("DOWN", Key, Code);
+};
+
+WL.Input.Keyboard.OnUp += (Key, Code) => {
+	Logger.Info("UP", Key, Code);
+};
+```
 
 </details>
 <div align="center">
