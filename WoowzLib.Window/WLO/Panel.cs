@@ -1,11 +1,15 @@
 ﻿namespace WLO;
 
 public class Panel : WindowElement{
-    public Panel(int X = 0, int Y = 0, uint Width = 128, uint Height = 128, ColorB? Color = null, Image? Image = null){
+    public Panel(string Name = "Панель", int X = 0, int Y = 0, uint Width = 128, uint Height = 128, WindowElement? Parent = null, ColorB? Color = null, Image? Image = null){
+        this.Name = Name;
         this.X = X;
         this.Y = Y;
         this.Width  = Width;
         this.Height = Height;
+        
+        if(Parent != null){ this.Parent = Parent; }
+        
         if(Color.HasValue){ this.Color = Color.Value; }
         this.Image = Image;
     }

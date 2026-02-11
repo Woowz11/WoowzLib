@@ -51,7 +51,7 @@ public static int Main(string[] Args){
 				W.Render();
 			});
 		
-			WL.Window.Update();
+			WL.WoowzLib.Update();
 		}
 		
 	}catch(Exception e){
@@ -93,7 +93,7 @@ public static int Main(string[] Args){
 				}
 			});
 	
-			WL.Window.Update();
+			WL.WoowzLib.Update();
 		}
 	
 	}catch(Exception e){
@@ -127,7 +127,7 @@ public static int Main(string[] Args){
 				));
 			});
 	
-			WL.Window.Update();
+			WL.WoowzLib.Update();
 		}
 	
 	}catch(Exception e){
@@ -180,7 +180,7 @@ public static int Main(string[] Args){
 				W.Render();
 			});
 	
-			WL.Window.Update();
+			WL.WoowzLib.Update();
 		}
 	
 	}catch(Exception e){

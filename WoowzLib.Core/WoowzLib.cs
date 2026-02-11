@@ -6,7 +6,7 @@ using System.Text;
 using WLO;
 
 namespace WL{
-    [WLModule(int.MinValue, 44)]
+    [WLModule(int.MinValue, 45)]
     public static class WoowzLib{
         static WoowzLib(){
             try{
@@ -51,7 +51,7 @@ namespace WL{
             try{
                 OnStop?.Invoke();
             }catch(Exception e){
-                Logger.Error("Произошла ошибка при вызове ивентов на остановку приложения!", e);
+                Logger.Error("Произошла ошибка при вызове ивентов на остановку WoowzLib!", e);
             }
             
             WL.System.__DisconnectWoowzLib();
@@ -143,7 +143,7 @@ namespace WL{
                 try{
                     OnStart?.Invoke();   
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при вызове ивентов после запуска всех модулей WoowzLib!", e);
+                    Logger.Error("Произошла ошибка при вызове ивентов после запуска всех модулей WoowzLib!", e);
                 }
             }catch(Exception e){
                 Started = false;
@@ -151,6 +151,26 @@ namespace WL{
             }
         }
 
+        /// <summary>
+        /// Нужно вызывать каждый кадр внутри while, желательно без задержек, иначе будет тормозить
+        /// </summary>
+        public static void Update(){
+            try{
+                try{
+                    OnUpdate?.Invoke();   
+                }catch(Exception e){
+                    Logger.Error("Произошла ошибка при вызове ивентов обновления WoowzLib!", e);
+                }
+                
+                while(System.Native.Windows.PeekMessage(out System.Native.Windows.MSG Message, IntPtr.Zero, 0, 0, System.Native.Windows.PM_REMOVE)){
+                    System.Native.Windows.TranslateMessage(ref Message);
+                    System.Native.Windows.DispatchMessage (ref Message);
+                }   
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при обновлении WoowzLib!", e);
+            }
+        }
+        
         /// <summary>
         /// Все загруженные модули
         /// </summary>
@@ -162,19 +182,24 @@ namespace WL{
         public static string Version => WL.System.GetVersion(LoadedModules["Core"]);
 
         /// <summary>
-        /// Ивент вызывается при остановке всего приложения
+        /// Вызывается при остановке всего приложения
         /// </summary>
         public static event Action? OnStop;
 
         /// <summary>
-        /// Ивент вызывается после запуска всех модулей
+        /// Вызывается после запуска всех модулей
         /// </summary>
         public static event Action? OnStart; 
         
         /// <summary>
-        /// Ивент вызывается при отправке сообщений через Logger
+        /// Вызывается при отправке сообщений через Logger
         /// </summary>
         public static event Action<Logger.MessageType, object[]?>? OnMessage;
+
+        /// <summary>
+        /// Вызывается каждый кадр
+        /// </summary>
+        public static event Action? OnUpdate;
 
         /// <summary>
         /// Отправляет сообщение в OnMessage

@@ -1,26 +1,23 @@
 ﻿namespace WL;
 
-[WLModule(-100, 34)]
+[WLModule(-100, 35)]
 public class Window{
-    public static readonly List<WLO.Window> Windows = [];
+    static Window(){
+        WL.WoowzLib.OnUpdate += () => {
+            try{
+                foreach(WLO.Window W in Windows.ToArray()){
+                    W.__Update();
+                }
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при обновлении всех окон!", e);
+            }
+        };
+    }
     
     /// <summary>
-    /// Обновляет окна
+    /// Созданные окна
     /// </summary>
-    public static void Update(){
-        try{
-            foreach(WLO.Window W in Windows.ToArray()){
-                W.__Update();
-            }
-            
-            while(System.Native.Windows.PeekMessage(out System.Native.Windows.MSG Message, IntPtr.Zero, 0, 0, System.Native.Windows.PM_REMOVE)){
-                System.Native.Windows.TranslateMessage(ref Message);
-                System.Native.Windows.DispatchMessage (ref Message);
-            }   
-        }catch(Exception e){
-            throw new Exception("Произошла ошибка при обновлении всех окон!", e);
-        }
-    }
+    public static readonly List<WLO.Window> Windows = [];
     
     /// <summary>
     /// Версия модуля

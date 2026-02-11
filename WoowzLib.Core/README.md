@@ -69,6 +69,15 @@ public static int Main(string[] Args){
 		
 		// Тут сам код, уже можно писать
 		
+		// Если приложение живёт больше 1 раза
+		/*
+		
+		while(...){
+			WL.WoowzLib.Update();
+		}
+		
+		*/
+		
 	}catch(Exception e){
 		Logger.Fatal("Произошла фатальная ошибка внутри самого приложения!", e);
 		return 1;
@@ -117,7 +126,7 @@ Logger.Debug("DEBUG", new Vector2F(120, -120));
 
 Содержит обычные математические формулы, начиная с простых, заканчивая сложными
 
-``Max``, ``Clamp``, ``Lerp``, ``Sign``, ``MulExact``, ``Root``, ``Truncate``, ``Above``, ``Average``, ``DSin``, ``IsNear``, ``Fma``, ``Evan`` и т.д
+``Add``, ``Max``, ``Clamp``, ``Lerp``, ``Sign``, ``MulExact``, ``Root``, ``Truncate``, ``Above``, ``Average``, ``DSin``, ``IsNear``, ``Fma``, ``Evan`` и т.д
 
 По дефолту он работает с ``float`` значениями, если нужны определённые значения, то в конце функции надо добавить:
 

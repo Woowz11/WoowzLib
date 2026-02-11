@@ -135,13 +135,13 @@ namespace WLO{
                 if(__CanChange){ throw new Exception("Изображение уже изменяется!"); }
                 __CanChange = true;
                 Action(__Context);
-                __Update(Create);
-                __CanChange = false;
 
                 return this;
-            }
-            catch(Exception e){
+            }catch(Exception e){
                 throw new Exception("Произошла ошибка при изменении изображения [" + this + "]!", e);
+            }finally{
+                __Update(Create);
+                __CanChange = false;
             }
         }
         private bool __CanChange = false;

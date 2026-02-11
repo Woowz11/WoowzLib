@@ -29,6 +29,7 @@ public static class Program{
 
             WL.Input.Keyboard.OnDown += (key, i) => {
                 Logger.Info(key, i);
+                return false;
             };
             WL.Input.Keyboard.OnUp += (key, i) => {
                 Logger.Info("UP", key, i);
@@ -100,7 +101,7 @@ public static class Program{
                     }
                 });
                 
-                WL.Window.Update();
+                WL.WoowzLib.Update();
             }
         }catch(Exception e){
             Logger.Fatal("ОШИБКА ВНУТРИ ПРИЛОЖЕНИЯ", e);

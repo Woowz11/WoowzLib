@@ -10,15 +10,20 @@ public class Window{
     /// <param name="Title">Стартовое название окна</param>
     /// <param name="Width">Стартовая ширина окна</param>
     /// <param name="Height">Стартовая высота окна</param>
-    public Window(string Title = "WL Window", uint Width = 800, uint Height = 600){
+    /// <param name="BackgroundColor">Цвет заднего фона</param>
+    public Window(string? Title = null, uint Width = 800, uint Height = 600, ColorB? BackgroundColor = null){
         try{
+            Title ??= WL.WoowzLib.ProjectInfo.Name;
+
             const string WindowClassName = "WoowzLib_Window";
             
             IntPtr Instance = WL.System.Native.Windows.GetModuleHandle(null);
+
+            __Events__ = WL.System.Native.Windows.EmptyWindowProc;
             
             WL.System.Native.Windows.WNDCLASSEX WindowClass = new WL.System.Native.Windows.WNDCLASSEX{
                 cbSize        = (uint)Marshal.SizeOf<WL.System.Native.Windows.WNDCLASSEX>(),
-                lpfnWndProc   = Marshal.GetFunctionPointerForDelegate(new WL.System.Native.Windows.WndProcDelegate(WL.System.Native.Windows.EmptyWindowProc)),
+                lpfnWndProc   = Marshal.GetFunctionPointerForDelegate(__Events__),
                 hInstance     = Instance,
                 lpszClassName = WindowClassName,
                 hCursor       = IntPtr.Zero,
@@ -30,7 +35,7 @@ public class Window{
             Handle = WL.System.Native.Windows.CreateWindowExW(
                 0,
                 WindowClassName,
-                Title ?? "",
+                Title,
                 WL.System.Native.Windows.WS_OVERLAPPEDWINDOW | WL.System.Native.Windows.WS_VISIBLE,
                 0, 0,
                 (int)Width, (int)Height,
@@ -49,9 +54,12 @@ public class Window{
             
             WL.Window.Windows.Add(this);
             
+            __Title  = Title;
+            
             this.Width  = Width;
             this.Height = Height;
-            this.Title  = Title ?? "";
+
+            if(BackgroundColor.HasValue){ this.BackgroundColor = BackgroundColor.Value; }
 
             __UpdateBuffer();
             
@@ -266,6 +274,7 @@ public class Window{
                     }
                     
                     // Нажали клавишу
+                    case WL.System.Native.Windows.WM_SYSKEYDOWN:
                     case WL.System.Native.Windows.WM_KEYDOWN:{
                         int Code = WParam.ToInt32();
                         Key Key  = Input.Keyboard.GetKey(Code);
@@ -283,6 +292,7 @@ public class Window{
                     }
                     
                     // Отпустили клавишу
+                    case WL.System.Native.Windows.WM_SYSKEYUP:
                     case WL.System.Native.Windows.WM_KEYUP: {
                         int Code = WParam.ToInt32();
                         Key Key  = Input.Keyboard.GetKey(Code);

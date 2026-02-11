@@ -4,7 +4,7 @@ namespace WL{
     /// <summary>
     /// Управление с вводом
     /// </summary>
-    [WLModule(int.MinValue + 4, 9)]
+    [WLModule(int.MinValue + 4, 10)]
     public static class Input{
         public static class Mouse{
             /// <summary>
@@ -39,7 +39,16 @@ namespace WL{
             /// Получает клавишу из кода
             /// </summary>
             public static Key GetKey(int Code){
-                return Enum.IsDefined(typeof(Key), Code) ? (Key)Code : Key.Unknown;
+                return Code switch{
+                    160   => Key.Shift,
+                    161   => Key.Shift,
+                    162   => Key.Control,
+                    163   => Key.Control,
+                    164   => Key.Alt,
+                    165   => Key.Alt,
+                    92    => Key.Win,
+                    var _ => Enum.IsDefined(typeof(Key), Code) ? (Key)Code : Key.Unknown
+                };
             }
             
             /// <summary>
@@ -57,10 +66,10 @@ namespace WL{
             public static bool KeyPressed(Key Key) => KeyPressed((int)Key);
             
             /// <summary>
-            /// Вызывается при нажатии клавиши [Клавиша, Код клавиши]
+            /// Вызывается при нажатии клавиши [Клавиша, Код клавиши], возвращает [Блокировать следующее нажатие?]
             /// </summary>
-            public static event Action<Key, int>? OnDown;
-            public static void __InvokeOnDown(Key Key, int Code) => OnDown?.Invoke(Key, Code);
+            public static event Func<Key, int, bool>? OnDown;
+            public static bool __InvokeOnDown(Key Key, int Code) => OnDown?.Invoke(Key, Code) ?? false;
         
             /// <summary>
             /// Вызывается при отжатии клавиши [Клавиша, Код клавиши]
@@ -99,7 +108,6 @@ namespace WL{
         Down  = 40,
         
         Win  = 91,
-        Win2 = 92,
         Menu = 93,
         
         D0 = 48,

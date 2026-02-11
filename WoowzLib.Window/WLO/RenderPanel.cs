@@ -3,11 +3,14 @@
 namespace WLO;
 
 public class RenderPanel : WindowElement, RenderSurface{
-    public RenderPanel(int X = 0, int Y = 0, uint Width = 128, uint Height = 128){
+    public RenderPanel(string Name = "Рендер панель", int X = 0, int Y = 0, uint Width = 128, uint Height = 128, WindowElement? Parent = null){
+        this.Name = Name;
         this.X = X;
         this.Y = Y;
         this.Width  = Width;
         this.Height = Height;
+
+        if(Parent != null){ this.Parent = Parent; }
 
         Img = new Image(Width, Height);
     }

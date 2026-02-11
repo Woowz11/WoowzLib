@@ -159,7 +159,7 @@ public abstract class WindowElement{
     /// <summary>
     /// Название элемента
     /// </summary>
-    public string Name = "Новый элемент";
+    public string Name = "элемент";
     
     /// <summary>
     /// Делает элемент невидимым (но активным!)
