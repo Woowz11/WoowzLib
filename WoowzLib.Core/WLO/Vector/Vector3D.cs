@@ -2,9 +2,9 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 11.02.2026 18:25
+/// Сгенерирован: 12.02.2026 19:38
 /// </summary>
-public struct Vector3D{
+public struct Vector3D : IEquatable<Vector3D>{
 	public static readonly int  Numbers = 3;
 	public static readonly Type Type    = typeof(double);
 
@@ -43,32 +43,26 @@ public struct Vector3D{
 	
 	public static Vector3D Lerp(Vector3D A, Vector3D B, float T) => new Vector3D(WL.Math.LerpD(A.X, B.X, T), WL.Math.LerpD(A.Y, B.Y, T), WL.Math.LerpD(A.Z, B.Z, T));
 	
+	public static float Distance(Vector3D A, Vector3D B) => WL.Math.Sqrt(WL.Math.Sqr((float)(B.X - A.X)) + WL.Math.Sqr((float)(B.Y - A.Y)) + WL.Math.Sqr((float)(B.Z - A.Z)));
+	
 	#region Override
 
-		public override string ToString(){
-			return "Vector3D(" + X + ", " + Y + ", " + Z + ")";
-		}
+		public override string ToString() => "Vector3D(" + X + ", " + Y + ", " + Z + ")";
 		
-		public string ToShortString(){
-			return X + ":" + Y + ":" + Z;
-		}
+		public string ToShortString() => X + ":" + Y + ":" + Z;
 		
 		public override bool Equals(object? Obj){
 			if(Obj is not Vector3D Other){ return false; }
 			return X == Other.X && Y == Other.Y && Z == Other.Z;
 		}
 		
-		public override int GetHashCode(){
-			return HashCode.Combine(X, Y, Z);
-		}
+		public bool Equals(Vector3D Other) => X.Equals(Other.X) && Y.Equals(Other.Y) && Z.Equals(Other.Z);
 		
-		public static bool operator ==(Vector3D A, Vector3D B){
-			return A.X == B.X && A.Y == B.Y && A.Z == B.Z;
-		}
+		public override int GetHashCode() => HashCode.Combine(X, Y, Z);
 		
-		public static bool operator !=(Vector3D A, Vector3D B){
-			return !(A == B);
-		}
+		public static bool operator ==(Vector3D A, Vector3D B) => A.X == B.X && A.Y == B.Y && A.Z == B.Z;
+		
+		public static bool operator !=(Vector3D A, Vector3D B) => !(A == B);
 	
 		public static Vector3D operator +(Vector3D A, Vector3D B){
 			return new Vector3D(A.X + B.X, A.Y + B.Y, A.Z + B.Z);

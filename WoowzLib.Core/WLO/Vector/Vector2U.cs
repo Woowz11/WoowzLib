@@ -2,9 +2,9 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 11.02.2026 18:25
+/// Сгенерирован: 12.02.2026 19:38
 /// </summary>
-public struct Vector2U{
+public struct Vector2U : IEquatable<Vector2U>{
 	public static readonly int  Numbers = 2;
 	public static readonly Type Type    = typeof(uint);
 
@@ -32,32 +32,26 @@ public struct Vector2U{
 	
 	public static Vector2U Lerp(Vector2U A, Vector2U B, float T) => new Vector2U(WL.Math.LerpU(A.X, B.X, T), WL.Math.LerpU(A.Y, B.Y, T));
 	
+	public static float Distance(Vector2U A, Vector2U B) => WL.Math.Sqrt(WL.Math.Sqr((float)(B.X - A.X)) + WL.Math.Sqr((float)(B.Y - A.Y)));
+	
 	#region Override
 
-		public override string ToString(){
-			return "Vector2U(" + X + ", " + Y + ")";
-		}
+		public override string ToString() => "Vector2U(" + X + ", " + Y + ")";
 		
-		public string ToShortString(){
-			return X + ":" + Y;
-		}
+		public string ToShortString() => X + ":" + Y;
 		
 		public override bool Equals(object? Obj){
 			if(Obj is not Vector2U Other){ return false; }
 			return X == Other.X && Y == Other.Y;
 		}
 		
-		public override int GetHashCode(){
-			return HashCode.Combine(X, Y);
-		}
+		public bool Equals(Vector2U Other) => X.Equals(Other.X) && Y.Equals(Other.Y);
 		
-		public static bool operator ==(Vector2U A, Vector2U B){
-			return A.X == B.X && A.Y == B.Y;
-		}
+		public override int GetHashCode() => HashCode.Combine(X, Y);
 		
-		public static bool operator !=(Vector2U A, Vector2U B){
-			return !(A == B);
-		}
+		public static bool operator ==(Vector2U A, Vector2U B) => A.X == B.X && A.Y == B.Y;
+		
+		public static bool operator !=(Vector2U A, Vector2U B) => !(A == B);
 	
 		public static Vector2U operator +(Vector2U A, Vector2U B){
 			return new Vector2U(A.X + B.X, A.Y + B.Y);

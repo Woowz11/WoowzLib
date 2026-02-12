@@ -2,9 +2,9 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 11.02.2026 18:25
+/// Сгенерирован: 12.02.2026 19:38
 /// </summary>
-public struct Vector2I{
+public struct Vector2I : IEquatable<Vector2I>{
 	public static readonly int  Numbers = 2;
 	public static readonly Type Type    = typeof(int);
 
@@ -38,32 +38,26 @@ public struct Vector2I{
 	
 	public static Vector2I Lerp(Vector2I A, Vector2I B, float T) => new Vector2I(WL.Math.LerpI(A.X, B.X, T), WL.Math.LerpI(A.Y, B.Y, T));
 	
+	public static float Distance(Vector2I A, Vector2I B) => WL.Math.Sqrt(WL.Math.Sqr((float)(B.X - A.X)) + WL.Math.Sqr((float)(B.Y - A.Y)));
+	
 	#region Override
 
-		public override string ToString(){
-			return "Vector2I(" + X + ", " + Y + ")";
-		}
+		public override string ToString() => "Vector2I(" + X + ", " + Y + ")";
 		
-		public string ToShortString(){
-			return X + ":" + Y;
-		}
+		public string ToShortString() => X + ":" + Y;
 		
 		public override bool Equals(object? Obj){
 			if(Obj is not Vector2I Other){ return false; }
 			return X == Other.X && Y == Other.Y;
 		}
 		
-		public override int GetHashCode(){
-			return HashCode.Combine(X, Y);
-		}
+		public bool Equals(Vector2I Other) => X.Equals(Other.X) && Y.Equals(Other.Y);
 		
-		public static bool operator ==(Vector2I A, Vector2I B){
-			return A.X == B.X && A.Y == B.Y;
-		}
+		public override int GetHashCode() => HashCode.Combine(X, Y);
 		
-		public static bool operator !=(Vector2I A, Vector2I B){
-			return !(A == B);
-		}
+		public static bool operator ==(Vector2I A, Vector2I B) => A.X == B.X && A.Y == B.Y;
+		
+		public static bool operator !=(Vector2I A, Vector2I B) => !(A == B);
 	
 		public static Vector2I operator +(Vector2I A, Vector2I B){
 			return new Vector2I(A.X + B.X, A.Y + B.Y);

@@ -2,9 +2,9 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 11.02.2026 18:25
+/// Сгенерирован: 12.02.2026 19:38
 /// </summary>
-public struct Vector4F{
+public struct Vector4F : IEquatable<Vector4F>{
 	public static readonly int  Numbers = 4;
 	public static readonly Type Type    = typeof(float);
 
@@ -48,32 +48,26 @@ public struct Vector4F{
 	
 	public static Vector4F Lerp(Vector4F A, Vector4F B, float T) => new Vector4F(WL.Math.Lerp(A.X, B.X, T), WL.Math.Lerp(A.Y, B.Y, T), WL.Math.Lerp(A.Z, B.Z, T), WL.Math.Lerp(A.W, B.W, T));
 	
+	public static float Distance(Vector4F A, Vector4F B) => WL.Math.Sqrt(WL.Math.Sqr((float)(B.X - A.X)) + WL.Math.Sqr((float)(B.Y - A.Y)) + WL.Math.Sqr((float)(B.Z - A.Z)) + WL.Math.Sqr((float)(B.W - A.W)));
+	
 	#region Override
 
-		public override string ToString(){
-			return "Vector4F(" + X + ", " + Y + ", " + Z + ", " + W + ")";
-		}
+		public override string ToString() => "Vector4F(" + X + ", " + Y + ", " + Z + ", " + W + ")";
 		
-		public string ToShortString(){
-			return X + ":" + Y + ":" + Z + ":" + W;
-		}
+		public string ToShortString() => X + ":" + Y + ":" + Z + ":" + W;
 		
 		public override bool Equals(object? Obj){
 			if(Obj is not Vector4F Other){ return false; }
 			return X == Other.X && Y == Other.Y && Z == Other.Z && W == Other.W;
 		}
 		
-		public override int GetHashCode(){
-			return HashCode.Combine(X, Y, Z, W);
-		}
+		public bool Equals(Vector4F Other) => X.Equals(Other.X) && Y.Equals(Other.Y) && Z.Equals(Other.Z) && W.Equals(Other.W);
 		
-		public static bool operator ==(Vector4F A, Vector4F B){
-			return A.X == B.X && A.Y == B.Y && A.Z == B.Z && A.W == B.W;
-		}
+		public override int GetHashCode() => HashCode.Combine(X, Y, Z, W);
 		
-		public static bool operator !=(Vector4F A, Vector4F B){
-			return !(A == B);
-		}
+		public static bool operator ==(Vector4F A, Vector4F B) => A.X == B.X && A.Y == B.Y && A.Z == B.Z && A.W == B.W;
+		
+		public static bool operator !=(Vector4F A, Vector4F B) => !(A == B);
 	
 		public static Vector4F operator +(Vector4F A, Vector4F B){
 			return new Vector4F(A.X + B.X, A.Y + B.Y, A.Z + B.Z, A.W + B.W);

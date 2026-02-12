@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 11.02.2026 18:25
+/// Сгенерирован: 12.02.2026 19:38
 /// </summary>
 public struct ColorD{
 	public static readonly Type Type = typeof(double);
@@ -114,6 +114,31 @@ public struct ColorD{
 	public ColorD Clone() => new ColorD(R, G, B, A);
 
 	public static ColorD Lerp(ColorD A, ColorD B, float T) => new ColorD(WL.Math.LerpD(A.R, B.R, T), WL.Math.LerpD(A.G, B.G, T), WL.Math.LerpD(A.B, B.B, T), WL.Math.LerpD(A.A, B.A, T));
+
+	public static ColorD FromHSV(float H, float S, float V){
+		float R = 0, G = 0, B = 0;
+		
+		int I = (int)(H * 6);
+		float F = H * 6 - I;
+		float P = V * (1 - S);
+		float Q = V * (1 - F * S);
+		float T = V * (1 - (1 - F) * S);
+		
+		switch(I % 6){
+			case 0: R = V; G = T; B = P; break;
+			case 1: R = Q; G = V; B = P; break;
+			case 2: R = P; G = V; B = T; break;
+			case 3: R = P; G = Q; B = V; break;
+			case 4: R = T; G = P; B = V; break;
+			case 5: R = V; G = P; B = Q; break;
+		}
+		
+		return new ColorD(
+			(double)(R * 1),
+			(double)(G * 1),
+			(double)(B * 1)
+		);
+	}
 
 	#region Override
 

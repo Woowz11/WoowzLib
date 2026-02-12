@@ -9,6 +9,20 @@ namespace WL{
     public enum ImageScalingInterpolation{
         Nearest, Bilinear, Bicubic, Lanczos
     }
+
+    /// <summary>
+    /// Эффект смешивания
+    /// </summary>
+    public enum ImageBlend{
+        /// <summary>
+        /// Полная замена
+        /// </summary>
+        Fixed,
+        /// <summary>
+        /// Смешивание по прозрачности
+        /// </summary>
+        Alpha
+    }
 }
 
 namespace WLO{
@@ -147,19 +161,16 @@ namespace WLO{
         private bool __CanChange = false;
 
         public class ImageContext(Image Image){
-            private readonly Image __Image = Image;
-            private void __CanChange(){ if(!__Image.__CanChange){ throw new Exception("Нельзя сейчас изменять изображение [" + __Image + "], оно сейчас не в режиме редактирования!"); } }
-            private bool __Initialized() => __Image.Pixels_RGBA != null;
-            private byte[] __Pixels(){
-                if(!__Initialized()){ __Image.Pixels_RGBA = new byte[Width * Height * 4]; }
-                return __Image.Pixels_RGBA;
-            }
+            private void __CanChange(){ if(!Image.__CanChange){ throw new Exception("Нельзя сейчас изменять изображение [" + Image + "], оно сейчас не в режиме редактирования!"); } }
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            private bool __Initialized() => Image.Pixels_RGBA != null;
+            private void __TryCreatePixels(){ if(!__Initialized()){ Image.Pixels_RGBA = new byte[Width * Height * 4]; } }
             
             /// <summary>
             /// Ширина
             /// </summary>
             public uint Width{
-                get => __Image.Width;
+                get => Image.Width;
                 set => SetWidth(value);
             }
 
@@ -167,7 +178,7 @@ namespace WLO{
             /// Высота
             /// </summary>
             public uint Height{
-                get => __Image.Height;
+                get => Image.Height;
                 set => SetHeight(value);
             }
             
@@ -175,7 +186,7 @@ namespace WLO{
             /// Ширина x Высота
             /// </summary>
             public Vector2U Size{
-                get => __Image.Size;
+                get => Image.Size;
                 set => SetSize(value.X, value.Y);
             }
 
@@ -214,7 +225,7 @@ namespace WLO{
             public ImageContext SetSize(uint Width, uint Height, ImageScalingInterpolation ScalingInterpolation = ImageScalingInterpolation.Nearest){
                 try{
                     __CanChange();
-                    if(__Image.Width == Width && __Image.Height == Height){ return this; }
+                    if(Image.Width == Width && Image.Height == Height){ return this; }
                     if(Width  == 0){ throw new Exception("Ширина не может быть равна 0!"); }
                     if(Height == 0){ throw new Exception("Высота не может быть равна 0!"); }
                     
@@ -222,36 +233,14 @@ namespace WLO{
                         
                     }
                     
-                    __Image.Width  = Width;
-                    __Image.Height = Height;
+                    Image.Width  = Width;
+                    Image.Height = Height;
                     
                     return this;
                 }catch(Exception e){
                     throw new Exception("Произошла ошибка при изменении ширины и высоты у изображения [" + this + "]!\nШирина: " + Width + "\nВысота: " + Height + "\nРазмытие: " + ScalingInterpolation, e);
                 }
             }
-
-            /// <summary>
-            /// Заполняет всё пространство цветом
-            /// </summary>
-            /// <param name="Color">Цвет</param>
-            public ImageContext Fill(ColorB? Color = null){
-                try{
-                    __CanChange();
-                    ColorB Color__ = Color ?? ColorB.White;
-                    
-                    WL.Math.Byte.FillArray(__Pixels(), Width * Height, Color__.R, Color__.G, Color__.B, Color__.A);
-                    
-                    return this;
-                }catch(Exception e){
-                    throw new Exception("Произошла ошибка при заполнении цветом изображения [" + this + "]!\nЦвет: " + Color, e);
-                }
-            }
-
-            /// <summary>
-            /// Заполняет всё пространство прозрачным цветом
-            /// </summary>
-            public ImageContext Clear() => Fill(ColorB.Transparent);
 
             /// <summary>
             /// Вызывает Action на каждый пиксель изображения
@@ -280,16 +269,61 @@ namespace WLO{
                 set => SetPixel(X, Y, value);
             }
 
+            /// <summary>
+            /// Выходит за пределы изображения?
+            /// </summary>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public int IDX(uint X, uint Y) => ((int)Y * (int)__Image.Width + (int)X) * 4;
+            public bool OutOfBounds(int X, int Y) => X >= Width || Y >= Height || X < 0 || Y < 0;
+            /// <summary>
+            /// Выходит за пределы изображения?
+            /// </summary>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public bool OutOfBounds(uint X, uint Y) => X >= Width || Y >= Height;
+            
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public int IDX(uint X, uint Y) => (int)(Y * Width + X) * 4;
 
+            /// <summary>
+            /// Устанавливает цвет пикселя
+            /// </summary>
+            /// <param name="X">X</param>
+            /// <param name="Y">Y</param>
+            /// <param name="Color">Цвет</param>
+            /// <param name="Blend">Смешивание</param>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public ImageContext SetPixel(uint X, uint Y, ColorB Color){
+            public ImageContext SetPixel(uint X, uint Y, ColorB Color, ImageBlend Blend = ImageBlend.Fixed){
+                __CanChange();
+                
+                if(OutOfBounds(X, Y)){ return this; }
+
                 int IDX__ = IDX(X, Y);
-                __Image.Pixels_RGBA[IDX__ + 0] = Color.R;
-                __Image.Pixels_RGBA[IDX__ + 1] = Color.G;
-                __Image.Pixels_RGBA[IDX__ + 2] = Color.B;
-                __Image.Pixels_RGBA[IDX__ + 3] = Color.A;
+                switch(Blend){
+                    case ImageBlend.Fixed: {
+                        Image.Pixels_RGBA[IDX__ + 0] = Color.R;
+                        Image.Pixels_RGBA[IDX__ + 1] = Color.G;
+                        Image.Pixels_RGBA[IDX__ + 2] = Color.B;
+                        Image.Pixels_RGBA[IDX__ + 3] = Color.A;
+                        break;
+                    }
+                    
+                    case ImageBlend.Alpha:{
+                        if(Color.A == 0){ return this; }
+
+                        byte DstR = Image.Pixels_RGBA[IDX__ + 0];
+                        byte DstG = Image.Pixels_RGBA[IDX__ + 1];
+                        byte DstB = Image.Pixels_RGBA[IDX__ + 2];
+                        byte DstA = Image.Pixels_RGBA[IDX__ + 3];
+
+                        float A  = Color.A / 255f;
+                        float IA = 1 - A;
+                        
+                        Image.Pixels_RGBA[IDX__ + 0] = (byte)(Color.R * A + DstR * IA);
+                        Image.Pixels_RGBA[IDX__ + 1] = (byte)(Color.G * A + DstG * IA);
+                        Image.Pixels_RGBA[IDX__ + 2] = (byte)(Color.B * A + DstB * IA);
+                        Image.Pixels_RGBA[IDX__ + 3] = (byte)(WL.Math.Min(255, Color.A + DstA));
+                        break;    
+                    }
+                }
 
                 return this;
             }
@@ -297,44 +331,107 @@ namespace WLO{
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public ColorB GetPixel(uint X, uint Y){
                 int IDX__ = IDX(X, Y);
-                return new ColorB(__Image.Pixels_RGBA[IDX__], __Image.Pixels_RGBA[IDX__ + 1], __Image.Pixels_RGBA[IDX__ + 2], __Image.Pixels_RGBA[IDX__ + 3]);
+                return new ColorB(Image.Pixels_RGBA[IDX__], Image.Pixels_RGBA[IDX__ + 1], Image.Pixels_RGBA[IDX__ + 2], Image.Pixels_RGBA[IDX__ + 3]);
             }
+            
+            /// <summary>
+            /// Заполняет всё пространство цветом
+            /// </summary>
+            /// <param name="Color">Цвет</param>
+            /// <param name="Blend">Смешивание</param>
+            public ImageContext Fill(ColorB? Color = null, ImageBlend Blend = ImageBlend.Fixed){
+                try{
+                    __CanChange();
+                    __TryCreatePixels();
+                    ColorB Color__ = Color ?? ColorB.White;
 
-            /*public uint Width{
-                get => __Image.Width;
-                set{
-
+                    For(((X, Y, W, H) => {
+                        SetPixel(X, Y, Color__, Blend);
+                    }));
+                    
+                    return this;
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при заполнении цветом изображения [" + this + "]!\nЦвет: " + Color, e);
                 }
             }
 
-            public uint Height{
-                get => __Image.Height;
-                set{
+            /// <summary>
+            /// Пустой цвет
+            /// </summary>
+            public readonly ColorB EmptyColor = ColorB.Transparent;
+            
+            /// <summary>
+            /// Заполняет всё пространство прозрачным цветом
+            /// </summary>
+            public ImageContext Clear() => Fill(EmptyColor);
 
+            /// <summary>
+            /// Закрашивает определённую область
+            /// </summary>
+            /// <param name="X">X</param>
+            /// <param name="Y">Y</param>
+            /// <param name="Width">Ширина</param>
+            /// <param name="Height">Высота</param>
+            /// <param name="Color">Цвет</param>
+            /// <param name="Blend">Смешивание</param>
+            public ImageContext Fill(int X, int Y, uint Width, uint Height, ColorB? Color = null, ImageBlend Blend = ImageBlend.Fixed){
+                try{
+                    __CanChange();
+                    ColorB Color__ = Color ?? ColorB.White;
+
+                    if(OutOfBounds(X, Y)){ return this; }
+
+                    int EndX = (int)(X + Width );
+                    int EndY = (int)(Y + Height);
+
+                    if(EndX > this.Width ){ EndX = (int)this.Width ; }
+                    if(EndY > this.Height){ EndY = (int)this.Height; }
+
+                    if(X >= EndX || Y >= EndY){ return this; }
+
+                    for(int Y__ = Y; Y__ < EndY; Y__++){
+                        for(int X__ = X; X__ < EndX; X__++){
+                            SetPixel((uint)X__, (uint)Y__, Color__, Blend);
+                        }   
+                    }
+                    
+                    return this;
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при заполнении цветом области изображения [" + this + "]!\nX: " + X + "\nY: " + Y + "\nШирина: " + Width + "\nВысота: " + Height + "\nЦвет: " + Color, e);
                 }
             }
 
-            public ImageContext Resize(uint Width, uint Height){
-                this.Width = Width;
-                this.Height = Height;
+            /// <summary>
+            /// Рисует рамку
+            /// </summary>
+            /// <param name="X">X</param>
+            /// <param name="Y">Y</param>
+            /// <param name="Width">Ширина</param>
+            /// <param name="Height">Высота</param>
+            /// <param name="Thickness">Толщина</param>
+            /// <param name="Color">Цвет</param>
+            /// <param name="Blend">Смешивание</param>
+            public ImageContext Border(int X, int Y, uint Width, uint Height, uint Thickness = 1, ColorB? Color = null, ImageBlend Blend = ImageBlend.Fixed){
+                try{
+                    __CanChange();
+                    
+                    if(Thickness == 0){ return this; }
+
+                    ColorB Color__ = Color ?? ColorB.White;
+
+                    Fill(X, Y, Width, Thickness, Color__, Blend);
+
+                    if(Height > Thickness){ Fill(X, (int)(Y + Height - Thickness), Width, Thickness, Color__, Blend); }
+
+                    Fill(X, (int)(Y + Thickness), Thickness, Height - 2 * Thickness, Color__, Blend);
+                    
+                    if(Width > Thickness){ Fill((int)(X + Width - Thickness), (int)(Y + Thickness), Thickness, Height - 2 * Thickness, Color__, Blend); }
+                    
+                    return this;
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при рисовании рамки у изображения [" + this + "]!\nX: " + X + "\nY: " + Y + "\nШирина: " + Width + "\nВысота: " + Height + "\nТолщина: " + Thickness + "\nЦвет: " + Color, e);
+                }
             }
-
-            public ImageContext OverwriteRGBA(byte[] Colors){
-
-            }
-
-            public ImageContext OverwriteBGRA(byte[] Colors){
-
-            }
-
-            public ImageContext OverwriteRGB(byte[] Colors, byte Alpha = 255){
-
-            }
-            public ImageContext OverwriteBGR(byte[] Colors, byte Alpha = 255){
-
-            }
-
-            public ImageContext Set*/
         }
 
         private byte __R;

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using WLO;
 
@@ -7,7 +8,7 @@ namespace WL{
     /// <summary>
     /// Математические функции и т.д
     /// </summary>
-    [WLModule(int.MinValue + 1, 29)]
+    [WLModule(int.MinValue + 1, 30)]
     public static class Math{
         /// <summary>
         /// Ноль
@@ -36,19 +37,23 @@ namespace WL{
         /// <summary>
         /// Это ошибочное значение?
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsError(float V) => float.IsNaN(V);
         /// <summary>
         /// Это ошибочное значение?
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsErrorD(double V) => double.IsNaN(V);
 
         /// <summary>
         /// Это не простое значение?
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsSpecial(float V) => IsError(V) || IsInfinity(V);
         /// <summary>
         /// Это не простое значение?
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsSpecialD(double V) => IsErrorD(V) || IsInfinityD(V);
         
         /// <summary>
@@ -73,10 +78,12 @@ namespace WL{
         /// <summary>
         /// Это бесконечность?
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsInfinity(float V) => float.IsInfinity(V);
         /// <summary>
         /// Это бесконечность?
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsInfinityD(double V) => double.IsInfinity(V);
         
         /// <summary>
@@ -123,15 +130,18 @@ namespace WL{
         /// <summary>
         /// Возвращает максимальное число из 2 чисел
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Max(float A, float B) => float.Max(A, B);
         /// <summary>
         /// Возвращает максимальное число из 2 чисел
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int MaxI(int A, int B) => int.Max(A, B);
 
         /// <summary>
         /// Возвращает максимальное число из нескольких чисел
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Max(params float[] Values){
             if(Values.Length == 0){ return Error; }
             float Max = Values[0];
@@ -144,15 +154,18 @@ namespace WL{
         /// <summary>
         /// Возвращает минимальное число из 2 чисел
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Min(float A, float B) => float.Min(A, B);
         /// <summary>
         /// Возвращает минимальное число из 2 чисел
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int MinI(int A, int B) => int.Min(A, B);
 
         /// <summary>
         /// Возвращает минимальное число из нескольких чисел
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Min(params float[] Values){
             if(Values.Length == 0){ return Error; }
             float Min = Values[0];
@@ -165,120 +178,156 @@ namespace WL{
         /// <summary>
         /// Ограничить число между Min и Max
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Clamp(float V, float Min, float Max) => float.Clamp(V, Min, Max);
         /// <summary>
         /// Ограничить число между Min и Max
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int ClampI(int V, int Min, int Max) => int.Clamp(V, Min, Max);
         /// <summary>
         /// Ограничить число между Min и Max
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte ClampB(byte V, byte Min, byte Max) => byte.Clamp(V, Min, Max);
 
         /// <summary>
         /// Ограничить число между 0 и 1
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Clamp01(float V) => Clamp(V, 0, 1);
         
         /// <summary>
         /// Ограничить байт между 0 и 255
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int ClampByteI(int V) => ClampI(V, 0, 255);
         /// <summary>
         /// Ограничить байт между 0 и 255
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte ClampByteB(byte V) => ClampB(V, 0, 255);
 
         /// <summary>
         /// Возвращает число между A и B по T (0-1 (нет ограничений!))
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Lerp(float A, float B, float T) => float.Lerp(A, B, T);
         /// <summary>
         /// Возвращает число между A и B по T (0-1 (нет ограничений!))
         /// </summary>
         [Obsolete("ХЗЗЗЗЗЗ, хуйня какая-то, надо подумать как правильно это сделать")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LerpI(int A, int B, float T) => (int)(Lerp(A, B, T));
         /// <summary>
         /// Возвращает число между A и B по T (0-1 (нет ограничений!))
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double LerpD(double A, double B, float T) => double.Lerp(A, B, T);
         /// <summary>
         /// Возвращает число между A и B по T (0-1 (нет ограничений!))
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte LerpB(byte A, byte B, float T) => (byte)LerpI(A, B, T);
         /// <summary>
         /// Возвращает число между A и B по T (0-1 (нет ограничений!))
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint LerpU(uint A, uint B, float T) => (uint)LerpI((int)A, (int)B, T);
 
         /// <summary>
         /// Убирает отрицание
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Abs(float V) => float.Abs(V);
         /// <summary>
         /// Убирает отрицание
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double AbsD(double V) => double.Abs(V);
 
         /// <summary>
         /// Число положительное?
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsPositive(float V) => V > 0;
         
         /// <summary>
         /// Число отрицательное?
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNegative(float V) => V < 0;
 
         /// <summary>
         /// Знак числа (+ или -)
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int Sign(float V) => IsNegative(V) ? -1 : 1;
         
         /// <summary>
         /// Добавляет число B числу A (A + B)
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Add(float A, float B) => A + B;
         /// <summary>
         /// Добавляет число B числу A (A + B)
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint AddU(uint A, uint B) => A + B;
+        /// <summary>
+        /// Добавляет число B числу A (A + B)
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte AddB(byte A, byte B) => (byte)ClampByteI(A + B);
         
         /// <summary>
         /// Вычитает число B из числа A (A - B)
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Sub(float A, float B) => A - B;
         /// <summary>
         /// Вычитает число B из числа A (A - B)
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint SubU(uint A, uint B) => A > B ? A - B : 0;
+        /// <summary>
+        /// Вычитает число B из числа A (A - B)
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte SubB(byte A, byte B) => (byte)ClampByteI(A - B);
         
         /// <summary>
         /// Умножает число B на число A (A * B)
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Mul(float A, float B) => A * B;
         /// <summary>
         /// Умножает число B на число A (A * B)
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte MulB(byte A, byte B) => (byte)ClampByteI(A * B);
 
         /// <summary>
         /// Умножает число B на число A (A * B) (Но очень точно! т.е: 0.1f * 0.1f = 0.01f, а не 0,010000001f)
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float MulExact(float A, float B) => (float)((decimal)A * (decimal)B);
         
         /// <summary>
         /// Делит число B на число A (A / B)
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Div(float A, float B) => A / B;
         /// <summary>
         /// Делит число B на число A (A / B)
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte DivB(byte A, byte B) => (byte)ClampByteI(A / B);
 
         /// <summary>
         /// Возводит в степень число V на Exponent
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Pow(float V, float Exponent){
             (float, float) Key = (V, Exponent);
 
@@ -298,16 +347,19 @@ namespace WL{
         /// <summary>
         /// Возводит число в квадрат
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Sqr(float V) => V * V;
 
         /// <summary>
         /// Возводит число в куб
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Cube(float V) => V * V * V;
 
         /// <summary>
         /// Корень N степени числа V (Выдаст ошибку если N == 0 или V &lt; 0 &amp;&amp; N чётное 2)
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Root(float V, float N){
             if(IsZero(N) || (IsNegative(V) && Mod(N, 2) == 0)){ return Error; } // Невозможен корень чётной степени из отрицательного числа
             return Pow(V, 1f / N);
@@ -316,48 +368,57 @@ namespace WL{
         /// <summary>
         /// Квадратный корень
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Sqrt(float V) => Root(V, 2);
 
         /// <summary>
         /// Кубический корень
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Cbrt(float V) => Root(V, 3);
         
         /// <summary>
         /// Округляет число (0.3 -> 0, 0.5 -> 1, 0.7 -> 1, -0.3 -> 0, 2.5 -> 3)
         /// <param name="Digits">До скольки округлять: 4 -> 0.0001</param>
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Round(float V, int Digits = 0) => float.Round(V, Digits, MidpointRounding.AwayFromZero);
         
         /// <summary>
         /// Округляет число (0.3 -> 1, 0.5 -> 1, 0.7 -> 1, -0.3 -> 0)
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Ceil(float V) => float.Ceiling(V);
         
         /// <summary>
         /// Округляет число (0.3 -> 0, 0.5 -> 0, 0.7 -> 0, -0.3 -> -1)
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Floor(float V) => float.Floor(V);
 
         /// <summary>
         /// Убирает дробную часть из числа (0.3 -> 0, -2.6 -> -2, 0.99 -> 0)
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Truncate(float V) => float.Truncate(V);
 
         /// <summary>
         /// Если есть дробное число, то делает целым и на 1 больше (0.1 -> 1, -0.1 -> -1, 0 -> 0)
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Above(float V) => Ceil(Abs(V)) * Sign(V);
         
         /// <summary>
         /// Получить среднее число между двумя (Поддерживает большие числа)
         /// </summary>
         /// <returns>A + (B - A) * 0.5f</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Average(float A, float B) => A + (B - A) * 0.5f;
         
         /// <summary>
         /// Синус
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Sin(float Rad){
             Rad = Mod(Rad, TwoPI);
             if(IsNegative(Rad)){ Rad += TwoPI; }
@@ -371,20 +432,38 @@ namespace WL{
         /// <summary>
         /// Косинус
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Cos(float Rad) => Sin(Rad + HalfPI);
 
         /// <summary>
         /// Тангенс
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Tan(float Rad){
             float Cos = Math.Cos(Rad);
             if(IsZero(Cos)){ return Error; }
             return Sin(Rad) / Cos;
         }
+
+        /// <summary>
+        /// Арктангенс
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float ATan(float Rad){
+            Rad = Mod(Rad, TwoPI);
+            if(IsNegative(Rad)){ Rad += TwoPI; }
+
+            float Key = Round(Rad, 2);
+
+            return __ATan.GetOrAdd(Key, K => IsNear(Rad, HalfPI) ? 1 : float.Atan(K));
+        }
+        private static readonly ConcurrentDictionary<float, float> __ATan = new ConcurrentDictionary<float, float>();
+        
         
         /// <summary>
         /// Котангенс
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Cot(float Rad){
             float Sin = Math.Sin(Rad);
             if(IsZero(Sin)){ return Error; }
@@ -394,27 +473,32 @@ namespace WL{
         /// <summary>
         /// Синус от 0 до 1
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float DSin(float Rad) => 0.5f + Sin(Rad) * 0.5f;
         
         /// <summary>
         /// Косинус от 0 до 1
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float DCos(float Rad) => 0.5f + Cos(Rad) * 0.5f;
 
         /// <summary>
         /// Число близко к нулю?
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsZero(float V, float Epsilon) => IsNear(V, 0, Epsilon);
         
         /// <summary>
         /// Число близко к нулю?
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsZero(float V) => IsZero(V, Epsilon_Strong);
 
         /// <summary>
         /// Число A близко к числу B?
         /// </summary>
         /// <param name="ConsiderError">Учитывать IsError(A) && IsError(B)</param>>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNear(float A, float B, float Epsilon, bool ConsiderError = false){
             if(IsError(A) && IsError(B)){ return ConsiderError; }
             if(IsInfinity(A) || IsInfinity(B)){ return A == B; }
@@ -424,6 +508,7 @@ namespace WL{
         /// Число A близко к числу B?
         /// </summary>
         /// <param name="ConsiderError">Учитывать IsError(A) && IsError(B)</param>>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNearD(double A, double B, double Epsilon, bool ConsiderError = false){
             if(IsErrorD(A) && IsErrorD(B)){ return ConsiderError; }
             if(IsInfinityD(A) || IsInfinityD(B)){ return A == B; }
@@ -433,39 +518,47 @@ namespace WL{
         /// <summary>
         /// Число A близко к числу B?
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNear(float A, float B) => IsNear(A, B, Epsilon_Strong);
         /// <summary>
         /// Число A близко к числу B?
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNearD(double A, double B) => IsNearD(A, B, Epsilon_Strong);
 
         /// <summary>
         /// Дробная часть числа (3.75 -> 0.75, -1.25 -> -0.25) [Сохраняет знак]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Frac(float V) => V - Truncate(V);
 
         /// <summary>
         /// Остаток от деления (A % B) [Сохраняет знак]
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Mod(float A, float B) => A % B;
         
         /// <summary>
         /// Число V чётное Divisor?
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Evan(float V, int Divisor = 2) => Divisor != 0 && Mod(V, Divisor) == 0;
 
         /// <summary>
         /// Превратить радианы в градусы
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float ToDeg(float Rad) => Rad * (180f / PI);
 
         /// <summary>
         /// Превратить градусы в радианы
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float ToRad(float Deg) => Deg * (PI / 180f);
 
         /// <summary>
         /// Умножение с последующим сложением (A * B + C)
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Fma(float A, float B, float C) => float.FusedMultiplyAdd(A, B, C);
         
         /// <summary>

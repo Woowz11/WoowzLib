@@ -124,7 +124,7 @@ public static class Generator{
                 
                 string Result = Pre() + "\n";
 
-                Result += "public struct " + Name + "{\n";
+                Result += "public struct " + Name + " : IEquatable<" + Name + ">{\n";
 
                 Result += $$"""
                                 public static readonly int  Numbers = {{N}};
@@ -156,32 +156,26 @@ public static class Generator{
                                     return WL.String.Join(LerpFunc + "(A.$0, B.$0, T), ", LerpFunc + "(A.$0, B.$0, T)", Components);
                                 })}});
                                 
+                                public static float Distance({{Name}} A, {{Name}} B) => WL.Math.Sqrt({{WL.String.Join("WL.Math.Sqr((float)(B.$0 - A.$0)) + ", "WL.Math.Sqr((float)(B.$0 - A.$0))", Components)}});
+                                
                                 #region Override
                             
-                                    public override string ToString(){
-                                        return "{{Name}}(" + {{WL.String.Join("$0 + \", \" + ", "$0", Components)}} + ")";
-                                    }
+                                    public override string ToString() => "{{Name}}(" + {{WL.String.Join("$0 + \", \" + ", "$0", Components)}} + ")";
                                     
-                                    public string ToShortString(){
-                                        return {{WL.String.Join("$0 + \":\" + ", "$0", Components)}};
-                                    }
+                                    public string ToShortString() => {{WL.String.Join("$0 + \":\" + ", "$0", Components)}};
                                     
                                     public override bool Equals(object? Obj){
                                         if(Obj is not {{Name}} Other){ return false; }
                                         return {{WL.String.Join("$0 == Other.$0 && ", "$0 == Other.$0", Components)}};
                                     }
                                     
-                                    public override int GetHashCode(){
-                                        return HashCode.Combine({{WL.String.Join(Components)}});
-                                    }
+                                    public bool Equals({{Name}} Other) => {{WL.String.Join("$0.Equals(Other.$0) && ", "$0.Equals(Other.$0)", Components)}};
                                     
-                                    public static bool operator ==({{Name}} A, {{Name}} B){
-                                        return {{WL.String.Join("A.$0 == B.$0 && ", "A.$0 == B.$0", Components)}};
-                                    }
+                                    public override int GetHashCode() => HashCode.Combine({{WL.String.Join(Components)}});
                                     
-                                    public static bool operator !=({{Name}} A, {{Name}} B){
-                                        return !(A == B);
-                                    }
+                                    public static bool operator ==({{Name}} A, {{Name}} B) => {{WL.String.Join("A.$0 == B.$0 && ", "A.$0 == B.$0", Components)}};
+                                    
+                                    public static bool operator !=({{Name}} A, {{Name}} B) => !(A == B);
                                 
                                     public static {{Name}} operator +({{Name}} A, {{Name}} B){
                                         return new {{Name}}({{WL.String.Join("A.$0 + B.$0, ", "A.$0 + B.$0", Components)}});
@@ -377,6 +371,31 @@ public static class Generator{
                                     });
                                     return LerpFunc + "(A.R, B.R, T), " + LerpFunc + "(A.G, B.G, T), " + LerpFunc + "(A.B, B.B, T), " + LerpFunc + "(A.A, B.A, T)";
                                 })}});
+                            
+                                public static {{Name}} FromHSV(float H, float S, float V){
+                                    float R = 0, G = 0, B = 0;
+                                    
+                                    int I = (int)(H * 6);
+                                    float F = H * 6 - I;
+                                    float P = V * (1 - S);
+                                    float Q = V * (1 - F * S);
+                                    float T = V * (1 - (1 - F) * S);
+                                    
+                                    switch(I % 6){
+                                        case 0: R = V; G = T; B = P; break;
+                                        case 1: R = Q; G = V; B = P; break;
+                                        case 2: R = P; G = V; B = T; break;
+                                        case 3: R = P; G = Q; B = V; break;
+                                        case 4: R = T; G = P; B = V; break;
+                                        case 5: R = V; G = P; B = Q; break;
+                                    }
+                                    
+                                    return new {{Name}}(
+                                        ({{Type}})(R * {{V_1}}),
+                                        ({{Type}})(G * {{V_1}}),
+                                        ({{Type}})(B * {{V_1}})
+                                    );
+                                }
                             
                                 #region Override
                             
