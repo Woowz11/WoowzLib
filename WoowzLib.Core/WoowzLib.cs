@@ -6,7 +6,7 @@ using System.Text;
 using WLO;
 
 namespace WL{
-    [WLModule(int.MinValue, 46)]
+    [WLModule(int.MinValue, 47)]
     public static class WoowzLib{
         static WoowzLib(){
             try{
@@ -165,7 +165,9 @@ namespace WL{
                 while(System.Native.Windows.PeekMessage(out System.Native.Windows.MSG Message, IntPtr.Zero, 0, 0, System.Native.Windows.PM_REMOVE)){
                     System.Native.Windows.TranslateMessage(ref Message);
                     System.Native.Windows.DispatchMessage (ref Message);
-                }   
+                }
+                
+                System.Sound.__Update();
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при обновлении WoowzLib!", e);
             }

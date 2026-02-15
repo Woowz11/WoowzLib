@@ -288,7 +288,7 @@ public static class Generator{
 
                 const string V_0 = "0";
                 string       V25 = ColorType is ColorType.Byte or ColorType.Int ? "63"  : ("0.25" + (ColorType is ColorType.Float ? "f" : ""));
-                string       V05 = ColorType is ColorType.Byte or ColorType.Int ? "127" : ("0.5"  + (ColorType is ColorType.Float ? "f" : ""));
+                string       V05 = ColorType is ColorType.Byte or ColorType.Int ? "128" : ("0.5"  + (ColorType is ColorType.Float ? "f" : ""));
                 string       V75 = ColorType is ColorType.Byte or ColorType.Int ? "191" : ("0.75" + (ColorType is ColorType.Float ? "f" : ""));
                 string       V_1 = ColorType is ColorType.Byte or ColorType.Int ? "255" : "1";
 
@@ -417,7 +417,7 @@ public static class Generator{
                                     
                                     public static {{Name}} operator -({{Name}} A, {{Name}} B) => new {{Name}}({{WL.System.Condition(ColorType == ColorType.Byte, WL.String.Join("WL.Math.SubB(A.$0, B.$0), ", "WL.Math.SubB(A.$0, B.$0)", ComponentsWithoutAlpha), WL.String.Join("A.$0 - B.$0, ", "A.$0 - B.$0", ComponentsWithoutAlpha))}}, A.A);
                                     
-                                    public static {{Name}} operator *({{Name}} A, {{Name}} B) => new {{Name}}({{WL.System.Condition(ColorType == ColorType.Byte, WL.String.Join("WL.Math.MulB(A.$0, B.$0), ", "WL.Math.MulB(A.$0, B.$0)", ComponentsWithoutAlpha), WL.String.Join("A.$0 * B.$0, ", "A.$0 * B.$0", ComponentsWithoutAlpha))}}, A.A);
+                                    public static {{Name}} operator *({{Name}} A, {{Name}} B) => new {{Name}}({{WL.System.Condition(ColorType == ColorType.Byte, WL.String.Join("WL.Math.MulB(A.$0, B.$0), ", "WL.Math.MulB(A.$0, B.$0)", Components), WL.String.Join("A.$0 * B.$0, ", "A.$0 * B.$0", Components))}});
                                     
                                     public static {{Name}} operator *({{Name}} A, {{Type}} B) => new {{Name}}({{WL.System.Condition(ColorType == ColorType.Byte, WL.String.Join("WL.Math.MulB(A.$0, B), ", "WL.Math.MulB(A.$0, B)", ComponentsWithoutAlpha), WL.String.Join("A.$0 * B, ", "A.$0 * B", ComponentsWithoutAlpha))}}, A.A);
                                 

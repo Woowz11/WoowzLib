@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 12.02.2026 19:38
+/// Сгенерирован: 14.02.2026 3:55
 /// </summary>
 public struct MassiveUL : ArrayByteObject{
 	// надо добавить sha256...

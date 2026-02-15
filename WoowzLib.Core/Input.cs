@@ -4,7 +4,7 @@ namespace WL{
     /// <summary>
     /// Управление с вводом
     /// </summary>
-    [WLModule(int.MinValue + 4, 11)]
+    [WLModule(int.MinValue + 4, 12)]
     public static class Input{
         public static class Mouse{
             /// <summary>
@@ -14,7 +14,7 @@ namespace WL{
                 get{
                     try{
                         if(!System.Native.Windows.GetCursorPos(out System.Native.Windows.POINT P)){
-                            System.Native.Windows.ThrowWin32Error("Получение позиции мыши");
+                            System.Native.Windows.ThrowWin32Error("Получение глобальной позиции мыши");
                         }
 
                         return new Vector2I(P);
@@ -25,7 +25,7 @@ namespace WL{
                 set{
                     try{
                         if(!System.Native.Windows.SetCursorPos(value.X, value.Y)){
-                            System.Native.Windows.ThrowWin32Error("Установка позиции мыши");
+                            System.Native.Windows.ThrowWin32Error("Установка глобальной позиции мыши");
                         }
                     }catch(Exception e){
                         throw new Exception("Произошла ошибка при установке позиции мыши!\nПозиция: " + value, e);

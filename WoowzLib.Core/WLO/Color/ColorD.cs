@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 12.02.2026 19:38
+/// Сгенерирован: 14.02.2026 3:55
 /// </summary>
 public struct ColorD{
 	public static readonly Type Type = typeof(double);
@@ -160,7 +160,7 @@ public struct ColorD{
 		
 		public static ColorD operator -(ColorD A, ColorD B) => new ColorD(A.R - B.R, A.G - B.G, A.B - B.B, A.A);
 		
-		public static ColorD operator *(ColorD A, ColorD B) => new ColorD(A.R * B.R, A.G * B.G, A.B * B.B, A.A);
+		public static ColorD operator *(ColorD A, ColorD B) => new ColorD(A.R * B.R, A.G * B.G, A.B * B.B, A.A * B.A);
 		
 		public static ColorD operator *(ColorD A, double B) => new ColorD(A.R * B, A.G * B, A.B * B, A.A);
 	

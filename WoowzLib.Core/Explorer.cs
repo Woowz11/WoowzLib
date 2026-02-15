@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 
 namespace WL{
-    [WLModule(int.MinValue + 5, 13)]
+    [WLModule(int.MinValue + 5, 14)]
     public static class Explorer{
         /// <summary>
         /// Для работы с файлами

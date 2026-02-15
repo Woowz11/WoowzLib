@@ -134,7 +134,10 @@ public class Window{
             try{
                 if(ShouldDestroy){ DestroyNow(); return; }
 
-                if(!WL.System.Native.Windows.GetCursorPos(out WL.System.Native.Windows.POINT P)){ WL.System.Native.Windows.ThrowWin32Error("Получение позиции мыши"); }
+                bool HasMousePosition = true;
+                if(!WL.System.Native.Windows.GetCursorPos(out WL.System.Native.Windows.POINT P)){
+                    WL.System.Native.Windows.ThrowWin32Error("Получение позиции мыши");
+                }
                 Vector2I MousePosition = new Vector2I(P);
                 this.MousePosition = ToClient(MousePosition);
 

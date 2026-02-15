@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 12.02.2026 19:38
+/// Сгенерирован: 14.02.2026 3:55
 /// </summary>
 public struct ColorI{
 	public static readonly Type Type = typeof(int);
@@ -32,63 +32,63 @@ public struct ColorI{
 	public static ColorI LightRed => new ColorI().ToLightRed();
 	public ColorI ToRed() => Set(255, 0, 0, 255);
 	public static ColorI Red => new ColorI().ToRed();
-	public ColorI ToDarkRed() => Set(127, 0, 0, 255);
+	public ColorI ToDarkRed() => Set(128, 0, 0, 255);
 	public static ColorI DarkRed => new ColorI().ToDarkRed();
 	public ColorI ToLightOrange() => Set(255, 191, 63, 255);
 	public static ColorI LightOrange => new ColorI().ToLightOrange();
-	public ColorI ToOrange() => Set(255, 127, 0, 255);
+	public ColorI ToOrange() => Set(255, 128, 0, 255);
 	public static ColorI Orange => new ColorI().ToOrange();
-	public ColorI ToDarkOrange() => Set(127, 63, 0, 255);
+	public ColorI ToDarkOrange() => Set(128, 63, 0, 255);
 	public static ColorI DarkOrange => new ColorI().ToDarkOrange();
-	public ColorI ToBrown() => Set(127, 63, 0, 255);
+	public ColorI ToBrown() => Set(128, 63, 0, 255);
 	public static ColorI Brown => new ColorI().ToBrown();
 	public ColorI ToLightYellow() => Set(255, 255, 63, 255);
 	public static ColorI LightYellow => new ColorI().ToLightYellow();
 	public ColorI ToYellow() => Set(255, 255, 0, 255);
 	public static ColorI Yellow => new ColorI().ToYellow();
-	public ColorI ToDarkYellow() => Set(127, 127, 0, 255);
+	public ColorI ToDarkYellow() => Set(128, 128, 0, 255);
 	public static ColorI DarkYellow => new ColorI().ToDarkYellow();
 	public ColorI ToLightGreen() => Set(63, 255, 63, 255);
 	public static ColorI LightGreen => new ColorI().ToLightGreen();
 	public ColorI ToGreen() => Set(0, 255, 0, 255);
 	public static ColorI Green => new ColorI().ToGreen();
-	public ColorI ToDarkGreen() => Set(0, 127, 0, 255);
+	public ColorI ToDarkGreen() => Set(0, 128, 0, 255);
 	public static ColorI DarkGreen => new ColorI().ToDarkGreen();
 	public ColorI ToLightAqua() => Set(63, 255, 255, 255);
 	public static ColorI LightAqua => new ColorI().ToLightAqua();
 	public ColorI ToAqua() => Set(0, 255, 255, 255);
 	public static ColorI Aqua => new ColorI().ToAqua();
-	public ColorI ToDarkAqua() => Set(0, 127, 127, 255);
+	public ColorI ToDarkAqua() => Set(0, 128, 128, 255);
 	public static ColorI DarkAqua => new ColorI().ToDarkAqua();
 	public ColorI ToLightBlue() => Set(63, 63, 255, 255);
 	public static ColorI LightBlue => new ColorI().ToLightBlue();
 	public ColorI ToBlue() => Set(0, 0, 255, 255);
 	public static ColorI Blue => new ColorI().ToBlue();
-	public ColorI ToDarkBlue() => Set(0, 0, 127, 255);
+	public ColorI ToDarkBlue() => Set(0, 0, 128, 255);
 	public static ColorI DarkBlue => new ColorI().ToDarkBlue();
 	public ColorI ToLightPurple() => Set(191, 63, 255, 255);
 	public static ColorI LightPurple => new ColorI().ToLightPurple();
-	public ColorI ToPurple() => Set(127, 0, 255, 255);
+	public ColorI ToPurple() => Set(128, 0, 255, 255);
 	public static ColorI Purple => new ColorI().ToPurple();
-	public ColorI ToDarkPurple() => Set(63, 0, 127, 255);
+	public ColorI ToDarkPurple() => Set(63, 0, 128, 255);
 	public static ColorI DarkPurple => new ColorI().ToDarkPurple();
 	public ColorI ToLightMagenta() => Set(255, 63, 255, 255);
 	public static ColorI LightMagenta => new ColorI().ToLightMagenta();
 	public ColorI ToMagenta() => Set(255, 0, 255, 255);
 	public static ColorI Magenta => new ColorI().ToMagenta();
-	public ColorI ToDarkMagenta() => Set(127, 0, 127, 255);
+	public ColorI ToDarkMagenta() => Set(128, 0, 128, 255);
 	public static ColorI DarkMagenta => new ColorI().ToDarkMagenta();
 	public ColorI ToLightPink() => Set(255, 191, 255, 255);
 	public static ColorI LightPink => new ColorI().ToLightPink();
-	public ColorI ToPink() => Set(255, 127, 255, 255);
+	public ColorI ToPink() => Set(255, 128, 255, 255);
 	public static ColorI Pink => new ColorI().ToPink();
-	public ColorI ToDarkPink() => Set(127, 63, 127, 255);
+	public ColorI ToDarkPink() => Set(128, 63, 128, 255);
 	public static ColorI DarkPink => new ColorI().ToDarkPink();
 	public ColorI ToWhite() => Set(255, 255, 255, 255);
 	public static ColorI White => new ColorI().ToWhite();
 	public ColorI ToLightGray() => Set(191, 191, 191, 255);
 	public static ColorI LightGray => new ColorI().ToLightGray();
-	public ColorI ToGray() => Set(127, 127, 127, 255);
+	public ColorI ToGray() => Set(128, 128, 128, 255);
 	public static ColorI Gray => new ColorI().ToGray();
 	public ColorI ToDarkGray() => Set(63, 63, 63, 255);
 	public static ColorI DarkGray => new ColorI().ToDarkGray();
@@ -98,7 +98,7 @@ public struct ColorI{
 	public static ColorI Transparent => new ColorI().ToTransparent();
 	public ColorI ToOne() => Set(255, 255, 255, 255);
 	public static ColorI One => new ColorI().ToOne();
-	public ColorI ToHalf() => Set(127, 127, 127, 127);
+	public ColorI ToHalf() => Set(128, 128, 128, 128);
 	public static ColorI Half => new ColorI().ToHalf();
 	public ColorI ToZero() => Set(0, 0, 0, 0);
 	public static ColorI Zero => new ColorI().ToZero();
@@ -160,7 +160,7 @@ public struct ColorI{
 		
 		public static ColorI operator -(ColorI A, ColorI B) => new ColorI(A.R - B.R, A.G - B.G, A.B - B.B, A.A);
 		
-		public static ColorI operator *(ColorI A, ColorI B) => new ColorI(A.R * B.R, A.G * B.G, A.B * B.B, A.A);
+		public static ColorI operator *(ColorI A, ColorI B) => new ColorI(A.R * B.R, A.G * B.G, A.B * B.B, A.A * B.A);
 		
 		public static ColorI operator *(ColorI A, int B) => new ColorI(A.R * B, A.G * B, A.B * B, A.A);
 	

@@ -1,6 +1,6 @@
 ﻿namespace WL;
 
-[WLModule(-100, 35)]
+[WLModule(-100, 36)]
 public class Window{
     static Window(){
         WL.WoowzLib.OnUpdate += () => {

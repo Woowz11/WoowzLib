@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 12.02.2026 19:38
+/// Сгенерирован: 14.02.2026 3:55
 /// </summary>
 public struct ColorF{
 	public static readonly Type Type = typeof(float);
@@ -160,7 +160,7 @@ public struct ColorF{
 		
 		public static ColorF operator -(ColorF A, ColorF B) => new ColorF(A.R - B.R, A.G - B.G, A.B - B.B, A.A);
 		
-		public static ColorF operator *(ColorF A, ColorF B) => new ColorF(A.R * B.R, A.G * B.G, A.B * B.B, A.A);
+		public static ColorF operator *(ColorF A, ColorF B) => new ColorF(A.R * B.R, A.G * B.G, A.B * B.B, A.A * B.A);
 		
 		public static ColorF operator *(ColorF A, float B) => new ColorF(A.R * B, A.G * B, A.B * B, A.A);
 	

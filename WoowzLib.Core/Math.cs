@@ -8,7 +8,7 @@ namespace WL{
     /// <summary>
     /// Математические функции и т.д
     /// </summary>
-    [WLModule(int.MinValue + 1, 30)]
+    [WLModule(int.MinValue + 1, 31)]
     public static class Math{
         /// <summary>
         /// Ноль
@@ -305,7 +305,7 @@ namespace WL{
         /// Умножает число B на число A (A * B)
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static byte MulB(byte A, byte B) => (byte)ClampByteI(A * B);
+        public static byte MulB(byte A, byte B) => (byte)ClampByteI((A * B) / 255);
 
         /// <summary>
         /// Умножает число B на число A (A * B) (Но очень точно! т.е: 0.1f * 0.1f = 0.01f, а не 0,010000001f)
@@ -322,7 +322,7 @@ namespace WL{
         /// Делит число B на число A (A / B)
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static byte DivB(byte A, byte B) => (byte)ClampByteI(A / B);
+        public static byte DivB(byte A, byte B) => (byte)ClampByteI((A / B) * 255);
 
         /// <summary>
         /// Возводит в степень число V на Exponent
@@ -679,7 +679,7 @@ namespace WL{
             /// Очень быстрое случайное число от 0 до 1 (Подходит для рендера, легко предугадать)
             /// </summary>
             /// <param name="Seed">Сид [<c>123456789</c>]</param>
-            public static float Fast_0_1(uint Seed){
+            public static float Fast_0_1(ref uint Seed){
                 Seed ^= Seed << 13; 
                 Seed ^= Seed >> 17;
                 Seed ^= Seed << 5 ;
@@ -699,6 +699,19 @@ namespace WL{
             }
             
             /// <summary>
+            /// Очень быстрое случайное целое число от Min до Max (Подходит для рендера, легко предугадать)
+            /// </summary>
+            /// <param name="Seed">Сид [<c>123456789</c>]</param>
+            public static int Fast_Int(int Min, int Max, ref uint Seed){
+                if(Min > Max){ (Min, Max) = (Max, Min); }
+
+                Seed ^= Seed << 13;
+                Seed ^= Seed >> 17;
+                Seed ^= Seed << 5 ;
+                return Min + (((int)(Seed & 0x7FFFFFFF)) % (Max - Min + 1));
+            }
+            
+            /// <summary>
             /// Очень быстрый случайный байт от 0 до 255 (Подходит для рендера, легко предугадать)
             /// </summary>
             public static byte Fast_Byte(){
@@ -708,17 +721,42 @@ namespace WL{
 
                 return (byte)(Fast_Seed & 0xFF);
             }
+            
+            /// <summary>
+            /// Очень быстрый случайный байт от 0 до 255 (Подходит для рендера, легко предугадать)
+            /// </summary>
+            /// <param name="Seed">Сид [<c>123456789</c>]</param>
+            public static byte Fast_Byte(ref uint Seed){
+                Seed ^= Seed << 13;
+                Seed ^= Seed >> 17;
+                Seed ^= Seed << 5;
+
+                return (byte)(Seed & 0xFF);
+            }
 
             /// <summary>
             /// Очень быстро возвращает случайно true или false 50/50 (Подходит для рендера, легко предугадать)
             /// </summary>
             public static bool Fast_Bool(){ return Fast_Byte() > 127; }
+            
+            /// <summary>
+            /// Очень быстро возвращает случайно true или false 50/50 (Подходит для рендера, легко предугадать)
+            /// </summary>
+            /// <param name="Seed">Сид [<c>123456789</c>]</param>
+            public static bool Fast_Bool(ref uint Seed){ return Fast_Byte(ref Seed) > 127; }
 
             /// <summary>
             /// Очень быстро возвращает случайно true или false (Подходит для рендера, легко предугадать)
             /// </summary>
             /// <param name="TrueChance">Шанс на true (0.5 = шанс 50/50)</param>
             public static bool Fast_Bool(float TrueChance){ return Fast_0_1() < TrueChance; }
+            
+            /// <summary>
+            /// Очень быстро возвращает случайно true или false (Подходит для рендера, легко предугадать)
+            /// </summary>
+            /// <param name="TrueChance">Шанс на true (0.5 = шанс 50/50)</param>
+            /// <param name="Seed">Сид [<c>123456789</c>]</param>
+            public static bool Fast_Bool(float TrueChance, ref uint Seed){ return Fast_0_1(ref Seed) < TrueChance; }
         }
         
         /// <summary>

@@ -6,7 +6,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 3, 38)]
+    [WLModule(int.MinValue + 3, 39)]
     public class System{
         /// <summary>
         /// Обозначение для null в виде строки
@@ -38,9 +38,10 @@ namespace WL{
             using Process       Process       = Process.GetCurrentProcess();
             using ProcessModule CurrentModule = Process.MainModule!;
             
-            
             __HookID_Keyboard = Native.Windows.SetWindowsHookEx(Native.Windows.WH_KEYBOARD_LL, __HookProc_Keyboard, Native.Windows.GetModuleHandle(CurrentModule.ModuleName), 0);
             if(__HookID_Keyboard == IntPtr.Zero){ Native.Windows.ThrowWin32Error("Создание Hook Keyboard"); }
+            
+            Sound.__Start();
         }
 
         /// <summary>
@@ -48,6 +49,8 @@ namespace WL{
         /// </summary>
         public static void __DisconnectWoowzLib(){
             if(__HookID_Keyboard != IntPtr.Zero){ Native.Windows.UnhookWindowsHookEx(__HookID_Keyboard); __HookID_Keyboard = IntPtr.Zero; }
+            
+            Sound.__Stop();
         }
 
         private static IntPtr __EventsKeyboard(int NCode, IntPtr WParam, IntPtr LParam){
@@ -457,6 +460,248 @@ namespace WL{
                 Native.Windows.RestoreDC(HDC, ClipResult);
             }
         }
+
+        public static class Sound{
+            private const int SampleRate = 22050;
+            private static IntPtr __WaveOut;
+            private static Native.Windows.WAVEHDR __Header;
+            private static GCHandle __BufferHandle;
+            private static byte[] __CurrentBuffer;
+
+            private static bool __Initialized = false;
+
+            public static void __Start(){
+                if(__Initialized){ return; }
+
+                Native.Windows.WAVEFORMATEX Format = new Native.Windows.WAVEFORMATEX{
+                    wFormatTag = 1, // PCM
+                    nChannels = 1,
+                    nSamplesPerSec = SampleRate,
+                    wBitsPerSample = 8,
+                    nBlockAlign = 1,
+                    nAvgBytesPerSec = SampleRate,
+                    cbSize = 0
+                };
+                
+                Native.Windows.waveOutOpen(
+                    out __WaveOut,
+                    -1,
+                    ref Format,
+                    (_, _, _, _, _) => {},
+                    IntPtr.Zero,
+                    0
+                );
+
+                __Initialized = true;
+            }
+
+            public static void __Update(){
+                if(!__BufferHandle.IsAllocated) return;
+
+                if((__Header.dwFlags & 0x00000001) != 0){
+                    Native.Windows.waveOutUnprepareHeader(__WaveOut, ref __Header, (uint)Marshal.SizeOf<Native.Windows.WAVEHDR>());
+                    __BufferHandle.Free();
+                }
+            }
+
+            public static void __Stop(){
+                if(__BufferHandle.IsAllocated){
+                    Native.Windows.waveOutUnprepareHeader(__WaveOut, ref __Header, (uint)Marshal.SizeOf<Native.Windows.WAVEHDR>());
+                    __BufferHandle.Free();
+                }
+
+                if(__Initialized){
+                    Native.Windows.waveOutClose(__WaveOut);
+                    __Initialized = false;
+                }
+            }
+
+            /// <summary>
+            /// Воспроизвести звук (Не блокирует поток)
+            /// </summary>
+            public static void Play(byte[] SoundBuffer){
+                if(!__Initialized) __Start();
+
+                // Если предыдущий буфер висит — отменяем
+                if(__BufferHandle.IsAllocated){
+                    Native.Windows.waveOutUnprepareHeader(__WaveOut, ref __Header, (uint)Marshal.SizeOf<Native.Windows.WAVEHDR>());
+                    __BufferHandle.Free();
+                }
+
+                __CurrentBuffer = SoundBuffer;
+                __BufferHandle = GCHandle.Alloc(__CurrentBuffer, GCHandleType.Pinned);
+
+                __Header = new Native.Windows.WAVEHDR{
+                    lpData = __BufferHandle.AddrOfPinnedObject(),
+                    dwBufferLength = (uint)SoundBuffer.Length,
+                    dwFlags = 0,
+                    dwLoops = 0
+                };
+
+                Native.Windows.waveOutPrepareHeader(__WaveOut, ref __Header, (uint)Marshal.SizeOf<Native.Windows.WAVEHDR>());
+                Native.Windows.waveOutWrite(__WaveOut, ref __Header, (uint)Marshal.SizeOf<Native.Windows.WAVEHDR>());
+            }
+            
+            public static class Generator{
+                // ======= Базовые генераторы =======
+                public static byte[] Sine(float frequency, float duration, float volume = 1f)
+                {
+                    int samples = (int)(SampleRate * duration);
+                    byte[] buffer = new byte[samples];
+                    for (int i = 0; i < samples; i++)
+                    {
+                        float t = i / (float)SampleRate;
+                        float value = (float)Math.Sin(2 * Math.PI * frequency * t) * volume;
+                        buffer[i] = (byte)(127 + 127 * value);
+                    }
+                    return buffer;
+                }
+
+                public static byte[] Square(float frequency, float duration, float volume = 1f)
+                {
+                    int samples = (int)(SampleRate * duration);
+                    byte[] buffer = new byte[samples];
+                    for (int i = 0; i < samples; i++)
+                    {
+                        float t = i / (float)SampleRate;
+                        float value = Math.Sin(2 * Math.PI * frequency * t) >= 0 ? volume : -volume;
+                        buffer[i] = (byte)(127 + 127 * value);
+                    }
+                    return buffer;
+                }
+
+                public static byte[] Saw(float frequency, float duration, float volume = 1f)
+                {
+                    int samples = (int)(SampleRate * duration);
+                    byte[] buffer = new byte[samples];
+                    for (int i = 0; i < samples; i++)
+                    {
+                        float t = i / (float)SampleRate;
+                        float value = (2f * (t * frequency - Math.Floor(t * frequency + 0.5f))) * volume;
+                        buffer[i] = (byte)(127 + 127 * value);
+                    }
+                    return buffer;
+                }
+
+                public static byte[] Triangle(float frequency, float duration, float volume = 1f)
+                {
+                    int samples = (int)(SampleRate * duration);
+                    byte[] buffer = new byte[samples];
+                    for (int i = 0; i < samples; i++)
+                    {
+                        float t = i / (float)SampleRate;
+                        float value = (float)(float.Asin(Math.Sin(2 * Math.PI * frequency * t)) * 2 / Math.PI) * volume;
+                        buffer[i] = (byte)(127 + 127 * value);
+                    }
+                    return buffer;
+                }
+
+                public static byte[] Noise(float duration, float volume = 1f)
+                {
+                    int samples = (int)(SampleRate * duration);
+                    byte[] buffer = new byte[samples];
+                    for (int i = 0; i < samples; i++)
+                    {
+                        float value = (float)(WL.Math.Random.Fast_0_1() * 2 - 1) * volume;
+                        buffer[i] = (byte)(127 + 127 * value);
+                    }
+                    return buffer;
+                }
+
+                // ======= Модификаторы =======
+                public static byte[] ChangeVolume(byte[] input, float volume)
+                {
+                    byte[] output = new byte[input.Length];
+                    for (int i = 0; i < input.Length; i++)
+                    {
+                        float v = (input[i] - 127) / 127f * volume;
+                        output[i] = (byte)(127 + Math.Clamp(v * 127f, -127f, 127f));
+                    }
+                    return output;
+                }
+
+                public static byte[] ChangePitch(byte[] input, float semitones)
+                {
+                    double factor = Math.Pow(2, semitones / 12f);
+                    int newLength = (int)(input.Length / factor);
+                    byte[] output = new byte[newLength];
+                    for (int i = 0; i < newLength; i++)
+                    {
+                        int src = (int)(i * factor);
+                        if (src >= input.Length) src = input.Length - 1;
+                        output[i] = input[src];
+                    }
+                    return output;
+                }
+
+                public static byte[] ChangeSpeed(byte[] input, float speed)
+                {
+                    int newLength = (int)(input.Length / speed);
+                    byte[] output = new byte[newLength];
+                    for (int i = 0; i < newLength; i++)
+                    {
+                        int src = (int)(i * speed);
+                        if (src >= input.Length) src = input.Length - 1;
+                        output[i] = input[src];
+                    }
+                    return output;
+                }
+
+                public static byte[] FadeIn(byte[] input, float seconds)
+                {
+                    int fadeSamples = (int)(seconds * SampleRate);
+                    byte[] output = (byte[])input.Clone();
+                    for (int i = 0; i < Math.Min(fadeSamples, input.Length); i++)
+                    {
+                        float factor = i / (float)fadeSamples;
+                        float v = (input[i] - 127) / 127f * factor;
+                        output[i] = (byte)(127 + Math.Clamp(v * 127f, -127f, 127f));
+                    }
+                    return output;
+                }
+
+                public static byte[] FadeOut(byte[] input, float seconds)
+                {
+                    int fadeSamples = (int)(seconds * SampleRate);
+                    byte[] output = (byte[])input.Clone();
+                    for (int i = 0; i < Math.Min(fadeSamples, input.Length); i++)
+                    {
+                        int idx = input.Length - 1 - i;
+                        float factor = i / (float)fadeSamples;
+                        float v = (input[idx] - 127) / 127f * (1 - factor);
+                        output[idx] = (byte)(127 + Math.Clamp(v * 127f, -127f, 127f));
+                    }
+                    return output;
+                }
+
+                // ======= Смешивание звуков =======
+                public static byte[] Mix(params byte[][] buffers)
+                {
+                    int length = 0;
+                    foreach (var buf in buffers)
+                        if (buf.Length > length) length = buf.Length;
+
+                    byte[] output = new byte[length];
+                    for (int i = 0; i < length; i++)
+                    {
+                        float sum = 0;
+                        int count = 0;
+                        foreach (var buf in buffers)
+                        {
+                            if (i < buf.Length)
+                            {
+                                sum += (buf[i] - 127) / 127f;
+                                count++;
+                            }
+                        }
+                        float avg = count > 0 ? sum / count : 0;
+                        avg = Math.Clamp(avg, -1f, 1f);
+                        output[i] = (byte)(127 + avg * 127f);
+                    }
+                    return output;
+                }
+            }
+        }
         
         public static class Native{
             /// <summary>
@@ -684,6 +929,7 @@ namespace WL{
                 private const string DLL_User   = "user32.dll";
                 private const string DLL_GDI    = "gdi32.dll";
                 private const string DLL_MSimg  = "msimg32.dll";
+                private const string DLL_WinMM  = "winmm.dll";
                 
                 [DllImport(DLL_Kernel)]
                 public static extern IntPtr GetConsoleWindow();
@@ -709,6 +955,40 @@ namespace WL{
                 [DllImport(DLL_User)]
                 public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
+                [DllImport(DLL_WinMM)]
+                public static extern int waveOutOpen(
+                    out IntPtr hWaveOut,
+                    int uDeviceID,
+                    ref WAVEFORMATEX lpFormat,
+                    WaveOutDelegate dwCallback,
+                    IntPtr dwInstance,
+                    uint dwFlags
+                );
+
+                [DllImport(DLL_WinMM)]
+                public static extern int waveOutPrepareHeader(
+                    IntPtr hWaveOut,
+                    ref WAVEHDR lpWaveOutHdr,
+                    uint uSize
+                );
+
+                [DllImport(DLL_WinMM)]
+                public static extern int waveOutWrite(
+                    IntPtr hWaveOut,
+                    ref WAVEHDR lpWaveOutHdr,
+                    uint uSize
+                );
+
+                [DllImport(DLL_WinMM)]
+                public static extern int waveOutUnprepareHeader(
+                    IntPtr hWaveOut,
+                    ref WAVEHDR lpWaveOutHdr,
+                    uint uSize
+                );
+
+                [DllImport(DLL_WinMM)]
+                public static extern int waveOutClose(IntPtr hWaveOut);
+                
                 [DllImport(DLL_GDI)]
                 public static extern bool SetViewportOrgEx(
                     IntPtr hdc,
@@ -1091,6 +1371,37 @@ namespace WL{
                 public static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
                 
                 [StructLayout(LayoutKind.Sequential)]
+                public struct WAVEFORMATEX{
+                    public ushort wFormatTag;
+                    public ushort nChannels;
+                    public uint   nSamplesPerSec;
+                    public uint   nAvgBytesPerSec;
+                    public ushort nBlockAlign;
+                    public ushort wBitsPerSample;
+                    public ushort cbSize;
+                }
+
+                [StructLayout(LayoutKind.Sequential)]
+                public struct WAVEHDR{
+                    public IntPtr lpData;
+                    public uint   dwBufferLength;
+                    public uint   dwBytesRecorded;
+                    public IntPtr dwUser;
+                    public uint   dwFlags;
+                    public uint   dwLoops;
+                    public IntPtr lpNext;
+                    public IntPtr reserved;
+                }
+                
+                public delegate void WaveOutDelegate(
+                    IntPtr hWaveOut,
+                    uint uMsg,
+                    IntPtr dwInstance,
+                    IntPtr dwParam1,
+                    IntPtr dwParam2
+                );
+                
+                [StructLayout(LayoutKind.Sequential)]
                 public struct BITMAPINFOHEADER{
                     public uint   biSize;
                     public int    biWidth;
@@ -1268,6 +1579,8 @@ namespace WL{
                 public const byte AC_SRC_OVER         = 0;
                 public const byte AC_SRC_ALPHA        = 1;
                 public const int  WH_KEYBOARD_LL      = 13;
+                public const int  CALLBACK_FUNCTION   = 0x00030000;
+                public const int  WOM_DONE            = 0x3BD;
             }
         }
     }
