@@ -309,18 +309,13 @@ namespace WLO{
                     case ImageBlend.Alpha:{
                         if(Color.A == 0){ return this; }
 
-                        byte DstR = Image.Pixels_RGBA[IDX__ + 0];
-                        byte DstG = Image.Pixels_RGBA[IDX__ + 1];
-                        byte DstB = Image.Pixels_RGBA[IDX__ + 2];
-                        byte DstA = Image.Pixels_RGBA[IDX__ + 3];
-
-                        float A  = Color.A / 255f;
-                        float IA = 1 - A;
+                        ColorB Dst = new ColorB(Image.Pixels_RGBA[IDX__ + 0], Image.Pixels_RGBA[IDX__ + 1], Image.Pixels_RGBA[IDX__ + 2], Image.Pixels_RGBA[IDX__ + 3]);
+                        ColorB Result = ColorB.BlendAlpha(Dst, Color);
                         
-                        Image.Pixels_RGBA[IDX__ + 0] = (byte)(Color.R * A + DstR * IA);
-                        Image.Pixels_RGBA[IDX__ + 1] = (byte)(Color.G * A + DstG * IA);
-                        Image.Pixels_RGBA[IDX__ + 2] = (byte)(Color.B * A + DstB * IA);
-                        Image.Pixels_RGBA[IDX__ + 3] = (byte)(WL.Math.Min(255, Color.A + DstA));
+                        Image.Pixels_RGBA[IDX__ + 0] = Result.R;
+                        Image.Pixels_RGBA[IDX__ + 1] = Result.G;
+                        Image.Pixels_RGBA[IDX__ + 2] = Result.B;
+                        Image.Pixels_RGBA[IDX__ + 3] = Result.A;
                         break;    
                     }
                 }

@@ -8,7 +8,7 @@ namespace WL{
     /// <summary>
     /// Математические функции и т.д
     /// </summary>
-    [WLModule(int.MinValue + 1, 31)]
+    [WLModule(int.MinValue + 1, 32)]
     public static class Math{
         /// <summary>
         /// Ноль
@@ -240,6 +240,11 @@ namespace WL{
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Abs(float V) => float.Abs(V);
+        /// <summary>
+        /// Убирает отрицание
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int AbsI(int V) => int.Abs(V);
         /// <summary>
         /// Убирает отрицание
         /// </summary>

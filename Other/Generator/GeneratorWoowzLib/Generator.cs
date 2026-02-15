@@ -396,6 +396,24 @@ public static class Generator{
                                         ({{Type}})(B * {{V_1}})
                                     );
                                 }
+                                
+                                public static {{Name}} BlendAlpha({{Name}} A, {{Name}} B){
+                                    {{Type}} AA = A.A;
+                                    {{Type}} BA = B.A;
+                                    
+                                    if(BA == {{V_0}}){ return A; }
+                                    if(BA == {{V_1}}){ return B; }
+                                    
+                                    {{Type}} IBA = ({{Type}})({{V_1}} - BA);
+                                    
+                                    {{Type}} OA = ({{Type}})(BA + (AA * IBA + {{V05}}) / {{V_1}});
+                                    
+                                    {{Type}} OR = ({{Type}})((B.R * BA + A.R * AA * IBA / {{V_1}} + {{V05}}) / {{V_1}});
+                                    {{Type}} OG = ({{Type}})((B.G * BA + A.G * AA * IBA / {{V_1}} + {{V05}}) / {{V_1}});
+                                    {{Type}} OB = ({{Type}})((B.B * BA + A.B * AA * IBA / {{V_1}} + {{V05}}) / {{V_1}});
+                                    
+                                    return new {{Name}}(OR, OG, OB, OA);
+                                }
                             
                                 #region Override
                             

@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 14.02.2026 3:55
+/// Сгенерирован: 15.02.2026 21:43
 /// </summary>
 public struct ColorF{
 	public static readonly Type Type = typeof(float);
@@ -138,6 +138,24 @@ public struct ColorF{
 			(float)(G * 1),
 			(float)(B * 1)
 		);
+	}
+	
+	public static ColorF BlendAlpha(ColorF A, ColorF B){
+		float AA = A.A;
+		float BA = B.A;
+		
+		if(BA == 0){ return A; }
+		if(BA == 1){ return B; }
+		
+		float IBA = (float)(1 - BA);
+		
+		float OA = (float)(BA + (AA * IBA + 0.5f) / 1);
+		
+		float OR = (float)((B.R * BA + A.R * AA * IBA / 1 + 0.5f) / 1);
+		float OG = (float)((B.G * BA + A.G * AA * IBA / 1 + 0.5f) / 1);
+		float OB = (float)((B.B * BA + A.B * AA * IBA / 1 + 0.5f) / 1);
+		
+		return new ColorF(OR, OG, OB, OA);
 	}
 
 	#region Override

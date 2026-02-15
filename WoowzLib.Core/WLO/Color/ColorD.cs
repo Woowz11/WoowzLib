@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 14.02.2026 3:55
+/// Сгенерирован: 15.02.2026 21:43
 /// </summary>
 public struct ColorD{
 	public static readonly Type Type = typeof(double);
@@ -138,6 +138,24 @@ public struct ColorD{
 			(double)(G * 1),
 			(double)(B * 1)
 		);
+	}
+	
+	public static ColorD BlendAlpha(ColorD A, ColorD B){
+		double AA = A.A;
+		double BA = B.A;
+		
+		if(BA == 0){ return A; }
+		if(BA == 1){ return B; }
+		
+		double IBA = (double)(1 - BA);
+		
+		double OA = (double)(BA + (AA * IBA + 0.5) / 1);
+		
+		double OR = (double)((B.R * BA + A.R * AA * IBA / 1 + 0.5) / 1);
+		double OG = (double)((B.G * BA + A.G * AA * IBA / 1 + 0.5) / 1);
+		double OB = (double)((B.B * BA + A.B * AA * IBA / 1 + 0.5) / 1);
+		
+		return new ColorD(OR, OG, OB, OA);
 	}
 
 	#region Override

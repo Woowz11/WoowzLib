@@ -6,7 +6,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 3, 39)]
+    [WLModule(int.MinValue + 3, 40)]
     public class System{
         /// <summary>
         /// Обозначение для null в виде строки

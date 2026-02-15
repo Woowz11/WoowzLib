@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 14.02.2026 3:55
+/// Сгенерирован: 15.02.2026 21:43
 /// </summary>
 public struct ColorI{
 	public static readonly Type Type = typeof(int);
@@ -138,6 +138,24 @@ public struct ColorI{
 			(int)(G * 255),
 			(int)(B * 255)
 		);
+	}
+	
+	public static ColorI BlendAlpha(ColorI A, ColorI B){
+		int AA = A.A;
+		int BA = B.A;
+		
+		if(BA == 0){ return A; }
+		if(BA == 255){ return B; }
+		
+		int IBA = (int)(255 - BA);
+		
+		int OA = (int)(BA + (AA * IBA + 128) / 255);
+		
+		int OR = (int)((B.R * BA + A.R * AA * IBA / 255 + 128) / 255);
+		int OG = (int)((B.G * BA + A.G * AA * IBA / 255 + 128) / 255);
+		int OB = (int)((B.B * BA + A.B * AA * IBA / 255 + 128) / 255);
+		
+		return new ColorI(OR, OG, OB, OA);
 	}
 
 	#region Override

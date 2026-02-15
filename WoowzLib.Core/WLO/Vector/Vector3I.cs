@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 14.02.2026 3:55
+/// Сгенерирован: 15.02.2026 21:43
 /// </summary>
 public struct Vector3I : IEquatable<Vector3I>{
 	public static readonly int  Numbers = 3;

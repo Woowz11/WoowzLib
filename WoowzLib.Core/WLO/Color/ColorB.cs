@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 14.02.2026 3:55
+/// Сгенерирован: 15.02.2026 21:43
 /// </summary>
 public struct ColorB{
 	public static readonly Type Type = typeof(byte);
@@ -138,6 +138,24 @@ public struct ColorB{
 			(byte)(G * 255),
 			(byte)(B * 255)
 		);
+	}
+	
+	public static ColorB BlendAlpha(ColorB A, ColorB B){
+		byte AA = A.A;
+		byte BA = B.A;
+		
+		if(BA == 0){ return A; }
+		if(BA == 255){ return B; }
+		
+		byte IBA = (byte)(255 - BA);
+		
+		byte OA = (byte)(BA + (AA * IBA + 128) / 255);
+		
+		byte OR = (byte)((B.R * BA + A.R * AA * IBA / 255 + 128) / 255);
+		byte OG = (byte)((B.G * BA + A.G * AA * IBA / 255 + 128) / 255);
+		byte OB = (byte)((B.B * BA + A.B * AA * IBA / 255 + 128) / 255);
+		
+		return new ColorB(OR, OG, OB, OA);
 	}
 
 	#region Override
