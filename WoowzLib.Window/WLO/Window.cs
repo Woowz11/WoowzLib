@@ -10,8 +10,10 @@ public class Window{
     /// <param name="Title">Стартовое название окна</param>
     /// <param name="Width">Стартовая ширина окна</param>
     /// <param name="Height">Стартовая высота окна</param>
+    /// <param name="X">Стартовая позиция по X</param>
+    /// <param name="Y">Стартовая позиция по Y</param>
     /// <param name="BackgroundColor">Цвет заднего фона</param>
-    public Window(string? Title = null, uint Width = 800, uint Height = 600, ColorB? BackgroundColor = null){
+    public Window(string? Title = null, uint Width = 800, uint Height = 600, int X = 0, int Y = 0, ColorB? BackgroundColor = null){
         try{
             Title ??= WL.WoowzLib.ProjectInfo.Name;
 
@@ -37,7 +39,7 @@ public class Window{
                 WindowClassName,
                 Title,
                 WL.System.Native.Windows.WS_OVERLAPPEDWINDOW | WL.System.Native.Windows.WS_VISIBLE,
-                0, 0,
+                X, Y,
                 (int)Width, (int)Height,
                 IntPtr.Zero,
                 IntPtr.Zero,
@@ -55,9 +57,10 @@ public class Window{
             WL.Window.Windows.Add(this);
             
             __Title  = Title;
-            
-            this.Width  = Width;
-            this.Height = Height;
+            __X = X;
+            __Y = Y;
+            __Width = Width;
+            __Height = Height;
 
             if(BackgroundColor.HasValue){ this.BackgroundColor = BackgroundColor.Value; }
 

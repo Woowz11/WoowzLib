@@ -2,13 +2,21 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using WLO;
+
+namespace WLO{
+    public enum Direction4{
+        Right,
+        Left,
+        Up,
+        Down
+    }
+}
 
 namespace WL{
     /// <summary>
     /// Математические функции и т.д
     /// </summary>
-    [WLModule(int.MinValue + 1, 32)]
+    [WLModule(int.MinValue + 1, 33)]
     public static class Math{
         /// <summary>
         /// Ноль
@@ -29,6 +37,10 @@ namespace WL{
         /// Ошибочное значение
         /// </summary>
         public const float Error = float.NaN;
+        /// <summary>
+        /// Ошибочное значение
+        /// </summary>
+        public const int ErrorI = -612121723;
         /// <summary>
         /// Ошибочное значение
         /// </summary>
@@ -150,6 +162,18 @@ namespace WL{
             }
             return Max;
         }
+        /// <summary>
+        /// Возвращает максимальное число из нескольких чисел
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int MaxI(params int[] Values){
+            if(Values.Length == 0){ return ErrorI; }
+            int Max = Values[0];
+            for(int i = 1; i < Values.Length; i++){
+                Max = MaxI(Max, Values[i]);
+            }
+            return Max;
+        }
         
         /// <summary>
         /// Возвращает минимальное число из 2 чисел
@@ -171,6 +195,18 @@ namespace WL{
             float Min = Values[0];
             for(int i = 1; i < Values.Length; i++){
                 Min = Math.Min(Min, Values[i]);
+            }
+            return Min;
+        }
+        /// <summary>
+        /// Возвращает минимальное число из нескольких чисел
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int MinI(params int[] Values){
+            if(Values.Length == 0){ return ErrorI; }
+            int Min = Values[0];
+            for(int i = 1; i < Values.Length; i++){
+                Min = MinI(Min, Values[i]);
             }
             return Min;
         }
@@ -387,7 +423,7 @@ namespace WL{
         /// <param name="Digits">До скольки округлять: 4 -> 0.0001</param>
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Round(float V, int Digits = 0) => float.Round(V, Digits, MidpointRounding.AwayFromZero);
+        public static float Round(float V, uint Digits = 0) => float.Round(V, (int)Digits, MidpointRounding.AwayFromZero);
         
         /// <summary>
         /// Округляет число (0.3 -> 1, 0.5 -> 1, 0.7 -> 1, -0.3 -> 0)
@@ -412,6 +448,18 @@ namespace WL{
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Above(float V) => Ceil(Abs(V)) * Sign(V);
+
+        /// <summary>
+        /// Округляет число, с шансом (0.5 -> (0 или 1, 50%), 1.25 -> 1 + (0 или 1, 25%))
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int RoundProbabilistic(float V){
+            int Whole = (int)Floor(V);
+            float Fraction = V - Whole;
+
+            if(Random.Fast_Bool(Fraction)){ return Whole + 1; }
+            return Whole;
+        }
         
         /// <summary>
         /// Получить среднее число между двумя (Поддерживает большие числа)
@@ -419,46 +467,50 @@ namespace WL{
         /// <returns>A + (B - A) * 0.5f</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Average(float A, float B) => A + (B - A) * 0.5f;
-        
+
         /// <summary>
         /// Синус
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Sin(float Rad){
+        public static float Sin(float Rad, uint Digits = 2){
             Rad = Mod(Rad, TwoPI);
             if(IsNegative(Rad)){ Rad += TwoPI; }
 
-            float Key = Round(Rad, 2);
+            float Key = Round(Rad, Digits);
 
-            return __Sin.GetOrAdd(Key, K => IsNear(Rad, HalfPI) ? 1 : float.Sin(K));
+            if(__Sin.TryGetValue(Key, out float V)){ return V; }
+
+            V = float.Sin(Key);
+            __Sin[Key] = V;
+            return V;
         }
-        private static readonly ConcurrentDictionary<float, float> __Sin = new ConcurrentDictionary<float, float>();
+        private static readonly Dictionary<float, float> __Sin = new Dictionary<float, float>();
 
         /// <summary>
         /// Косинус
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Cos(float Rad) => Sin(Rad + HalfPI);
+        public static float Cos(float Rad, uint Digits = 2) => Sin(Rad + HalfPI, Digits);
 
         /// <summary>
         /// Тангенс
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Tan(float Rad){
-            float Cos = Math.Cos(Rad);
+        public static float Tan(float Rad, uint Digits = 2){
+            float Cos = Math.Cos(Rad, Digits);
             if(IsZero(Cos)){ return Error; }
-            return Sin(Rad) / Cos;
+            return Sin(Rad, Digits) / Cos;
         }
 
         /// <summary>
         /// Арктангенс
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float ATan(float Rad){
+        public static float ATan(float Rad, uint Digits = 2){
             Rad = Mod(Rad, TwoPI);
             if(IsNegative(Rad)){ Rad += TwoPI; }
 
-            float Key = Round(Rad, 2);
+            float Key = Round(Rad, Digits);
 
             return __ATan.GetOrAdd(Key, K => IsNear(Rad, HalfPI) ? 1 : float.Atan(K));
         }
@@ -469,23 +521,23 @@ namespace WL{
         /// Котангенс
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Cot(float Rad){
-            float Sin = Math.Sin(Rad);
+        public static float Cot(float Rad, uint Digits = 2){
+            float Sin = Math.Sin(Rad, Digits);
             if(IsZero(Sin)){ return Error; }
-            return Cos(Rad) / Sin;
+            return Cos(Rad, Digits) / Sin;
         }
 
         /// <summary>
         /// Синус от 0 до 1
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float DSin(float Rad) => 0.5f + Sin(Rad) * 0.5f;
+        public static float DSin(float Rad, uint Digits = 2) => 0.5f + Sin(Rad, Digits) * 0.5f;
         
         /// <summary>
         /// Косинус от 0 до 1
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float DCos(float Rad) => 0.5f + Cos(Rad) * 0.5f;
+        public static float DCos(float Rad, uint Digits = 2) => 0.5f + Cos(Rad, Digits) * 0.5f;
 
         /// <summary>
         /// Число близко к нулю?
