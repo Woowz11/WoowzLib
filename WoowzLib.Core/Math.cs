@@ -16,7 +16,7 @@ namespace WL{
     /// <summary>
     /// Математические функции и т.д
     /// </summary>
-    [WLModule(int.MinValue + 1, 33)]
+    [WLModule(int.MinValue + 1, 34)]
     public static class Math{
         /// <summary>
         /// Ноль
@@ -390,6 +390,11 @@ namespace WL{
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Sqr(float V) => V * V;
+        /// <summary>
+        /// Возводит число в квадрат
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int SqrI(int V) => V * V;
 
         /// <summary>
         /// Возводит число в куб
@@ -487,10 +492,70 @@ namespace WL{
         private static readonly Dictionary<float, float> __Sin = new Dictionary<float, float>();
 
         /// <summary>
+        /// Быстрый синус
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float SinFast(float Rad){
+            Rad %= TwoPI;
+            switch(Rad){
+                case > PI:
+                    Rad -= TwoPI;
+                    break;
+                
+                case < -PI:
+                    Rad += TwoPI;
+                    break;
+            }
+
+            float AbsRad = Abs(Rad);
+
+            float Numerator = 16 * Rad * (PI - AbsRad);
+            float Denominator = 5 * Sqr(PI) - 4 * AbsRad * (PI - AbsRad);
+
+            return Numerator / Denominator;
+        }
+
+        /// <summary>
+        /// Очень быстрый синус
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float SinVeryFast(float Rad){
+            Rad %= TwoPI;
+            switch(Rad){
+                case > PI:
+                    Rad -= TwoPI;
+                    break;
+                
+                case < -PI:
+                    Rad += TwoPI;
+                    break;
+            }
+
+            const float B =  4 / PI;
+            const float  C = -4 / (PI * PI);
+
+            float Y = B * Rad + C * Rad * Abs(Rad);
+
+            return 0.225f * (Y * Abs(Y) - Y) + Y;
+        }
+        
+        /// <summary>
         /// Косинус
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Cos(float Rad, uint Digits = 2) => Sin(Rad + HalfPI, Digits);
+        
+        /// <summary>
+        /// Быстрый косинус
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float CosFast(float Rad) => SinFast(Rad + HalfPI);
+        
+        /// <summary>
+        /// Очень быстрый косинус
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float CosVeryFast(float Rad) => SinVeryFast(Rad + HalfPI);
 
         /// <summary>
         /// Тангенс

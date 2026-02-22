@@ -39,8 +39,8 @@ public class Window{
                 WindowClassName,
                 Title,
                 WL.System.Native.Windows.WS_OVERLAPPEDWINDOW | WL.System.Native.Windows.WS_VISIBLE,
-                X, Y,
-                (int)Width, (int)Height,
+                0, 0,
+                64, 64,
                 IntPtr.Zero,
                 IntPtr.Zero,
                 Instance,
@@ -57,10 +57,8 @@ public class Window{
             WL.Window.Windows.Add(this);
             
             __Title  = Title;
-            __X = X;
-            __Y = Y;
-            __Width = Width;
-            __Height = Height;
+            Position = new Vector2I(X, Y);
+            Size     = new Vector2U(Width, Height);
 
             if(BackgroundColor.HasValue){ this.BackgroundColor = BackgroundColor.Value; }
 
@@ -209,8 +207,7 @@ public class Window{
                     case WL.System.Native.Windows.WM_CLOSE:{
                         try{
                             OnClose?.Invoke(this);
-                        }
-                        catch(Exception e){
+                        }catch(Exception e){
                             Logger.Error("Произошла ошибка при вызове ивентов на закрытие окна на крестик [" + this + "]!", e);
                         }
 
@@ -227,8 +224,7 @@ public class Window{
 
                         try{
                             OnResize?.Invoke(this, __Width, __Height);
-                        }
-                        catch(Exception e){
+                        }catch(Exception e){
                             Logger.Error("Произошла ошибка при вызове ивентов на изменение размера окна [" + this + "]!\nШирина: " + __Width + "\nВысота: " + __Height, e);
                         }
 
@@ -245,8 +241,7 @@ public class Window{
 
                             try{
                                 OnMove?.Invoke(this, __X, __Y);
-                            }
-                            catch(Exception e){
+                            }catch(Exception e){
                                 Logger.Error("Произошла ошибка при вызове ивентов на изменение позиции окна [" + this + "]!\nX: " + __X + "\nY: " + __Y, e);
                             }
                         }
@@ -271,8 +266,7 @@ public class Window{
 
                         try{
                             OnMouseMove?.Invoke(this, X__, Y__);
-                        }
-                        catch(Exception e){
+                        }catch(Exception e){
                             Logger.Error("Произошла ошибка при вызове ивентов на изменение позиции мыши внутри окна [" + this + "]!\nX: " + X__ + "\nY: " + Y__, e);
                         }
 
@@ -289,8 +283,7 @@ public class Window{
 
                         try{
                             OnKeyboardDown?.Invoke(this, Key, Code);
-                        }
-                        catch(Exception e){
+                        }catch(Exception e){
                             Logger.Error("Произошла ошибка при вызове ивентов на нажатии клавиши [" + Key + " (" + Code + ")] внутри окна [" + this + "]!", e);
                         }
 
@@ -418,8 +411,7 @@ public class Window{
                     IntPtr HDC = WL.System.Native.Windows.GetDC(Handle);
                     if(HDC == IntPtr.Zero){ throw new Exception("Не найден HDC у окна!"); }
                     return HDC;
-                }
-                catch(Exception e){
+                }catch(Exception e){
                     throw new Exception("Произошла ошибка при получении HDC у окна [" + this + "]!", e);
                 }
             }   
@@ -636,7 +628,7 @@ public class Window{
                         __X = value.X;
                         __Y = value.Y;
                     
-                        __UpdateSize();
+                        __UpdatePosition();
                     }catch(Exception e){
                         throw new Exception("Произошла ошибка при изменении позиции у окна [" + this + "]!\nПозиция: " + value, e);
                     }

@@ -287,9 +287,9 @@ public static class Generator{
                 string Type = ColorType.ToString().ToLower();
 
                 const string V_0 = "0";
-                string       V25 = ColorType is ColorType.Byte or ColorType.Int ? "63"  : ("0.25" + (ColorType is ColorType.Float ? "f" : ""));
-                string       V05 = ColorType is ColorType.Byte or ColorType.Int ? "128" : ("0.5"  + (ColorType is ColorType.Float ? "f" : ""));
-                string       V75 = ColorType is ColorType.Byte or ColorType.Int ? "191" : ("0.75" + (ColorType is ColorType.Float ? "f" : ""));
+                string       V25 = ColorType is ColorType.Byte or ColorType.Int ? "64"  : ("0.25" + (ColorType is ColorType.Float ? "f" : ""));
+                string       V05 = ColorType is ColorType.Byte or ColorType.Int ? "127" : ("0.5"  + (ColorType is ColorType.Float ? "f" : ""));
+                string       V75 = ColorType is ColorType.Byte or ColorType.Int ? "192" : ("0.75" + (ColorType is ColorType.Float ? "f" : ""));
                 string       V_1 = ColorType is ColorType.Byte or ColorType.Int ? "255" : "1";
 
                 Dictionary<string, string[]> Constants = new Dictionary<string, string[]>{

@@ -6,7 +6,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 3, 41)]
+    [WLModule(int.MinValue + 3, 42)]
     public class System{
         /// <summary>
         /// Обозначение для null в виде строки
@@ -66,8 +66,7 @@ namespace WL{
                     if(WL.Input.Keyboard.__PressedKeys.Add(Code)){
                         try{
                             Block |= WL.Input.Keyboard.__InvokeOnDown(Key, Code);
-                        }
-                        catch(Exception e){
+                        }catch(Exception e){
                             Logger.Error("Произошла ошибка при вызове ивентов на нажатии клавиши [" + Key + " (" + Code + ")]!", e);
                         }
                     }

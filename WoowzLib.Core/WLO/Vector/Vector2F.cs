@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Сгенерировано через GeneratorWoowzLib!
-/// Сгенерирован: 15.02.2026 21:43
+/// Сгенерирован: 20.02.2026 15:15
 /// </summary>
 public struct Vector2F : IEquatable<Vector2F>{
 	public static readonly int  Numbers = 2;
