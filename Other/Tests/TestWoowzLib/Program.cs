@@ -77,7 +77,7 @@ public static class Program{
                             FPS = TD.FPS.ToString(); d = 0;
                         }
 
-                        IMAGEPANEL.Image.Change(C => {
+                        /*IMAGEPANEL.Image.Change(C => {
                             C.Fill(ColorB.Random);
                             
                             C.For((X, Y, W, H) => {
@@ -93,7 +93,7 @@ public static class Program{
 
                                 C[X, Y] -= new ColorB(g, b, r);
                             });
-                        });
+                        });*/
 
                         W1.Title = FPS + " | " + W1.KeyboardKeyPressed(Key.Up);
                         

@@ -16,7 +16,7 @@ namespace WL{
     /// <summary>
     /// Математические функции и т.д
     /// </summary>
-    [WLModule(int.MinValue + 1, 34)]
+    [WLModule(int.MinValue + 1, 35)]
     public static class Math{
         /// <summary>
         /// Ноль
@@ -532,7 +532,7 @@ namespace WL{
             }
 
             const float B =  4 / PI;
-            const float  C = -4 / (PI * PI);
+            const float C = -4 / (PI * PI);
 
             float Y = B * Rad + C * Rad * Abs(Rad);
 
