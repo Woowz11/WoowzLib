@@ -6,13 +6,13 @@ using System.Text;
 using WLO;
 
 namespace WL{
-    [WLModule(int.MinValue, 51)]
+    [WLModule(int.MinValue, 52)]
     public static class WoowzLib{
         static WoowzLib(){
             try{
-                AppDomain.CurrentDomain.ProcessExit += (_, _) => __Stop();
+                AppDomain.CurrentDomain.ProcessExit        += (_, _) => __Stop();
                 AppDomain.CurrentDomain.UnhandledException += (_, _) => __Stop();
-                TaskScheduler.UnobservedTaskException += (_, e) => {
+                TaskScheduler.UnobservedTaskException      += (_, e) => {
                     __Stop();
                     e.SetObserved();
                 };
@@ -56,7 +56,7 @@ namespace WL{
             
             WL.System.__DisconnectWoowzLib();
             
-            Logger.Info("Остановлен WL!");
+            Logger.Info("Остановлен WoowzLib!");
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace WL{
                 
                 Console.Title = "WoowzLib Program";
 
-                Logger.Info("Установка WL [" + OSType + " : \"" + ProjectInfo.Name + " " + ProjectInfo.Version + "\" на \"" + ProjectInfo.Engine + " " + ProjectInfo.EngineVersion + "\"] [\"" + WL.System.RunFolder + "\"]:");
+                Logger.Info("Установка WoowzLib [" + OSType + " : \"" + ProjectInfo.Name + " " + ProjectInfo.Version + "\" на \"" + ProjectInfo.Engine + " " + ProjectInfo.EngineVersion + "\"] [\"" + WL.System.RunFolder + "\"]:");
                 
                 foreach(string DLL in Directory.GetFiles( WL.System.RunFolder, "WoowzLib.*.dll")){
                     Assembly Assembly = Assembly.LoadFrom(DLL);
@@ -134,17 +134,13 @@ namespace WL{
                        .ToList().OrderBy(A => A.Attribute!.Order);
 
                 foreach(var Module in Modules){
-                    Logger.Info("Загружен WL модуль: [" + Module.Attribute!.Order + "] " + Module.Type.Name + " " + Module.Attribute!.Version);
+                    Logger.Info("Загружен модуль: [" + Module.Attribute!.Order + "] " + Module.Type.Name + " " + Module.Attribute!.Version);
                     RuntimeHelpers.RunClassConstructor(Module.Type.TypeHandle);
                 }
             
-                Logger.Info("Установка WL завершена!");
+                Logger.Info("Установка WoowzLib завершена!");
                 
-                try{
-                    OnStart?.Invoke();   
-                }catch(Exception e){
-                    Logger.Error("Произошла ошибка при вызове ивентов после запуска всех модулей WoowzLib!", e);
-                }
+                try{ OnStart?.Invoke(); }catch(Exception e){ Logger.Error("Произошла ошибка при вызове ивентов после запуска всех модулей WoowzLib!", e); }
             }catch(Exception e){
                 Started = false;
                 throw new Exception("Произошла ошибка при запуске WoowzLib!", e);
@@ -156,16 +152,7 @@ namespace WL{
         /// </summary>
         public static void Update(){
             try{
-                try{
-                    OnUpdate?.Invoke();   
-                }catch(Exception e){
-                    Logger.Error("Произошла ошибка при вызове ивентов обновления WoowzLib!", e);
-                }
-                
-                while(System.Native.Windows.PeekMessage(out System.Native.Windows.MSG Message, IntPtr.Zero, 0, 0, System.Native.Windows.PM_REMOVE)){
-                    System.Native.Windows.TranslateMessage(ref Message);
-                    System.Native.Windows.DispatchMessage (ref Message);
-                }
+                try{ OnUpdate?.Invoke(); }catch(Exception e){ Logger.Error("Произошла ошибка при вызове ивентов обновления WoowzLib!", e); }
                 
                 System.Sound.__Update();
             }catch(Exception e){

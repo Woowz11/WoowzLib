@@ -6,7 +6,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 3, 43)]
+    [WLModule(int.MinValue + 3, 44)]
     public class System{
         /// <summary>
         /// Обозначение для null в виде строки
@@ -198,6 +198,16 @@ namespace WL{
             private static readonly Stopwatch __Stopwatch = Stopwatch.StartNew();
 
             /// <summary>
+            /// Все запущенные вычисления информации по поводу потока
+            /// </summary>
+            private static readonly Dictionary<int, double> Timers = [];
+
+            /// <summary>
+            /// Все текущие вычисления информации по поводу потока
+            /// </summary>
+            private static readonly Dictionary<int, TickData> __TickData = [];
+            
+            /// <summary>
             /// Сколько ТИКОВ прошло после запуска приложения
             /// </summary>
             public static long ProgramLifeTick => __Stopwatch.ElapsedTicks;
@@ -231,35 +241,41 @@ namespace WL{
                 try{
                     if(TargetDeltaTime < 0){ throw new Exception("TargetDeltaTime не может быть < 0!"); }
 
-                    bool Do = false;
-
                     double Time = ProgramLifeTime;
 
-                    if(Timers.TryGetValue(UniqueID, out double StartTime)){
-                        double Elapsed = Time - StartTime;
+                    if(!Timers.TryGetValue(UniqueID, out double NextTime))
+                    {
+                        Timers[UniqueID] = Time + TargetDeltaTime;
 
-                        if(Elapsed >= TargetDeltaTime){ Do = true; }
-                    }else{
-                        Start(UniqueID);
-                        Do = true;
+                        TickData First = new TickData{
+                            StartTime = Time,
+                            StopTime  = Time,
+                            Tick      = 0,
+                            DeltaTick = 0
+                        };
+
+                        __TickData[UniqueID] = First;
+
+                        Action.Invoke(First);
+                        
+                        return;
                     }
 
-                    if(Do){
-                        if(!__TickData.TryGetValue(UniqueID, out TickData TD)){
-                            TD = new TickData();
-                        }else{
-                            if(TD.Tick                    == -1 ){ TD.Tick      = 0; }
-                            if(WL.Math.IsNearD(TD.DeltaTick, -1)){ TD.DeltaTick = 0; }
+                    if(Time >= NextTime){
+                        TickData Old = __TickData[UniqueID];
 
-                            TD.Tick++;
-                            TD.DeltaTick += TD.DeltaTimeS;
-                            
-                            __TickData[UniqueID] = TD;
-                        }
+                        TickData TD = new TickData{
+                            StartTime = Old.StopTime,
+                            StopTime  = Time,
+                            Tick      = Old.Tick + 1,
+                            DeltaTick = Old.DeltaTick + Old.DeltaTimeS
+                        };
+
+                        __TickData[UniqueID] = TD;
 
                         Action.Invoke(TD);
-                        Stop (UniqueID);
-                        Start(UniqueID);
+
+                        Timers[UniqueID] = NextTime + TargetDeltaTime;
                     }
                 }catch(Exception e){
                     throw new Exception("Произошла ошибка при ограничении потока через DeltaTime!\nID: " + UniqueID + "\nЦель: " + TargetDeltaTime, e);
@@ -281,16 +297,6 @@ namespace WL{
             }
 
             /// <summary>
-            /// Все запущенные вычисления информации по поводу потока
-            /// </summary>
-            private static readonly Dictionary<int, double> Timers = [];
-
-            /// <summary>
-            /// Все текущие вычисления информации по поводу потока
-            /// </summary>
-            private static readonly Dictionary<int, TickData> __TickData = [];
-
-            /// <summary>
             /// Начинает вычисление информации по поводу потока (DeltaTime, FPS, ...)
             /// </summary>
             /// <param name="UniqueID">Уникальный ID, не должны совпадать с другими функциями</param>
@@ -298,8 +304,7 @@ namespace WL{
                 try{
                     if(Timers.ContainsKey(UniqueID)){ throw new Exception("Запущено вычисление информации по поводу потока, хотя ещё прошлое не было завершено!"); }
                     Timers[UniqueID] = ProgramLifeTime;
-                }
-                catch(Exception e){
+                }catch(Exception e){
                     throw new Exception("Произошла ошибка при старте вычисления информации по поводу потока!\nID: " + UniqueID, e);
                 }
             }
@@ -326,8 +331,7 @@ namespace WL{
                     __TickData[UniqueID] = TD;
 
                     return TD;
-                }
-                catch(Exception e){
+                }catch(Exception e){
                     throw new Exception("Произошла ошибка при остановке вычисления информации по поводу потока!\nID: " + UniqueID, e);
                 }
             }

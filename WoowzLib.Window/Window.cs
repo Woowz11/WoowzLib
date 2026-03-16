@@ -1,12 +1,17 @@
 ﻿namespace WL;
 
-[WLModule(-100, 38)]
+[WLModule(-100, 39)]
 public class Window{
     static Window(){
         WL.WoowzLib.OnUpdate += () => {
             try{
                 foreach(WLO.Window W in Windows.ToArray()){
                     W.__Update();
+                }
+                
+                while(System.Native.Windows.PeekMessage(out System.Native.Windows.MSG Message, IntPtr.Zero, 0, 0, System.Native.Windows.PM_REMOVE)){
+                    System.Native.Windows.TranslateMessage(ref Message);
+                    System.Native.Windows.DispatchMessage (ref Message);
                 }
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при обновлении всех окон!", e);

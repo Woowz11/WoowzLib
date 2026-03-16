@@ -4,7 +4,7 @@ namespace WL{
     /// <summary>
     /// Управление с вводом
     /// </summary>
-    [WLModule(int.MinValue + 4, 16)]
+    [WLModule(int.MinValue + 4, 17)]
     public static class Input{
         public static class Mouse{
             /// <summary>
