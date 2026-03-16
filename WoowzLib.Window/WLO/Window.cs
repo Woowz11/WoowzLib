@@ -15,7 +15,7 @@ public class Window{
     /// <param name="BackgroundColor">Цвет заднего фона</param>
     public Window(string? Title = null, uint Width = 800, uint Height = 600, int X = 0, int Y = 0, ColorB? BackgroundColor = null){
         try{
-            Title ??= WL.WoowzLib.ProjectInfo.Name;
+            Title ??= WoowzLib.ProjectInfo.Name;
 
             const string WindowClassName = "WoowzLib_Window";
             
@@ -59,7 +59,8 @@ public class Window{
             __Title  = Title;
             Position = new Vector2I(X, Y);
             Size     = new Vector2U(Width, Height);
-
+            Transparent = 255;
+            
             if(BackgroundColor.HasValue){ this.BackgroundColor = BackgroundColor.Value; }
 
             __UpdateBuffer();
@@ -429,7 +430,18 @@ public class Window{
                     if(BackBuffer == IntPtr.Zero){ throw new Exception("Произошла ошибка при создании BackBuffer!"); }
                 }
 
-                BackBufferBitMap = WL.System.Native.Windows.CreateCompatibleBitmap(HDC, (int)Width, (int)Height);
+                WL.System.Native.Windows.BITMAPINFO BMI = new WL.System.Native.Windows.BITMAPINFO{
+                    bmiHeader = new WL.System.Native.Windows.BITMAPINFOHEADER{
+                        biSize = (uint)Marshal.SizeOf<WL.System.Native.Windows.BITMAPINFOHEADER>(),
+                        biWidth = (int)Width,
+                        biHeight = -(int)Height,
+                        biPlanes = 1,
+                        biBitCount = 32,
+                        biCompression = WL.System.Native.Windows.BI_RGB
+                    }
+                };
+
+                BackBufferBitMap = WL.System.Native.Windows.CreateDIBSection(HDC, ref BMI, WL.System.Native.Windows.DIB_RGB_COLORS, out IntPtr Bits, IntPtr.Zero, 0);
                 if(BackBufferBitMap == IntPtr.Zero){ throw new Exception("Произошла ошибка при создании BackBufferBitMap!"); }
 
                 WL.System.Native.Windows.SelectObject(BackBuffer, BackBufferBitMap);
@@ -439,10 +451,10 @@ public class Window{
                 WL.System.Native.Windows.ReleaseDC(Handle, HDC);
             }
         }
-            
+        
         public Window Render(ColorB BackgroundColor, bool RenderElements, Action<IntPtr>? PreRender, Action<IntPtr>? PostRender){
             try{
-                WL.System.HDC.Fill(BackBuffer, 0, 0, Width, Height, BackgroundColor);
+                /*WL.System.HDC.Fill(BackBuffer, 0, 0, Width, Height, BackgroundColor);
                 
                 PreRender?.Invoke(BackBuffer);
                 
@@ -456,12 +468,33 @@ public class Window{
                 
                 PostRender?.Invoke(BackBuffer);
 
-                IntPtr HDC = this.HDC;
+                WL.System.Native.Windows.POINT TopPosition = new WL.System.Native.Windows.POINT{ x = 0, y = 0 };
+                WL.System.Native.Windows.SIZE Size = new WL.System.Native.Windows.SIZE{ cx = (int)Width, cy = (int)Height };
+                WL.System.Native.Windows.POINT SourcePosition = new WL.System.Native.Windows.POINT{ x = 0, y = 0 };
+                
+                IntPtr ScreenDC = WL.System.Native.Windows.GetDC(IntPtr.Zero);
                 try{
-                    WL.System.Native.Windows.BitBlt(HDC, 0, 0, (int)Width, (int)Height, BackBuffer, 0, 0, WL.System.Native.Windows.SRCCOPY);   
+                    WL.System.Native.Windows.BLENDFUNCTION Blend = new WL.System.Native.Windows.BLENDFUNCTION{
+                        BlendOp = 0x00,
+                        BlendFlags = 0,
+                        SourceConstantAlpha = 255,
+                        AlphaFormat = 0
+                    };
+                    
+                    WL.System.Native.Windows.UpdateLayeredWindow(
+                        Handle,
+                        ScreenDC,
+                        ref TopPosition,
+                        ref Size,
+                        BackBuffer,
+                        ref SourcePosition,
+                        0,
+                        ref Blend,
+                        WL.System.Native.Windows.ULW_ALPHA
+                    );
                 }finally{
-                    WL.System.Native.Windows.ReleaseDC(Handle, HDC);
-                }
+                    WL.System.Native.Windows.ReleaseDC(IntPtr.Zero, ScreenDC);
+                }*/
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при рендере окна [" + this + "]!", e);
             }
@@ -798,6 +831,64 @@ public class Window{
     /// Цвет заднего фона
     /// </summary>
     public ColorB BackgroundColor = ColorB.White;
+
+    /// <summary>
+    /// Прозрачность окна
+    /// </summary>
+    public byte Transparent{
+        get => __Transparent;
+        set{
+            if(__Transparent == value){ return; }
+            __Transparent = value;
+
+            WL.System.Native.Windows.SetLayeredWindowAttributes(Handle, 0, value, WL.System.Native.Windows.LWA_ALPHA);
+        }
+    }
+    private byte __Transparent = 0;
+    
+    public void MakeColoredTransparentWindow(byte r, byte g, byte b, float alpha)
+    {
+        CheckDestroyed();
+
+        // Расширяем рамку в клиентскую область (DWM)
+        WL.System.Native.Windows.MARGINS margins = new WL.System.Native.Windows.MARGINS
+        {
+            cxLeftWidth = -1,
+            cxRightWidth = -1,
+            cyTopHeight = -1,
+            cyBottomHeight = -1
+        };
+        WL.System.Native.Windows.DwmExtendFrameIntoClientArea(Handle, ref margins);
+
+        // Включаем WS_EX_LAYERED
+        IntPtr exStyle = WL.System.Native.Windows.GetWindowLongPtr(Handle, WL.System.Native.Windows.GWL_EXSTYLE);
+        WL.System.Native.Windows.SetWindowLongPtrW(
+            Handle,
+            WL.System.Native.Windows.GWL_EXSTYLE,
+            exStyle | (IntPtr)WL.System.Native.Windows.WS_EX_LAYERED
+        );
+
+        // Прозрачность окна (цвет задаём через LWA_COLORKEY или через фон окна)
+        byte a = (byte)(alpha * 255);
+
+        // SetLayeredWindowAttributes: используем только альфу
+        WL.System.Native.Windows.SetLayeredWindowAttributes(
+            Handle,
+            0,       // color key (не нужен, 0)
+            a,       // alpha
+            WL.System.Native.Windows.LWA_ALPHA
+        );
+
+        // Чтобы задать "цветной фон" клиентской области, можно перекрасить через FillRect
+        IntPtr hdc = WL.System.Native.Windows.GetDC(Handle);
+        try{
+            WL.System.HDC.Fill(hdc, 0, 0, Width, Height, new ColorB(r, g, b, (byte)(alpha * 255)));
+        }
+        finally
+        {
+            WL.System.Native.Windows.ReleaseDC(Handle, hdc);
+        }
+    }
     
     #region Override
 

@@ -16,7 +16,7 @@ namespace WL{
     /// <summary>
     /// Математические функции и т.д
     /// </summary>
-    [WLModule(int.MinValue + 1, 36)]
+    [WLModule(int.MinValue + 1, 37)]
     public static class Math{
         /// <summary>
         /// Ноль

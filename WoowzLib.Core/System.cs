@@ -6,7 +6,7 @@ using WLO;
 
 namespace WL{
     
-    [WLModule(int.MinValue + 3, 44)]
+    [WLModule(int.MinValue + 3, 45)]
     public class System{
         /// <summary>
         /// Обозначение для null в виде строки
@@ -933,6 +933,7 @@ namespace WL{
                 private const string DLL_GDI    = "gdi32.dll";
                 private const string DLL_MSimg  = "msimg32.dll";
                 private const string DLL_WinMM  = "winmm.dll";
+                private const string DLL_DWM    = "dwmapi.dll";
                 
                 [DllImport(DLL_Kernel)]
                 public static extern IntPtr GetConsoleWindow();
@@ -1041,6 +1042,15 @@ namespace WL{
                     IntPtr hInstance,
                     IntPtr lpParam
                 );
+
+                [DllImport(DLL_User, SetLastError = true)]
+                [return: MarshalAs(UnmanagedType.Bool)]
+                public static extern bool SetLayeredWindowAttributes(
+                    IntPtr hwnd,
+                    uint crKey,
+                    byte bAlpha,
+                    uint dwFlags
+                );
                 
                 [DllImport(DLL_User, SetLastError = true)]
                 [return: MarshalAs(UnmanagedType.Bool)]
@@ -1049,12 +1059,21 @@ namespace WL{
                 [DllImport(DLL_Kernel, CharSet = CharSet.Unicode)]
                 public static extern IntPtr GetModuleHandle(string? lpModuleName);
 
+                [DllImport(DLL_GDI)]
+                public static extern IntPtr CreateRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
+                
                 [DllImport(DLL_User, SetLastError = true, CharSet = CharSet.Unicode)]
                 public static extern ushort RegisterClassExW(ref WNDCLASSEX lpwcx);
 
                 [DllImport(DLL_GDI, SetLastError = true)]
                 public static extern IntPtr CreateCompatibleDC(IntPtr Hdc);
 
+                [DllImport(DLL_User, SetLastError = true)]
+                public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+                [DllImport(DLL_User, SetLastError = true)]
+                public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+                
                 [DllImport(DLL_GDI, SetLastError = true)]
                 public static extern IntPtr CreateCompatibleBitmap(
                     IntPtr Hdc,
@@ -1103,6 +1122,19 @@ namespace WL{
                 [DllImport(DLL_User)]
                 public static extern bool UpdateWindow(IntPtr hWnd);
                 
+                [DllImport(DLL_User, SetLastError = true)]
+                public static extern bool UpdateLayeredWindow(
+                    IntPtr hwnd,
+                    IntPtr hdcDst,
+                    ref POINT pptDst,
+                    ref SIZE psize,
+                    IntPtr hdcSrc,
+                    ref POINT pptSrc,
+                    int crKey,
+                    ref BLENDFUNCTION pblend,
+                    uint dwFlags
+                );
+                
                 public static IntPtr EmptyWindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam){ return DefWindowProcW(hWnd, msg, wParam, lParam); }
                 
                 [StructLayout(LayoutKind.Sequential)]
@@ -1120,6 +1152,9 @@ namespace WL{
                     public int x;
                     public int y;
                 }
+                
+                [StructLayout(LayoutKind.Sequential)]
+                public struct SIZE { public int cx; public int cy; }
 
                 [DllImport(DLL_User)]
                 [return: MarshalAs(UnmanagedType.Bool)]
@@ -1373,6 +1408,12 @@ namespace WL{
                 [DllImport(DLL_User)]
                 public static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
                 
+                [DllImport(DLL_DWM)]
+                public static extern int DwmEnableBlurBehindWindow(IntPtr hWnd, ref DWM_BLURBEHIND blur);
+                
+                [DllImport(DLL_DWM, PreserveSig = true)]
+                public static extern int DwmExtendFrameIntoClientArea(IntPtr hwnd, ref MARGINS margins);
+                
                 [StructLayout(LayoutKind.Sequential)]
                 public struct WAVEFORMATEX{
                     public ushort wFormatTag;
@@ -1464,6 +1505,24 @@ namespace WL{
                 );
                 
                 [StructLayout(LayoutKind.Sequential)]
+                public struct DWM_BLURBEHIND{
+                    public uint dwFlags;
+                    [MarshalAs(UnmanagedType.Bool)]
+                    public bool fEnable;
+                    public IntPtr hRgnBlur;
+                    [MarshalAs(UnmanagedType.Bool)]
+                    public bool fTransitionOnMaximized;
+                }
+                
+                [StructLayout(LayoutKind.Sequential)]
+                public struct MARGINS{
+                    public int cxLeftWidth;
+                    public int cxRightWidth;
+                    public int cyTopHeight;
+                    public int cyBottomHeight;
+                }
+                
+                [StructLayout(LayoutKind.Sequential)]
                 public struct BLENDFUNCTION{
                     public byte BlendOp;
                     public byte BlendFlags;
@@ -1476,114 +1535,121 @@ namespace WL{
                 public static readonly IntPtr HWND_TOPMOST   = new IntPtr(-1);
                 public static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
                 
-                public const int  MAX_CLASS_NAME      = 256;
-                public const int  GCLP_WNDPROC        = -24;
-                public const int  SW_HIDE             = 0;
-                public const int  SW_SHOW             = 5;
-                public const uint WS_EX_NOACTIVATE    = 0x08000000;
-                public const uint WS_OVERLAPPEDWINDOW = 0x00CF0000;
-                public const uint PM_REMOVE           = 0x0001;
-                public const int  HORZRES             = 8;
-                public const int  VERTRES             = 10;
-                public const uint PFD_DRAW_TO_WINDOW  = 0x00000004;
-                public const uint PFD_SUPPORT_OPENGL  = 0x00000020;
-                public const uint PFD_DOUBLEBUFFER    = 0x00000001;
-                public const byte PFD_TYPE_RGBA       = 0;
-                public const byte PFD_MAIN_PLANE      = 0;
-                public const int  GWLP_USERDATA       = -21;
-                public const uint WM_DESTROY          = 0x0002;
-                public const uint WM_MOVE             = 0x0003;
-                public const uint WM_SHOWWINDOW       = 0x0018;
-                public const uint WM_KEYDOWN          = 0x0100;
-                public const uint WM_SYSKEYDOWN       = 0x0104;
-                public const uint WM_KEYUP            = 0x0101;
-                public const uint WM_SYSKEYUP         = 0x0105;
-                public const uint WM_CHAR             = 0x0102;
-                public const uint WM_MOUSEMOVE        = 0x0200;
-                public const uint WM_LBUTTONDOWN      = 0x0201;
-                public const uint WM_LBUTTONUP        = 0x0202;
-                public const uint WM_RBUTTONDOWN      = 0x0204;
-                public const uint WM_RBUTTONUP        = 0x0205;
-                public const uint WM_MOUSEWHEEL       = 0x020A;
-                public const uint WM_PAINT            = 0x000F;
-                public const uint WM_SETCURSOR        = 0x0020;
-                public const uint WM_ACTIVATE         = 0x0006;
-                public const uint WM_SETFOCUS         = 0x0007;
-                public const uint WM_KILLFOCUS        = 0x0008;
-                public const uint WM_SIZE             = 0x0005;
-                public const uint WM_CLOSE            = 0x0010;
-                public const uint WM_WINDOWPOSCHANGED = 0x0047;
-                public const uint WM_COMMAND          = 0x0111;
-                public const uint WM_SETTEXT          = 0x000C;
-                public const uint SWP_NOSIZE          = 0x0001;
-                public const uint SWP_NOMOVE          = 0x0002;
-                public const uint SWP_NOZORDER        = 0x0004;
-                public const uint SWP_NOREDRAW        = 0x0008;
-                public const uint SWP_NOACTIVATE      = 0x0010;
-                public const uint SWP_FRAMECHANGED    = 0x0020;
-                public const uint SWP_SHOWWINDOW      = 0x0040;
-                public const uint SWP_HIDEWINDOW      = 0x0080;
-                public const uint SWP_NOCOPYBITS      = 0x0100;
-                public const uint SWP_NOOWNERZORDER   = 0x0200;
-                public const uint SWP_NOSENDCHANGING  = 0x0400;
-                public const uint SWP_DRAWFRAME       = SWP_FRAMECHANGED;
-                public const uint SWP_NOREPOSITION    = SWP_NOOWNERZORDER;
-                public const int  HTCLIENT            = 1;
-                public const int  HTCAPTION           = 2;
-                public const int  IDC_ARROW           = 32512;
-                public const int  IDC_IBEAM           = 32513;
-                public const int  IDC_WAIT            = 32514;
-                public const int  IDC_CROSS           = 32515;
-                public const int  IDC_UPARROW         = 32516;
-                public const int  IDC_SIZE            = 32640;
-                public const int  IDC_ICON            = 32641;
-                public const int  IDC_SIZENWSE        = 32642;
-                public const int  IDC_SIZENESW        = 32643;
-                public const int  IDC_SIZEWE          = 32644;
-                public const int  IDC_SIZENS          = 32645;
-                public const int  IDC_SIZEALL         = 32646;
-                public const int  IDC_NO              = 32648;
-                public const int  IDC_HAND            = 32649;
-                public const int  IDC_APPSTARTING     = 32650;
-                public const uint WS_OVERLAPPED       = 0x00000000;
-                public const uint WS_POPUP            = 0x80000000;
-                public const uint WS_CHILD            = 0x40000000;
-                public const uint WS_MINIMIZE         = 0x20000000;
-                public const uint WS_VISIBLE          = 0x10000000;
-                public const uint WS_DISABLED         = 0x08000000;
-                public const uint WS_CLIPSIBLINGS     = 0x04000000;
-                public const uint WS_CLIPCHILDREN     = 0x02000000;
-                public const uint WS_MAXIMIZE         = 0x01000000;
-                public const uint WS_CAPTION          = 0x00C00000;
-                public const uint WS_BORDER           = 0x00800000;
-                public const uint WS_DLGFRAME         = 0x00400000;
-                public const uint WS_VSCROLL          = 0x00200000;
-                public const uint WS_HSCROLL          = 0x00100000;
-                public const uint WS_SYSMENU          = 0x00080000;
-                public const uint WS_THICKFRAME       = 0x00040000;
-                public const uint WS_GROUP            = 0x00020000;
-                public const uint WS_TABSTOP          = 0x00010000;
-                public const uint BN_CLICKED          = 0;
-                public const int  GWLP_WNDPROC        = -4;
-                public const uint SS_OWNERDRAW        = 0x000B;
-                public const uint CS_HREDRAW          = 0x0002;
-                public const uint CS_VREDRAW          = 0x0001;
-                public const uint WM_SETREDRAW        = 0x000B;
-                public const uint WM_ERASEBKGND       = 0x0014;
-                public const uint SRCCOPY             = 0x00CC0020;
-                public const int  TRANSPARENT         = 1;
-                public const int  OPAQUE              = 2;
-                public const int  BI_RGB              = 0;
-                public const int  DIB_RGB_COLORS      = 0;
-                public const int  BI_BITFIELDS        = 3;
-                public const int  STRETCH_DELETESCANS = 1;
-                public const int  STRETCH_HALFTONE    = 2;
-                public const int  STRETCH_ANDSCANS    = 3;
-                public const byte AC_SRC_OVER         = 0;
-                public const byte AC_SRC_ALPHA        = 1;
-                public const int  WH_KEYBOARD_LL      = 13;
-                public const int  CALLBACK_FUNCTION   = 0x00030000;
-                public const int  WOM_DONE            = 0x3BD;
+                public const  int  MAX_CLASS_NAME      = 256;
+                public const  int  GCLP_WNDPROC        = -24;
+                public const  int  SW_HIDE             = 0;
+                public const  int  SW_SHOW             = 5;
+                public const  uint WS_EX_NOACTIVATE    = 0x08000000;
+                public const  uint WS_OVERLAPPEDWINDOW = 0x00CF0000;
+                public const  uint WS_EX_LAYERED       = 0x00080000;
+                public const  uint PM_REMOVE           = 0x0001;
+                public const  int  HORZRES             = 8;
+                public const  int  VERTRES             = 10;
+                public const  uint PFD_DRAW_TO_WINDOW  = 0x00000004;
+                public const  uint PFD_SUPPORT_OPENGL  = 0x00000020;
+                public const  uint PFD_DOUBLEBUFFER    = 0x00000001;
+                public const  byte PFD_TYPE_RGBA       = 0;
+                public const  byte PFD_MAIN_PLANE      = 0;
+                public const  int  GWLP_USERDATA       = -21;
+                public const  uint WM_DESTROY          = 0x0002;
+                public const  uint WM_MOVE             = 0x0003;
+                public const  uint WM_SHOWWINDOW       = 0x0018;
+                public const  uint WM_KEYDOWN          = 0x0100;
+                public const  uint WM_SYSKEYDOWN       = 0x0104;
+                public const  uint WM_KEYUP            = 0x0101;
+                public const  uint WM_SYSKEYUP         = 0x0105;
+                public const  uint WM_CHAR             = 0x0102;
+                public const  uint WM_MOUSEMOVE        = 0x0200;
+                public const  uint WM_LBUTTONDOWN      = 0x0201;
+                public const  uint WM_LBUTTONUP        = 0x0202;
+                public const  uint WM_RBUTTONDOWN      = 0x0204;
+                public const  uint WM_RBUTTONUP        = 0x0205;
+                public const  uint WM_MOUSEWHEEL       = 0x020A;
+                public const  uint WM_PAINT            = 0x000F;
+                public const  uint WM_SETCURSOR        = 0x0020;
+                public const  uint WM_ACTIVATE         = 0x0006;
+                public const  uint WM_SETFOCUS         = 0x0007;
+                public const  uint WM_KILLFOCUS        = 0x0008;
+                public const  uint WM_SIZE             = 0x0005;
+                public const  uint WM_CLOSE            = 0x0010;
+                public const  uint WM_WINDOWPOSCHANGED = 0x0047;
+                public const  uint WM_COMMAND          = 0x0111;
+                public const  uint WM_SETTEXT          = 0x000C;
+                public const  uint SWP_NOSIZE          = 0x0001;
+                public const  uint SWP_NOMOVE          = 0x0002;
+                public const  uint SWP_NOZORDER        = 0x0004;
+                public const  uint SWP_NOREDRAW        = 0x0008;
+                public const  uint SWP_NOACTIVATE      = 0x0010;
+                public const  uint SWP_FRAMECHANGED    = 0x0020;
+                public const  uint SWP_SHOWWINDOW      = 0x0040;
+                public const  uint SWP_HIDEWINDOW      = 0x0080;
+                public const  uint SWP_NOCOPYBITS      = 0x0100;
+                public const  uint SWP_NOOWNERZORDER   = 0x0200;
+                public const  uint SWP_NOSENDCHANGING  = 0x0400;
+                public const  uint SWP_DRAWFRAME       = SWP_FRAMECHANGED;
+                public const  uint SWP_NOREPOSITION    = SWP_NOOWNERZORDER;
+                public const  int  HTCLIENT            = 1;
+                public const  int  HTCAPTION           = 2;
+                public const  int  IDC_ARROW           = 32512;
+                public const  int  IDC_IBEAM           = 32513;
+                public const  int  IDC_WAIT            = 32514;
+                public const  int  IDC_CROSS           = 32515;
+                public const  int  IDC_UPARROW         = 32516;
+                public const  int  IDC_SIZE            = 32640;
+                public const  int  IDC_ICON            = 32641;
+                public const  int  IDC_SIZENWSE        = 32642;
+                public const  int  IDC_SIZENESW        = 32643;
+                public const  int  IDC_SIZEWE          = 32644;
+                public const  int  IDC_SIZENS          = 32645;
+                public const  int  IDC_SIZEALL         = 32646;
+                public const  int  IDC_NO              = 32648;
+                public const  int  IDC_HAND            = 32649;
+                public const  int  IDC_APPSTARTING     = 32650;
+                public const  uint WS_OVERLAPPED       = 0x00000000;
+                public const  uint WS_POPUP            = 0x80000000;
+                public const  uint WS_CHILD            = 0x40000000;
+                public const  uint WS_MINIMIZE         = 0x20000000;
+                public const  uint WS_VISIBLE          = 0x10000000;
+                public const  uint WS_DISABLED         = 0x08000000;
+                public const  uint WS_CLIPSIBLINGS     = 0x04000000;
+                public const  uint WS_CLIPCHILDREN     = 0x02000000;
+                public const  uint WS_MAXIMIZE         = 0x01000000;
+                public const  uint WS_CAPTION          = 0x00C00000;
+                public const  uint WS_BORDER           = 0x00800000;
+                public const  uint WS_DLGFRAME         = 0x00400000;
+                public const  uint WS_VSCROLL          = 0x00200000;
+                public const  uint WS_HSCROLL          = 0x00100000;
+                public const  uint WS_SYSMENU          = 0x00080000;
+                public const  uint WS_THICKFRAME       = 0x00040000;
+                public const  uint WS_GROUP            = 0x00020000;
+                public const  uint WS_TABSTOP          = 0x00010000;
+                public const  uint BN_CLICKED          = 0;
+                public const  int  GWLP_WNDPROC        = -4;
+                public const  uint SS_OWNERDRAW        = 0x000B;
+                public const  uint CS_HREDRAW          = 0x0002;
+                public const  uint CS_VREDRAW          = 0x0001;
+                public const  uint WM_SETREDRAW        = 0x000B;
+                public const  uint WM_ERASEBKGND       = 0x0014;
+                public const  uint SRCCOPY             = 0x00CC0020;
+                public const  int  TRANSPARENT         = 1;
+                public const  int  OPAQUE              = 2;
+                public const  int  BI_RGB              = 0;
+                public const  int  DIB_RGB_COLORS      = 0;
+                public const  int  BI_BITFIELDS        = 3;
+                public const  int  STRETCH_DELETESCANS = 1;
+                public const  int  STRETCH_HALFTONE    = 2;
+                public const  int  STRETCH_ANDSCANS    = 3;
+                public const  byte AC_SRC_OVER         = 0;
+                public const  byte AC_SRC_ALPHA        = 1;
+                public const  int  WH_KEYBOARD_LL      = 13;
+                public const  int  CALLBACK_FUNCTION   = 0x00030000;
+                public const  int  WOM_DONE            = 0x3BD;
+                public const  int  GWL_EXSTYLE         = -20;
+                public const  uint LWA_ALPHA           = 0x00000002;
+                public const  uint LWA_COLORKEY        = 0x00000001;
+                public const  uint ULW_ALPHA           = 0x02;
+                public const uint DWM_BB_ENABLE        = 0x1;
+                public const uint DWM_BB_BLURREGION    = 0x2;
             }
         }
     }
