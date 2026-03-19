@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.Base", "WoowzLib.Base\WoowzLib.Base.csproj", "{3A864AA1-DE39-4C5B-82C6-D284D56055B2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.Core", "WoowzLib.Core\WoowzLib.Core.csproj", "{1BB7982F-B36F-4C9F-B4AF-0EB13FEC7BFA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|Any CPU = Release|Any CPU
@@ -9,5 +11,7 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{3A864AA1-DE39-4C5B-82C6-D284D56055B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A864AA1-DE39-4C5B-82C6-D284D56055B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BB7982F-B36F-4C9F-B4AF-0EB13FEC7BFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BB7982F-B36F-4C9F-B4AF-0EB13FEC7BFA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
