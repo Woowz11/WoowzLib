@@ -10,4 +10,12 @@ public static class Core{
     /// Останавливает WoowzLib
     /// </summary>
     public static void Terminate() => WL.__Base.Terminate();
+    
+    /// <summary>
+    /// Вызывается при остановке WoowzLib
+    /// </summary>
+    public static event Action? OnTerminate{
+        add    => WL.__Base.OnTerminate += value;
+        remove => WL.__Base.OnTerminate -= value;
+    }
 }
