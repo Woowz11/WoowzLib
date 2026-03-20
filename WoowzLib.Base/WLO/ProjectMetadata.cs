@@ -2,7 +2,7 @@
 
 namespace WLO;
 
-public readonly struct ProjectInfo{
+public readonly struct ProjectMetadata{
     /// <summary>
     /// Информация об проекте
     /// </summary>
@@ -10,7 +10,7 @@ public readonly struct ProjectInfo{
     /// <param name="Version">Версия</param>
     /// <param name="Author">Автор</param>
     /// <param name="License">Лицензия</param>
-    public ProjectInfo(string? Name = null, Version? Version = null, string? Author = null, string? License = null){
+    public ProjectMetadata(string? Name = null, Version? Version = null, string? Author = null, string? License = null){
         this.Name = Name ?? "Unknown Project";
         this.Version = Version ?? new Version();
         this.Author = Author ?? "Anonymous";
