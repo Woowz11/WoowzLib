@@ -2,7 +2,7 @@
 
 namespace WL;
 
-public static class __Base{
+public static partial class __Base{
     /// <summary>
     /// Информация об проекте
     /// </summary>
