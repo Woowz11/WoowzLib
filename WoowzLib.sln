@@ -8,6 +8,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{A8B38C02
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VersionUpdater", "VersionUpdater\VersionUpdater.csproj", "{9BC7321D-4BDC-4E14-AA39-7926DF61E274}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{5EF70B8D-E68C-4B9E-BAE8-DB3A36235F40}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|Any CPU = Release|Any CPU
@@ -22,5 +24,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9BC7321D-4BDC-4E14-AA39-7926DF61E274} = {A8B38C02-DA3F-4AC9-B1F6-B61B5E718800}
+		{3A864AA1-DE39-4C5B-82C6-D284D56055B2} = {5EF70B8D-E68C-4B9E-BAE8-DB3A36235F40}
+		{1BB7982F-B36F-4C9F-B4AF-0EB13FEC7BFA} = {5EF70B8D-E68C-4B9E-BAE8-DB3A36235F40}
 	EndGlobalSection
 EndGlobal

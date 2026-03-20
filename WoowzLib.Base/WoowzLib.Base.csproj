@@ -6,6 +6,8 @@
         <Nullable>enable</Nullable>
         <Configurations>Release</Configurations>
         <Platforms>AnyCPU</Platforms>
+        
+        <Version>0.236</Version>>
     </PropertyGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
