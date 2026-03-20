@@ -7,38 +7,59 @@ public static class Logger{
     /// <summary>
     /// Устанавливает новый Logger
     /// </summary>
-    public static void Initialize(){
+    public static void Initialize(LoggerSettings? Settings = null){
         try{
+            WL.Core.BaseLoggerInitialize();
+            
+            if(Settings.HasValue){ WL.Logger.Settings = Settings.Value; }
+            
             StatusInfo.Clear();
-            StatusInfo[(byte)MessageStatus.Default] = new StatusInfo{ Symbol = 'I'};
-            StatusInfo[(byte)MessageStatus.Warning] = new StatusInfo{ Symbol = 'W'};
-            StatusInfo[(byte)MessageStatus.Error  ] = new StatusInfo{ Symbol = 'E'};
-            StatusInfo[(byte)MessageStatus.Fatal  ] = new StatusInfo{ Symbol = 'F'};
-            StatusInfo[(byte)MessageStatus.Debug  ] = new StatusInfo{ Symbol = 'D'};
+            StatusInfo[(byte)MessageStatus.Default ] = new StatusInfo{ Symbol = 'I'};
+            StatusInfo[(byte)MessageStatus.Warning ] = new StatusInfo{ Symbol = 'W'};
+            StatusInfo[(byte)MessageStatus.Error   ] = new StatusInfo{ Symbol = 'E'};
+            StatusInfo[(byte)MessageStatus.Fatal   ] = new StatusInfo{ Symbol = 'F'};
+            StatusInfo[(byte)MessageStatus.Debug   ] = new StatusInfo{ Symbol = 'D'};
+            StatusInfo[(byte)MessageStatus.External] = new StatusInfo{ Symbol = '?'};
             
             WL.Core.Output = (Status, ExtraInfo, Message) => {
                 StringBuilder SB = new StringBuilder();
 
                 StatusInfo StatusInfo = Logger.StatusInfo[Status];
 
-                SB.Append(WL.Logger.Prefix(Status, StatusInfo));
+                string[] Lines = Message.Split('\n');
                 
-                SB.Append(Message);
-                
-                Console.WriteLine(SB.ToString());
+                string  Prefix        =                    WL.Logger.Prefix(Status, StatusInfo);
+                string? PrefixNewLine = Lines.Length > 0 ? WL.Logger.Prefix(Status, StatusInfo, true) : null;
+
+                for(int i = 0; i < Lines.Length; i++){
+                    string Line = Lines[i].TrimEnd('\r');
+
+                    SB.Append(i == 0 ? Prefix : PrefixNewLine);
+
+                    SB.Append(Line);
+
+                    if(i < Lines.Length - 1){ SB.Append('\n'); }
+                }
+
+                return SB.ToString();
             };
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при установке нового Logger!", e);
+            throw new Exception("Произошла ошибка при установке нового Logger!\nНастройки: " + WL.__Base.Other.ToString(Settings), e);
         }
     }
 
     /// <summary>
+    /// Настройки Logger
+    /// </summary>
+    public static LoggerSettings Settings = new LoggerSettings();
+
+    /// <summary>
     /// Генерирует префикс сообщения
     /// </summary>
-    public static string Prefix(byte Status, StatusInfo StatusInfo){
-        return (StatusInfo.Symbol == ' ' ? Status : StatusInfo.Symbol) + ": TESTPRO ";
+    public static string Prefix(byte Status, StatusInfo StatusInfo, bool NewLine = false){
+        return (NewLine ? '~' : (StatusInfo.Symbol == ' ' ? Status : StatusInfo.Symbol)) + ": ";
     }
-
+    
     // ----------------------------------------------------------------------
 
     /// <summary>
