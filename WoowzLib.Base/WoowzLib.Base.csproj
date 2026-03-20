@@ -7,11 +7,11 @@
         <Configurations>Release</Configurations>
         <Platforms>AnyCPU</Platforms>
         
-        <Version>0.236</Version>>
+        <Version>0.0.0.0</Version>
     </PropertyGroup>
 
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-      <Exec Command="echo TEST" />
+    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+      <Exec Command="&quot;W:\Other\WoowzLib\VersionUpdater\bin\Release\net8.0\VersionUpdater.exe&quot; &quot;W:\Other\WoowzLib\WoowzLib.Base\WoowzLib.Base.csproj&quot;" />
     </Target>
 
 </Project>

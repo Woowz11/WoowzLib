@@ -1,13 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-
         <Configurations>Release</Configurations>
-
         <Platforms>AnyCPU</Platforms>
+        
+        <Version>0.0.0.1</Version>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,5 +17,9 @@
     <ItemGroup>
       <Folder Include="WLO\" />
     </ItemGroup>
+
+    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+      <Exec Command="&quot;W:\Other\WoowzLib\VersionUpdater\bin\Release\net8.0\VersionUpdater.exe&quot; &quot;W:\Other\WoowzLib\WoowzLib.Core\WoowzLib.Core.csproj&quot;" />
+    </Target>
 
 </Project>

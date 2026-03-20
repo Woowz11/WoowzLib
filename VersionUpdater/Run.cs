@@ -1,6 +1,6 @@
-﻿using System.Xml.Linq;
+﻿using System.Text.RegularExpressions;
 
-public static class Run{
+public static partial class Run{
     public static int Main(string[] Args){
         try{
             if(Args.Length == 0){
@@ -12,30 +12,34 @@ public static class Run{
 
             if(!File.Exists(ProjPath)){ throw new Exception("Проект [\"" + ProjPath + "\"] не найден!"); }
 
-            XDocument Document = XDocument.Load(ProjPath);
+            string Content = File.ReadAllText(ProjPath);
 
-            XElement? VersionElement = Document.Descendants("Version").FirstOrDefault();
+            Match VersionMatch = Regex().Match(Content);
 
-            if(VersionElement == null){ throw new Exception("<Version> в проекте не найден!"); }
+            if(!VersionMatch.Success){ throw new Exception("<Version> в проекте не найден!"); }
 
-            string Version = VersionElement.Value.Trim();
+            string OldVersion = VersionMatch.Groups[1].Value.Trim();
 
-            string[] Parts = Version.Split('.');
+            string[] Parts = OldVersion.Split('.');
 
             if(!Parts.All(P => int.TryParse(P, out int _))){
-                throw new Exception("Неверный формат версии [" + Version + "]!");
+                throw new Exception("Неверный формат версии [" + OldVersion + "]!");
             }
 
             int LastIndex = Parts.Length - 1;
-            int LastValue = int.Parse(Parts[LastIndex]);
-            Parts[LastIndex] = (LastValue + 1).ToString();
+            Parts[LastIndex] = (int.Parse(Parts[LastIndex]) + 1).ToString();
 
             string NewVersion = string.Join(".", Parts);
+
+            File.WriteAllText(ProjPath, Regex().Replace(Content, M => "<Version>" + NewVersion + "</Version>"));
             
-            Console.WriteLine(NewVersion);
+            Console.WriteLine("Обновлена версия: " + OldVersion + " -> " + NewVersion);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при обновлении версии у проекта!", e);
         }
         return 0;
-    }    
+    }
+
+    [GeneratedRegex(@"<Version>(.*?)</Version>")]
+    private static partial Regex Regex();
 }
