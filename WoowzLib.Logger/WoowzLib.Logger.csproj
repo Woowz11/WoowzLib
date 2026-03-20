@@ -4,14 +4,19 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+
+        <Version>0.0.0.4</Version>
+
         <Configurations>Release</Configurations>
+
         <Platforms>AnyCPU</Platforms>
-        
-        <Version>0.0.0.16</Version>
     </PropertyGroup>
 
-    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-      <Exec Command="&quot;W:\Other\WoowzLib\VersionUpdater\bin\Release\net8.0\VersionUpdater.exe&quot; &quot;W:\Other\WoowzLib\WoowzLib.Base\WoowzLib.Base.csproj&quot;" />
-    </Target>
+    <ItemGroup>
+      <ProjectReference Include="..\WoowzLib.Core\WoowzLib.Core.csproj" />
+    </ItemGroup>
 
+    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+        <Exec Command="&quot;W:\Other\WoowzLib\VersionUpdater\bin\Release\net8.0\VersionUpdater.exe&quot; &quot;W:\Other\WoowzLib\WoowzLib.Logger\WoowzLib.Logger.csproj&quot;" />
+    </Target>
 </Project>

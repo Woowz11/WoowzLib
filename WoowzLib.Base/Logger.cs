@@ -1,4 +1,4 @@
-﻿using WL;
+﻿using WLO;
 
 public static class Logger{
     /// <summary>
