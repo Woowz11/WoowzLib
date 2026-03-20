@@ -4,6 +4,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.Base", "WoowzLib.B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoowzLib.Core", "WoowzLib.Core\WoowzLib.Core.csproj", "{1BB7982F-B36F-4C9F-B4AF-0EB13FEC7BFA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{A8B38C02-DA3F-4AC9-B1F6-B61B5E718800}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VersionUpdater", "VersionUpdater\VersionUpdater.csproj", "{9BC7321D-4BDC-4E14-AA39-7926DF61E274}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|Any CPU = Release|Any CPU
@@ -13,5 +17,10 @@ Global
 		{3A864AA1-DE39-4C5B-82C6-D284D56055B2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1BB7982F-B36F-4C9F-B4AF-0EB13FEC7BFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1BB7982F-B36F-4C9F-B4AF-0EB13FEC7BFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BC7321D-4BDC-4E14-AA39-7926DF61E274}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BC7321D-4BDC-4E14-AA39-7926DF61E274}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9BC7321D-4BDC-4E14-AA39-7926DF61E274} = {A8B38C02-DA3F-4AC9-B1F6-B61B5E718800}
 	EndGlobalSection
 EndGlobal
