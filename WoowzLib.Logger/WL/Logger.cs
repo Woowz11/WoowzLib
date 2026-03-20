@@ -36,7 +36,7 @@ public static class Logger{
     /// Генерирует префикс сообщения
     /// </summary>
     public static string Prefix(byte Status, StatusInfo StatusInfo){
-        return (StatusInfo.Symbol == ' ' ? Status : StatusInfo.Symbol) + ": ";
+        return (StatusInfo.Symbol == ' ' ? Status : StatusInfo.Symbol) + ": TESTPRO ";
     }
 
     // ----------------------------------------------------------------------
@@ -44,7 +44,7 @@ public static class Logger{
     /// <summary>
     /// Класс, для информации об статусе
     /// </summary>
-    private class StatusInfoCollection{
+    public class StatusInfoCollection{
         private readonly StatusInfo[] __StatusInfos = new StatusInfo[255];
 
         /// <summary>
@@ -61,5 +61,5 @@ public static class Logger{
     /// <summary>
     /// Информации об статусе
     /// </summary>
-    private static readonly StatusInfoCollection StatusInfo = new StatusInfoCollection();
+    public static readonly StatusInfoCollection StatusInfo = new StatusInfoCollection();
 }
