@@ -107,7 +107,7 @@ public static partial class Native{
             public static extern IntPtr GetModuleHandle(string? lpModuleName);
             
             [DllImport(DLL_User, CharSet = CharSet.Unicode, SetLastError = true)]
-            public static extern IntPtr CreateWindowEx(uint dwExStyle, string lpClassName, string lpWindowName, uint dwStyle, int X, int Y, int nWidth, int nHeight, IntPtr hWndParent, IntPtr hMenu, IntPtr hInstance, IntPtr lpParam);
+            public static extern IntPtr CreateWindowExW(uint dwExStyle, string lpClassName, string lpWindowName, uint dwStyle, int X, int Y, int nWidth, int nHeight, IntPtr hWndParent, IntPtr hMenu, IntPtr hInstance, IntPtr lpParam);
             
             [DllImport(DLL_User)]
             public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
@@ -132,6 +132,24 @@ public static partial class Native{
             
             [DllImport(DLL_User)]
             public static extern IntPtr DefWindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+            
+            [DllImport(DLL_User)]
+            public static extern void PostQuitMessage(int nExitCode);
+            
+            [DllImport(DLL_User)]
+            public static extern IntPtr BeginPaint(IntPtr hWnd, out PAINTSTRUCT lpPaint);
+
+            [DllImport(DLL_User)]
+            public static extern bool EndPaint(IntPtr hWnd, ref PAINTSTRUCT lpPaint);
+
+            [DllImport(DLL_User)]
+            public static extern bool FillRect(IntPtr hDC, ref RECT lprc, IntPtr hbr);
+            
+            [DllImport(DLL_GDI)]
+            public static extern IntPtr CreateSolidBrush(int color);
+
+            [DllImport(DLL_GDI)]
+            public static extern bool DeleteObject(IntPtr hObject);
             
             // ----------------------------------------------------------------------
             
@@ -191,6 +209,26 @@ public static partial class Native{
                 public IntPtr hIconSm;
             }
             
+            [StructLayout(LayoutKind.Sequential)]
+            public struct RECT{
+                public int left;
+                public int top;
+                public int right;
+                public int bottom;
+            }
+
+            [StructLayout(LayoutKind.Sequential)]
+            public struct PAINTSTRUCT{
+                public IntPtr hdc;
+                public bool   fErase;
+                public RECT   rcPaint;
+                public bool   fRestore;
+                public bool   fIncUpdate;
+    
+                [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+                public byte[] rgbReserved;
+            }
+            
             // ----------------------------------------------------------------------
             
             public const uint MEM_COMMIT             = 0x1000;
@@ -210,6 +248,9 @@ public static partial class Native{
             public const uint PM_NOREMOVE            = 0x0000;
             public const uint PM_REMOVE              = 0x0001;
             public const uint PM_NOYIELD             = 0x0002;
+            public const uint WM_DESTROY             = 0x0002;
+            public const uint WM_CLOSE               = 0x0010;
+            public const uint WM_PAINT               = 0x000F;
         }
     }
 }
