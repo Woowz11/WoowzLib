@@ -70,7 +70,7 @@ namespace WL{
                 try{
                     if(!Initialized){ throw new Exception("Logger не инициализирован!"); }
 
-                    Console.SetOut(TextWriter.Original);
+                    Console.SetOut(TextWriter!.Original);
                     TextWriter = null;
                     WL.__Base.OnTerminate -= __Terminate;
                     

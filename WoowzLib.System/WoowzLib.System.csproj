@@ -7,15 +7,11 @@
         <Configurations>Release</Configurations>
         <Platforms>AnyCPU</Platforms>
 
-        <Version>0.0.0.10</Version>
+        <Version>0.0.0.13</Version>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\WoowzLib.Core\WoowzLib.Core.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="WLO\" />
     </ItemGroup>
 
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

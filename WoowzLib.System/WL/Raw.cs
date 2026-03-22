@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
 namespace WL;
 
@@ -102,6 +103,45 @@ public static partial class Native{
             [DllImport(DLL_Kernel)]
             public static extern IntPtr HeapReAlloc(IntPtr hHeap, uint dwFlags, IntPtr lpMem, UIntPtr dwBytes);
         
+            [DllImport(DLL_Kernel, CharSet = CharSet.Unicode, SetLastError = true)]
+            public static extern IntPtr GetModuleHandle(string? lpModuleName);
+            
+            [DllImport(DLL_User, CharSet = CharSet.Unicode, SetLastError = true)]
+            public static extern IntPtr CreateWindowEx(uint dwExStyle, string lpClassName, string lpWindowName, uint dwStyle, int X, int Y, int nWidth, int nHeight, IntPtr hWndParent, IntPtr hMenu, IntPtr hInstance, IntPtr lpParam);
+            
+            [DllImport(DLL_User)]
+            public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+            [DllImport(DLL_User)]
+            public static extern bool UpdateWindow(IntPtr hWnd);
+            
+            [DllImport(DLL_User)]
+            public static extern bool GetMessage(out MSG lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
+
+            [DllImport(DLL_User)]
+            public static extern bool TranslateMessage(ref MSG lpMsg);
+
+            [DllImport(DLL_User)]
+            public static extern IntPtr DispatchMessage(ref MSG lpMsg);
+            
+            [DllImport(DLL_User, SetLastError = true)]
+            public static extern bool PeekMessage(out MSG lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax, uint wRemoveMsg);
+            
+            [DllImport(DLL_User, CharSet = CharSet.Unicode, SetLastError = true)]
+            public static extern ushort RegisterClassEx(ref WNDCLASSEX lpWndClass);
+            
+            [DllImport(DLL_User)]
+            public static extern IntPtr DefWindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+            
+            // ----------------------------------------------------------------------
+            
+            [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+            public delegate IntPtr WndProcDelegate(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam);
+            
+            // ----------------------------------------------------------------------
+
+            public static IntPtr DefaultWndProc(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam) => Windows.DefWindowProc(hwnd, msg, wParam, lParam);
+            
             // ----------------------------------------------------------------------
             
             public struct SYSTEMTIME{
@@ -115,6 +155,42 @@ public static partial class Native{
                 public ushort Milliseconds;
             }
             
+            public struct MSG{
+                public IntPtr hwnd;
+                public uint   message;
+                public IntPtr wParam;
+                public IntPtr lParam;
+                public uint   time;
+                public POINT  pt;
+            }
+            
+            [StructLayout(LayoutKind.Sequential)]
+            public struct POINT{
+                public int X;
+                public int Y;
+            }
+
+            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+            public struct WNDCLASSEX{
+                public WNDCLASSEX(string Name){
+                    cbSize = WL.System.Memory.StructSize<Native.Raw.Windows.WNDCLASSEX>();
+                    lpszClassName = Name;
+                }
+                
+                public uint cbSize;
+                public uint style;
+                public WndProcDelegate lpfnWndProc;
+                public int cbClsExtra;
+                public int cbWndExtra;
+                public IntPtr hInstance;
+                public IntPtr hIcon;
+                public IntPtr hCursor;
+                public IntPtr hbrBackground;
+                public string lpszMenuName;
+                public string lpszClassName;
+                public IntPtr hIconSm;
+            }
+            
             // ----------------------------------------------------------------------
             
             public const uint MEM_COMMIT             = 0x1000;
@@ -124,6 +200,16 @@ public static partial class Native{
             public const uint PAGE_EXECUTE_READWRITE = 0x40;
             public const uint WAIT_OBJECT_0          = 0x00000000;
             public const uint INFINITE               = 0xFFFFFFFF;
+            public const int  WS_OVERLAPPED          = 0x00000000;
+            public const int  WS_CAPTION             = 0x00C00000;
+            public const int  WS_SYSMENU             = 0x00080000;
+            public const int  WS_THICKFRAME          = 0x00040000;
+            public const int  WS_MINIMIZEBOX         = 0x00020000;
+            public const int  WS_MAXIMIZEBOX         = 0x00010000;
+            public const int  WS_OVERLAPPEDWINDOW    = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+            public const uint PM_NOREMOVE            = 0x0000;
+            public const uint PM_REMOVE              = 0x0001;
+            public const uint PM_NOYIELD             = 0x0002;
         }
     }
 }
