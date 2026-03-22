@@ -121,4 +121,11 @@ public static class Core{
         get => WL.__Base.Logger.Output;
         set => WL.__Base.Logger.Output = value;
     }
+    
+    // ----------------------------------------------------------------------
+    
+    /// <summary>
+    /// Текущая операционная система
+    /// </summary>
+    public static OS CurrentOS => WL.__Base.CurrentOS;
 }
