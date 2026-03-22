@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <Version>0.0.0.1</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\WoowzLib.Base\WoowzLib.Base.csproj" />
+      <ProjectReference Include="..\WoowzLib.Core\WoowzLib.Core.csproj" />
+      <ProjectReference Include="..\WoowzLib.Logger\WoowzLib.Logger.csproj" />
+      <ProjectReference Include="..\WoowzLib.System\WoowzLib.System.csproj" />
+    </ItemGroup>
+
+    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+        <Exec Command="&quot;W:\Other\WoowzLib\VersionUpdater\bin\Release\net8.0\VersionUpdater.exe&quot; &quot;W:\Other\WoowzLib\WoowzLibTest\WoowzLibTest.csproj&quot;" />
+    </Target>
+</Project>
+ 
