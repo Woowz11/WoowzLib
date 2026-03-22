@@ -1,4 +1,5 @@
-﻿using WLO;
+﻿using System.Runtime.Loader;
+using WLO;
 
 namespace WL;
 
@@ -58,6 +59,46 @@ public static class Core{
     /// </summary>
     public static void EnableAutoTerminate() => WL.__Base.HookTerminate();
     
+    /// <summary>
+    /// Вызывается при выходе из приложения (ТОЛЬКО ПРИ ВЫХОДЕ, CRASH или другие последствия не вызывают! Для этого используйте OnClose!)
+    /// </summary>
+    public static event EventHandler? OnExit{
+        add    => WL.__Base.OnExit += value;
+        remove => WL.__Base.OnExit -= value;
+    }
+        
+    /// <summary>
+    /// Вызывается при CRASH
+    /// </summary>
+    public static event UnhandledExceptionEventHandler? OnCrash{
+        add    => WL.__Base.OnCrash += value;
+        remove => WL.__Base.OnCrash -= value;
+    }
+        
+    /// <summary>
+    /// Вызывается при нажатиях комбинации <b>Ctrl+C, Ctrl+Break</b> в консоли
+    /// </summary>
+    public static event ConsoleCancelEventHandler? OnCancel{
+        add    => WL.__Base.OnCancel += value;
+        remove => WL.__Base.OnCancel -= value;
+    }
+        
+    /// <summary>
+    /// Вызывается при выгрузке приложения
+    /// </summary>
+    public static event Action<AssemblyLoadContext>? OnUnloading{
+        add    => WL.__Base.OnUnloading += value;
+        remove => WL.__Base.OnUnloading -= value;
+    }
+    
+    /// <summary>
+    /// Вызывается при любом закрытии приложения
+    /// </summary>
+    public static event Action<CloseReason>? OnClose{
+        add    => WL.__Base.OnClose += value;
+        remove => WL.__Base.OnClose -= value;
+    }
+
     // ----------------------------------------------------------------------
 
     /// <summary>
