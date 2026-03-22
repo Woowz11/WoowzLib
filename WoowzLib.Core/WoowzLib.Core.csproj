@@ -14,10 +14,6 @@
       <ProjectReference Include="..\WoowzLib.Base\WoowzLib.Base.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="WLO\" />
-    </ItemGroup>
-
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
       <Exec Command="&quot;W:\Other\WoowzLib\VersionUpdater\bin\Release\net8.0\VersionUpdater.exe&quot; &quot;W:\Other\WoowzLib\WoowzLib.Core\WoowzLib.Core.csproj&quot;" />
     </Target>
