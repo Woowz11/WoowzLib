@@ -1,4 +1,5 @@
 ﻿using WL;
+using WLO.Vector;
 
 namespace WLO;
 
@@ -6,17 +7,33 @@ namespace WLO;
 /// WINAPI окно
 /// </summary>
 public class Window{
-    public Window(WindowClass Class){
+    static Window(){
+        WL.Core.OnTerminate += () => {
+            foreach(Window Window in Windows.Values.ToArray()){
+                try{
+                    if(Window.Alive){ Window.Destroy(); }
+                    
+                    Window.__Destroy();
+                }catch(Exception e){
+                    Logger.Error("Произошла ошибка при очистке оставшихся WINAPI окон! Окно: " + Window);
+                }
+            }
+            
+            Windows.Clear();
+        };
+    }
+    
+    public Window(WindowClass Class, string Name, Vector2I Position, Vector2UI Size){
         try{
             this.Class = Class;
             
             Handle = Native.Raw.Windows.CreateWindowExW(
                 0,
                 Class.Name,
-                "Test window woowzlib",
-                Native.Raw.Windows.WS_OVERLAPPEDWINDOW,
-                100, 100,
-                800, 600,
+                Name,
+                Native.Raw.Windows.WS_OVERLAPPEDWINDOW | Native.Raw.Windows.WS_VISIBLE,
+                Position.X, Position.Y,
+                (int)Size.W, (int)Size.H,
                 IntPtr.Zero,
                 IntPtr.Zero,
                 Native.Raw.Windows.GetModuleHandle(null),
@@ -36,10 +53,14 @@ public class Window{
         }
     }
 
+    /// <summary>
+    /// Уничтожить окно
+    /// </summary>
     public void Destroy(){
         try{
             if(!Alive){ throw new Exception("Окно уже уничтожено!"); }
 
+            Native.Raw.Windows.DestroyWindow(Handle);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при уничтожении WINAPI окна [" + this + "]!", e);
         }

@@ -7,15 +7,14 @@
         <Configurations>Release</Configurations>
         <Platforms>AnyCPU</Platforms>
 
-        <Version>0.0.0.19</Version>
+        <Version>0.0.0.1</Version>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\WoowzLib.Core\WoowzLib.Core.csproj" />
-      <ProjectReference Include="..\WoowzLib.Math\WoowzLib.Math.csproj" />
     </ItemGroup>
 
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-        <Exec Command="&quot;W:\Other\WoowzLib\VersionUpdater\bin\Release\net8.0\VersionUpdater.exe&quot; &quot;W:\Other\WoowzLib\WoowzLib.System\WoowzLib.System.csproj&quot;" />
+        <Exec Command="&quot;W:\Other\WoowzLib\VersionUpdater\bin\Release\net8.0\VersionUpdater.exe&quot; &quot;W:\Other\WoowzLib\WoowzLib.Math\WoowzLib.Math.csproj&quot;" />
     </Target>
 </Project>

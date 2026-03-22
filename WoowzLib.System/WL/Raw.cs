@@ -151,6 +151,9 @@ public static partial class Native{
             [DllImport(DLL_GDI)]
             public static extern bool DeleteObject(IntPtr hObject);
             
+            [DllImport(DLL_User, SetLastError = true)]
+            public static extern bool DestroyWindow(IntPtr hWnd);
+            
             // ----------------------------------------------------------------------
             
             [UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -245,6 +248,7 @@ public static partial class Native{
             public const int  WS_MINIMIZEBOX         = 0x00020000;
             public const int  WS_MAXIMIZEBOX         = 0x00010000;
             public const int  WS_OVERLAPPEDWINDOW    = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+            public const int  WS_VISIBLE             = 0x10000000;
             public const uint PM_NOREMOVE            = 0x0000;
             public const uint PM_REMOVE              = 0x0001;
             public const uint PM_NOYIELD             = 0x0002;
