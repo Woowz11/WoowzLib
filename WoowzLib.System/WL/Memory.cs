@@ -19,6 +19,13 @@ public static partial class System{
         public static IntPtr SaveString(string Value) => Marshal.StringToHGlobalUni(Value);
 
         /// <summary>
+        /// Получает строку из памяти
+        /// </summary>
+        /// <param name="Pointer">Ссылка</param>
+        /// <returns>Строка</returns>
+        public static string? LoadString(IntPtr Pointer) => Marshal.PtrToStringUni(Pointer);
+
+        /// <summary>
         /// Сохраняет функцию в память (не нужно освобождать), функция должна находится в managed-поле, что-бы GC не удалил её
         /// </summary>
         /// <param name="Delegate">Функция</param>

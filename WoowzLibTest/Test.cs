@@ -7,6 +7,11 @@ public static class Test{
     /// Всего ошибок
     /// </summary>
     public static int TotalErrors = 0;
+
+    /// <summary>
+    /// Проваленных тестов
+    /// </summary>
+    public static int FailedTests = 0;
     
     /// <summary>
     /// Тест
@@ -55,6 +60,7 @@ public static class Test{
 
         if(TotalErrors > 0){
             Logger.Info("Тест \"" + Name + "\", прошёл с ошибками! Ошибок: " + TotalErrors);
+            FailedTests++;
         }else{
             Logger.Info("Тест \"" + Name + "\", прошёл успешно!");
         }
@@ -62,6 +68,11 @@ public static class Test{
     
     public static void Run(){
         Test_CSharp.Run();
-        Test_Base.Run();
+        Test_Base  .Run();
+        Test_Vector.Run();
+
+        if(FailedTests > 0){
+            Logger.Error("Есть проваленные тесты! Проваленных тестов: " + FailedTests);
+        }
     }
 }

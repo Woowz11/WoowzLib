@@ -87,7 +87,13 @@ namespace WL{
                 if(Terminated){ throw new Exception("Работа WoowzLib и так была завершена!"); }
                 
                 try{
-                    OnTerminate?.Invoke();
+                    // Вызов, в обратном порядке
+                    Delegate[]? OnTerminate__ = OnTerminate?.GetInvocationList();
+                    if(OnTerminate__ != null){
+                        for(int i = OnTerminate__.Length - 1; i >= 0; i--){
+                            ((Action)OnTerminate__[i])();
+                        }
+                    }
                 }catch(Exception e){ global::Logger.Error("Произошла ошибка в ивенте OnTerminate!", e); }
 
                 if(TerminateHooked){

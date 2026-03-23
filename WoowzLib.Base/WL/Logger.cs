@@ -1,5 +1,4 @@
-﻿using System.CodeDom.Compiler;
-using System.Text;
+﻿using System.Text;
 using WLO;
 
 namespace WLO{
@@ -44,7 +43,7 @@ namespace WL{
             public static void Initialize(){
                 try{
                     if(Initialized){ throw new Exception("Logger уже инициализированный!"); } Initialized = true;
-
+                    
                     Warned = false;
                     
                     TextWriter = new WoowzLibTextWriter(Console.Out);

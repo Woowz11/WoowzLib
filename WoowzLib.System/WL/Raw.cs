@@ -109,6 +109,9 @@ public static partial class Native{
             [DllImport(DLL_User, CharSet = CharSet.Unicode, SetLastError = true)]
             public static extern IntPtr CreateWindowExW(uint dwExStyle, string lpClassName, string lpWindowName, uint dwStyle, int X, int Y, int nWidth, int nHeight, IntPtr hWndParent, IntPtr hMenu, IntPtr hInstance, IntPtr lpParam);
             
+            [DllImport(DLL_User, CharSet = CharSet.Unicode)]
+            public static extern bool SetWindowTextW(IntPtr hWnd, string lpString);
+            
             [DllImport(DLL_User)]
             public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
@@ -130,7 +133,7 @@ public static partial class Native{
             [DllImport(DLL_User, CharSet = CharSet.Unicode, SetLastError = true)]
             public static extern ushort RegisterClassEx(ref WNDCLASSEX lpWndClass);
             
-            [DllImport(DLL_User)]
+            [DllImport(DLL_User, CharSet = CharSet.Unicode)]
             public static extern IntPtr DefWindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
             
             [DllImport(DLL_User)]
@@ -207,7 +210,9 @@ public static partial class Native{
                 public IntPtr hIcon;
                 public IntPtr hCursor;
                 public IntPtr hbrBackground;
+                [MarshalAs(UnmanagedType.LPWStr)]
                 public string lpszMenuName;
+                [MarshalAs(UnmanagedType.LPWStr)]
                 public string lpszClassName;
                 public IntPtr hIconSm;
             }
@@ -253,6 +258,7 @@ public static partial class Native{
             public const uint PM_REMOVE              = 0x0001;
             public const uint PM_NOYIELD             = 0x0002;
             public const uint WM_DESTROY             = 0x0002;
+            public const uint WM_SETTEXT             = 0x000C;
             public const uint WM_CLOSE               = 0x0010;
             public const uint WM_PAINT               = 0x000F;
         }

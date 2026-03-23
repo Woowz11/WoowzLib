@@ -10,7 +10,9 @@ public class WindowClass{
         try{
             this.Name = Name;
 
-            this.Event = Event ?? new WindowEvent((Window, Message, WP, LP) => null);
+            this.Event = Event ?? ((Window, Message, WP, LP) => null);
+
+            __WndProcDelegate = Events;
             
             Register();
         }catch(Exception e){
@@ -55,7 +57,7 @@ public class WindowClass{
                 hbrBackground = IntPtr.Zero,
                 lpszMenuName  = null!,
                 hIconSm       = IntPtr.Zero,
-                lpfnWndProc   = Events,
+                lpfnWndProc   = __WndProcDelegate,
                 hInstance     = Native.Raw.Windows.GetModuleHandle(null)
             };
 
@@ -70,7 +72,8 @@ public class WindowClass{
     /// Делегат для Events
     /// </summary>
     public delegate IntPtr? WindowEvent(Window Window, uint Message, long WP, long LP);
-    
+
+    private readonly Native.Raw.Windows.WndProcDelegate __WndProcDelegate;
     /// <summary>
     /// События
     /// </summary>
@@ -84,10 +87,21 @@ public class WindowClass{
                 }catch(Exception e){
                     Logger.Error("Произошла ошибка при вызове событий у класса окна [" + this + "]!", e);
                 }
-                
-                if(Message == Native.Raw.Windows.WM_DESTROY){
-                    Window__.__Destroy();
-                    Native.Raw.Windows.PostQuitMessage(0);
+
+                switch(Message){
+                    case Native.Raw.Windows.WM_SETTEXT:{
+                        string? NewTitle = WL.System.Memory.LoadString(LP);
+
+                        if(NewTitle != null){ Window__.__Title = NewTitle; }
+                        
+                        break;
+                    }
+                    
+                    case Native.Raw.Windows.WM_DESTROY: {
+                        Window__.__Destroy();
+                        Native.Raw.Windows.PostQuitMessage(0);
+                        break;
+                    }
                 }
 
                 if(Result.HasValue){ return Result.Value; }
@@ -115,4 +129,17 @@ public class WindowClass{
     /// Ссылка на класс
     /// </summary>
     public ushort Atom{ get; private set; }
+    
+    // ----------------------------------------------------------------------
+
+    public override string ToString() => "WindowClass(\"" + Name + "\", " + Atom + ")";
+
+    public override bool Equals(object? Object){
+        if(Object is not WindowClass Other){ return false; }
+        if(Atom != 0 && Other.Atom != 0){ return Atom == Other.Atom; }
+        return string.Equals(Name, Other.Name, StringComparison.Ordinal);
+    }
+
+    private readonly int __ID = Interlocked.Increment(ref __NextID); private static int __NextID;
+    public override int GetHashCode() => __ID;
 }

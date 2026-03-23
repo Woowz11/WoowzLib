@@ -23,14 +23,14 @@ public class Window{
         };
     }
     
-    public Window(WindowClass Class, string Name, Vector2I Position, Vector2UI Size){
+    public Window(WindowClass Class, string Title, Vector2I Position, Vector2UI Size){
         try{
             this.Class = Class;
             
             Handle = Native.Raw.Windows.CreateWindowExW(
                 0,
                 Class.Name,
-                Name,
+                Title,
                 Native.Raw.Windows.WS_OVERLAPPEDWINDOW | Native.Raw.Windows.WS_VISIBLE,
                 Position.X, Position.Y,
                 (int)Size.W, (int)Size.H,
@@ -39,6 +39,7 @@ public class Window{
                 Native.Raw.Windows.GetModuleHandle(null),
                 IntPtr.Zero
             );
+            __Title = Title;
 
             if(Handle == IntPtr.Zero){ throw new Exception("Произошла ошибка в CreateWindowExW!\nОшибка: " + WL.System.LastOSError()); }
             
@@ -52,6 +53,8 @@ public class Window{
             throw new Exception("Произошла ошибка при создании WINAPI окна!", e);
         }
     }
+    public Window(WindowClass Class, string Title, Vector2I Position) : this(Class, Title, Position, new Vector2UI(800, 600)){}
+    public Window(WindowClass Class, string Title = "Window") : this(Class, Title, Vector2I.Zero){}
 
     /// <summary>
     /// Уничтожить окно
@@ -77,16 +80,120 @@ public class Window{
     public bool Alive => Handle != IntPtr.Zero;
     
     /// <summary>
+    /// Проверяет, живое ли окно
+    /// </summary>
+    public void CheckAlive(){ if(!Alive){ throw new Exception("Окно не живое!"); } }
+    
+    /// <summary>
     /// Класс окна
     /// </summary>
     public readonly WindowClass Class;
+    
+    // ----------------------------------------------------------------------
+
+    internal string __Title;
+    /// <summary>
+    /// Заголовок окна
+    /// </summary>
+    public string Title{
+        get => __Title;
+        set{
+            try{
+                CheckAlive();
+
+                string Title = value;
+
+                try{
+                    string? ChangedTitle = OnTitleChange?.Invoke(this, value);
+                    if(ChangedTitle != null){ Title = ChangedTitle; }
+                }catch(Exception e){
+                    throw new Exception("Ошибка внутри ивента OnTitleChange!", e);
+                }
+                
+                if(__Title == Title){ return; }
+
+                Native.Raw.Windows.SetWindowTextW(Handle, Title);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке заголовка окну [" + this + "]!\nЗаголовок: \"" + value + "\"", e);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Вызывается при изменении заголовка окна
+    /// </summary>
+    public event Func<Window, string, string>? OnTitleChange;
+
+    private Vector2I __Position;
+    /// <summary>
+    /// Позиция окна
+    /// </summary>
+    public Vector2I Position{
+        get => __Position;
+        set{
+            try{
+                CheckAlive();
+                if(__Position == value){ return; } __Position = value;
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке позиции окна [" + this + "]!\nПозиция: " + value, e);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Позиция окна по X
+    /// </summary>
+    public int X{
+        get => Position.X;
+        set => Position = __Position.WithX(value);
+    }
+    
+    /// <summary>
+    /// Позиция окна по Y
+    /// </summary>
+    public int Y{
+        get => Position.Y;
+        set => Position = __Position.WithY(value);
+    }
+
+    private Vector2UI __Size;
+    /// <summary>
+    /// Размер окна
+    /// </summary>
+    public Vector2UI Size{
+        get => __Size;
+        set{
+            try{
+                CheckAlive();
+                if(__Size == value){ return; } __Size = value;
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке размера окна [" + this + "]!\nРазмер: " + value, e);
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Ширина окна
+    /// </summary>
+    public uint W{
+        get => Size.W;
+        set => Size = __Size.WithW(value);
+    }
+    
+    /// <summary>
+    /// Высота окна
+    /// </summary>
+    public uint H{
+        get => Size.H;
+        set => Size = __Size.WithH(value);
+    }
     
     // ----------------------------------------------------------------------
     
     /// <summary>
     /// Вызывается при уничтожении окна
     /// </summary>
-    public void __Destroy(){
+    internal void __Destroy(){
         try{
             if(!Alive){ return; }
 
@@ -128,4 +235,18 @@ public class Window{
             Native.Raw.Windows.DispatchMessage (ref Message);
         }
     }
+    
+    // ----------------------------------------------------------------------
+
+    public override string ToString() => "Window(\"" + Title + "\", " + Handle + ", " + Size.ToSizeString() + ", " + Position.ToPositionString() + ", " + Class + ")";
+
+    public override bool Equals(object? Object){
+        if(Object is not Window Other){ return false; }
+        if(ReferenceEquals(this, Other)){ return true; }
+        if(Handle == IntPtr.Zero || Other.Handle == IntPtr.Zero){ return false; }
+        return Handle == Other.Handle;
+    }
+    
+    private readonly int __ID = Interlocked.Increment(ref __NextID); private static int __NextID;
+    public override int GetHashCode() => __ID;
 }
