@@ -178,6 +178,9 @@ public static partial class Native{
             [DllImport(DLL_User, SetLastError = true)]
             public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
             
+            [DllImport(DLL_User, SetLastError = true, CharSet = CharSet.Unicode)]
+            public static extern bool GetClassInfoEx(IntPtr hInstance, string lpClassName, out WNDCLASSEX lpWndClass);
+            
             // ----------------------------------------------------------------------
             
             [UnmanagedFunctionPointer(CallingConvention.StdCall)]

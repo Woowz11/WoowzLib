@@ -56,37 +56,24 @@ public class Window{
             Config ??= new WindowConstructor();
             
             this.Class = Class;
+            ClassName  = Class.Name;
 
-            __Style = Native.Raw.Windows.WS_OVERLAPPEDWINDOW;
-            
-            Handle = Native.Raw.Windows.CreateWindowExW(
-                0,
-                Class.Name,
-                Config.Title!,
-                __Style,
-                Config.Position.X, Config.Position.Y,
-                (int)Config.Size.W, (int)Config.Size.H,
-                IntPtr.Zero,
-                IntPtr.Zero,
-                Native.Raw.Windows.GetModuleHandle(null),
-                IntPtr.Zero
-            );
-            __OnTitle   (Config.Title!  );
-            __OnPosition(Config.Position);
-            __OnSize    (Config.Size    );
-
-            if(Handle == IntPtr.Zero){ throw new Exception("Произошла ошибка в CreateWindowExW!\nОшибка: " + WL.System.LastOSError()); }
-
-            if(Config.Visible){ Visible = true; }
-            
-            Windows[Handle] = this;
-            try{
-                OnCreate?.Invoke(this);
-            }catch(Exception e){
-                Logger.Error("Произошла ошибка в ивенте OnCreate при создании окна [" + this + "]!", e);
-            }
+            __CreateWindow(ClassName, Config);
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при создании окна!", e);
+            throw new Exception("Произошла ошибка при создании окна!\nКласс: " + Class + "\nКонфиг: " + WL.__Base.Other.ToString(Config), e);
+        }
+    }
+    
+    public Window(string ExistingClass, WindowConstructor? Config = null){
+        try{
+            Config ??= new WindowConstructor();
+
+            Class     = null;
+            ClassName = ExistingClass;
+
+            __CreateWindow(ClassName, Config);
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при создании окна!\nСуществующий класс: " + ExistingClass + "\nКонфиг: " + WL.__Base.Other.ToString(Config), e);
         }
     }
 
@@ -119,9 +106,14 @@ public class Window{
     public void CheckAlive(){ if(!Alive){ throw new Exception("Окно не живое!"); } }
     
     /// <summary>
-    /// Класс окна
+    /// Класс окна (если указан)
     /// </summary>
-    public readonly WindowClass Class;
+    public readonly WindowClass? Class;
+
+    /// <summary>
+    /// Название класса
+    /// </summary>
+    public readonly string ClassName;
     
     // ----------------------------------------------------------------------
 
@@ -408,6 +400,41 @@ public class Window{
     private void __UpdateWindowSize(Vector2UI Size){
         if(!Native.Raw.Windows.SetWindowPos(Handle, IntPtr.Zero, 0, 0, (int)Size.W, (int)Size.H, Native.Raw.Windows.SWP_NOZORDER | Native.Raw.Windows.SWP_NOACTIVATE | Native.Raw.Windows.SWP_NOMOVE)){
             throw new Exception("Произошла ошибка в SetWindowPos, внутри __UpdateWindowSize!\nОшибка: " + WL.System.LastOSError() + "\nРазмер: " + Size);
+        }
+    }
+
+    /// <summary>
+    /// Создаёт окно
+    /// </summary>
+    /// <param name="Class">Название класса</param>
+    private void __CreateWindow(string Class, WindowConstructor Config){
+        __Style = Native.Raw.Windows.WS_OVERLAPPEDWINDOW;
+            
+        Handle = Native.Raw.Windows.CreateWindowExW(
+            0,
+            Class,
+            Config.Title!,
+            __Style,
+            Config.Position.X, Config.Position.Y,
+            (int)Config.Size.W, (int)Config.Size.H,
+            IntPtr.Zero,
+            IntPtr.Zero,
+            Native.Raw.Windows.GetModuleHandle(null),
+            IntPtr.Zero
+        );
+        __OnTitle   (Config.Title!  );
+        __OnPosition(Config.Position);
+        __OnSize    (Config.Size    );
+
+        if(Handle == IntPtr.Zero){ throw new Exception("Произошла ошибка в CreateWindowExW!\nОшибка: " + WL.System.LastOSError()); }
+
+        if(Config.Visible){ Visible = true; }
+            
+        Windows[Handle] = this;
+        try{
+            OnCreate?.Invoke(this);
+        }catch(Exception e){
+            Logger.Error("Произошла ошибка в ивенте OnCreate при создании окна [" + this + "]!", e);
         }
     }
     

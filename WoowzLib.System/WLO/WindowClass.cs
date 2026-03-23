@@ -20,27 +20,6 @@ public class WindowClass{
             throw new Exception("Произошла ошибка при создании класса окна!", e);
         }
     }
-
-    [Obsolete]
-    public static WindowClass FromExisting(string Name){
-        try{
-            WindowClass Result = new WindowClass(Name);
-
-            return Result;
-        }catch(Exception e){
-            throw new Exception("Произошла ошибка при получении существующего класса окна!\nНазвание: \"" + Name + "\"", e);
-        }
-    }
-    
-    [Obsolete]
-    public static WindowClass FromExisting(ushort Atom){
-        try{
-
-            return null;
-        }catch(Exception e){
-            throw new Exception("Произошла ошибка при получении существующего класса окна!\nAtom: " + Atom, e);
-        }
-    }
     
     // ----------------------------------------------------------------------
 
@@ -137,7 +116,7 @@ public class WindowClass{
     public readonly WindowEvent Event;
     
     /// <summary>
-    /// Ссылка на класс
+    /// ID класса
     /// </summary>
     public ushort Atom{ get; private set; }
     
