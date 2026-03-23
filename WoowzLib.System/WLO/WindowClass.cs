@@ -72,7 +72,7 @@ public class WindowClass{
     /// <summary>
     /// Делегат для Events
     /// </summary>
-    public delegate IntPtr? WindowEvent(Window Window, uint Message, long WP, long LP);
+    public delegate IntPtr? WindowEvent(Window Window, uint Message, IntPtr WP, IntPtr LP);
 
     private readonly Native.Raw.Windows.WndProcDelegate __WndProcDelegate;
     /// <summary>
@@ -84,18 +84,16 @@ public class WindowClass{
                 IntPtr? Result = null;
                 
                 try{
-                    Result = Event(Window, Message, WP.ToInt64(), LP.ToInt64());
+                    Result = Event(Window, Message, WP, LP);
                 }catch(Exception e){
                     Logger.Error("Произошла ошибка при вызове событий у класса окна [" + this + "]!", e);
                 }
 
                 switch(Message){
                     case Native.Raw.Windows.WM_SETTEXT: {
-                        string? NewTitle = WL.System.Memory.LoadString(LP);
+                        string? Title = WL.System.Memory.LoadString(LP);
 
-                        if(NewTitle != null){ Window.__Title = NewTitle; }
-                        
-                        break;
+                        if(Title != null){ Window.__OnTitle(Title); } break;
                     }
 
                     case Native.Raw.Windows.WM_MOVE:{
@@ -107,7 +105,7 @@ public class WindowClass{
                     case Native.Raw.Windows.WM_SIZE:{
                         if(!Native.Raw.Windows.GetWindowRect(Handle, out Native.Raw.Windows.RECT Rect)){ throw new Exception("Произошла ошибка в GetWindowRect в WM_SIZE!\nОшибка: " + WL.System.LastOSError()); }
                         
-                        Window.__OnSize(new Vector2UI((uint)(Rect.right - Rect.left), (uint)(Rect.bottom - Rect.top))); break;
+                        Window.__OnSize(new Vector2UI((uint)(Rect.width), (uint)(Rect.height))); break;
                     }
                     
                     case Native.Raw.Windows.WM_DESTROY: {

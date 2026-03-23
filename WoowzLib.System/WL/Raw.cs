@@ -172,6 +172,9 @@ public static partial class Native{
             [DllImport(DLL_User, SetLastError = true)]
             public static extern bool ScreenToClient(IntPtr hWnd, ref POINT lpPoint);
             
+            [DllImport(DLL_User, SetLastError = true)]
+            public static extern bool AdjustWindowRectEx(ref RECT lpRect, uint dwStyle, bool bMenu, uint dwExStyle);
+            
             // ----------------------------------------------------------------------
             
             [UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -236,10 +239,15 @@ public static partial class Native{
             
             [StructLayout(LayoutKind.Sequential)]
             public struct RECT{
+                public RECT(int left, int top, int right, int bottom){ this.left = left; this.top = top; this.right = right; this.bottom = bottom; }
+                
                 public int left;
                 public int top;
                 public int right;
                 public int bottom;
+
+                public int width  => right - left;
+                public int height => bottom - top;
             }
 
             [StructLayout(LayoutKind.Sequential)]
