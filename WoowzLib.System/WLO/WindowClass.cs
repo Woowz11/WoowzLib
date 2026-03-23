@@ -68,32 +68,6 @@ public class WindowClass{
                     Logger.Error("Произошла ошибка при вызове событий у класса окна [" + this + "]!", e);
                 }
 
-                switch(Message){
-                    case Native.Raw.Windows.WM_SETTEXT: {
-                        string? Title = WL.System.Memory.LoadString(LP);
-
-                        if(Title != null){ Window.__OnTitle(Title); } break;
-                    }
-
-                    case Native.Raw.Windows.WM_MOVE: {
-                        if(!Native.Raw.Windows.GetWindowRect(Handle, out Native.Raw.Windows.RECT Rect)){ throw new Exception("Произошла ошибка в GetWindowRect в WM_MOVE!\nОшибка: " + WL.System.LastOSError()); }
-                        
-                        Window.__OnPosition(new Vector2I(Rect.left, Rect.top)); break;
-                    }
-
-                    case Native.Raw.Windows.WM_SIZE: {
-                        if(!Native.Raw.Windows.GetWindowRect(Handle, out Native.Raw.Windows.RECT Rect)){ throw new Exception("Произошла ошибка в GetWindowRect в WM_SIZE!\nОшибка: " + WL.System.LastOSError()); }
-                        
-                        Window.__OnSize(new Vector2UI((uint)(Rect.width), (uint)(Rect.height))); break;
-                    }
-                    
-                    case Native.Raw.Windows.WM_DESTROY: {
-                        Window.__Destroy();
-                        Native.Raw.Windows.PostQuitMessage(0);
-                        break;
-                    }
-                }
-
                 if(Result.HasValue){ return Result.Value; }
             }
         }catch(Exception e){

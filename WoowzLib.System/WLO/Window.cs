@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Text;
 using WL;
 using WLO.Attribute;
 using WLO.Vector;
@@ -123,28 +124,36 @@ public class Window{
         /// Вызывается при изменении заголовка окна, (Окно, заголовок)
         /// </summary>
         public event Action<Window, string>? OnTitle;
-        internal void __OnTitle(string Title){
-            __Title = Title;
-            
-            try{
-                OnTitle?.Invoke(this, __Title);
-            }catch(Exception e){
-                Logger.Error("Произошла ошибка внутри ивента OnTitle у окна [" + this + "]!\nЗаголовок: " + Title, e);
-            }
-        }
         
-        private string __Title = string.Empty;
         /// <summary>
         /// Заголовок окна
         /// </summary>
         public string Title{
-            get => __Title;
+            get{
+                try{
+                    CheckAlive();
+
+                    StringBuilder SB = new StringBuilder(512);
+
+                    int Length = Native.Raw.Windows.GetWindowText(Handle, SB, SB.Capacity);
+                    
+                    return Length > 0 ? SB.ToString() : string.Empty;
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при получении заголовка окна [" + this + "]!", e);
+                }
+            }
             set{
                 try{
                     CheckAlive();
                     
-                    if(__Title == value){ return; }
+                    if(Title == value){ return; }
 
+                    try{
+                        OnTitle?.Invoke(this, value);
+                    }catch(Exception e){
+                        Logger.Error("Произошла ошибка внутри ивента OnTitle у окна [" + this + "]!\nЗаголовок: " + value, e);
+                    }
+                    
                     if(!Native.Raw.Windows.SetWindowTextW(Handle, value)){ throw new Exception("Произошла ошибка в SetWindowTextW!\nОшибка: " + WL.System.LastOSError()); }
                 }catch(Exception e){
                     throw new Exception("Произошла ошибка при установке заголовка окну [" + this + "]!\nЗаголовок: \"" + value + "\"", e);
@@ -160,32 +169,40 @@ public class Window{
         /// Вызывается при изменении позиции окна, (Окно, позиция, клиентская позиция)
         /// </summary>
         public event Action<Window, Vector2I, Vector2I>? OnPosition;
-        internal void __OnPosition(Vector2I WindowPosition){
-            __Position       = WindowPosition;
-            __ClientPosition = ClientToScreen(Vector2I.Zero);
-            
+        internal void __OnPosition(Vector2I Position){
             try{
-                OnPosition?.Invoke(this, __Position, __ClientPosition);
+                OnPosition?.Invoke(this, Position, ClientPosition);
             }catch(Exception e){
-                Logger.Error("Произошла ошибка внутри ивента OnPosition у окна [" + this + "]!\nПозиция: " + WindowPosition, e);
+                Logger.Error("Произошла ошибка внутри ивента OnPosition у окна [" + this + "]!\nПозиция: " + Position, e);
             }
         }
     
         #region Screen
 
-            private Vector2I __Position;
             /// <summary>
             /// Позиция окна (с учётом рамки)
             /// </summary>
             public Vector2I Position{
-                get => __Position;
+                get{
+                    try{
+                        CheckAlive();
+
+                        if(!Native.Raw.Windows.GetWindowRect(Handle, out Native.Raw.Windows.RECT Rect)){ throw new Exception("Произошла ошибка в GetWindowRect!\nОшибка: " + WL.System.LastOSError()); }
+
+                        return new Vector2I(Rect.left, Rect.top);
+                    }catch(Exception e){
+                        throw new Exception("Произошла ошибка при получении позиции окна [" + this + "]!", e);
+                    }
+                }
                 set{
                     try{
                         CheckAlive();
                             
-                        if(__Position == value){ return; }
-                            
+                        if(Position == value){ return; }
+                        
                         __UpdateWindowPosition(value);
+                        
+                        __OnPosition(value);
                     }catch(Exception e){
                         throw new Exception("Произошла ошибка при установке позиции окна [" + this + "]!\nПозиция: " + value.ToPositionString(), e);
                     }
@@ -196,21 +213,33 @@ public class Window{
 
         #region Client
 
-            internal Vector2I __ClientPosition;
             /// <summary>
             /// Клиентская позиция окна (без учёта рамки)
             /// </summary>
             [RequireTesting(TestingInformation.New, "Неизвестно, верная формула или нет")]
             public Vector2I ClientPosition{
-                get => __ClientPosition;
+                get{
+                    try{
+                        CheckAlive();
+
+                        return ClientToScreen(Vector2I.Zero);
+                    }catch(Exception e){
+                        throw new Exception("Произошла ошибка при получении клиентской позиции окна [" + this + "]!", e);
+                    }
+                }
                 set{
                     try{
                         CheckAlive();
-                                
+
+                        Vector2I __ClientPosition = ClientPosition;
+                        
                         if(__ClientPosition == value){ return; }
 
-                        Vector2I Offset = __ClientPosition - __Position;
-                        Position = value - Offset;
+                        Vector2I Offset = __ClientPosition - Position;
+                        Vector2I __Position = value - Offset;
+                        Position = __Position;
+                        
+                        __OnPosition(__Position);
                     }catch(Exception e){
                         throw new Exception("Произошла ошибка при установке клиентской позиции окна [" + this + "]!\nПозиция: " + value.ToPositionString(), e);
                     }
@@ -227,34 +256,40 @@ public class Window{
         /// Вызывается при изменении размера окна, (Окно, размер, клиентский размер)
         /// </summary>
         public event Action<Window, Vector2UI, Vector2UI>? OnSize;
-        internal void __OnSize(Vector2UI WindowSize){
-            __Size = WindowSize;
-
-            if(!Native.Raw.Windows.GetClientRect(Handle, out Native.Raw.Windows.RECT Rect)){ throw new Exception("Произошла ошибка в GetClientRect!\nОшибка:" + WL.System.LastOSError()); }
-            __ClientSize = new Vector2UI((uint)(Rect.width), (uint)(Rect.height));
-            
+        internal void __OnSize(Vector2UI Size){
             try{
-                OnSize?.Invoke(this, __Size, __ClientSize);
+                OnSize?.Invoke(this, Size, ClientSize);
             }catch(Exception e){
-                Logger.Error("Произошла ошибка внутри ивента OnSize у окна [" + this + "]!\nРазмер: " + WindowSize, e);
+                Logger.Error("Произошла ошибка внутри ивента OnSize у окна [" + this + "]!\nРазмер: " + Size, e);
             }
         }
 
         #region Screen
 
-            private Vector2UI __Size;
             /// <summary>
             /// Размер окна (с учётом рамки)
             /// </summary>
             public Vector2UI Size{
-                get => __Size;
+                get{
+                    try{
+                        CheckAlive();
+                        
+                        if(!Native.Raw.Windows.GetWindowRect(Handle, out Native.Raw.Windows.RECT Rect)){ throw new Exception("Произошла ошибка в GetWindowRect!\nОшибка: " + WL.System.LastOSError()); }
+
+                        return new Vector2UI((uint)Rect.width, (uint)Rect.height);
+                    }catch(Exception e){
+                        throw new Exception("Произошла ошибка при получении размера окна [" + this + "]!", e);
+                    }
+                }
                 set{
                     try{
                         CheckAlive();
                         
-                        if(__Size == value){ return; }
+                        if(Size == value){ return; }
 
                         __UpdateWindowSize(value);
+                        
+                        __OnSize(value);
                     }catch(Exception e){
                         throw new Exception("Произошла ошибка при установке размера окна [" + this + "]!\nРазмер: " + value.ToSizeString(), e);
                     }
@@ -265,17 +300,26 @@ public class Window{
 
         #region Client
 
-            private Vector2UI __ClientSize;
             /// <summary>
             /// Размер окна (без учёта рамки)
             /// </summary>
             public Vector2UI ClientSize{
-                get => __ClientSize;
+                get{
+                    try{
+                        CheckAlive();
+                        
+                        if(!Native.Raw.Windows.GetClientRect(Handle, out Native.Raw.Windows.RECT Rect)){ throw new Exception("Произошла ошибка в GetClientRect!\nОшибка:" + WL.System.LastOSError()); }
+                        
+                        return new Vector2UI((uint)(Rect.width), (uint)(Rect.height));
+                    }catch(Exception e){
+                        throw new Exception("Произошла ошибка при получении клиентского размера окна [" + this + "]!", e);
+                    }
+                }
                 set{
                     try{
                         CheckAlive();
                             
-                        if(__ClientSize == value){ return; }
+                        if(ClientSize == value){ return; }
 
                         Native.Raw.Windows.RECT Rect = new Native.Raw.Windows.RECT(0, 0, (int)value.W, (int)value.H);
 
@@ -422,12 +466,11 @@ public class Window{
             Native.Raw.Windows.GetModuleHandle(null),
             IntPtr.Zero
         );
-        __OnTitle   (Config.Title!  );
-        __OnPosition(Config.Position);
-        __OnSize    (Config.Size    );
 
         if(Handle == IntPtr.Zero){ throw new Exception("Произошла ошибка в CreateWindowExW!\nОшибка: " + WL.System.LastOSError()); }
 
+        __OnSize    (Config.Size    );
+        
         if(Config.Visible){ Visible = true; }
             
         Windows[Handle] = this;
@@ -463,11 +506,17 @@ public class Window{
             Native.Raw.Windows.TranslateMessage(ref Message);
             Native.Raw.Windows.DispatchMessage (ref Message);
         }
+
+        foreach(Window Window in Windows.Values.ToArray()){
+            if(!Native.Raw.Windows.IsWindow(Window.Handle)){
+                Window.__Destroy();
+            }
+        }
     }
     
     // ----------------------------------------------------------------------
 
-    public override string ToString() => "Window(\"" + Title + "\", " + Handle + ", " + Size.ToSizeString() + ", " + Position.ToPositionString() + ", " + Class + ")";
+    public override string ToString() => "Window(" + (Alive ? ("\"" + Title + "\", " + Handle + ", " + Size.ToSizeString() + ", " + Position.ToPositionString()) : "Уничтожено") + ", " + (Class == null ? ClassName : Class) + ")";
 
     public override bool Equals(object? Object){
         if(Object is not Window Other){ return false; }

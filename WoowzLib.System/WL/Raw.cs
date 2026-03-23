@@ -1,4 +1,6 @@
 ﻿using System.Runtime.InteropServices;
+using System.Text;
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
 namespace WL;
@@ -180,6 +182,12 @@ public static partial class Native{
             
             [DllImport(DLL_User, SetLastError = true, CharSet = CharSet.Unicode)]
             public static extern bool GetClassInfoEx(IntPtr hInstance, string lpClassName, out WNDCLASSEX lpWndClass);
+            
+            [DllImport(DLL_User, CharSet = CharSet.Unicode)]
+            public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+            
+            [DllImport(DLL_User)]
+            public static extern bool IsWindow(IntPtr hWnd);
             
             // ----------------------------------------------------------------------
             
