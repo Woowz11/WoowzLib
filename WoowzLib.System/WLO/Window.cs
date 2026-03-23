@@ -25,29 +25,59 @@ public class Window{
         };
     }
     
-    public Window(WindowClass Class, string Title, Vector2I Position, Vector2UI Size){
+    /// <summary>
+    /// Значения для конструктора окна
+    /// </summary>
+    public class WindowConstructor{
+        
+        /// <summary>
+        /// Стартовый заголовок окна
+        /// </summary>
+        public string Title = "Window";
+        
+        /// <summary>
+        /// Стартовая позиция окна
+        /// </summary>
+        public Vector2I Position = Vector2I.Zero;
+        
+        /// <summary>
+        /// Стартовый размер окна
+        /// </summary>
+        public Vector2UI Size = new Vector2UI(800, 600);
+
+        /// <summary>
+        /// Видно окно при старте?
+        /// </summary>
+        public bool Visible = true;
+    }
+    
+    public Window(WindowClass Class, WindowConstructor? Config = null){
         try{
+            Config ??= new WindowConstructor();
+            
             this.Class = Class;
 
-            __Style = Native.Raw.Windows.WS_OVERLAPPEDWINDOW | Native.Raw.Windows.WS_VISIBLE;
+            __Style = Native.Raw.Windows.WS_OVERLAPPEDWINDOW;
             
             Handle = Native.Raw.Windows.CreateWindowExW(
                 0,
                 Class.Name,
-                Title,
+                Config.Title!,
                 __Style,
-                Position.X, Position.Y,
-                (int)Size.W, (int)Size.H,
+                Config.Position.X, Config.Position.Y,
+                (int)Config.Size.W, (int)Config.Size.H,
                 IntPtr.Zero,
                 IntPtr.Zero,
                 Native.Raw.Windows.GetModuleHandle(null),
                 IntPtr.Zero
             );
-            __OnTitle   (Title   );
-            __OnPosition(Position);
-            __OnSize    (Size    );
+            __OnTitle   (Config.Title!  );
+            __OnPosition(Config.Position);
+            __OnSize    (Config.Size    );
 
             if(Handle == IntPtr.Zero){ throw new Exception("Произошла ошибка в CreateWindowExW!\nОшибка: " + WL.System.LastOSError()); }
+
+            if(Config.Visible){ Visible = true; }
             
             Windows[Handle] = this;
             try{
@@ -59,8 +89,6 @@ public class Window{
             throw new Exception("Произошла ошибка при создании окна!", e);
         }
     }
-    public Window(WindowClass Class, string Title, Vector2I Position) : this(Class, Title, Position, new Vector2UI(800, 600)){}
-    public Window(WindowClass Class, string Title = "Window") : this(Class, Title, Vector2I.Zero){}
 
     /// <summary>
     /// Уничтожить окно
@@ -269,6 +297,45 @@ public class Window{
             }
 
         #endregion
+
+    #endregion
+
+    #region Видимость
+
+        /// <summary>
+        /// Вызывается при изменении видимости окна, (Окно, видимый?)
+        /// </summary>
+        public event Action<Window, bool>? OnVisible;
+        internal void __OnVisible(bool Visible){
+            __Visible = Visible;
+
+            try{
+                OnVisible?.Invoke(this, __Visible);
+            }catch(Exception e){
+                Logger.Error("Произошла ошибка внутри ивента OnVisible у окна [" + this + "]!\nВидимость: " + Visible, e);
+            }
+        }
+    
+        private bool __Visible;
+        /// <summary>
+        /// Окно видимое?
+        /// </summary>
+        public bool Visible{
+            get => __Visible;
+            set{
+                try{
+                    CheckAlive();
+                    
+                    if(__Visible == value){ return; }
+
+                    Native.Raw.Windows.ShowWindow(Handle, value ? Native.Raw.Windows.SW_SHOW : Native.Raw.Windows.SW_HIDE);
+                    
+                    __OnVisible(value);
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при установке видимости окну [" + this + "]!\nВидимость: " + value, e);
+                }
+            }
+        }
 
     #endregion
     

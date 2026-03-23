@@ -175,6 +175,9 @@ public static partial class Native{
             [DllImport(DLL_User, SetLastError = true)]
             public static extern bool AdjustWindowRectEx(ref RECT lpRect, uint dwStyle, bool bMenu, uint dwExStyle);
             
+            [DllImport(DLL_User, SetLastError = true)]
+            public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+            
             // ----------------------------------------------------------------------
             
             [UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -301,6 +304,12 @@ public static partial class Native{
             public const uint SWP_NOREPOSITION       = SWP_NOOWNERZORDER;
             public const uint WM_MOVE                = 0x0003;
             public const uint WM_SIZE                = 0x0005;
+            public const uint WM_SHOWWINDOW          = 0x0018;
+            public const uint WM_WINDOWPOSCHANGED    = 0x0047;
+            public const int  SW_HIDE                = 0;
+            public const int  SW_SHOW                = 5;
+            public const int  GWL_STYLE              = -16;
+            public const int  GWL_EXSTYLE            = -20;
         }
     }
 }

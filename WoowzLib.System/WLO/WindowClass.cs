@@ -96,13 +96,13 @@ public class WindowClass{
                         if(Title != null){ Window.__OnTitle(Title); } break;
                     }
 
-                    case Native.Raw.Windows.WM_MOVE:{
+                    case Native.Raw.Windows.WM_MOVE: {
                         if(!Native.Raw.Windows.GetWindowRect(Handle, out Native.Raw.Windows.RECT Rect)){ throw new Exception("Произошла ошибка в GetWindowRect в WM_MOVE!\nОшибка: " + WL.System.LastOSError()); }
                         
                         Window.__OnPosition(new Vector2I(Rect.left, Rect.top)); break;
                     }
 
-                    case Native.Raw.Windows.WM_SIZE:{
+                    case Native.Raw.Windows.WM_SIZE: {
                         if(!Native.Raw.Windows.GetWindowRect(Handle, out Native.Raw.Windows.RECT Rect)){ throw new Exception("Произошла ошибка в GetWindowRect в WM_SIZE!\nОшибка: " + WL.System.LastOSError()); }
                         
                         Window.__OnSize(new Vector2UI((uint)(Rect.width), (uint)(Rect.height))); break;
