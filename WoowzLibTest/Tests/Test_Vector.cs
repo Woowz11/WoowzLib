@@ -38,6 +38,31 @@ public static class Test_Vector{
                 if(A == C){ throw new Exception("Сломан: == 2"); }
                 if(A != B){ throw new Exception("Сломан: != 1"); }
                 if(!(A != C)){ throw new Exception("Сломан: != 2"); }
+
+                var R = A + B;
+                if(R.X != 6 || R.Y != 2){ throw new Exception("Сломан: + 1"); }
+                R = A + 10;
+                if(R.X != 13 || R.Y != 11){ throw new Exception("Сломан: + 2"); }
+                
+                R = A - B;
+                if(R.X != 0 || R.Y != 0){ throw new Exception("Сломан: - 1"); }
+                R = A - 10;
+                if(R.X != -7 || R.Y != -9){ throw new Exception("Сломан: - 2"); }
+                
+                R = A * B;
+                if(R.X != 9 || R.Y != 1){ throw new Exception("Сломан: * 1"); }
+                R = A * 10;
+                if(R.X != 30 || R.Y != 10){ throw new Exception("Сломан: * 2"); }
+                
+                R = A / B;
+                if(R.X != 1 || R.Y != 1){ throw new Exception("Сломан: / 1"); }
+                R = new Vector2I(10, 10) / 10;
+                if(R.X != 1 || R.Y != 1){ throw new Exception("Сломан: / 2"); }
+                
+                R = A++;
+                if(R.X != 4 || R.Y != 2){ throw new Exception("Сломан: ++"); }
+                R = A--;
+                if(R.X != 2 || R.Y != 0){ throw new Exception("Сломан: --"); }
             });
         });
     }

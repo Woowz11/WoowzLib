@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using WL;
+using WLO.Attribute;
 using WLO.Vector;
 
 namespace WLO;
@@ -179,6 +180,7 @@ public class Window{
             /// <summary>
             /// Клиентская позиция окна (без учёта рамки)
             /// </summary>
+            [RequireTesting(TestingInformation.New, "Неизвестно, верная формула или нет")]
             public Vector2I ClientPosition{
                 get => __ClientPosition;
                 set{
@@ -187,7 +189,8 @@ public class Window{
                                 
                         if(__ClientPosition == value){ return; }
 
-                        Position = ClientToScreen(value);
+                        Vector2I Offset = __ClientPosition - __Position;
+                        Position = value - Offset;
                     }catch(Exception e){
                         throw new Exception("Произошла ошибка при установке клиентской позиции окна [" + this + "]!\nПозиция: " + value.ToPositionString(), e);
                     }
