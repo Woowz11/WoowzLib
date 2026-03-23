@@ -21,9 +21,9 @@ namespace WLO{
         /// </summary>
         Cancel,
         /// <summary>
-        /// Разгрузка приложения
+        /// Сам пользователь указал закрытие в коде (вызвал OnTerminate)
         /// </summary>
-        Unloading
+        User
     }
     
     /// <summary>
@@ -54,15 +54,15 @@ namespace WL{
 
             if(CurrentOS != OS.Windows){ throw new Exception("WoowzLib работает только на Windows операционной системе! А сейчас: " + CurrentOS); }
             
-            void __Terminate(){
+            void __Terminate(CloseReason CloseReason){
                 if(!Terminated && !TerminateHooked){
                     global::Logger.Warn("WoowzLib не был завершён корректно, авто-завершение! Используйте WL.Core.Terminate()!");
-                    WL.__Base.Terminate();
+                    Terminate(CloseReason);
                 }
             }
             
             // Предупреждение, если библиотека не была остановлена!
-            OnClose += _ => __Terminate();
+            OnClose += __Terminate;
         }
         
         // ----------------------------------------------------------------------
@@ -82,33 +82,38 @@ namespace WL{
         /// <summary>
         /// Остановить библиотеку
         /// </summary>
-        public static void Terminate(){
+        public static void Terminate(CloseReason Reason){
             try{
+                if(__InTerminate){ return; }
                 if(Terminated){ throw new Exception("Работа WoowzLib и так была завершена!"); }
+
+                __InTerminate = true;
                 
-                try{
-                    // Вызов, в обратном порядке
-                    Delegate[]? OnTerminate__ = OnTerminate?.GetInvocationList();
-                    if(OnTerminate__ != null){
-                        for(int i = OnTerminate__.Length - 1; i >= 0; i--){
-                            ((Action)OnTerminate__[i])();
+                // Вызов, в обратном порядке
+                Delegate[]? OnTerminate__ = OnTerminate?.GetInvocationList();
+                if(OnTerminate__ != null){
+                    for(int i = OnTerminate__.Length - 1; i >= 0; i--){
+                        try{
+                            ((Action<CloseReason>)OnTerminate__[i])(Reason);
+                        }catch(Exception e){
+                            global::Logger.Error("Произошла ошибка в ивенте OnTerminate!\nИндекс: " + i, e);
                         }
                     }
-                }catch(Exception e){ global::Logger.Error("Произошла ошибка в ивенте OnTerminate!", e); }
+                }
 
                 if(TerminateHooked){
-                    OnClose -= __Hook_Terminate;
-
-                    __Hook_Terminate = null;
+                    OnClose -= Terminate;
                     
                     TerminateHooked = false;
                 }
 
+                __InTerminate = false;
                 Terminated = true;
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при остановке WoowzLib!", e);
             }
         }
+        private static bool __InTerminate;
 
         /// <summary>
         /// Работа библиотеки была завершена
@@ -118,7 +123,7 @@ namespace WL{
         /// <summary>
         /// Вызывается при остановке библиотеки
         /// </summary>
-        public static event Action? OnTerminate;
+        public static event Action<CloseReason>? OnTerminate;
 
         /// <summary>
         /// Связывает Terminate автоматически с выходом из приложения
@@ -126,20 +131,13 @@ namespace WL{
         public static void HookTerminate(){
             if(TerminateHooked){ throw new Exception("Нельзя привязать Terminate больше одного раза!"); } TerminateHooked = true;
 
-            __Hook_Terminate = _ => Terminate();
-
-            OnClose += __Hook_Terminate;
+            OnClose += Terminate;
         }
 
         /// <summary>
         /// Terminate связан?
         /// </summary>
         private static bool TerminateHooked;
-
-        /// <summary>
-        /// Hook Terminate
-        /// </summary>
-        private static Action<CloseReason>? __Hook_Terminate;
         
         // ----------------------------------------------------------------------
         
@@ -167,14 +165,6 @@ namespace WL{
             remove => Console.CancelKeyPress -= value;
         }
         
-        /// <summary>
-        /// Вызывается при выгрузке приложения
-        /// </summary>
-        public static event Action<AssemblyLoadContext>? OnUnloading{
-            add    => AssemblyLoadContext.Default.Unloading += value;
-            remove => AssemblyLoadContext.Default.Unloading -= value;
-        }
-        
         // ----------------------------------------------------------------------
         
         /// <summary>
@@ -189,18 +179,16 @@ namespace WL{
             public __OnCloseHook(Action<CloseReason> Action){
                 this.Action = Action;
 
-                Exit      = (_, _) => { Action(CloseReason.Exit     ); };
-                Crash     = (_, _) => { Action(CloseReason.Crash    ); };
-                Cancel    = (_, _) => { Action(CloseReason.Cancel   ); };
-                Unloading =  _     => { Action(CloseReason.Unloading); };
+                Exit   = (_, _) => { Action(CloseReason.Exit  ); };
+                Crash  = (_, _) => { Action(CloseReason.Crash ); };
+                Cancel = (_, _) => { Action(CloseReason.Cancel); };
             }
 
             public readonly Action<CloseReason> Action;
             
-            public readonly EventHandler?                   Exit     ;
-            public readonly UnhandledExceptionEventHandler? Crash    ;
-            public readonly ConsoleCancelEventHandler?      Cancel   ;
-            public readonly Action<AssemblyLoadContext>?    Unloading;
+            public readonly EventHandler?                   Exit  ;
+            public readonly UnhandledExceptionEventHandler? Crash ;
+            public readonly ConsoleCancelEventHandler?      Cancel;
         }
         
         /// <summary>
@@ -215,19 +203,17 @@ namespace WL{
 
                 __OnCloseHooks[value] = Hook;
 
-                OnExit      += Hook.Exit     ;
-                OnCrash     += Hook.Crash    ;
-                OnCancel    += Hook.Cancel   ;
-                OnUnloading += Hook.Unloading;
+                OnExit   += Hook.Exit  ;
+                OnCrash  += Hook.Crash ;
+                OnCancel += Hook.Cancel;
             }
             remove{
                 if(value == null){ return; }
                 if(!__OnCloseHooks.TryGetValue(value, out __OnCloseHook Hook)){ throw new Exception("Такой OnClose Hook не найден при удалении!"); }
                 
-                OnExit      -= Hook.Exit     ;
-                OnCrash     -= Hook.Crash    ;
-                OnCancel    -= Hook.Cancel   ;
-                OnUnloading -= Hook.Unloading;
+                OnExit   -= Hook.Exit  ;
+                OnCrash  -= Hook.Crash ;
+                OnCancel -= Hook.Cancel;
 
                 __OnCloseHooks.Remove(value);
             }

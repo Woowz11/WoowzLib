@@ -44,12 +44,12 @@ public static class Core{
     /// <summary>
     /// Остановить библиотеку
     /// </summary>
-    public static void Terminate() => WL.__Base.Terminate();
+    public static void Terminate() => WL.__Base.Terminate(CloseReason.User);
     
     /// <summary>
     /// Вызывается при остановке библиотеки
     /// </summary>
-    public static event Action OnTerminate{
+    public static event Action<CloseReason> OnTerminate{
         add    => WL.__Base.OnTerminate += value;
         remove => WL.__Base.OnTerminate -= value;
     }
@@ -81,14 +81,6 @@ public static class Core{
     public static event ConsoleCancelEventHandler? OnCancel{
         add    => WL.__Base.OnCancel += value;
         remove => WL.__Base.OnCancel -= value;
-    }
-        
-    /// <summary>
-    /// Вызывается при выгрузке приложения
-    /// </summary>
-    public static event Action<AssemblyLoadContext>? OnUnloading{
-        add    => WL.__Base.OnUnloading += value;
-        remove => WL.__Base.OnUnloading -= value;
     }
     
     /// <summary>

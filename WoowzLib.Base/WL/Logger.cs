@@ -65,7 +65,7 @@ namespace WL{
             /// <summary>
             /// Вызывается при остановке
             /// </summary>
-            private static void __Terminate(){
+            private static void __Terminate(CloseReason CloseReason){
                 try{
                     if(!Initialized){ throw new Exception("Logger не инициализирован!"); }
 

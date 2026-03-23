@@ -11,7 +11,7 @@ namespace WLO;
 /// </summary>
 public class Window{
     static Window(){
-        WL.Core.OnTerminate += () => {
+        WL.Core.OnTerminate += CloseReason => {
             foreach(Window Window in Windows.Values.ToArray()){
                 try{
                     if(Window.Alive){ Window.Destroy(); }
@@ -323,7 +323,7 @@ public class Window{
 
                         Native.Raw.Windows.RECT Rect = new Native.Raw.Windows.RECT(0, 0, (int)value.W, (int)value.H);
 
-                        if(!Native.Raw.Windows.AdjustWindowRectEx(ref Rect, __Style, false, 0)){ throw new Exception("Произошла ошибка в AdjustWindowRectEx!\nОшибка: " + WL.System.LastOSError()); }
+                        if(!Native.Raw.Windows.AdjustWindowRectEx(ref Rect, Style, false, 0)){ throw new Exception("Произошла ошибка в AdjustWindowRectEx!\nОшибка: " + WL.System.LastOSError()); }
 
                         Size = new Vector2UI((uint)Rect.width, (uint)Rect.height);
                     }catch(Exception e){
@@ -342,31 +342,33 @@ public class Window{
         /// Вызывается при изменении видимости окна, (Окно, видимый?)
         /// </summary>
         public event Action<Window, bool>? OnVisible;
-        internal void __OnVisible(bool Visible){
-            __Visible = Visible;
-
-            try{
-                OnVisible?.Invoke(this, __Visible);
-            }catch(Exception e){
-                Logger.Error("Произошла ошибка внутри ивента OnVisible у окна [" + this + "]!\nВидимость: " + Visible, e);
-            }
-        }
     
-        private bool __Visible;
         /// <summary>
         /// Окно видимое?
         /// </summary>
         public bool Visible{
-            get => __Visible;
+            get{
+                try{
+                    CheckAlive();
+
+                    return (Style & Native.Raw.Windows.WS_VISIBLE) != 0;
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при получении видимости окна [" + this + "]!", e);
+                }
+            }
             set{
                 try{
                     CheckAlive();
                     
-                    if(__Visible == value){ return; }
+                    if(Visible == value){ return; }
 
                     Native.Raw.Windows.ShowWindow(Handle, value ? Native.Raw.Windows.SW_SHOW : Native.Raw.Windows.SW_HIDE);
                     
-                    __OnVisible(value);
+                    try{
+                        OnVisible?.Invoke(this, value);
+                    }catch(Exception e){
+                        Logger.Error("Произошла ошибка внутри ивента OnVisible у окна [" + this + "]!\nВидимость: " + value, e);
+                    }
                 }catch(Exception e){
                     throw new Exception("Произошла ошибка при установке видимости окну [" + this + "]!\nВидимость: " + value, e);
                 }
@@ -374,6 +376,24 @@ public class Window{
         }
 
     #endregion
+    
+    /// <summary>
+    /// Стиль окна
+    /// </summary>
+    public uint Style{
+        get{
+            try{
+                CheckAlive();
+
+                return (uint)Native.Raw.Windows.GetWindowLong(Handle, Native.Raw.Windows.GWL_STYLE);
+            }catch(Exception e){
+                throw new Exception("Не получилось получить стиль окна [" + this + "]!", e);
+            }
+        }
+        set{
+            
+        }
+    }
     
     // ----------------------------------------------------------------------
 
@@ -404,11 +424,6 @@ public class Window{
     }
     
     // ----------------------------------------------------------------------
-
-    /// <summary>
-    /// Стиль окна
-    /// </summary>
-    private uint __Style;
     
     /// <summary>
     /// Вызывается при уничтожении окна
@@ -452,13 +467,11 @@ public class Window{
     /// </summary>
     /// <param name="Class">Название класса</param>
     private void __CreateWindow(string Class, WindowConstructor Config){
-        __Style = Native.Raw.Windows.WS_OVERLAPPEDWINDOW;
-            
         Handle = Native.Raw.Windows.CreateWindowExW(
             0,
             Class,
             Config.Title!,
-            __Style,
+            Native.Raw.Windows.WS_OVERLAPPEDWINDOW,
             Config.Position.X, Config.Position.Y,
             (int)Config.Size.W, (int)Config.Size.H,
             IntPtr.Zero,

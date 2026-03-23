@@ -109,9 +109,4 @@ public struct Vector2UI : IEquatable<Vector2UI>{
     public static Vector2UI operator *(uint S, Vector2UI V) => V * S;
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector2UI operator /(uint S, Vector2UI V) => V / S;
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector2UI operator ++(Vector2UI V) => V + 1;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector2UI operator --(Vector2UI V) => V - 1;
 }

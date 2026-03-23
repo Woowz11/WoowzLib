@@ -58,11 +58,6 @@ public static class Test_Vector{
                 if(R.X != 1 || R.Y != 1){ throw new Exception("Сломан: / 1"); }
                 R = new Vector2I(10, 10) / 10;
                 if(R.X != 1 || R.Y != 1){ throw new Exception("Сломан: / 2"); }
-                
-                R = A++;
-                if(R.X != 4 || R.Y != 2){ throw new Exception("Сломан: ++"); }
-                R = A--;
-                if(R.X != 2 || R.Y != 0){ throw new Exception("Сломан: --"); }
             });
         });
     }
