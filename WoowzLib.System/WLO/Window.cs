@@ -39,7 +39,9 @@ public class Window{
                 Native.Raw.Windows.GetModuleHandle(null),
                 IntPtr.Zero
             );
-            __Title = Title;
+            __Title    = Title;
+            __Position = Position;
+            __Size     = Size;
 
             if(Handle == IntPtr.Zero){ throw new Exception("Произошла ошибка в CreateWindowExW!\nОшибка: " + WL.System.LastOSError()); }
             
@@ -91,102 +93,148 @@ public class Window{
     
     // ----------------------------------------------------------------------
 
-    internal string __Title;
-    /// <summary>
-    /// Заголовок окна
-    /// </summary>
-    public string Title{
-        get => __Title;
-        set{
-            try{
-                CheckAlive();
+    #region Заголовок
 
-                string Title = value;
-
+        internal string __Title;
+        /// <summary>
+        /// Заголовок окна
+        /// </summary>
+        public string Title{
+            get => __Title;
+            set{
                 try{
-                    string? ChangedTitle = OnTitleChange?.Invoke(this, value);
-                    if(ChangedTitle != null){ Title = ChangedTitle; }
+                    CheckAlive();
+
+                    string Title = value;
+
+                    try{
+                        string? ChangedTitle = OnTitleChange?.Invoke(this, value);
+                        if(ChangedTitle != null){ Title = ChangedTitle; }
+                    }catch(Exception e){
+                        throw new Exception("Ошибка внутри ивента OnTitleChange!", e);
+                    }
+                    
+                    if(__Title == Title){ return; }
+
+                    if(!Native.Raw.Windows.SetWindowTextW(Handle, Title)){ throw new Exception("Произошла ошибка в SetWindowTextW!\nОшибка: " + WL.System.LastOSError()); }
                 }catch(Exception e){
-                    throw new Exception("Ошибка внутри ивента OnTitleChange!", e);
+                    throw new Exception("Произошла ошибка при установке заголовка окну [" + this + "]!\nЗаголовок: \"" + value + "\"", e);
                 }
-                
-                if(__Title == Title){ return; }
-
-                Native.Raw.Windows.SetWindowTextW(Handle, Title);
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при установке заголовка окну [" + this + "]!\nЗаголовок: \"" + value + "\"", e);
             }
         }
-    }
 
-    /// <summary>
-    /// Вызывается при изменении заголовка окна
-    /// </summary>
-    public event Func<Window, string, string>? OnTitleChange;
+        /// <summary>
+        /// Вызывается при изменении заголовка окна, (Окно, заголовок) => (изменённый заголовок)
+        /// </summary>
+        public event Func<Window, string, string>? OnTitleChange;
 
-    private Vector2I __Position;
-    /// <summary>
-    /// Позиция окна
-    /// </summary>
-    public Vector2I Position{
-        get => __Position;
-        set{
-            try{
-                CheckAlive();
-                if(__Position == value){ return; } __Position = value;
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при установке позиции окна [" + this + "]!\nПозиция: " + value, e);
+    #endregion
+
+    #region Позиция
+
+        internal Vector2I __Position;
+        /// <summary>
+        /// Позиция окна
+        /// </summary>
+        public Vector2I Position{
+            get => __Position;
+            set{
+                try{
+                    CheckAlive();
+
+                    Vector2I Position = value;
+                    
+                    try{
+                        Vector2I? ChangedPosition = OnPositionChange?.Invoke(this, value);
+                        if(ChangedPosition.HasValue){ Position = ChangedPosition.Value; }
+                    }catch(Exception e){
+                        throw new Exception("Ошибка внутри ивента OnPositionChange!", e);
+                    }
+                    
+                    if(__Position == Position){ return; }
+                    
+                    __UpdateWindowBounds(Position, __Size);
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при установке позиции окна [" + this + "]!\nПозиция: " + value.ToPositionString(), e);
+                }
             }
         }
-    }
 
-    /// <summary>
-    /// Позиция окна по X
-    /// </summary>
-    public int X{
-        get => Position.X;
-        set => Position = __Position.WithX(value);
-    }
-    
-    /// <summary>
-    /// Позиция окна по Y
-    /// </summary>
-    public int Y{
-        get => Position.Y;
-        set => Position = __Position.WithY(value);
-    }
+        /// <summary>
+        /// Позиция окна по X
+        /// </summary>
+        public int X{
+            get => Position.X;
+            set => Position = __Position.WithX(value);
+        }
+        
+        /// <summary>
+        /// Позиция окна по Y
+        /// </summary>
+        public int Y{
+            get => Position.Y;
+            set => Position = __Position.WithY(value);
+        }
+        
+        /// <summary>
+        /// Вызывается при изменении позиции окна, (Окно, позиция) => (изменённая позиция)
+        /// </summary>
+        public event Func<Window, Vector2I, Vector2I>? OnPositionChange;
 
-    private Vector2UI __Size;
-    /// <summary>
-    /// Размер окна
-    /// </summary>
-    public Vector2UI Size{
-        get => __Size;
-        set{
-            try{
-                CheckAlive();
-                if(__Size == value){ return; } __Size = value;
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при установке размера окна [" + this + "]!\nРазмер: " + value, e);
+    #endregion
+
+    #region Размер
+
+        internal Vector2UI __Size;
+        /// <summary>
+        /// Размер окна
+        /// </summary>
+        public Vector2UI Size{
+            get => __Size;
+            set{
+                try{
+                    CheckAlive();
+                    
+                    Vector2UI Size = value;
+                    
+                    try{
+                        Vector2UI? ChangedSize = OnSizeChange?.Invoke(this, value);
+                        if(ChangedSize.HasValue){ Size = ChangedSize.Value; }
+                    }catch(Exception e){
+                        throw new Exception("Ошибка внутри ивента OnSizeChange!", e);
+                    }
+                    
+                    if(__Size == Size){ return; }
+
+                    __UpdateWindowBounds(__Position, Size);
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при установке размера окна [" + this + "]!\nРазмер: " + value.ToSizeString(), e);
+                }
             }
         }
-    }
-    
-    /// <summary>
-    /// Ширина окна
-    /// </summary>
-    public uint W{
-        get => Size.W;
-        set => Size = __Size.WithW(value);
-    }
-    
-    /// <summary>
-    /// Высота окна
-    /// </summary>
-    public uint H{
-        get => Size.H;
-        set => Size = __Size.WithH(value);
-    }
+        
+        /// <summary>
+        /// Ширина окна
+        /// </summary>
+        public uint W{
+            get => Size.W;
+            set => Size = __Size.WithW(value);
+        }
+        
+        /// <summary>
+        /// Высота окна
+        /// </summary>
+        public uint H{
+            get => Size.H;
+            set => Size = __Size.WithH(value);
+        }
+        
+        /// <summary>
+        /// Вызывается при изменении размера окна, (Окно, размер) => (изменённый размер)
+        /// </summary>
+        public event Func<Window, Vector2UI, Vector2UI>? OnSizeChange;
+
+    #endregion
     
     // ----------------------------------------------------------------------
     
@@ -206,6 +254,15 @@ public class Window{
             Handle = IntPtr.Zero;
         }catch(Exception e){
             throw new Exception("Произошла ошибка при вызове уничтожения WINAPI окна [" + this + "]!", e);
+        }
+    }
+
+    /// <summary>
+    /// Обновляет позицию и размер окна
+    /// </summary>
+    private void __UpdateWindowBounds(Vector2I Position, Vector2UI Size){
+        if(!Native.Raw.Windows.SetWindowPos(Handle, IntPtr.Zero, Position.X, Position.Y, (int)Size.W, (int)Size.H, Native.Raw.Windows.SWP_NOZORDER | Native.Raw.Windows.SWP_NOACTIVATE)){
+            throw new Exception("Произошла ошибка в SetWindowPos!\nОшибка: " + WL.System.LastOSError());
         }
     }
     

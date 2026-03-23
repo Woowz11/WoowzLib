@@ -35,7 +35,7 @@ public static class Core{
     }
 
     /// <summary>
-    /// Вызывается при изменении информации, возвращает: (Изменённую информацию об проекте, Изменённую информацию об ядре), получает: (Информация об проекте, Информация об ядре)
+    /// Вызывается при изменении информации, (Информация об проекте, Информация об ядре) => (Изменённая информация об проекте, Изменённая информация об ядре)
     /// </summary>
     public static event Func<ProjectMetadata, ProjectMetadata?, (ProjectMetadata Project, ProjectMetadata? Engine)>? OnMetadataChanged;
     
@@ -107,7 +107,7 @@ public static class Core{
     public static void BaseLoggerInitialize() => WL.__Base.Logger.Initialize();
     
     /// <summary>
-    /// Вызывается при вызове вывода сообщения в консоль, возвращает: (статус, сообщение), получает: (статус, сообщение), если вернуть null, то сообщение не отправится
+    /// Вызывается при вызове вывода сообщения в консоль, (статус, сообщение) => (изменённый статус, изменённый сообщение), если вернуть null, то сообщение не отправится
     /// </summary>
     public static event Func<byte, object?, string, (byte, object?, string)?>? OnPrint{
         add    => WL.__Base.Logger.OnPrint += value;
@@ -115,7 +115,7 @@ public static class Core{
     }
 
     /// <summary>
-    /// Функция вывода сообщения в консоль, получает: (статус, доп. информация, сообщение), возвращает: (сообщение), если вернуть null, то сообщение не отправится
+    /// Функция вывода сообщения в консоль, (статус, дополнительная информация, сообщение) => (финальное сообщение), если вернуть null, то сообщение не отправится
     /// </summary>
     public static Func<byte, object?, string, string?>? Output{
         get => WL.__Base.Logger.Output;

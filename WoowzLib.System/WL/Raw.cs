@@ -157,6 +157,12 @@ public static partial class Native{
             [DllImport(DLL_User, SetLastError = true)]
             public static extern bool DestroyWindow(IntPtr hWnd);
             
+            [DllImport(DLL_User, SetLastError = true)]
+            public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+            
+            [DllImport(DLL_User, SetLastError = true)]
+            public static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+            
             // ----------------------------------------------------------------------
             
             [UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -261,6 +267,21 @@ public static partial class Native{
             public const uint WM_SETTEXT             = 0x000C;
             public const uint WM_CLOSE               = 0x0010;
             public const uint WM_PAINT               = 0x000F;
+            public const uint SWP_NOSIZE             = 0x0001;
+            public const uint SWP_NOMOVE             = 0x0002;
+            public const uint SWP_NOZORDER           = 0x0004;
+            public const uint SWP_NOREDRAW           = 0x0008;
+            public const uint SWP_NOACTIVATE         = 0x0010;
+            public const uint SWP_FRAMECHANGED       = 0x0020;
+            public const uint SWP_SHOWWINDOW         = 0x0040;
+            public const uint SWP_HIDEWINDOW         = 0x0080;
+            public const uint SWP_NOCOPYBITS         = 0x0100;
+            public const uint SWP_NOOWNERZORDER      = 0x0200;
+            public const uint SWP_NOSENDCHANGING     = 0x0400;
+            public const uint SWP_DRAWFRAME          = SWP_FRAMECHANGED;
+            public const uint SWP_NOREPOSITION       = SWP_NOOWNERZORDER;
+            public const uint WM_MOVE                = 0x0003;
+            public const uint WM_SIZE                = 0x0005;
         }
     }
 }

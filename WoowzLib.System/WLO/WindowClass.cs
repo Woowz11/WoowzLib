@@ -1,4 +1,5 @@
 ﻿using WL;
+using WLO.Vector;
 
 namespace WLO;
 
@@ -89,11 +90,29 @@ public class WindowClass{
                 }
 
                 switch(Message){
-                    case Native.Raw.Windows.WM_SETTEXT:{
+                    case Native.Raw.Windows.WM_SETTEXT: {
                         string? NewTitle = WL.System.Memory.LoadString(LP);
 
                         if(NewTitle != null){ Window__.__Title = NewTitle; }
                         
+                        break;
+                    }
+
+                    case Native.Raw.Windows.WM_MOVE: {
+                        int X = WL.System.Native.LoWord(LP);
+                        int Y = WL.System.Native.HiWord(LP);
+
+                        Window__.__Position = new Vector2I(X, Y);
+                        break;
+                    }
+
+                    case Native.Raw.Windows.WM_SIZE:{
+                        Native.Raw.Windows.GetClientRect(Window, out Native.Raw.Windows.RECT Rect);
+                        
+                        int W = Rect.right  - Rect.left;
+                        int H = Rect.bottom - Rect.top ;
+
+                        Window__.__Size = new Vector2UI((uint)W, (uint)H);
                         break;
                     }
                     
