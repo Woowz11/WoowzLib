@@ -163,6 +163,15 @@ public static partial class Native{
             [DllImport(DLL_User, SetLastError = true)]
             public static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
             
+            [DllImport(DLL_User, SetLastError = true)]
+            public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+            
+            [DllImport(DLL_User, SetLastError = true)]
+            public static extern bool ClientToScreen(IntPtr hWnd, ref POINT lpPoint);
+
+            [DllImport(DLL_User, SetLastError = true)]
+            public static extern bool ScreenToClient(IntPtr hWnd, ref POINT lpPoint);
+            
             // ----------------------------------------------------------------------
             
             [UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -196,6 +205,8 @@ public static partial class Native{
             
             [StructLayout(LayoutKind.Sequential)]
             public struct POINT{
+                public POINT(int X, int Y){ this.X = X; this.Y = Y; }
+                
                 public int X;
                 public int Y;
             }
