@@ -6,16 +6,19 @@ namespace WLO;
 /// <summary>
 /// Класс для окна
 /// </summary>
+/// <param name="Name">Название класса</param>
+/// <param name="Event">Обработка событий окна</param>
+/// <param name="Instance">Область, где создать класс</param>
 public class WindowClass{
-    public WindowClass(string Name, WindowEvent? Event = null){
+    public WindowClass(string Name, WindowEvent? Event = null, IntPtr? Instance = null){
         try{
             this.Name = Name;
 
             this.Event = Event ?? ((Window, Message, WP, LP) => null);
 
-            __WndProcDelegate = Events;
+            __WndProcDelegate = __Events;
             
-            Register();
+            __Register(Instance ?? WL.System.Instance);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании класса окна!", e);
         }
@@ -56,10 +59,39 @@ public class WindowClass{
     // ----------------------------------------------------------------------
 
     /// <summary>
+    /// Название класса
+    /// </summary>
+    public readonly string Name;
+
+    /// <summary>
+    /// Ивент класса, верните null, что-бы продолжить ивенты окна
+    /// </summary>
+    public readonly WindowEvent Event;
+    
+    /// <summary>
+    /// ID класса
+    /// </summary>
+    public ushort Atom{ get; private set; }
+    
+    // ----------------------------------------------------------------------
+
+    /// <summary>
+    /// Проверяет, существует указанный класс или нет
+    /// </summary>
+    /// <param name="ClassName">Название класса</param>
+    /// <param name="Instance">Область, где искать</param>
+    /// <param name="Class">Если нашёл класс, возвращает его</param>
+    public static bool Exists(string ClassName, IntPtr Instance, out Native.Raw.Windows.WNDCLASS Class) => Native.Raw.Windows.GetClassInfo(Instance, ClassName, out Class);
+    
+    // ----------------------------------------------------------------------
+
+    /// <summary>
     /// Регистрирует класс
     /// </summary>
-    private void Register(){
+    private void __Register(IntPtr Instance){
         try{
+            if(Exists(Name, Instance, out Native.Raw.Windows.WNDCLASS _)){ throw new Exception("Такой класс уже зарегистрирован!"); }
+            
             Native.Raw.Windows.WNDCLASSEX Class = new Native.Raw.Windows.WNDCLASSEX(Name){
                 style         = 0,
                 cbClsExtra    = 0,
@@ -69,14 +101,14 @@ public class WindowClass{
                 hbrBackground = IntPtr.Zero,
                 lpszMenuName  = null!,
                 hIconSm       = IntPtr.Zero,
-                lpfnWndProc   = __WndProcDelegate,
-                hInstance     = Native.Raw.Windows.GetModuleHandle(null)
+                lpfnWndProc   = WL.System.Memory.SaveDelegate(__WndProcDelegate),
+                hInstance     = Instance
             };
-
+            
             Atom = Native.Raw.Windows.RegisterClassEx(ref Class);
             if(Atom == 0){ throw new Exception("Произошла ошибка в RegisterClassEx!\nОшибка: " + WL.System.LastOSError()); }
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при регистрации класса [" + this + "] окна!", e);
+            throw new Exception("Произошла ошибка при регистрации класса [" + this + "] окна!\nДескриптор: " + Instance, e);
         }
     }
 
@@ -89,7 +121,7 @@ public class WindowClass{
     /// <summary>
     /// События
     /// </summary>
-    public IntPtr Events(IntPtr Handle, uint Message, IntPtr WP, IntPtr LP){
+    private IntPtr __Events(IntPtr Handle, uint Message, IntPtr WP, IntPtr LP){
         try{
             if(WLO.Window.WindowsIDs.TryGetValue(Handle, out int ID)){
                 Window Window = WLO.Window.Windows[ID];
@@ -113,24 +145,7 @@ public class WindowClass{
     }
     
     // ----------------------------------------------------------------------
-
-    /// <summary>
-    /// Название класса
-    /// </summary>
-    public readonly string Name;
-
-    /// <summary>
-    /// Ивент класса, верните null, что-бы продолжить ивенты окна
-    /// </summary>
-    public readonly WindowEvent Event;
     
-    /// <summary>
-    /// ID класса
-    /// </summary>
-    public ushort Atom{ get; private set; }
-    
-    // ----------------------------------------------------------------------
-
     public override string ToString() => "WindowClass(\"" + Name + "\", " + Atom + ")";
 
     public override bool Equals(object? Object){

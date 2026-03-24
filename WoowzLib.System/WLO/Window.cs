@@ -56,6 +56,11 @@ public class Window{
         /// Родительское окно при старте
         /// </summary>
         public Window? Parent = null;
+
+        /// <summary>
+        /// Дескриптор (область где создать окно)
+        /// </summary>
+        public IntPtr Instance = WL.System.Instance;
     }
     
     public Window(WindowClass Class, WindowConstructor? Config = null){
@@ -537,7 +542,7 @@ public class Window{
             (int)Config.Size.W, (int)Config.Size.H,
             Config.Parent?.Handle ?? IntPtr.Zero,
             IntPtr.Zero,
-            Native.Raw.Windows.GetModuleHandle(null),
+            Config.Instance,
             IntPtr.Zero
         );
 
@@ -603,7 +608,7 @@ public class Window{
     
     // ----------------------------------------------------------------------
 
-    public override string ToString() => "Window(" + ID + ", " + (Alive ? ("\"" + Title + "\", " + Handle + ", " + Size.ToSizeString() + ", " + Position.ToPositionString() + ", " + (Hierarchy.Parent?.Self.ToShortString() ?? "Нет родителя")) : "Уничтожено") + ", " + (Class == null ? ClassName : Class) + ")";
+    public override string ToString() => "Window(" + ID + ", " + (Alive ? ("\"" + Title + "\", " + Handle + ", " + Size.ToSizeString() + ", " + Position.ToPositionString() + ", " + Hierarchy.ToStringWithoutSelf()) : "Уничтожено") + ", " + (Class == null ? ClassName : Class) + ")";
 
     public string ToShortString() => "Window(" + ID + ", " + (Alive ? Handle : "Уничтожено") + ", " + (Class == null ? ClassName : Class) + ")";
     

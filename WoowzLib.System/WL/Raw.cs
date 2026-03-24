@@ -36,16 +36,16 @@ public static partial class Native{
             [DllImport(DLL_Kernel)]
             public static extern IntPtr OpenProcess(uint dwDesiredAccess, bool bInheritHandle, int dwProcessId);
 
-            [DllImport(DLL_Kernel)]
+            [DllImport(DLL_Kernel, SetLastError = true)]
             public static extern bool TerminateProcess(IntPtr hProcess, uint uExitCode);
             
             [DllImport(DLL_Kernel)]
             public static extern IntPtr VirtualAlloc(IntPtr lpAddress, UIntPtr dwSize, uint flAllocationType, uint flProtect);
 
-            [DllImport(DLL_Kernel)]
+            [DllImport(DLL_Kernel, SetLastError = true)]
             public static extern bool VirtualFree(IntPtr lpAddress, UIntPtr dwSize, uint dwFreeType);
 
-            [DllImport(DLL_Kernel)]
+            [DllImport(DLL_Kernel, SetLastError = true)]
             public static extern bool VirtualProtect(IntPtr lpAddress, UIntPtr dwSize, uint flNewProtect, out uint lpflOldProtect);
             
             [DllImport(DLL_Kernel)]
@@ -54,7 +54,7 @@ public static partial class Native{
             [DllImport(DLL_Kernel)]
             public static extern uint WaitForSingleObject(IntPtr hHandle, uint dwMilliseconds);
 
-            [DllImport(DLL_Kernel)]
+            [DllImport(DLL_Kernel, SetLastError = true)]
             public static extern bool CloseHandle(IntPtr hObject);
             
             [DllImport(DLL_Kernel)]
@@ -72,7 +72,7 @@ public static partial class Native{
             [DllImport(DLL_Kernel)]
             public static extern IntPtr LoadLibrary(string lpLibFileName);
 
-            [DllImport(DLL_Kernel)]
+            [DllImport(DLL_Kernel, SetLastError = true)]
             public static extern bool FreeLibrary(IntPtr hModule);
 
             [DllImport(DLL_Kernel)]
@@ -81,10 +81,10 @@ public static partial class Native{
             [DllImport(DLL_Kernel)]
             public static extern IntPtr CreateEvent(IntPtr lpEventAttributes, bool bManualReset, bool bInitialState, string? lpName);
 
-            [DllImport(DLL_Kernel)]
+            [DllImport(DLL_Kernel, SetLastError = true)]
             public static extern bool SetEvent(IntPtr hEvent);
 
-            [DllImport(DLL_Kernel)]
+            [DllImport(DLL_Kernel, SetLastError = true)]
             public static extern bool ResetEvent(IntPtr hEvent);
             
             [DllImport(DLL_Kernel)]
@@ -99,7 +99,7 @@ public static partial class Native{
             [DllImport(DLL_Kernel)]
             public static extern IntPtr HeapAlloc(IntPtr hHeap, uint dwFlags, UIntPtr dwBytes);
 
-            [DllImport(DLL_Kernel)]
+            [DllImport(DLL_Kernel, SetLastError = true)]
             public static extern bool HeapFree(IntPtr hHeap, uint dwFlags, IntPtr lpMem);
 
             [DllImport(DLL_Kernel)]
@@ -111,19 +111,19 @@ public static partial class Native{
             [DllImport(DLL_User, CharSet = CharSet.Unicode, SetLastError = true)]
             public static extern IntPtr CreateWindowExW(uint dwExStyle, string lpClassName, string lpWindowName, uint dwStyle, int X, int Y, int nWidth, int nHeight, IntPtr hWndParent, IntPtr hMenu, IntPtr hInstance, IntPtr lpParam);
             
-            [DllImport(DLL_User, CharSet = CharSet.Unicode)]
+            [DllImport(DLL_User, CharSet = CharSet.Unicode, SetLastError = true)]
             public static extern bool SetWindowTextW(IntPtr hWnd, string lpString);
             
-            [DllImport(DLL_User)]
+            [DllImport(DLL_User, SetLastError = true)]
             public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-            [DllImport(DLL_User)]
+            [DllImport(DLL_User, SetLastError = true)]
             public static extern bool UpdateWindow(IntPtr hWnd);
             
-            [DllImport(DLL_User)]
+            [DllImport(DLL_User, SetLastError = true)]
             public static extern bool GetMessage(out MSG lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
 
-            [DllImport(DLL_User)]
+            [DllImport(DLL_User, SetLastError = true)]
             public static extern bool TranslateMessage(ref MSG lpMsg);
 
             [DllImport(DLL_User)]
@@ -144,16 +144,16 @@ public static partial class Native{
             [DllImport(DLL_User)]
             public static extern IntPtr BeginPaint(IntPtr hWnd, out PAINTSTRUCT lpPaint);
 
-            [DllImport(DLL_User)]
+            [DllImport(DLL_User, SetLastError = true)]
             public static extern bool EndPaint(IntPtr hWnd, ref PAINTSTRUCT lpPaint);
 
-            [DllImport(DLL_User)]
+            [DllImport(DLL_User, SetLastError = true)]
             public static extern bool FillRect(IntPtr hDC, ref RECT lprc, IntPtr hbr);
             
             [DllImport(DLL_GDI)]
             public static extern IntPtr CreateSolidBrush(int color);
 
-            [DllImport(DLL_GDI)]
+            [DllImport(DLL_GDI, SetLastError = true)]
             public static extern bool DeleteObject(IntPtr hObject);
             
             [DllImport(DLL_User, SetLastError = true)]
@@ -184,7 +184,10 @@ public static partial class Native{
             public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
             
             [DllImport(DLL_User, SetLastError = true, CharSet = CharSet.Unicode)]
-            public static extern bool GetClassInfoEx(IntPtr hInstance, string lpClassName, out WNDCLASSEX lpWndClass);
+            public static extern bool GetClassInfoEx(IntPtr hInstance, string lpClassName, ref WNDCLASSEX lpWndClass);
+            
+            [DllImport(DLL_User, CharSet = CharSet.Unicode, SetLastError = true)]
+            public static extern bool GetClassInfo(IntPtr hInstance, string lpClassName, out WNDCLASS lpWndClass);
             
             [DllImport(DLL_User, CharSet = CharSet.Unicode)]
             public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
@@ -233,14 +236,17 @@ public static partial class Native{
 
             [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
             public struct WNDCLASSEX{
-                public WNDCLASSEX(string Name){
+                public WNDCLASSEX(){
                     cbSize = WL.System.Memory.StructSize<Native.Raw.Windows.WNDCLASSEX>();
+                }
+                
+                public WNDCLASSEX(string Name) : this(){
                     lpszClassName = Name;
                 }
                 
                 public uint cbSize;
                 public uint style;
-                public WndProcDelegate lpfnWndProc;
+                public IntPtr lpfnWndProc;
                 public int cbClsExtra;
                 public int cbWndExtra;
                 public IntPtr hInstance;
@@ -252,6 +258,20 @@ public static partial class Native{
                 [MarshalAs(UnmanagedType.LPWStr)]
                 public string lpszClassName;
                 public IntPtr hIconSm;
+            }
+            
+            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+            public struct WNDCLASS{
+                public uint   style;
+                public IntPtr lpfnWndProc;
+                public int    cbClsExtra;
+                public int    cbWndExtra;
+                public IntPtr hInstance;
+                public IntPtr hIcon;
+                public IntPtr hCursor;
+                public IntPtr hbrBackground;
+                public IntPtr lpszMenuName;
+                public IntPtr lpszClassName;
             }
             
             [StructLayout(LayoutKind.Sequential)]

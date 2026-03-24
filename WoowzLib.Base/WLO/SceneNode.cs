@@ -208,9 +208,11 @@ public class SceneNode<T>{
     
     // ----------------------------------------------------------------------
 
-    public override string ToString() => "SceneNode<" + typeof(T).Name + ">(" + Self + ", " + (!CanUse ? "Нельзя использовать" : (Count + ", " + (Parent != null ? Parent.ToShortString() : "null"))) + ")";
+    public override string ToString() => "SceneNode<" + typeof(T).Name + ">(" + Self + ", " + (!CanUse ? "Нельзя использовать" : (Count + ", " + (Parent != null ? Parent.ToShortString() : "Нет родителя"))) + ")";
 
     public string ToShortString() => "SceneNode<" + typeof(T).Name + ">(" + Self + ", " + Count + ")";
+
+    public string ToStringWithoutSelf() => "SceneNode(" + Count + ", " + (Parent != null ? Parent.ToShortString() : "Нет родителя") + ")";
     
     public T this[int Index] => Get(Index);
 }
