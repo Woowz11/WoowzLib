@@ -23,9 +23,13 @@ public struct Vector2I : IEquatable<Vector2I>{
     
     // ----------------------------------------------------------------------
 
-    public static readonly Vector2I Zero = new Vector2I();
-    public static readonly Vector2I One  = new Vector2I(1);
-    public static readonly Vector2I NOne = new Vector2I(-1);
+    public static readonly Vector2I Zero  = new Vector2I();
+    public static readonly Vector2I One   = new Vector2I(1);
+    public static readonly Vector2I NOne  = new Vector2I(-1);
+    public static readonly Vector2I Right = new Vector2I( 1,  0);
+    public static readonly Vector2I Left  = new Vector2I(-1,  0);
+    public static readonly Vector2I Up    = new Vector2I( 0,  1);
+    public static readonly Vector2I Down  = new Vector2I( 0, -1);
     
     // ----------------------------------------------------------------------
 

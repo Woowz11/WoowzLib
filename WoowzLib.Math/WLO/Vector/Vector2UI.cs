@@ -23,8 +23,10 @@ public struct Vector2UI : IEquatable<Vector2UI>{
     
     // ----------------------------------------------------------------------
 
-    public static readonly Vector2UI Zero = new Vector2UI();
-    public static readonly Vector2UI One  = new Vector2UI(1);
+    public static readonly Vector2UI Zero  = new Vector2UI();
+    public static readonly Vector2UI One   = new Vector2UI(1);
+    public static readonly Vector2UI Right = new Vector2UI(1, 0);
+    public static readonly Vector2UI Up    = new Vector2UI(0, 1);
     
     // ----------------------------------------------------------------------
 
