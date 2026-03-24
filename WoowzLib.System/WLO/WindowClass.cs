@@ -23,6 +23,38 @@ public class WindowClass{
     
     // ----------------------------------------------------------------------
 
+    public const string Default_Button       = "Button";
+    public const string Default_Edit         = "Edit";
+    public const string Default_Static       = "Static";
+    public const string Default_ListBox      = "ListBox";
+    public const string Default_ComboBox     = "ComboBox";
+    public const string Default_ScrollBar    = "ScrollBar";
+    public const string Default_Dialog       = "#32770";
+    public const string Default_Popup        = "#32768";
+    public const string Default_Desktop      = "#32769";
+    public const string Default_ListView     = "SysListView32";
+    public const string Default_TreeView     = "SysTreeView32";
+    public const string Default_TabControl   = "SysTabControl32";
+    public const string Default_TrackBar     = "msctls_trackbar32";
+    public const string Default_ProgressBar  = "msctls_progress32";
+    public const string Default_UpDown       = "msctls_updown32";
+    public const string Default_ReBar        = "ReBarWindow32";
+    public const string Default_ToolBar      = "ToolbarWindow32";
+    public const string Default_HotKey       = "msctls_hotkey32";
+    public const string Default_StatusBar    = "msctls_statusbar32";
+    public const string Default_Header       = "SysHeader32";
+    public const string Default_ComboBoxEx   = "ComboBoxEx32";
+    public const string Default_DateTimePick = "SysDateTimePick32";
+    public const string Default_MonthCal     = "SysMonthCal32";
+    public const string Default_Pager        = "SysPager";
+    public const string Default_Message      = "#32771";
+    public const string Default_ComboLBox    = "ComboLBox";
+    public const string Default_Animate      = "SysAnimate32";
+    public const string Default_IPAddress    = "SysIPAddress32";
+    public const string Default_Shadow       = "SysShadow";
+    
+    // ----------------------------------------------------------------------
+
     /// <summary>
     /// Регистрирует класс
     /// </summary>

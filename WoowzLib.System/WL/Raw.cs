@@ -296,6 +296,7 @@ public static partial class Native{
             public const int  WS_MAXIMIZEBOX             = 0x00010000;
             public const int  WS_OVERLAPPEDWINDOW        = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
             public const int  WS_VISIBLE                 = 0x10000000;
+            public const uint WS_CHILD                   = 0x40000000;
             public const uint PM_NOREMOVE                = 0x0000;
             public const uint PM_REMOVE                  = 0x0001;
             public const uint PM_NOYIELD                 = 0x0002;
@@ -325,6 +326,22 @@ public static partial class Native{
             public const int  GWL_STYLE                  = -16;
             public const int  GWL_EXSTYLE                = -20;
             public const int  ERROR_CLASS_DOES_NOT_EXIST = 1407;
+            public const uint BS_PUSHBUTTON              = 0x00000000;
+            public const uint BS_DEFPUSHBUTTON           = 0x00000001;
+            public const uint BS_CHECKBOX                = 0x00000002;
+            public const uint BS_AUTOCHECKBOX            = 0x00000003;
+            public const uint BS_RADIOBUTTON             = 0x00000004;
+            public const uint BS_3STATE                  = 0x00000005;
+            public const uint BS_AUTO3STATE              = 0x00000006;
+            public const uint BS_GROUPBOX                = 0x00000007;
+            public const uint BS_USERBUTTON              = 0x00000008;
+            public const uint BS_AUTORADIOBUTTON         = 0x00000009;
+            public const uint BS_PUSHBOX                 = 0x0000000A;
+            public const uint BS_OWNERDRAW               = 0x0000000B;
+            public const uint BS_SPLITBUTTON             = 0x0000000C;
+            public const uint BS_DEFSPLITBUTTON          = 0x0000000D;
+            public const uint BS_COMMANDLINK             = 0x0000000E;
+            public const uint BS_DEFCOMMANDLINK          = 0x0000000F;
         }
     }
 }

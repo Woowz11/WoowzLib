@@ -51,6 +51,11 @@ public class Window{
         /// Видно окно при старте?
         /// </summary>
         public bool Visible = true;
+
+        /// <summary>
+        /// Родительское окно при старте
+        /// </summary>
+        public Window? Parent = null;
     }
     
     public Window(WindowClass Class, WindowConstructor? Config = null){
@@ -59,6 +64,8 @@ public class Window{
             
             this.Class = Class;
             ClassName  = Class.Name;
+
+            Hierarchy = new SceneNode<Window>(this);
 
             __CreateWindow(ClassName, Config);
         }catch(Exception e){
@@ -72,10 +79,12 @@ public class Window{
 
             Class     = null;
             ClassName = ExistingClass;
+            
+            Hierarchy = new SceneNode<Window>(this);
 
             __CreateWindow(ClassName, Config);
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при создании окна!\nСуществующий класс: " + ExistingClass + "\nКонфиг: " + WL.__Base.Other.ToString(Config), e);
+            throw new Exception("Произошла ошибка при создании окна!\nЗагруженный класс: " + ExistingClass + "\nКонфиг: " + WL.__Base.Other.ToString(Config), e);
         }
     }
 
@@ -121,6 +130,11 @@ public class Window{
     /// Название класса
     /// </summary>
     public readonly string ClassName;
+
+    /// <summary>
+    /// Child/Parent окна
+    /// </summary>
+    public readonly SceneNode<Window> Hierarchy;
     
     // ----------------------------------------------------------------------
 
@@ -382,34 +396,48 @@ public class Window{
         }
 
     #endregion
-    
-    /// <summary>
-    /// Стиль окна
-    /// </summary>
-    public uint Style{
-        get{
-            try{
-                CheckAlive();
 
-                return (uint)Native.Raw.Windows.GetWindowLong(Handle, Native.Raw.Windows.GWL_STYLE);
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при получении стиля окна [" + ToShortString() + "]!", e);
+    #region Стиль
+
+        /// <summary>
+        /// Стиль окна
+        /// </summary>
+        public uint Style{
+            get{
+                try{
+                    CheckAlive();
+
+                    return (uint)Native.Raw.Windows.GetWindowLong(Handle, Native.Raw.Windows.GWL_STYLE);
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при получении стиля окна [" + ToShortString() + "]!", e);
+                }
+            }
+            set{
+                try{
+                    CheckAlive();
+                    
+                    if(Style == value){ return; }
+
+                    uint Style__ = value;
+
+                    if(Hierarchy.Parent != null && !HasStyle(Style__, Native.Raw.Windows.WS_CHILD)){ Style__ |= Native.Raw.Windows.WS_CHILD; }
+                    if(Visible && !HasStyle(Style__, Native.Raw.Windows.WS_VISIBLE)){ Style__ |= Native.Raw.Windows.WS_VISIBLE; }
+                    
+                    Native.Raw.Windows.SetWindowLong(Handle, Native.Raw.Windows.GWL_STYLE, (int)Style__);
+
+                    Native.Raw.Windows.SetWindowPos(Handle, IntPtr.Zero, 0, 0, 0, 0, Native.Raw.Windows.SWP_NOMOVE | Native.Raw.Windows.SWP_NOSIZE | Native.Raw.Windows.SWP_NOZORDER | Native.Raw.Windows.SWP_FRAMECHANGED);
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при установке стиля окну [" + ToShortString() + "]!\nСтиль: " + value, e);
+                }
             }
         }
-        set{
-            try{
-                CheckAlive();
-                
-                if(Style == value){ return; }
 
-                Native.Raw.Windows.SetWindowLong(Handle, Native.Raw.Windows.GWL_STYLE, (int)value);
+        /// <summary>
+        /// Есть стиль в стиле?
+        /// </summary>
+        public static bool HasStyle(uint Style, uint Flag) => (Style & Flag) != 0;
 
-                Native.Raw.Windows.SetWindowPos(Handle, IntPtr.Zero, 0, 0, 0, 0, Native.Raw.Windows.SWP_NOMOVE | Native.Raw.Windows.SWP_NOSIZE | Native.Raw.Windows.SWP_NOZORDER | Native.Raw.Windows.SWP_FRAMECHANGED);
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при установке стиля окну [" + ToShortString() + "]!\nСтиль: " + value, e);
-            }
-        }
-    }
+    #endregion
     
     // ----------------------------------------------------------------------
 
@@ -447,6 +475,10 @@ public class Window{
     internal void __Destroy(){
         try{
             if(!Windows.ContainsKey(ID)){ return; }
+            
+            Hierarchy.ClearAll();
+            Hierarchy.Parent = null;
+            Hierarchy.CanUse = false;
             
             try{
                 OnDestroy?.Invoke(this);
@@ -492,14 +524,18 @@ public class Window{
     /// </summary>
     /// <param name="Class">Название класса</param>
     private void __CreateWindow(string Class, WindowConstructor Config){
+        uint Style__ = Native.Raw.Windows.WS_OVERLAPPEDWINDOW;
+
+        if(Config.Parent != null){ Style__ = Native.Raw.Windows.WS_CHILD; }
+        
         Handle = Native.Raw.Windows.CreateWindowExW(
             0,
             Class,
             Config.Title!,
-            Native.Raw.Windows.WS_OVERLAPPEDWINDOW,
+            Style__,
             Config.Position.X, Config.Position.Y,
             (int)Config.Size.W, (int)Config.Size.H,
-            IntPtr.Zero,
+            Config.Parent?.Handle ?? IntPtr.Zero,
             IntPtr.Zero,
             Native.Raw.Windows.GetModuleHandle(null),
             IntPtr.Zero
@@ -514,7 +550,7 @@ public class Window{
             }
         }
 
-        __OnSize    (Config.Size    );
+        Hierarchy.Parent = Config.Parent?.Hierarchy;
         
         if(Config.Visible){ Visible = true; }
             
@@ -567,7 +603,7 @@ public class Window{
     
     // ----------------------------------------------------------------------
 
-    public override string ToString() => "Window(" + ID + ", " + (Alive ? ("\"" + Title + "\", " + Handle + ", " + Size.ToSizeString() + ", " + Position.ToPositionString()) : "Уничтожено") + ", " + (Class == null ? ClassName : Class) + ")";
+    public override string ToString() => "Window(" + ID + ", " + (Alive ? ("\"" + Title + "\", " + Handle + ", " + Size.ToSizeString() + ", " + Position.ToPositionString() + ", " + (Hierarchy.Parent?.Self.ToShortString() ?? "Нет родителя")) : "Уничтожено") + ", " + (Class == null ? ClassName : Class) + ")";
 
     public string ToShortString() => "Window(" + ID + ", " + (Alive ? Handle : "Уничтожено") + ", " + (Class == null ? ClassName : Class) + ")";
     
