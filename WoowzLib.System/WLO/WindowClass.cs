@@ -113,11 +113,10 @@ public class WindowClass{
     }
 
     /// <summary>
-    /// Делегат для Events
+    /// Делегат для Events (Окно, сообщение, информация 1, информация 2) => (Результат (если вернуть null, то вызовется DefWindowProc))
     /// </summary>
     public delegate IntPtr? WindowEvent(Window Window, uint Message, IntPtr WP, IntPtr LP);
-
-    private readonly Native.Raw.Windows.WndProcDelegate __WndProcDelegate;
+    
     /// <summary>
     /// События
     /// </summary>
@@ -143,6 +142,7 @@ public class WindowClass{
         
         return Native.Raw.Windows.DefWindowProc(Handle, Message, WP, LP);
     }
+    private readonly Native.Raw.Windows.WndProcDelegate __WndProcDelegate;
     
     // ----------------------------------------------------------------------
     

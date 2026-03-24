@@ -30,8 +30,7 @@ public class Window{
     /// <summary>
     /// Значения для конструктора окна
     /// </summary>
-    public class WindowConstructor{
-        
+    public class Constructor{
         /// <summary>
         /// Стартовый заголовок окна
         /// </summary>
@@ -63,9 +62,9 @@ public class Window{
         public IntPtr Instance = WL.System.Instance;
     }
     
-    public Window(WindowClass Class, WindowConstructor? Config = null){
+    public Window(WindowClass Class, Constructor? Config = null){
         try{
-            Config ??= new WindowConstructor();
+            Config ??= new Constructor();
             
             this.Class = Class;
             ClassName  = Class.Name;
@@ -78,9 +77,9 @@ public class Window{
         }
     }
     
-    public Window(string ExistingClass, WindowConstructor? Config = null){
+    public Window(string ExistingClass, Constructor? Config = null){
         try{
-            Config ??= new WindowConstructor();
+            Config ??= new Constructor();
 
             Class     = null;
             ClassName = ExistingClass;
@@ -443,6 +442,11 @@ public class Window{
         public static bool HasStyle(uint Style, uint Flag) => (Style & Flag) != 0;
 
     #endregion
+
+    /// <summary>
+    /// Вызывается при уничтожении окна
+    /// </summary>
+    public event Action<Window>? OnDestroy;
     
     // ----------------------------------------------------------------------
 
@@ -490,6 +494,12 @@ public class Window{
             }catch(Exception e){
                 Logger.Error("Произошла ошибка в ивенте OnDestroy при уничтожении окна [" + this + "]!", e);
             }
+            
+            try{
+                OnGlobalDestroy?.Invoke(this);
+            }catch(Exception e){
+                Logger.Error("Произошла ошибка в ивенте OnGlobalDestroy при уничтожении окна [" + this + "]!", e);
+            }
             Windows.Remove(ID);
 
             IntPtr ToRemove = IntPtr.Zero;
@@ -528,7 +538,7 @@ public class Window{
     /// Создаёт окно
     /// </summary>
     /// <param name="Class">Название класса</param>
-    private void __CreateWindow(string Class, WindowConstructor Config){
+    private void __CreateWindow(string Class, Constructor Config){
         uint Style__ = Native.Raw.Windows.WS_OVERLAPPEDWINDOW;
 
         if(Config.Parent != null){ Style__ = Native.Raw.Windows.WS_CHILD; }
@@ -562,7 +572,7 @@ public class Window{
         Windows[ID] = this;
         WindowsIDs[Handle] = ID;
         try{
-            OnCreate?.Invoke(this);
+            OnGlobalCreate?.Invoke(this);
         }catch(Exception e){
             Logger.Error("Произошла ошибка в ивенте OnCreate при создании окна [" + this + "]!", e);
         }
@@ -583,26 +593,30 @@ public class Window{
     /// <summary>
     /// Вызывается при создании окна
     /// </summary>
-    public static event Action<Window>? OnCreate;
+    public static event Action<Window>? OnGlobalCreate;
 
     /// <summary>
     /// Вызывается при уничтожении окна
     /// </summary>
-    public static event Action<Window>? OnDestroy;
+    public static event Action<Window>? OnGlobalDestroy;
 
     /// <summary>
     /// Обновляет окна (отправляет сообщения по окнам)
     /// </summary>
     public static void UpdateWindows(){
-        while(Native.Raw.Windows.PeekMessage(out Native.Raw.Windows.MSG Message, IntPtr.Zero, 0, 0, Native.Raw.Windows.PM_REMOVE)){
-            Native.Raw.Windows.TranslateMessage(ref Message);
-            Native.Raw.Windows.DispatchMessage (ref Message);
-        }
-
-        foreach(Window Window in Windows.Values.ToArray()){
-            if(!Window.Alive){
-                Window.__Destroy();
+        try{
+            while(Native.Raw.Windows.PeekMessage(out Native.Raw.Windows.MSG Message, IntPtr.Zero, 0, 0, Native.Raw.Windows.PM_REMOVE)){
+                Native.Raw.Windows.TranslateMessage(ref Message);
+                Native.Raw.Windows.DispatchMessage(ref Message);
             }
+
+            foreach(Window Window in Windows.Values.ToArray()){
+                if(!Window.Alive){
+                    Window.__Destroy();
+                }
+            }
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при обновлении окон!", e);
         }
     }
     
