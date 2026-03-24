@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using System.Text;
+﻿using System.Text;
 using WL;
 using WLO.Attribute;
 using WLO.Vector;
@@ -9,6 +8,7 @@ namespace WLO;
 /// <summary>
 /// окно
 /// </summary>
+[RequireTesting(TestingInformation.WorkInProgress, "Не реализована смена стиля (WS_CHILD) и родителя при изменении Hierarchy")]
 public class Window{
     static Window(){
         WL.Core.OnTerminate += CloseReason => {
@@ -57,9 +57,19 @@ public class Window{
         public Window? Parent = null;
 
         /// <summary>
-        /// Дескриптор (область где создать окно)
+        /// Дескриптор (область, где создать окно)
         /// </summary>
         public IntPtr Instance = WL.System.Instance;
+
+        /// <summary>
+        /// Стартовый стиль окна
+        /// </summary>
+        public uint Style = Native.Raw.Windows.WS_OVERLAPPEDWINDOW;
+
+        /// <summary>
+        /// Стартовый дополнительный стиль окна
+        /// </summary>
+        public uint StyleEx = 0;
     }
     
     public Window(WindowClass Class, Constructor? Config = null){
@@ -139,6 +149,11 @@ public class Window{
     /// Child/Parent окна
     /// </summary>
     public readonly SceneNode<Window> Hierarchy;
+
+    /// <summary>
+    /// Device Context окна
+    /// </summary>
+    public DeviceContext DeviceContext => new DeviceContext(this);
     
     // ----------------------------------------------------------------------
 
@@ -368,7 +383,7 @@ public class Window{
         public event Action<Window, bool>? OnVisible;
     
         /// <summary>
-        /// Окно видимое?
+        /// Окно видимое? (изменяет стиль: WS_VISIBLE)
         /// </summary>
         public bool Visible{
             get{
@@ -424,8 +439,8 @@ public class Window{
 
                     uint Style__ = value;
 
-                    if(Hierarchy.Parent != null && !HasStyle(Style__, Native.Raw.Windows.WS_CHILD)){ Style__ |= Native.Raw.Windows.WS_CHILD; }
-                    if(Visible && !HasStyle(Style__, Native.Raw.Windows.WS_VISIBLE)){ Style__ |= Native.Raw.Windows.WS_VISIBLE; }
+                    if(Hierarchy.Parent != null){ Style__ = AddStyle(Style__, Native.Raw.Windows.WS_CHILD, out bool _); }
+                    if(Visible                 ){ Style__ = AddStyle(Style__, Native.Raw.Windows.WS_VISIBLE, out bool _); }
                     
                     Native.Raw.Windows.SetWindowLong(Handle, Native.Raw.Windows.GWL_STYLE, (int)Style__);
 
@@ -435,21 +450,82 @@ public class Window{
                 }
             }
         }
-
+        
         /// <summary>
-        /// Есть стиль в стиле?
+        /// Дополнительный стиль окна
         /// </summary>
-        public static bool HasStyle(uint Style, uint Flag) => (Style & Flag) != 0;
+        public uint StyleEx{
+            get{
+                try{
+                    CheckAlive();
+
+                    return (uint)Native.Raw.Windows.GetWindowLong(Handle, Native.Raw.Windows.GWL_EXSTYLE);
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при получении дополнительного стиля окна [" + ToShortString() + "]!", e);
+                }
+            }
+            set{
+                try{
+                    CheckAlive();
+                    
+                    if(StyleEx == value){ return; }
+
+                    uint StyleEx__ = value;
+
+                    if(Alpha != 255){ StyleEx__ = AddStyle(StyleEx__, Native.Raw.Windows.WS_EX_LAYERED, out bool _); }
+                    
+                    Native.Raw.Windows.SetWindowLong(Handle, Native.Raw.Windows.GWL_EXSTYLE, (int)StyleEx__);
+
+                    Native.Raw.Windows.SetWindowPos(Handle, IntPtr.Zero, 0, 0, 0, 0, Native.Raw.Windows.SWP_NOMOVE | Native.Raw.Windows.SWP_NOSIZE | Native.Raw.Windows.SWP_NOZORDER | Native.Raw.Windows.SWP_FRAMECHANGED);
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при установке дополнительного стиля окну [" + ToShortString() + "]!\nСтиль: " + value, e);
+                }
+            }
+        }
 
     #endregion
+
+    /// <summary>
+    /// Прозрачность окна (изменяет стиль: WS_EX_LAYERED)
+    /// </summary>
+    public byte Alpha{
+        get{
+            try{
+                CheckAlive();
+
+                if(!HasStyleEx(Native.Raw.Windows.WS_EX_LAYERED)){ return 255; }
+
+                if(!Native.Raw.Windows.GetLayeredWindowAttributes(Handle, out uint ColorKey, out byte Alpha__, out uint Flags)){ throw new Exception("Произошла ошибка в GetLayeredWindowAttributes при получении прозрачности у окна!\nОшибка: " + WL.System.LastOSError()); }
+
+                if((Flags & Native.Raw.Windows.LWA_ALPHA) == 0){ return 255; }
+
+                return Alpha__;
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при получении прозрачности у окна [" + this + "]!", e);
+            }
+        }
+        set{
+            try{
+                CheckAlive();
+                
+                if(Alpha == value){ return; }
+
+                AddStyleEx(Native.Raw.Windows.WS_EX_LAYERED);
+
+                if(!Native.Raw.Windows.SetLayeredWindowAttributes(Handle, 0, value, Native.Raw.Windows.LWA_ALPHA)){ throw new Exception("Произошла ошибка в SetLayeredWindowAttributes при установке прозрачности окну!\nОшибка: " + WL.System.LastOSError()); }
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при изменении прозрачности у окна [" + this + "]!\nПрозрачность: " + value, e);
+            }
+        }
+    }
+    
+    // ----------------------------------------------------------------------
 
     /// <summary>
     /// Вызывается при уничтожении окна
     /// </summary>
     public event Action<Window>? OnDestroy;
     
-    // ----------------------------------------------------------------------
-
     /// <summary>
     /// Конвертирует клиентские координаты окна в экранные координаты
     /// </summary>
@@ -474,6 +550,36 @@ public class Window{
         }catch(Exception e){
             throw new Exception("Произошла ошибка при конвертации Screen -> Client координат у окна [" + this + "]!\nScreen координаты: " + Screen, e);
         }
+    }
+
+    /// <summary>
+    /// Есть стиль в стиле?
+    /// </summary>
+    public bool HasStyle(uint Flag) => HasStyle(Style, Flag);
+    
+    /// <summary>
+    /// Добавляет стиль (если уже есть, ничего не делает)
+    /// </summary>
+    /// <param name="Flag">Добавляемый стиль</param>
+    /// <returns>Если стиль уже есть, возвращает true</returns>
+    public bool AddStyle(uint Flag){
+        Style = AddStyle(Style, Flag, out bool Updated);
+        return Updated;
+    }
+    
+    /// <summary>
+    /// Есть стиль в дополнительном стиле?
+    /// </summary>
+    public bool HasStyleEx(uint Flag) => HasStyle(StyleEx, Flag);
+    
+    /// <summary>
+    /// Добавляет дополнительный стиль (если уже есть, ничего не делает)
+    /// </summary>
+    /// <param name="Flag">Добавляемый стиль</param>
+    /// <returns>Если стиль уже есть, возвращает true</returns>
+    public bool AddStyleEx(uint Flag){
+        StyleEx = AddStyle(StyleEx, Flag, out bool Updated);
+        return Updated;
     }
     
     // ----------------------------------------------------------------------
@@ -539,12 +645,12 @@ public class Window{
     /// </summary>
     /// <param name="Class">Название класса</param>
     private void __CreateWindow(string Class, Constructor Config){
-        uint Style__ = Native.Raw.Windows.WS_OVERLAPPEDWINDOW;
+        uint Style__ = Config.Style;
 
-        if(Config.Parent != null){ Style__ = Native.Raw.Windows.WS_CHILD; }
+        if(Config.Parent != null){ Style__ = AddStyle(Style__, Native.Raw.Windows.WS_CHILD, out bool _); }
         
         Handle = Native.Raw.Windows.CreateWindowExW(
-            0,
+            Config.StyleEx,
             Class,
             Config.Title!,
             Style__,
@@ -619,6 +725,25 @@ public class Window{
             throw new Exception("Произошла ошибка при обновлении окон!", e);
         }
     }
+    
+    /// <summary>
+    /// Добавляет стиль (если уже есть, ничего не делает)
+    /// </summary>
+    /// <param name="Style">Стиль</param>
+    /// <param name="Flag">Добавляемый стиль</param>
+    /// <param name="Updated">Стиль обновился?</param>
+    /// <returns>Изменённый стиль</returns>
+    public static uint AddStyle(uint Style, uint Flag, out bool Updated){
+        if(HasStyle(Style, Flag)){ Updated = false; return Style; }
+
+        Updated = true;
+        return Style | Flag;
+    }
+    
+    /// <summary>
+    /// Есть стиль в стиле?
+    /// </summary>
+    public static bool HasStyle(uint Style, uint Flag) => (Style & Flag) != 0;
     
     // ----------------------------------------------------------------------
 

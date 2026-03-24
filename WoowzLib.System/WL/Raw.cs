@@ -204,6 +204,48 @@ public static partial class Native{
             [DllImport(DLL_User)]
             public static extern IntPtr LoadCursor(IntPtr hInstance, int lpCursorName);
             
+            [DllImport(DLL_User, SetLastError = true)]
+            public static extern bool SetLayeredWindowAttributes(IntPtr hWnd, uint crKey, byte bAlpha, uint dwFlags);
+            
+            [DllImport(DLL_User, SetLastError = true)]
+            public static extern bool GetLayeredWindowAttributes(IntPtr hWnd, out uint pcrKey, out byte pbAlpha, out uint pdwFlags);
+            
+            [DllImport(DLL_User)]
+            public static extern IntPtr GetDC(IntPtr hWnd);
+
+            [DllImport(DLL_User)]
+            public static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
+
+            [DllImport(DLL_User)]
+            public static extern IntPtr GetWindowDC(IntPtr hWnd);
+            
+            [DllImport(DLL_GDI, SetLastError = true)]
+            public static extern bool Rectangle(IntPtr hdc, int left, int top, int right, int bottom);
+            
+            [DllImport(DLL_GDI, SetLastError = true)]
+            public static extern bool Ellipse(IntPtr hdc, int left, int top, int right, int bottom);
+            
+            [DllImport(DLL_GDI, SetLastError = true)]
+            public static extern bool MoveToEx(IntPtr hdc, int x, int y, out POINT lpPoint);
+            
+            [DllImport(DLL_GDI, SetLastError = true)]
+            public static extern bool LineTo(IntPtr hdc, int x, int y);
+            
+            [DllImport(DLL_GDI, CharSet = CharSet.Unicode)]
+            public static extern int TextOut(IntPtr hdc, int x, int y, string lpString, int c);
+            
+            [DllImport(DLL_GDI)]
+            public static extern IntPtr CreatePen(int fnPenStyle, int nWidth, uint crColor);
+            
+            [DllImport(DLL_GDI)]
+            public static extern IntPtr CreateSolidBrush(uint crColor);
+            
+            [DllImport(DLL_GDI, CharSet = CharSet.Unicode)]
+            public static extern IntPtr CreateFont(int nHeight, int nWidth, int nEscapement, int nOrientation, int fnWeight, uint fdwItalic, uint fdwUnderline, uint fdwStrikeOut, uint fdwCharSet, uint fdwOutputPrecision, uint fdwClipPrecision, uint fdwQuality, uint fdwPitchAndFamily, string lpszFace);
+            
+            [DllImport(DLL_GDI)]
+            public static extern IntPtr SelectObject(IntPtr hdc, IntPtr hObject);
+            
             // ----------------------------------------------------------------------
             
             [UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -353,6 +395,8 @@ public static partial class Native{
             public const uint WM_SIZE                    = 0x0005;
             public const uint WM_SHOWWINDOW              = 0x0018;
             public const uint WM_WINDOWPOSCHANGED        = 0x0047;
+            public const uint WM_ERASEBKGND              = 0x0014;
+            public const uint WM_COMMAND                 = 0x0111;
             public const int  SW_HIDE                    = 0;
             public const int  SW_SHOW                    = 5;
             public const int  HTCLIENT                   = 1;
@@ -376,6 +420,9 @@ public static partial class Native{
             public const uint BS_COMMANDLINK             = 0x0000000E;
             public const uint BS_DEFCOMMANDLINK          = 0x0000000F;
             public const int  IDC_ARROW                  = 32512;
+            public const int  WS_EX_LAYERED              = 0x00080000;
+            public const uint LWA_COLORKEY               = 0x00000001;
+            public const uint LWA_ALPHA                  = 0x00000002;
         }
     }
 }

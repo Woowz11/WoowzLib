@@ -13,6 +13,7 @@
 }
 
 namespace WLO{
+    [Flags]
     public enum TestingInformation{
         /// <summary>
         /// Не выбрано
@@ -25,6 +26,10 @@ namespace WLO{
         /// <summary>
         /// Нужен глобальный тест, возможно переписать всё надо
         /// </summary>
-        Global
+        Global,
+        /// <summary>
+        /// В разработке
+        /// </summary>
+        WorkInProgress
     }
 }

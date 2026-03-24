@@ -74,9 +74,44 @@ public class WLWindow{
     /// Вызывается при закрытии окна (окно) => (закрыть окно?)
     /// </summary>
     public event Func<WLWindow, bool>? OnClose;
+
+    /// <summary>
+    /// Вызывается при изменении заголовка окна (окно, заголовок) => (новый заголовок (если вернуть null, не изменит заголовок))
+    /// </summary>
+    public event Func<WLWindow, string, string?>? OnTitle;
     
     // ----------------------------------------------------------------------
 
+    private string __Title;
+    /// <summary>
+    /// Заголовок окна
+    /// </summary>
+    public string Title{
+        get => __Title;
+        set{
+            try{
+                CheckAlive();
+
+                string Title__ = value;
+                
+                try{
+                    string? NewTitle = OnTitle?.Invoke(this, Title__);
+                    if(NewTitle != null){ Title__ = NewTitle; }
+                }catch(Exception e){
+                    Logger.Error("Произошла ошибка в ивенте OnTitle в WL окне [" + this + "]!\nЗаголовок: " + value, e);
+                }
+                
+                if(__Title == Title__){ return; }
+
+                __Window.Title = Title__;
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке заголовка WL окна [" + this + "]!\nЗаголовок: " + value, e);
+            }
+        }
+    }
+    
+    // ----------------------------------------------------------------------
+    
     /// <summary>
     /// Уничтожает окно
     /// </summary>
@@ -90,22 +125,14 @@ public class WLWindow{
         }
     }
 
-    private string __Title;
     /// <summary>
-    /// Заголовок окна
+    /// Рендерит окно
     /// </summary>
-    public string Title{
-        get => __Title;
-        set{
-            try{
-                CheckAlive();
-                
-                if(__Title == value){ return; }
-
-                __Window.Title = value;
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при установке заголовка WL окна [" + this + "]!\nЗаголовок: " + value, e);
-            }
+    public void Render(){
+        try{
+               
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при рендере WL окна [" + this + "]!", e);
         }
     }
     
@@ -172,7 +199,16 @@ public class WLWindow{
                     if(!Destroy){ return IntPtr.Zero; }
                     break;
                 }
+                
+                // Рисование внутри окна
+                case Native.Raw.Windows.WM_PAINT: { break; }
 
+                // Очистка окна
+                case Native.Raw.Windows.WM_ERASEBKGND: { return 1; }
+                
+                // Обработка элементов у окна
+                case Native.Raw.Windows.WM_COMMAND: { return IntPtr.Zero; }
+                
                 // Обновляет курсор
                 case Native.Raw.Windows.WM_SETCURSOR: {
                     int Hit = WL.System.Native.LoWord(LP);
