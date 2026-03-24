@@ -23,6 +23,7 @@ public class Window{
             }
             
             Windows.Clear();
+            WindowsIDs.Clear();
         };
     }
     
@@ -87,19 +88,24 @@ public class Window{
 
             Native.Raw.Windows.DestroyWindow(Handle);
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при уничтожении окна [" + this + "]!", e);
+            throw new Exception("Произошла ошибка при уничтожении окна [" + ToShortString() + "]!", e);
         }
     }
 
     /// <summary>
-    /// Ссылка на окно (ID окна)
+    /// Уникальный ID окна
+    /// </summary>
+    public readonly int ID = Interlocked.Increment(ref __NextID); private static int __NextID;
+    
+    /// <summary>
+    /// Ссылка на окно (Удаляется, после удаления окна)
     /// </summary>
     public IntPtr Handle{ get; private set; }
 
     /// <summary>
     /// Окно живое?
     /// </summary>
-    public bool Alive => Handle != IntPtr.Zero;
+    public bool Alive => Native.Raw.Windows.IsWindow(Handle);
     
     /// <summary>
     /// Проверяет, живое ли окно
@@ -139,7 +145,7 @@ public class Window{
                     
                     return Length > 0 ? SB.ToString() : string.Empty;
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при получении заголовка окна [" + this + "]!", e);
+                    throw new Exception("Произошла ошибка при получении заголовка окна [" + ToShortString() + "]!", e);
                 }
             }
             set{
@@ -151,12 +157,12 @@ public class Window{
                     try{
                         OnTitle?.Invoke(this, value);
                     }catch(Exception e){
-                        Logger.Error("Произошла ошибка внутри ивента OnTitle у окна [" + this + "]!\nЗаголовок: " + value, e);
+                        Logger.Error("Произошла ошибка внутри ивента OnTitle у окна [" + ToShortString() + "]!\nЗаголовок: " + value, e);
                     }
                     
                     if(!Native.Raw.Windows.SetWindowTextW(Handle, value)){ throw new Exception("Произошла ошибка в SetWindowTextW!\nОшибка: " + WL.System.LastOSError()); }
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при установке заголовка окну [" + this + "]!\nЗаголовок: \"" + value + "\"", e);
+                    throw new Exception("Произошла ошибка при установке заголовка окну [" + ToShortString() + "]!\nЗаголовок: \"" + value + "\"", e);
                 }
             }
         }
@@ -173,7 +179,7 @@ public class Window{
             try{
                 OnPosition?.Invoke(this, Position, ClientPosition);
             }catch(Exception e){
-                Logger.Error("Произошла ошибка внутри ивента OnPosition у окна [" + this + "]!\nПозиция: " + Position, e);
+                Logger.Error("Произошла ошибка внутри ивента OnPosition у окна [" + ToShortString() + "]!\nПозиция: " + Position, e);
             }
         }
     
@@ -191,7 +197,7 @@ public class Window{
 
                         return new Vector2I(Rect.left, Rect.top);
                     }catch(Exception e){
-                        throw new Exception("Произошла ошибка при получении позиции окна [" + this + "]!", e);
+                        throw new Exception("Произошла ошибка при получении позиции окна [" + ToShortString() + "]!", e);
                     }
                 }
                 set{
@@ -204,7 +210,7 @@ public class Window{
                         
                         __OnPosition(value);
                     }catch(Exception e){
-                        throw new Exception("Произошла ошибка при установке позиции окна [" + this + "]!\nПозиция: " + value.ToPositionString(), e);
+                        throw new Exception("Произошла ошибка при установке позиции окна [" + ToShortString() + "]!\nПозиция: " + value.ToPositionString(), e);
                     }
                 }
             }
@@ -224,7 +230,7 @@ public class Window{
 
                         return ClientToScreen(Vector2I.Zero);
                     }catch(Exception e){
-                        throw new Exception("Произошла ошибка при получении клиентской позиции окна [" + this + "]!", e);
+                        throw new Exception("Произошла ошибка при получении клиентской позиции окна [" + ToShortString() + "]!", e);
                     }
                 }
                 set{
@@ -241,7 +247,7 @@ public class Window{
                         
                         __OnPosition(__Position);
                     }catch(Exception e){
-                        throw new Exception("Произошла ошибка при установке клиентской позиции окна [" + this + "]!\nПозиция: " + value.ToPositionString(), e);
+                        throw new Exception("Произошла ошибка при установке клиентской позиции окна [" + ToShortString() + "]!\nПозиция: " + value.ToPositionString(), e);
                     }
                 }
             }
@@ -260,7 +266,7 @@ public class Window{
             try{
                 OnSize?.Invoke(this, Size, ClientSize);
             }catch(Exception e){
-                Logger.Error("Произошла ошибка внутри ивента OnSize у окна [" + this + "]!\nРазмер: " + Size, e);
+                Logger.Error("Произошла ошибка внутри ивента OnSize у окна [" + ToShortString() + "]!\nРазмер: " + Size, e);
             }
         }
 
@@ -278,7 +284,7 @@ public class Window{
 
                         return new Vector2UI((uint)Rect.width, (uint)Rect.height);
                     }catch(Exception e){
-                        throw new Exception("Произошла ошибка при получении размера окна [" + this + "]!", e);
+                        throw new Exception("Произошла ошибка при получении размера окна [" + ToShortString() + "]!", e);
                     }
                 }
                 set{
@@ -291,7 +297,7 @@ public class Window{
                         
                         __OnSize(value);
                     }catch(Exception e){
-                        throw new Exception("Произошла ошибка при установке размера окна [" + this + "]!\nРазмер: " + value.ToSizeString(), e);
+                        throw new Exception("Произошла ошибка при установке размера окна [" + ToShortString() + "]!\nРазмер: " + value.ToSizeString(), e);
                     }
                 }
             }
@@ -312,7 +318,7 @@ public class Window{
                         
                         return new Vector2UI((uint)(Rect.width), (uint)(Rect.height));
                     }catch(Exception e){
-                        throw new Exception("Произошла ошибка при получении клиентского размера окна [" + this + "]!", e);
+                        throw new Exception("Произошла ошибка при получении клиентского размера окна [" + ToShortString() + "]!", e);
                     }
                 }
                 set{
@@ -327,7 +333,7 @@ public class Window{
 
                         Size = new Vector2UI((uint)Rect.width, (uint)Rect.height);
                     }catch(Exception e){
-                        throw new Exception("Произошла ошибка при установке клиентского размера окна [" + this + "]!\nРазмер: " + value.ToSizeString(), e);
+                        throw new Exception("Произошла ошибка при установке клиентского размера окна [" + ToShortString() + "]!\nРазмер: " + value.ToSizeString(), e);
                     }
                 }
             }
@@ -353,7 +359,7 @@ public class Window{
 
                     return (Style & Native.Raw.Windows.WS_VISIBLE) != 0;
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при получении видимости окна [" + this + "]!", e);
+                    throw new Exception("Произошла ошибка при получении видимости окна [" + ToShortString() + "]!", e);
                 }
             }
             set{
@@ -367,10 +373,10 @@ public class Window{
                     try{
                         OnVisible?.Invoke(this, value);
                     }catch(Exception e){
-                        Logger.Error("Произошла ошибка внутри ивента OnVisible у окна [" + this + "]!\nВидимость: " + value, e);
+                        Logger.Error("Произошла ошибка внутри ивента OnVisible у окна [" + ToShortString() + "]!\nВидимость: " + value, e);
                     }
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при установке видимости окну [" + this + "]!\nВидимость: " + value, e);
+                    throw new Exception("Произошла ошибка при установке видимости окну [" + ToShortString() + "]!\nВидимость: " + value, e);
                 }
             }
         }
@@ -387,11 +393,21 @@ public class Window{
 
                 return (uint)Native.Raw.Windows.GetWindowLong(Handle, Native.Raw.Windows.GWL_STYLE);
             }catch(Exception e){
-                throw new Exception("Не получилось получить стиль окна [" + this + "]!", e);
+                throw new Exception("Произошла ошибка при получении стиля окна [" + ToShortString() + "]!", e);
             }
         }
         set{
-            
+            try{
+                CheckAlive();
+                
+                if(Style == value){ return; }
+
+                Native.Raw.Windows.SetWindowLong(Handle, Native.Raw.Windows.GWL_STYLE, (int)value);
+
+                Native.Raw.Windows.SetWindowPos(Handle, IntPtr.Zero, 0, 0, 0, 0, Native.Raw.Windows.SWP_NOMOVE | Native.Raw.Windows.SWP_NOSIZE | Native.Raw.Windows.SWP_NOZORDER | Native.Raw.Windows.SWP_FRAMECHANGED);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке стиля окну [" + ToShortString() + "]!\nСтиль: " + value, e);
+            }
         }
     }
     
@@ -430,14 +446,23 @@ public class Window{
     /// </summary>
     internal void __Destroy(){
         try{
-            if(!Alive){ return; }
-
+            if(!Windows.ContainsKey(ID)){ return; }
+            
             try{
                 OnDestroy?.Invoke(this);
             }catch(Exception e){
                 Logger.Error("Произошла ошибка в ивенте OnDestroy при уничтожении окна [" + this + "]!", e);
             }
-            Windows.Remove(Handle);
+            Windows.Remove(ID);
+
+            IntPtr ToRemove = IntPtr.Zero;
+            foreach(KeyValuePair<IntPtr, int> Pair in WindowsIDs.Where(Pair => Pair.Value == ID)){
+                ToRemove = Pair.Key;
+            }
+            if(ToRemove != IntPtr.Zero){
+                WindowsIDs.Remove(ToRemove);
+            }
+            
             Handle = IntPtr.Zero;
         }catch(Exception e){
             throw new Exception("Произошла ошибка при вызове уничтожения окна [" + this + "]!", e);
@@ -480,13 +505,21 @@ public class Window{
             IntPtr.Zero
         );
 
-        if(Handle == IntPtr.Zero){ throw new Exception("Произошла ошибка в CreateWindowExW!\nОшибка: " + WL.System.LastOSError()); }
+        if(Handle == IntPtr.Zero){
+            int OSError = WL.System.LastOSError();
+            if(OSError == Native.Raw.Windows.ERROR_CLASS_DOES_NOT_EXIST){
+                throw new Exception("Не найден оконный класс \"" + Class + "\"!");
+            }else{
+                throw new Exception("Произошла ошибка в CreateWindowExW!\nОшибка: " + OSError);
+            }
+        }
 
         __OnSize    (Config.Size    );
         
         if(Config.Visible){ Visible = true; }
             
-        Windows[Handle] = this;
+        Windows[ID] = this;
+        WindowsIDs[Handle] = ID;
         try{
             OnCreate?.Invoke(this);
         }catch(Exception e){
@@ -499,7 +532,12 @@ public class Window{
     /// <summary>
     /// Все запущенные окна
     /// </summary>
-    public static readonly Dictionary<IntPtr, Window> Windows = new Dictionary<IntPtr, Window>();
+    public static readonly Dictionary<int, Window> Windows = new Dictionary<int, Window>();
+
+    /// <summary>
+    /// Все ID окон
+    /// </summary>
+    public static readonly Dictionary<IntPtr, int> WindowsIDs = new Dictionary<IntPtr, int>();
 
     /// <summary>
     /// Вызывается при создании окна
@@ -521,7 +559,7 @@ public class Window{
         }
 
         foreach(Window Window in Windows.Values.ToArray()){
-            if(!Native.Raw.Windows.IsWindow(Window.Handle)){
+            if(!Window.Alive){
                 Window.__Destroy();
             }
         }
@@ -529,15 +567,15 @@ public class Window{
     
     // ----------------------------------------------------------------------
 
-    public override string ToString() => "Window(" + (Alive ? ("\"" + Title + "\", " + Handle + ", " + Size.ToSizeString() + ", " + Position.ToPositionString()) : "Уничтожено") + ", " + (Class == null ? ClassName : Class) + ")";
+    public override string ToString() => "Window(" + ID + ", " + (Alive ? ("\"" + Title + "\", " + Handle + ", " + Size.ToSizeString() + ", " + Position.ToPositionString()) : "Уничтожено") + ", " + (Class == null ? ClassName : Class) + ")";
 
+    public string ToShortString() => "Window(" + ID + ", " + (Alive ? Handle : "Уничтожено") + ", " + (Class == null ? ClassName : Class) + ")";
+    
     public override bool Equals(object? Object){
         if(Object is not Window Other){ return false; }
         if(ReferenceEquals(this, Other)){ return true; }
-        if(Handle == IntPtr.Zero || Other.Handle == IntPtr.Zero){ return false; }
-        return Handle == Other.Handle;
+        return ID == Other.ID;
     }
     
-    private readonly int __ID = Interlocked.Increment(ref __NextID); private static int __NextID;
-    public override int GetHashCode() => __ID;
+    public override int GetHashCode() => ID;
 }

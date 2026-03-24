@@ -180,6 +180,9 @@ public static partial class Native{
             [DllImport(DLL_User, SetLastError = true)]
             public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
             
+            [DllImport(DLL_User, SetLastError = true)]
+            public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+            
             [DllImport(DLL_User, SetLastError = true, CharSet = CharSet.Unicode)]
             public static extern bool GetClassInfoEx(IntPtr hInstance, string lpClassName, out WNDCLASSEX lpWndClass);
             
@@ -278,49 +281,50 @@ public static partial class Native{
             
             // ----------------------------------------------------------------------
             
-            public const uint MEM_COMMIT             = 0x1000;
-            public const uint MEM_RESERVE            = 0x2000;
-            public const uint MEM_RELEASE            = 0x8000;
-            public const uint PAGE_READWRITE         = 0x04;
-            public const uint PAGE_EXECUTE_READWRITE = 0x40;
-            public const uint WAIT_OBJECT_0          = 0x00000000;
-            public const uint INFINITE               = 0xFFFFFFFF;
-            public const int  WS_OVERLAPPED          = 0x00000000;
-            public const int  WS_CAPTION             = 0x00C00000;
-            public const int  WS_SYSMENU             = 0x00080000;
-            public const int  WS_THICKFRAME          = 0x00040000;
-            public const int  WS_MINIMIZEBOX         = 0x00020000;
-            public const int  WS_MAXIMIZEBOX         = 0x00010000;
-            public const int  WS_OVERLAPPEDWINDOW    = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
-            public const int  WS_VISIBLE             = 0x10000000;
-            public const uint PM_NOREMOVE            = 0x0000;
-            public const uint PM_REMOVE              = 0x0001;
-            public const uint PM_NOYIELD             = 0x0002;
-            public const uint WM_DESTROY             = 0x0002;
-            public const uint WM_SETTEXT             = 0x000C;
-            public const uint WM_CLOSE               = 0x0010;
-            public const uint WM_PAINT               = 0x000F;
-            public const uint SWP_NOSIZE             = 0x0001;
-            public const uint SWP_NOMOVE             = 0x0002;
-            public const uint SWP_NOZORDER           = 0x0004;
-            public const uint SWP_NOREDRAW           = 0x0008;
-            public const uint SWP_NOACTIVATE         = 0x0010;
-            public const uint SWP_FRAMECHANGED       = 0x0020;
-            public const uint SWP_SHOWWINDOW         = 0x0040;
-            public const uint SWP_HIDEWINDOW         = 0x0080;
-            public const uint SWP_NOCOPYBITS         = 0x0100;
-            public const uint SWP_NOOWNERZORDER      = 0x0200;
-            public const uint SWP_NOSENDCHANGING     = 0x0400;
-            public const uint SWP_DRAWFRAME          = SWP_FRAMECHANGED;
-            public const uint SWP_NOREPOSITION       = SWP_NOOWNERZORDER;
-            public const uint WM_MOVE                = 0x0003;
-            public const uint WM_SIZE                = 0x0005;
-            public const uint WM_SHOWWINDOW          = 0x0018;
-            public const uint WM_WINDOWPOSCHANGED    = 0x0047;
-            public const int  SW_HIDE                = 0;
-            public const int  SW_SHOW                = 5;
-            public const int  GWL_STYLE              = -16;
-            public const int  GWL_EXSTYLE            = -20;
+            public const uint MEM_COMMIT                 = 0x1000;
+            public const uint MEM_RESERVE                = 0x2000;
+            public const uint MEM_RELEASE                = 0x8000;
+            public const uint PAGE_READWRITE             = 0x04;
+            public const uint PAGE_EXECUTE_READWRITE     = 0x40;
+            public const uint WAIT_OBJECT_0              = 0x00000000;
+            public const uint INFINITE                   = 0xFFFFFFFF;
+            public const int  WS_OVERLAPPED              = 0x00000000;
+            public const int  WS_CAPTION                 = 0x00C00000;
+            public const int  WS_SYSMENU                 = 0x00080000;
+            public const int  WS_THICKFRAME              = 0x00040000;
+            public const int  WS_MINIMIZEBOX             = 0x00020000;
+            public const int  WS_MAXIMIZEBOX             = 0x00010000;
+            public const int  WS_OVERLAPPEDWINDOW        = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+            public const int  WS_VISIBLE                 = 0x10000000;
+            public const uint PM_NOREMOVE                = 0x0000;
+            public const uint PM_REMOVE                  = 0x0001;
+            public const uint PM_NOYIELD                 = 0x0002;
+            public const uint WM_DESTROY                 = 0x0002;
+            public const uint WM_SETTEXT                 = 0x000C;
+            public const uint WM_CLOSE                   = 0x0010;
+            public const uint WM_PAINT                   = 0x000F;
+            public const uint SWP_NOSIZE                 = 0x0001;
+            public const uint SWP_NOMOVE                 = 0x0002;
+            public const uint SWP_NOZORDER               = 0x0004;
+            public const uint SWP_NOREDRAW               = 0x0008;
+            public const uint SWP_NOACTIVATE             = 0x0010;
+            public const uint SWP_FRAMECHANGED           = 0x0020;
+            public const uint SWP_SHOWWINDOW             = 0x0040;
+            public const uint SWP_HIDEWINDOW             = 0x0080;
+            public const uint SWP_NOCOPYBITS             = 0x0100;
+            public const uint SWP_NOOWNERZORDER          = 0x0200;
+            public const uint SWP_NOSENDCHANGING         = 0x0400;
+            public const uint SWP_DRAWFRAME              = SWP_FRAMECHANGED;
+            public const uint SWP_NOREPOSITION           = SWP_NOOWNERZORDER;
+            public const uint WM_MOVE                    = 0x0003;
+            public const uint WM_SIZE                    = 0x0005;
+            public const uint WM_SHOWWINDOW              = 0x0018;
+            public const uint WM_WINDOWPOSCHANGED        = 0x0047;
+            public const int  SW_HIDE                    = 0;
+            public const int  SW_SHOW                    = 5;
+            public const int  GWL_STYLE                  = -16;
+            public const int  GWL_EXSTYLE                = -20;
+            public const int  ERROR_CLASS_DOES_NOT_EXIST = 1407;
         }
     }
 }

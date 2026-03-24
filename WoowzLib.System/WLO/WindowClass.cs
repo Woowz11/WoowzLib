@@ -59,12 +59,15 @@ public class WindowClass{
     /// </summary>
     public IntPtr Events(IntPtr Handle, uint Message, IntPtr WP, IntPtr LP){
         try{
-            if(WLO.Window.Windows.TryGetValue(Handle, out Window? Window)){
-                IntPtr? Result = null;
+            if(WLO.Window.WindowsIDs.TryGetValue(Handle, out int ID)){
+                Window Window = WLO.Window.Windows[ID];
                 
+                IntPtr? Result = null;
+
                 try{
                     Result = Event(Window, Message, WP, LP);
-                }catch(Exception e){
+                }
+                catch(Exception e){
                     Logger.Error("Произошла ошибка при вызове событий у класса окна [" + this + "]!", e);
                 }
 
