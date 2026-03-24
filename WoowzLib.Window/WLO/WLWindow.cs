@@ -59,8 +59,34 @@ public class WLWindow{
         try{
 
             switch(Message){
+                // Вызывается перед уничтожением
                 case Native.Raw.Windows.WM_DESTROY: {
                     __Destroy();
+                    break;
+                }
+
+                // Вызывается при закрытии окна
+                case Native.Raw.Windows.WM_CLOSE: {
+                    bool Destroy;
+                    
+                    try{
+                        Destroy = OnClose?.Invoke(this) ?? true;
+                    }catch(Exception e){
+                        Logger.Error("Произошла ошибка в ивенте OnClose в WL окне [" + this + "]!", e);
+                        Destroy = false;
+                    }
+                    
+                    if(!Destroy){ return IntPtr.Zero; }
+                    break;
+                }
+
+                // Обновляет курсор
+                case Native.Raw.Windows.WM_SETCURSOR:{
+                    int Hit = WL.System.Native.LoWord(LP);
+                    if(Hit == Native.Raw.Windows.HTCLIENT){
+                        Native.Raw.Windows.SetCursor(Native.Raw.Windows.CURSOR_Arrow);
+                    }
+                    
                     break;
                 }
             }

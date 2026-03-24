@@ -195,6 +195,15 @@ public static partial class Native{
             [DllImport(DLL_User)]
             public static extern bool IsWindow(IntPtr hWnd);
             
+            [DllImport(DLL_User)]
+            public static extern IntPtr SetCursor(IntPtr hCursor);
+
+            [DllImport(DLL_User, CharSet = CharSet.Auto)]
+            public static extern IntPtr LoadCursor(IntPtr hInstance, IntPtr lpCursorName);
+
+            [DllImport(DLL_User)]
+            public static extern IntPtr LoadCursor(IntPtr hInstance, int lpCursorName);
+            
             // ----------------------------------------------------------------------
             
             [UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -300,6 +309,8 @@ public static partial class Native{
             }
             
             // ----------------------------------------------------------------------
+
+            public static readonly IntPtr CURSOR_Arrow = LoadCursor(IntPtr.Zero, IDC_ARROW);
             
             public const uint MEM_COMMIT                 = 0x1000;
             public const uint MEM_RESERVE                = 0x2000;
@@ -321,6 +332,7 @@ public static partial class Native{
             public const uint PM_REMOVE                  = 0x0001;
             public const uint PM_NOYIELD                 = 0x0002;
             public const uint WM_DESTROY                 = 0x0002;
+            public const uint WM_SETCURSOR               = 0x0020;
             public const uint WM_SETTEXT                 = 0x000C;
             public const uint WM_CLOSE                   = 0x0010;
             public const uint WM_PAINT                   = 0x000F;
@@ -343,6 +355,7 @@ public static partial class Native{
             public const uint WM_WINDOWPOSCHANGED        = 0x0047;
             public const int  SW_HIDE                    = 0;
             public const int  SW_SHOW                    = 5;
+            public const int  HTCLIENT                   = 1;
             public const int  GWL_STYLE                  = -16;
             public const int  GWL_EXSTYLE                = -20;
             public const int  ERROR_CLASS_DOES_NOT_EXIST = 1407;
@@ -362,6 +375,7 @@ public static partial class Native{
             public const uint BS_DEFSPLITBUTTON          = 0x0000000D;
             public const uint BS_COMMANDLINK             = 0x0000000E;
             public const uint BS_DEFCOMMANDLINK          = 0x0000000F;
+            public const int  IDC_ARROW                  = 32512;
         }
     }
 }
