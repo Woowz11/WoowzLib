@@ -11,6 +11,14 @@
         <Version>0.0.0.1</Version>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\WoowzLib.Core\WoowzLib.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Generator\" />
+    </ItemGroup>
+
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
         <Exec Command="&quot;W:\Other\WoowzLib\VersionUpdater\bin\Release\net8.0\VersionUpdater.exe&quot; &quot;W:\Other\WoowzLib\WoowzLibGenerator\WoowzLibGenerator.csproj&quot;" />
     </Target>

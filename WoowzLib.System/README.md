@@ -8,3 +8,6 @@
 |Draw|WL.System.Draw|Рисование, HDC, кисти и т.д|
 |Raw|WL.System.Native.Raw|Сырые функции|
 |Windows|WL.System.Native.Raw.Windows|Сырые функции Windows|
+|Explorer|WL.Explorer|Работа с Explorer|
+|File|WL.Explorer.File|Работа с файлами|
+|Folder|WL.Explorer.Folder|Работа с папкой|

@@ -13,6 +13,7 @@
     <ItemGroup>
       <ProjectReference Include="..\WoowzLib.Core\WoowzLib.Core.csproj" />
       <ProjectReference Include="..\WoowzLib.Math\WoowzLib.Math.csproj" />
+      <ProjectReference Include="..\WoowzLib.String\WoowzLib.String.csproj" />
     </ItemGroup>
 
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
