@@ -6,7 +6,7 @@ namespace WLO;
 /// <summary>
 /// Состояние рисования (нужно очищать!)
 /// </summary>
-[RequireTesting(TestingInformation.WorkInProgress, "ну доделайте")]
+[WoowzLibHint(Information.WorkInProgress, "ну доделайте")]
 public class DeviceContext{
     /// <summary>
     /// Device Context окна

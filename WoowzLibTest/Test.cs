@@ -18,13 +18,15 @@ public static class Test{
     /// </summary>
     public static void F(string Name, Action Action){
         try{
+            if(WL.String.IsWhiteSpace(Name)){ return; }
+            
             Action();
             
-            Logger.Info("\t+ " + Name);
+            Logger.Info("\t+ \"" + Name + "\"");
         }catch(Exception e){
             TotalErrors++;
             
-            Logger.Info("\t- " + Name);
+            Logger.Info("\t- \"" + Name + "\"");
             Logger.Error(e);
         }
     }
@@ -34,13 +36,15 @@ public static class Test{
     /// </summary>
     public static void F<T>(string Name, T Expected, Func<T> Action){
         try{
+            if(WL.String.IsWhiteSpace(Name)){ return; }
+            
             T Result = Action();
 
             if(EqualityComparer<T>.Default.Equals(Expected, Result)){
-                Logger.Info("\t+ " + Name + " | " + WL.__Base.Other.ToString(Expected) + " == " + WL.__Base.Other.ToString(Result));   
+                Logger.Info("\t+ \"" + Name + "\" | " + WL.__Base.Other.ToBeautifulString(Expected) + " == " + WL.__Base.Other.ToBeautifulString(Result));   
             }else{
                 TotalErrors++;
-                Logger.Info("\t- " + Name + " | " + WL.__Base.Other.ToString(Expected) + " != " + WL.__Base.Other.ToString(Result));
+                Logger.Info("\t- \"" + Name + "\" | " + WL.__Base.Other.ToBeautifulString(Expected) + " != " + WL.__Base.Other.ToBeautifulString(Result));
             }
         }catch(Exception e){
             TotalErrors++;
@@ -49,6 +53,16 @@ public static class Test{
         }
     }
 
+    /// <summary>
+    /// Сравнивает значения
+    /// </summary>
+    public static void CheckResult<T>(T Result, T Expected, string ErrorMessage = "Значения не равны!"){ if(!EqualityComparer<T>.Default.Equals(Expected, Result)){ throw new Exception(ErrorMessage + "\n" + WL.String.ToBeautifulString(Expected) + " != " + WL.String.ToBeautifulString(Result)); } }
+    
+    /// <summary>
+    /// Не сравнивает значения
+    /// </summary>
+    public static void NotCheckResult<T>(T Result, T NotExpected, string ErrorMessage = "Значения равны!"){ if(EqualityComparer<T>.Default.Equals(NotExpected, Result)){ throw new Exception(ErrorMessage + "\n" + WL.String.ToBeautifulString(NotExpected) + " == " + WL.String.ToBeautifulString(Result)); } }
+    
     /// <summary>
     /// Run функция
     /// </summary>
@@ -64,12 +78,16 @@ public static class Test{
         }else{
             Logger.Info("Тест \"" + Name + "\", прошёл успешно!");
         }
+        
+        Logger.Info("");
     }
     
     public static void Run(){
         Test_CSharp.Run();
         Test_Base  .Run();
         Test_Vector.Run();
+        Test_String.Run();
+        Test_Path  .Run();
 
         if(FailedTests > 0){
             Logger.Error("Есть проваленные тесты! Проваленных тестов: " + FailedTests);

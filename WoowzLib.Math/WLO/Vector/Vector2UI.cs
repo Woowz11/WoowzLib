@@ -3,7 +3,7 @@ using WLO.Attribute;
 
 namespace WLO.Vector;
 
-[RequireTesting(TestingInformation.Global, "человеческий фактор все дела")]
+[WoowzLibHint(Information.Global, "человеческий фактор все дела")]
 public struct Vector2UI : IEquatable<Vector2UI>{
     public Vector2UI(uint X, uint Y){ this.X = X; this.Y = Y; }
     public Vector2UI(uint XY) : this(XY, XY){}

@@ -7,9 +7,20 @@ public static partial class __Base{
         /// <summary>
         /// Превращает в строку
         /// </summary>
-        public static string ToString(object? Obj = null){
-            if(Obj == null){ return "null"; }
-            return Obj.ToString() ?? "null";
+        public static string ToString(object? Object = null){
+            if(Object == null){ return "null"; }
+            return Object.ToString() ?? "null";
+        }
+
+        /// <summary>
+        /// Превращает в красивую строку (если объект строка, то делает в кавычках)
+        /// </summary>
+        public static string ToBeautifulString(object? Object = null){
+            return Object switch{
+                null          => "null",
+                string String => '"' + String + '"',
+                var _         => Object.ToString() ?? "null"
+            };
         }
 
         /// <summary>

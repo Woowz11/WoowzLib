@@ -53,11 +53,11 @@ public static class Test_CSharp{
 
                 string result = text + " World";
 
-                if (result != "Hello World"){ throw new Exception("Соединение строк сломано"); }
+                Test.CheckResult(result, "Hello World", "Соединение строк сломано");
 
                 byte[] bytes = Encoding.UTF8.GetBytes(text);
 
-                if (bytes.Length == 0){ throw new Exception("Encoding сломан"); }
+                Test.NotCheckResult(bytes.Length, 0, "Encoding сломан");
             });
             
             Test.F("Сборщик мусора", () => {
@@ -73,12 +73,9 @@ public static class Test_CSharp{
             Test.F("Исключения", () => {
                 bool caught = false;
 
-                try
-                {
+                try{
                     throw new Exception("Test");
-                }
-                catch
-                {
+                }catch{
                     caught = true;
                 }
 
@@ -102,10 +99,8 @@ public static class Test_CSharp{
                         int* intPtr = (int*)ptr;
                         *intPtr = 123;
 
-                        if (*intPtr != 123)
-                            throw new Exception("Memory write/read broken");
-                    }
-                    finally{
+                        Test.CheckResult(*intPtr, 123, "Запись/чтение из памяти сломано!");
+                    }finally{
                         Marshal.FreeHGlobal(ptr);
                     }
                 }

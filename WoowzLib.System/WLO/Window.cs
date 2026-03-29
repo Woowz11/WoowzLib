@@ -8,7 +8,7 @@ namespace WLO;
 /// <summary>
 /// окно
 /// </summary>
-[RequireTesting(TestingInformation.WorkInProgress, "Не реализована смена стиля (WS_CHILD) и родителя при изменении Hierarchy")]
+[WoowzLibHint(Information.WorkInProgress, "Не реализована смена стиля (WS_CHILD) и родителя при изменении Hierarchy")]
 public class Window{
     static Window(){
         WL.Core.OnTerminate += CloseReason => {
@@ -255,7 +255,7 @@ public class Window{
             /// <summary>
             /// Клиентская позиция окна (без учёта рамки)
             /// </summary>
-            [RequireTesting(TestingInformation.New, "Неизвестно, верная формула или нет")]
+            [WoowzLibHint(Information.New, "Неизвестно, верная формула или нет")]
             public Vector2I ClientPosition{
                 get{
                     try{

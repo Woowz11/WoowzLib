@@ -3,7 +3,7 @@ using WLO.Vector;
 
 namespace WLO.Rect;
 
-[RequireTesting(TestingInformation.Global | TestingInformation.WorkInProgress, "человеческий фактор все дела")]
+[WoowzLibHint(Information.Global | Information.WorkInProgress, "человеческий фактор все дела")]
 public struct RectI : IEquatable<RectI>{
     public RectI(int X, int Y, uint W, uint H){ this.X = X; this.Y = Y; this.W = W; this.H = H; }
     
