@@ -59,6 +59,11 @@ public static class Test{
     public static void CheckResult<T>(T Result, T Expected, string ErrorMessage = "Значения не равны!"){ if(!EqualityComparer<T>.Default.Equals(Expected, Result)){ throw new Exception(ErrorMessage + "\n" + WL.String.ToBeautifulString(Expected) + " != " + WL.String.ToBeautifulString(Result)); } }
     
     /// <summary>
+    /// Сравнивает значения
+    /// </summary>
+    public static void CheckResult<T>(T[] Result, T[] Expected, string ErrorMessage = "Значения не равны!"){ if(!Result.SequenceEqual(Expected)){ throw new Exception(ErrorMessage + "\n" + WL.String.ToBeautifulString(Expected) + " != " + WL.String.ToBeautifulString(Result)); } }
+    
+    /// <summary>
     /// Не сравнивает значения
     /// </summary>
     public static void NotCheckResult<T>(T Result, T NotExpected, string ErrorMessage = "Значения равны!"){ if(EqualityComparer<T>.Default.Equals(NotExpected, Result)){ throw new Exception(ErrorMessage + "\n" + WL.String.ToBeautifulString(NotExpected) + " == " + WL.String.ToBeautifulString(Result)); } }
@@ -87,7 +92,7 @@ public static class Test{
         Test_Base  .Run();
         Test_Vector.Run();
         Test_String.Run();
-        Test_Path  .Run();
+        Test_Explorer  .Run();
 
         if(FailedTests > 0){
             Logger.Error("Есть проваленные тесты! Проваленных тестов: " + FailedTests);

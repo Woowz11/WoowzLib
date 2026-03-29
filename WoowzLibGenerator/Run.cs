@@ -1,4 +1,5 @@
 ﻿using WLO;
+using WoowzLibGenerator.Generator;
 
 namespace WoowzLibGenerator;
 
@@ -9,7 +10,7 @@ public class Run{
             WL.Core.BaseLoggerInitialize();
             WL.Core.EnableAutoTerminate();
             
-            Generate();       
+            Generate();    
         }catch(Exception e){
             Logger.Fatal("Произошла ошибка во время генерации!", e);
             return 1;
@@ -19,6 +20,10 @@ public class Run{
     }
 
     public static void Generate(){
+        Logger.Info("Начало генерации!");
         
+        Vector.Generate();
+        
+        Logger.Info("Конец генерации!");
     }
 }

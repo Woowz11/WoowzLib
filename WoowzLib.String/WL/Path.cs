@@ -1,64 +1,99 @@
-﻿using WLO.Attribute;
-
-namespace WL;
+﻿namespace WL;
 
 public static partial class String{
-    [WoowzLibHint(Information.NeedRemake)]
     public static class Path{
-        /// <summary>
-        /// Объединяет пути
-        /// </summary>
-        /// <param name="Parts">Пути</param>
-        /// <returns>Объединённый путь</returns>
-        public static string Combine(params string[] Parts){
-            try{
-                if(Parts.Length == 0){ throw new Exception("Не указаны пути!"); }
-
-                return Normalize(System.IO.Path.Combine(Parts));
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при объединении путей [" + Parts + "]!", e);
-            }
+        static Path(){
+            InvalidPathChars = System.IO.Path.GetInvalidPathChars();
+            InvalidNameChars = System.IO.Path.GetInvalidFileNameChars();
         }
 
         /// <summary>
-        /// Нормализует путь (Убирает .., и меняет сплеши)
+        /// Запрещённые символы в пути
+        /// </summary>
+        public static readonly char[] InvalidPathChars;
+
+        /// <summary>
+        /// Запрещённые символы в названии файла
+        /// </summary>
+        public static readonly char[] InvalidNameChars;
+        
+        /// <summary>
+        /// Проверяет, указанная строка путь? (может быть пустой)
+        /// </summary>
+        public static bool IsCorrect(string Path){
+            if(WL.String.IsEmpty(Path)){ return true; }
+
+            if(InvalidPathChars.Any(c => WL.String.Contains(Path, c))){ return false; }
+
+            // Проверка на диск
+            Path = WL.String.Path.Disk(Path, out char? Disk, out bool DiskError);
+            if(DiskError){ return false; }
+            
+            string[] Parts = WL.String.Path.Split(Path);
+
+            foreach(string File in Parts){
+                if(WL.String.IsWhiteSpace(File)){ return false; }
+
+                if(InvalidNameChars.Any(c => WL.String.Contains(File, c))){ return false; }
+            }
+            
+            return true;
+        }
+
+        /// <summary>
+        /// Нормализует путь (превращает в один стиль)
         /// </summary>
         public static string Normalize(string Path){
-            try{
-                if(string.IsNullOrWhiteSpace(Path)){ throw new Exception("Путь пустой!"); }
+            Path = WL.String.Trim(Path);
+            if(WL.String.IsEmpty(Path)){ return WL.String.Empty; }
 
-                string FullPath = System.IO.Path.GetFullPath(Path);
+            string Result = WL.String.Replace(Path, '\\', '/');
 
-                if(FullPath.Length > 3 && FullPath.EndsWith(System.IO.Path.DirectorySeparatorChar)){
-                    FullPath = FullPath.TrimEnd(System.IO.Path.DirectorySeparatorChar);
-                }
-
-                return FullPath;
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при нормализации пути [\"" + Path + "\"]!", e);
+            if(Result.Length > 1 && Result.EndsWith('/')){
+                Result = Result[..^1];
             }
+            
+            return Result;
         }
+        
+        // ----------------------------------------------------------------------
 
         /// <summary>
-        /// Возвращает последнее имя в пути
+        /// Разделяет путь по символам '/' или '\\', удаляет пустоту в конце если есть
         /// </summary>
-        public static string LastName(string Path) => System.IO.Path.GetFileName(Path);
+        public static string[] Split(string Path){
+            if(WL.String.IsWhiteSpace(Path)){ return []; }
+
+            string[] Parts = Path.Split(['/', '\\'], StringSplitOptions.None);
+
+            if(Parts.Length > 0 && WL.String.IsWhiteSpace(Parts[^1])){
+                Array.Resize(ref Parts, Parts.Length - 1);
+            }
+
+            return Parts;
+        }
+        
+        // ----------------------------------------------------------------------
 
         /// <summary>
-        /// Возвращает пред-последнее имя в пути
-        /// </summary>
-        public static string? ParentName(string Path) => System.IO.Path.GetDirectoryName(Path);
-
-        /// <summary>
-        /// Возвращает расширение в пути
-        /// </summary>
-        public static string Extension(string Path) => System.IO.Path.GetExtension(Path);
-
-        /// <summary>
-        /// Меняет расширение в пути
+        /// Получает диск по указанному пути
         /// </summary>
         /// <param name="Path">Путь</param>
-        /// <param name="NewExtension">Новое расширение</param>
-        public static string ChangeExtension(string Path, string NewExtension) => System.IO.Path.ChangeExtension(Path, NewExtension);
+        /// <param name="Disk">Диск</param>
+        /// <param name="Error">Неверно указан диск</param>
+        /// <returns>Путь без диска</returns>
+        public static string Disk(string Path, out char? Disk, out bool Error){
+            Disk = null;
+            Error = false;
+            
+            if(Path.Length > 2 && Path[1] == ':'){
+                if(!char.IsLetter(Path[0]) || Path[2] != '/'){ Error = true; return Path; }
+
+                Disk = Path[0];
+                Path = Path[3..];
+            }
+
+            return Path;
+        }
     }
 }

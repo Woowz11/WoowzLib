@@ -8,15 +8,12 @@
         <Configurations>Release</Configurations>
         <Platforms>AnyCPU</Platforms>
 
-        <Version>0.0.0.2</Version>
+        <Version>0.0.0.9</Version>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\WoowzLib.Core\WoowzLib.Core.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Generator\" />
+      <ProjectReference Include="..\WoowzLib.System\WoowzLib.System.csproj" />
     </ItemGroup>
 
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

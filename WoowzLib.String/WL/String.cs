@@ -58,6 +58,14 @@ public static partial class String{
     }
     
     /// <summary>
+    /// Заменяет символы в строке
+    /// </summary>
+    public static string Replace(string S, char Old, char? New){
+        if(IsEmpty(S) || Old == New){ return S; }
+        return New.HasValue ? S.Replace(Old, New.Value) : S.Replace(Old.ToString(), Empty);
+    }
+    
+    /// <summary>
     /// Заменяет левые символы из CharSet, на правые (или наоборот если Reverse включен)
     /// </summary>
     /// <param name="S">Строка</param>
@@ -144,4 +152,14 @@ public static partial class String{
         if(IsEmpty(S) || IsEmpty(Regex)){ return false; }
         return System.Text.RegularExpressions.Regex.IsMatch(S, Regex);
     }
+    
+    // ----------------------------------------------------------------------
+
+    /// <summary>
+    /// Строка содержит символ?
+    /// </summary>
+    /// <param name="S"></param>
+    /// <param name="C"></param>
+    /// <returns></returns>
+    public static bool Contains(string S, char C) => S.Contains(C);
 }
