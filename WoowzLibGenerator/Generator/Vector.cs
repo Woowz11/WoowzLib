@@ -161,6 +161,8 @@ public static class Vector{
             Logger.Info("Создание вектора " + I.Name + "");
             Result = "";
 
+            Result += "/* ReSharper disable NonReadonlyMemberInGetHashCode */";
+            
             Result += Other.Generate_Namespace("WLO.Vector");
 
             Result += Other.Generate_PublicStaticClass(I.Name, I.Parent);
@@ -169,7 +171,9 @@ public static class Vector{
             VectorContent(I);
             
             Result += "}";
-
+            
+            Result = Other.Generate_Using("System.Runtime.CompilerServices") + Result;
+            
             Result = Other.Generate_GeneratorComment("Vector") + Result;
             
             File FileR = WL.Explorer.File.GetOrCreate(WL.String.Path.Add(OutFolder     , I.Name + ".cs"));
@@ -225,14 +229,14 @@ public static class Vector{
             
             Generate_Constructor(RFEA(I.Primitive + " @", ", "), RFEA("this.@ = @;"));
             Generate_Constructor(I.Primitive + " " + I.AllAxis, "", RFEA(I.AllAxis, ", "));
-            Generate_Constructor("", "", I.Zero);
+            Generate_Constructor("", "");
         }
         Generate_Constructors();
 
         Result += Other.Generate_Line();
         
         void Generate_Values(){
-            Result += RFEA("public " + I.Primitive + " @ = " + I.Zero + ";");
+            Result += RFEA("public " + I.Primitive + " @;");
 
             if(I.SupportSizes){
                 Result += RFEA("public " + I.Primitive + " @{ get => @2; set => @2 = value; }", "", I.Sizes, I.Axis);
@@ -245,7 +249,7 @@ public static class Vector{
         void Generate_Consts(){
             void Generate_Const(Info_VectorConst2 VC2){
                 Result += "public static readonly " + I.Name + " " + VC2.Name + " = new " + I.Name + "(" + RFEAS(VC2.Values, "@", ", ") + ");";
-                Result += "public " + I.Name + " To" + VC2.Name + " = new " + I.Name + "(" + RFEAS(VC2.Values, "@", ", ") + ");";
+                Result += "public " + I.Name + " To" + VC2.Name + " => new " + I.Name + "(" + RFEAS(VC2.Values, "@", ", ") + ");";
             }
 
             foreach(Info_VectorConst2 VC2 in I.Consts){ Generate_Const(VC2); }
@@ -287,7 +291,7 @@ public static class Vector{
 
             Result += Other.Generate_NextLine();
             
-            Result += "public bool Equals(" + I.Name + " Other) => " + RFEA("@ == Other.@", " && ") + ";";
+            Result += "public bool Equals(" + I.Name + "? Other){ if(ReferenceEquals(Other, null)){ return false; } if(ReferenceEquals(this, Other)){ return true; } return " + RFEA("@ == Other.@", " && ") + "; }";
             Result += "public override bool Equals(object? Object) => Object is " + I.Name + " Other && Equals(Other);";
             
             Result += Other.Generate_NextLine();
@@ -299,13 +303,13 @@ public static class Vector{
         Result += Other.Generate_Line();
 
         void Generate_Operators(){
-            void Generate_Operator(string Operator, string Params, string Inside, string? Return = null){
+            void Generate_Operator(string Operator, string Params, string Inside, string? Return = null, bool Lambda = true){
                 Return ??= I.Name;
-                Result += Other.Generate_AggressiveInlining() + "public static " + Return + " operator " + Operator + "(" + Params + ") => " + Inside + ";";
+                Result += Other.Generate_AggressiveInlining() + "public static " + Return + " operator " + Operator + "(" + Params + ")" + (Lambda ? " => " : "{") + Inside + (Lambda ? ";" : "}");
             }
             
-            Generate_Operator("==", I.Name + " L, " + I.Name + " R", "L.Equals(R)", "bool");
-            Generate_Operator("!=", I.Name + " L, " + I.Name + " R", "!L.Equals(R)", "bool");
+            Generate_Operator("==", I.Name + "? L, " + I.Name + "? R", "if(ReferenceEquals(L, R)){ return true; } if(L is null || R is null){ return false; } return L.Equals(R);", "bool", false);
+            Generate_Operator("!=", I.Name + "? L, " + I.Name + "? R", "!(L == R)", "bool");
 
             Result += Other.Generate_NextLine();
 

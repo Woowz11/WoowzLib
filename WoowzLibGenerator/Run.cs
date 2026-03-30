@@ -25,10 +25,13 @@ public class Run{
         string ResultFolder = "W:/Other/WoowzLib/__GENERATED";
         WL.Explorer.Folder.Clear(ResultFolder);
 
+        WL.Explorer.File.Create(WL.String.Path.Add(ResultFolder, ".gitignore"), "DEBUG/");
+        
         string ForResult = WL.String.Path.Add(ResultFolder, "RELEASE");
         string ForDebug  = WL.String.Path.Add(ResultFolder, "DEBUG");
         
         Vector.Generate(WL.String.Path.Add(ForResult, "Vector"), WL.String.Path.Add(ForDebug, "Vector"));
+        Rect  .Generate(WL.String.Path.Add(ForResult, "Rect"), WL.String.Path.Add(ForDebug, "Rect"));
         
         Logger.Info("Конец генерации!");
     }
