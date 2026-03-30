@@ -52,6 +52,86 @@ public static class Info{
     ];
     public static string ValueType_Zero(ValueType VT) => __ValueType_Zero[(int)VT];
     
+    private static readonly string[] __ValueType_One = [
+        "~",  // Bool
+        "1",      // Float
+        "1",      // Double
+        "1",      // Int
+        "1",      // UInt
+        "1",      // Short
+        "1",      // UShort
+        "1",      // Long
+        "1",      // ULong
+        "255",      // Byte
+        "127",      // SByte
+        "~",   // Char
+        "~",   // String
+        "1",      // Decimal
+        "~",   // Object
+        "~" // DateTime
+    ];
+    public static string ValueType_One(ValueType VT) => __ValueType_One[(int)VT];
+    
+    private static readonly string[] __ValueType_Half = [
+        "~",  // Bool
+        "0.5f",      // Float
+        "0.5",      // Double
+        "~",      // Int
+        "~",      // UInt
+        "~",      // Short
+        "~",      // UShort
+        "~",      // Long
+        "~",      // ULong
+        "127",      // Byte
+        "63",      // SByte
+        "~",   // Char
+        "~",   // String
+        "0.5m",      // Decimal
+        "~",   // Object
+        "~" // DateTime
+    ];
+    public static string ValueType_Half(ValueType VT) => __ValueType_Half[(int)VT];
+    
+    private static readonly string[] __ValueType_Quarter = [
+        "~",  // Bool
+        "0.25f",      // Float
+        "0.25",      // Double
+        "~",      // Int
+        "~",      // UInt
+        "~",      // Short
+        "~",      // UShort
+        "~",      // Long
+        "~",      // ULong
+        "63",      // Byte
+        "31",      // SByte
+        "~",   // Char
+        "~",   // String
+        "0.25m",      // Decimal
+        "~",   // Object
+        "~" // DateTime
+    ];
+    public static string ValueType_Quarter(ValueType VT) => __ValueType_Quarter[(int)VT];
+    
+    private static readonly string[] __ValueType_Double = [
+        "~",  // Bool
+        "2",      // Float
+        "2",      // Double
+        "2",      // Int
+        "2",      // UInt
+        "2",      // Short
+        "2",      // UShort
+        "2",      // Long
+        "2",      // ULong
+        "~",      // Byte
+        "~",      // SByte
+        "~",   // Char
+        "~",   // String
+        "2",      // Decimal
+        "~",   // Object
+        "~" // DateTime
+    ];
+    public static string ValueType_Double(ValueType VT) => __ValueType_Double[(int)VT];
+    
     private static readonly string[] __ValueType_Default = [
         "false",  // Bool
         ValueType_Zero(ValueType.Float),      // Float
@@ -71,4 +151,44 @@ public static class Info{
         "default" // DateTime
     ];
     public static string ValueType_Default(ValueType VT) => __ValueType_Default[(int)VT];
+    
+    private static readonly bool[] __ValueType_SupportNegative = [
+        false,  // Bool
+        true,      // Float
+        true,      // Double
+        true,      // Int
+        false,      // UInt
+        true,      // Short
+        false,      // UShort
+        true,      // Long
+        false,      // ULong
+        false,      // Byte
+        true,      // SByte
+        false,   // Char
+        false,   // String
+        true,      // Decimal
+        false,   // Object
+        false // DateTime
+    ];
+    public static bool ValueType_SupportNegative(ValueType VT) => __ValueType_SupportNegative[(int)VT];
+    
+    private static readonly bool[] __ValueType_SupportFraction = [
+        false,  // Bool
+        true,      // Float
+        true,      // Double
+        false,      // Int
+        false,      // UInt
+        false,      // Short
+        false,      // UShort
+        false,      // Long
+        false,      // ULong
+        true,      // Byte
+        true,      // SByte
+        false,   // Char
+        false,   // String
+        true,      // Decimal
+        false,   // Object
+        false // DateTime
+    ];
+    public static bool ValueType_SupportFraction(ValueType VT) => __ValueType_SupportFraction[(int)VT];
 }

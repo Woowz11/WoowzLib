@@ -24,8 +24,11 @@ public class Run{
 
         string ResultFolder = "W:/Other/WoowzLib/__GENERATED";
         WL.Explorer.Folder.Clear(ResultFolder);
+
+        string ForResult = WL.String.Path.Add(ResultFolder, "RELEASE");
+        string ForDebug  = WL.String.Path.Add(ResultFolder, "DEBUG");
         
-        Vector.Generate(WL.String.Path.Add(ResultFolder, "Vector"));
+        Vector.Generate(WL.String.Path.Add(ForResult, "Vector"), WL.String.Path.Add(ForDebug, "Vector"));
         
         Logger.Info("Конец генерации!");
     }

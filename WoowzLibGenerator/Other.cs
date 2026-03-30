@@ -41,7 +41,7 @@ public static class Other{
                     continue;
                 }
                 
-                if(c == ' ' && SB.Length > 0 && "{};/".Contains(SB[^1])){ continue; }
+                if(c == ' ' && SB.Length > 0 && "{};".Contains(SB[^1])){ continue; }
                 
                 switch(c){
                     case '\n' or '\t' or '\r':
@@ -67,11 +67,11 @@ public static class Other{
     /// <summary>
     /// Делает код красивым
     /// </summary>
-    public static string Beautify(string Code, string Indent = "\t"){
+    public static string Beautify(string Code, string Indent = "\t", bool AutoInline = true){
         if(WL.String.IsWhiteSpace(Code)){ return WL.String.Empty; }
 
-        Code = Inline(Code);
-        
+        if(AutoInline){ Code = Inline(Code); }
+
         StringBuilder SB = new StringBuilder();
         int I = 0;
         bool InString = false;
@@ -91,19 +91,40 @@ public static class Other{
             char CP = Get(i - 1);
             char CN = Get(i + 1);
 
-            if(!InString && !InComment && WL.String.AtLeft(Code.Substring(i), "@LINE@")){
-                AddC();
-                ApplyIndent();
-                AddS("// ----------------------------------------------------------------------");
-                AddC();
-                ApplyIndent();
-                AddC();
-                ApplyIndent();
+            if(!InString && !InComment){
+                string __Substring = Code.Substring(i);
                 
-                i += 5;
-                continue;
-            }
+                if(WL.String.AtLeft(__Substring, "@LINE@")){
+                    AddC();
+                    ApplyIndent();
+                    AddS("// ----------------------------------------------------------------------");
+                    AddC();
+                    ApplyIndent();
+                    AddC();
+                    ApplyIndent();
+                
+                    i += 5;
+                    continue;
+                }
             
+                if(WL.String.AtLeft(__Substring, "@NEXTLINE@")){
+                    AddC();
+                    ApplyIndent();
+                
+                    i += 9;
+                    continue;
+                }
+                
+                if(WL.String.AtLeft(__Substring, "@IMPL_AIL@")){
+                    AddS("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
+                    AddC();
+                    ApplyIndent();
+                
+                    i += 9;
+                    continue;
+                }
+            }
+           
             if(C == '"'){
                 bool Escaped = CP == '\\';
                 if(!Escaped){ InString = !InString; }
@@ -138,17 +159,23 @@ public static class Other{
             
             switch(C){
                 case '{': {
-                    AddS("{\n");
-                    I++;
-                    ApplyIndent();
-                    
+                    AddC('{');
+                    if(CN != '}'){
+                        AddC();
+                        I++;
+                        ApplyIndent();
+                    }
+
                     break;
                 }
                 
                 case '}': {
-                    AddC();
-                    I--;
-                    ApplyIndent();
+                    if(CP != '{'){
+                        AddC();
+                        I--;
+                        ApplyIndent();
+                    }
+
                     AddC('}');
 
                     if(CN != ';' && CN != '}' && CN != ')'){
@@ -189,4 +216,6 @@ public static class Other{
     public static string Generate_Namespace(string Name) => "namespace " + Name + ";";
     public static string Generate_PublicStaticClass(string Name, string? Parent = null) => "public static class " + Name + (Parent != null ? " : " + Parent : "");
     public static string Generate_Line() => "@LINE@";
+    public static string Generate_NextLine() => "@NEXTLINE@";
+    public static string Generate_AggressiveInlining() => "@IMPL_AIL@";
 }
