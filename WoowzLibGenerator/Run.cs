@@ -21,8 +21,10 @@ public class Run{
 
     public static void Generate(){
         Logger.Info("Начало генерации!");
+
+        string ResultFolder = "W:/Woowz11/Desktop/woowzlib_test_folder";
         
-        Vector.Generate();
+        Vector.Generate(WL.String.Path.Add(ResultFolder, "test"));
         
         Logger.Info("Конец генерации!");
     }

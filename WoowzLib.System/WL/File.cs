@@ -12,5 +12,41 @@ public static partial class Explorer{
                 throw new Exception("Произошла ошибка при проверке, файл ли путь [\"" + Path + "\"]!", e);
             }
         }
+
+        /// <summary>
+        /// Получает файл
+        /// </summary>
+        /// <param name="Path">Путь</param>
+        /// <returns>Файл, если не найден то возвращает null</returns>
+        public static WLO.File? Get(string Path){
+            try{
+                WLO.File Result = new WLO.File(Path);
+                return Result.IsFile ? Result : null;
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при получении файла [\"" + Path + "\"]!", e);
+            }
+        }
+
+        /// <summary>
+        /// Создаёт файл (если уже существует, ничего не сделает)
+        /// </summary>
+        public static WLO.File? Create(string Path, string Content = ""){
+            try{
+                return IsFile(Path) ? null : new WLO.File(Path, Content);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при создании файла [\"" + Path + "\"]!\nСтартовое содержимое:\n" + Content, e);
+            }
+        }
+        
+        /// <summary>
+        /// Получает файл или создаёт файл
+        /// </summary>
+        public static WLO.File GetOrCreate(string Path, string Content = ""){
+            try{
+                return IsFile(Path) ? new WLO.File(Path) : new WLO.File(Path, Content);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при получении или создании файла [\"" + Path + "\"]!\nСтартовое содержимое:\n" + Content, e);
+            }
+        }
     }
 }

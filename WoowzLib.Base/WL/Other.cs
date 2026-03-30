@@ -17,9 +17,10 @@ public static partial class __Base{
         /// </summary>
         public static string ToBeautifulString(object? Object = null){
             return Object switch{
-                null          => "null",
-                string String => '"' + String + '"',
-                var _         => Object.ToString() ?? "null"
+                null             => "null",
+                string String    => '"' + String + '"',
+                StringBuilder SB => '"' + SB.ToString() + '"',
+                var _            => Object.ToString() ?? "null"
             };
         }
 

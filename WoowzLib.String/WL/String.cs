@@ -110,18 +110,6 @@ public static partial class String{
     public static string Trim(string S) => TrimRight(TrimLeft(S));
     
     /// <summary>
-    /// Убирает пробелы справа (а так же \n, \t, \r, \v, \f)
-    /// </summary>
-    public static string TrimRight(string S){
-        if(IsEmpty(S)){ return S; }
-
-        int i = S.Length - 1;
-        while(i >= 0 && char.IsWhiteSpace(S[i])){ i--; }
-
-        return S[..(i + 1)];
-    }
-    
-    /// <summary>
     /// Убирает пробелы слева (а так же \n, \t, \r, \v, \f)
     /// </summary>
     public static string TrimLeft(string S){
@@ -131,6 +119,18 @@ public static partial class String{
         while(i < S.Length && char.IsWhiteSpace(S[i])){ i++; }
 
         return S[i..];
+    }
+    
+    /// <summary>
+    /// Убирает пробелы справа (а так же \n, \t, \r, \v, \f)
+    /// </summary>
+    public static string TrimRight(string S){
+        if(IsEmpty(S)){ return S; }
+
+        int i = S.Length - 1;
+        while(i >= 0 && char.IsWhiteSpace(S[i])){ i--; }
+
+        return S[..(i + 1)];
     }
     
     // ----------------------------------------------------------------------
@@ -162,4 +162,31 @@ public static partial class String{
     /// <param name="C"></param>
     /// <returns></returns>
     public static bool Contains(string S, char C) => S.Contains(C);
+
+    /// <summary>
+    /// Строка начинается на указанную?
+    /// </summary>
+    public static bool AtLeft(string S, string Target) => S.StartsWith(Target);
+    /// <summary>
+    /// Строка начинается на указанную?
+    /// </summary>
+    public static bool AtLeft(string S, char Target) => S.StartsWith(Target);
+    
+    /// <summary>
+    /// Строка заканчивается на указанную?
+    /// </summary>
+    public static bool AtRight(string S, string Target) => S.EndsWith(Target);
+    /// <summary>
+    /// Строка заканчивается на указанную?
+    /// </summary>
+    public static bool AtRight(string S, char Target) => S.EndsWith(Target);
+
+    /// <summary>
+    /// Разъединяет строку
+    /// </summary>
+    public static string[] Split(string S, char Splitter) => S.Split(Splitter);
+    /// <summary>
+    /// Разъединяет строку (несколько вариантов)
+    /// </summary>
+    public static string[] Split(string S, params char[] Splitters) => S.Split(Splitters, StringSplitOptions.None);
 }

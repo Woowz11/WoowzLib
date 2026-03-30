@@ -49,7 +49,7 @@ public static partial class String{
 
             string Result = WL.String.Replace(Path, '\\', '/');
 
-            if(Result.Length > 1 && Result.EndsWith('/')){
+            if(Result.Length > 1 && WL.String.AtRight(Result, '/')){
                 Result = Result[..^1];
             }
             
@@ -64,13 +64,25 @@ public static partial class String{
         public static string[] Split(string Path){
             if(WL.String.IsWhiteSpace(Path)){ return []; }
 
-            string[] Parts = Path.Split(['/', '\\'], StringSplitOptions.None);
+            string[] Parts = WL.String.Split(Path, '/', '\\');
 
             if(Parts.Length > 0 && WL.String.IsWhiteSpace(Parts[^1])){
                 Array.Resize(ref Parts, Parts.Length - 1);
             }
 
             return Parts;
+        }
+
+        /// <summary>
+        /// Добавляет путь в конец пути
+        /// </summary>
+        public static string Add(string Path, string Added){
+            if(WL.String.IsWhiteSpace(Path)){ return Normalize(Added); }
+
+            Path  = Normalize(Path );
+            Added = Normalize(Added);
+
+            return Path + "/" + Added;
         }
         
         // ----------------------------------------------------------------------
