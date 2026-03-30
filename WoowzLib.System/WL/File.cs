@@ -1,4 +1,6 @@
-﻿namespace WL;
+﻿using Microsoft.VisualBasic.FileIO;
+
+namespace WL;
 
 public static partial class Explorer{
     public static class File{
@@ -12,6 +14,11 @@ public static partial class Explorer{
                 throw new Exception("Произошла ошибка при проверке, файл ли путь [\"" + Path + "\"]!", e);
             }
         }
+
+        /// <summary>
+        /// Проверяет, есть ли файл по указанному пути?
+        /// </summary>
+        public static bool Exist(string Path) => IsFile(Path);
 
         /// <summary>
         /// Получает файл
@@ -46,6 +53,21 @@ public static partial class Explorer{
                 return IsFile(Path) ? new WLO.File(Path) : new WLO.File(Path, Content);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при получении или создании файла [\"" + Path + "\"]!\nСтартовое содержимое:\n" + Content, e);
+            }
+        }
+        
+        // ----------------------------------------------------------------------
+
+        /// <summary>
+        /// Удаляет файл
+        /// </summary>
+        public static void Delete(string Path, bool ToRecycleBin = false){
+            try{
+                if(!IsFile(Path)){ throw new Exception("Указан неверный путь!"); }
+                
+                FileSystem.DeleteFile(Path, UIOption.OnlyErrorDialogs, ToRecycleBin ? RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently);
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при удалении файла [\"" + Path + "\"]!\nВ корзину?: " + ToRecycleBin, e);
             }
         }
     }

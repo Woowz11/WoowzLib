@@ -75,9 +75,12 @@ public static class Other{
         StringBuilder SB = new StringBuilder();
         int I = 0;
         bool InString = false;
+        bool InComment = false;
         
         void ApplyIndent(){ for(int i = 0; i < I; i++){ SB.Append(Indent); } }
-
+        void AddC(char C = '\n'){ SB.Append(C); }
+        void AddS(string S     ){ SB.Append(S); }
+        
         char Get(int Index){
             if(Index < 0 || Index >= Code.Length){ return '\0'; }
             return Code[Index];
@@ -88,55 +91,81 @@ public static class Other{
             char CP = Get(i - 1);
             char CN = Get(i + 1);
 
-            switch(C){
-                case '"':{
-                    SB.Append('"');
-
-                    bool Escaped = Get(i - 1) == '\\';
-                    if(!Escaped){ InString = !InString; }
-                    break;
-                }
+            if(!InString && !InComment && WL.String.AtLeft(Code.Substring(i), "@LINE@")){
+                AddC();
+                ApplyIndent();
+                AddS("// ----------------------------------------------------------------------");
+                AddC();
+                ApplyIndent();
+                AddC();
+                ApplyIndent();
                 
-                case '{': {
-                    SB.Append('{');
-                    if(!InString){
-                        SB.Append('\n');
-                        I++;
-                        ApplyIndent();
-                    }
+                i += 5;
+                continue;
+            }
+            
+            if(C == '"'){
+                bool Escaped = CP == '\\';
+                if(!Escaped){ InString = !InString; }
 
+                AddC(C);
+                continue;
+            }
+
+            if(!InString && !InComment && C == '/' && CN == '*'){
+                InComment = true;
+                
+                ApplyIndent();
+                
+                AddS("/*");
+                i++;
+                continue;
+            }
+
+            if(InComment && C == '*' && CN == '/'){
+                InComment = false;
+                
+                AddS("*/");
+                i++;
+                
+                AddC();
+                ApplyIndent();
+                
+                continue;
+            }
+            
+            if(InString || InComment){ AddC(C); continue; }
+            
+            switch(C){
+                case '{': {
+                    AddS("{\n");
+                    I++;
+                    ApplyIndent();
+                    
                     break;
                 }
                 
                 case '}': {
-                    if(!InString){
-                        I--;
+                    AddC();
+                    I--;
+                    ApplyIndent();
+                    AddC('}');
+
+                    if(CN != ';' && CN != '}' && CN != ')'){
+                        AddC();
                         ApplyIndent();
                     }
-                    SB.Append('}');
-                    if(!InString){
-                        SB.Append('\n');
-                        ApplyIndent();
-                    }
-
-                    break;
-                }
-
-                case '*':{
-                    SB.Append('*');
                     
-                    break;  
+                    break;
                 }
                 
                 case ';': {
-                    SB.Append(';');
-                    if(!InString){
-                        SB.Append('\n');
-                        if(Get(i + 1) != '}'){
-                            ApplyIndent();
-                        }
+                    AddS(";");
+                    if(CN != '}'){
+                        AddC();
+                        ApplyIndent();
                     }
-
+                    
                     break;
                 }
                 
@@ -146,7 +175,18 @@ public static class Other{
                 }
             }
         }
+
+        if(SB.Length > 0 && SB[^1] == '\n'){ SB.Length--; }
+
+        string Result = SB.ToString();
         
-        return SB.ToString();
+        return Result;
     }
+    
+    // ----------------------------------------------------------------------
+
+    public static string Generate_GeneratorComment(string Class) => "/* Сгенерировано с помощью " + WL.Core.Metadata.Project.Name + " " + WL.Core.Metadata.Project.Version + ", внутри класса \"" + Class + ".cs\" */";
+    public static string Generate_Namespace(string Name) => "namespace " + Name + ";";
+    public static string Generate_PublicStaticClass(string Name, string? Parent = null) => "public static class " + Name + (Parent != null ? " : " + Parent : "");
+    public static string Generate_Line() => "@LINE@";
 }

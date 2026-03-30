@@ -163,6 +163,21 @@ public class File{
     }
 
     /// <summary>
+    /// Удаляет файл
+    /// </summary>
+    public void Delete(bool ToRecycleBin = false){
+        try{
+            switch(Type){
+                case FileType.File  : WL.Explorer.File  .Delete(AbsolutePath, ToRecycleBin); break;
+                case FileType.Folder: WL.Explorer.Folder.Delete(AbsolutePath, ToRecycleBin); break;
+                default: throw new Exception("Нечего удалять!");
+            }
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при удалении файла [" + this + "]!\nВ корзину?: " + ToRecycleBin, e);
+        }
+    }
+
+    /// <summary>
     /// Добавляет текст в конец содержимого файла
     /// </summary>
     public File AppendText(string Text){

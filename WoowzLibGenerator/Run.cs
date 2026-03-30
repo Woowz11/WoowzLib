@@ -22,9 +22,10 @@ public class Run{
     public static void Generate(){
         Logger.Info("Начало генерации!");
 
-        string ResultFolder = "W:/Woowz11/Desktop/woowzlib_test_folder";
+        string ResultFolder = "W:/Other/WoowzLib/__GENERATED";
+        WL.Explorer.Folder.Clear(ResultFolder);
         
-        Vector.Generate(WL.String.Path.Add(ResultFolder, "test"));
+        Vector.Generate(WL.String.Path.Add(ResultFolder, "Vector"));
         
         Logger.Info("Конец генерации!");
     }
