@@ -1,5 +1,6 @@
 ﻿using WLO;
 using WoowzLibGenerator.Generator;
+using Math = System.Math;
 
 namespace WoowzLibGenerator;
 
@@ -29,6 +30,8 @@ public class Run{
         
         string ForResult = WL.String.Path.Add(ResultFolder, "RELEASE");
         string ForDebug  = WL.String.Path.Add(ResultFolder, "DEBUG");
+
+        Generator.Math.Generate(WL.String.Path.Add(ForResult, "Math"), WL.String.Path.Add(ForDebug, "Math"));
         
         Vector.Generate(WL.String.Path.Add(ForResult, "Vector"), WL.String.Path.Add(ForDebug, "Vector"));
         Rect  .Generate(WL.String.Path.Add(ForResult, "Rect"), WL.String.Path.Add(ForDebug, "Rect"));

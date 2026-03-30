@@ -67,15 +67,16 @@ public static class Other{
     /// <summary>
     /// Делает код красивым
     /// </summary>
-    public static string Beautify(string Code, string Indent = "\t", bool AutoInline = true){
+    public static string Beautify(string Code, string Indent = "\t", bool AutoInline = true, int StartIndent = 0){
         if(WL.String.IsWhiteSpace(Code)){ return WL.String.Empty; }
 
         if(AutoInline){ Code = Inline(Code); }
 
         StringBuilder SB = new StringBuilder();
-        int I = 0;
+        int I = StartIndent;
         bool InString = false;
         bool InComment = false;
+        bool InForeach = false;
         
         void ApplyIndent(){ for(int i = 0; i < I; i++){ SB.Append(Indent); } }
         void AddC(char C = '\n'){ SB.Append(C); }
@@ -85,6 +86,8 @@ public static class Other{
             if(Index < 0 || Index >= Code.Length){ return '\0'; }
             return Code[Index];
         }
+
+        string Line = "// ----------------------------------------------------------------------";
         
         for(int i = 0; i < Code.Length; i++){
             char C  = Code[i];
@@ -93,11 +96,15 @@ public static class Other{
 
             if(!InString && !InComment){
                 string __Substring = Code.Substring(i);
+
+                if(WL.String.AtLeft(__Substring, "for(") || WL.String.AtLeft(__Substring, "foreach(")){
+                    InForeach = true;
+                }
                 
-                if(WL.String.AtLeft(__Substring, "@LINE@")){
+                if(WL.String.AtLeft(__Substring, SpecialSymbol + "LINE" + SpecialSymbol)){
                     AddC();
                     ApplyIndent();
-                    AddS("// ----------------------------------------------------------------------");
+                    AddS(Line);
                     AddC();
                     ApplyIndent();
                     AddC();
@@ -106,8 +113,19 @@ public static class Other{
                     i += 5;
                     continue;
                 }
+                
+                if(WL.String.AtLeft(__Substring, SpecialSymbol + "LINE2" + SpecialSymbol)){
+                    AddS(Line);
+                    AddC();
+                    ApplyIndent();
+                    AddC();
+                    ApplyIndent();
+                
+                    i += 6;
+                    continue;
+                }
             
-                if(WL.String.AtLeft(__Substring, "@NEXTLINE@")){
+                if(WL.String.AtLeft(__Substring, SpecialSymbol + "NEXTLINE" + SpecialSymbol)){
                     AddC();
                     ApplyIndent();
                 
@@ -115,13 +133,37 @@ public static class Other{
                     continue;
                 }
                 
-                if(WL.String.AtLeft(__Substring, "@IMPL_AIL@")){
+                if(WL.String.AtLeft(__Substring, SpecialSymbol + "IMPL_AIL" + SpecialSymbol)){
                     AddS("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
                     AddC();
                     ApplyIndent();
                 
                     i += 9;
                     continue;
+                }
+
+                if(WL.String.AtLeft(__Substring, SpecialSymbol + "SUM<|")){
+                    int Start = i + 6;
+                    int End = Code.IndexOf("|>" + SpecialSymbol, Start, StringComparison.Ordinal);
+
+                    if(End != -1){
+                        string Content = Code.Substring(Start, End - Start);
+
+                        AddS("/// <summary>");
+                        AddC();
+                        ApplyIndent();
+                        
+                        AddS("/// " + Content);
+                        AddC();
+                        ApplyIndent();
+                        
+                        AddS("/// </summary>");
+                        AddC();
+                        ApplyIndent();
+                        
+                        i = End + 2;
+                        continue;
+                    }
                 }
             }
            
@@ -156,7 +198,9 @@ public static class Other{
             }
             
             if(InString || InComment){ AddC(C); continue; }
-            
+
+            if(InForeach && C == ')'){ InForeach = false; }
+
             switch(C){
                 case '{': {
                     AddC('{');
@@ -188,11 +232,15 @@ public static class Other{
                 
                 case ';': {
                     AddS(";");
-                    if(CN != '}'){
-                        AddC();
-                        ApplyIndent();
+                    if(InForeach){
+                        AddC(' ');
+                    }else{
+                        if(CN != '}'){
+                            AddC();
+                            ApplyIndent();
+                        }
                     }
-                    
+
                     break;
                 }
                 
@@ -203,21 +251,23 @@ public static class Other{
             }
         }
 
-        if(SB.Length > 0 && SB[^1] == '\n'){ SB.Length--; }
-
-        string Result = SB.ToString();
+        string Result = WL.String.TrimRight(SB.ToString());
         
         return Result;
     }
     
     // ----------------------------------------------------------------------
 
+    public const string SpecialSymbol = "\u2623";
+    public static string Generate_Line(bool PrevNextLine = true) => Generate_SpecialTag("LINE" + (PrevNextLine ? "" : "2"));
+    public static string Generate_NextLine() => Generate_SpecialTag("NEXTLINE");
+    public static string Generate_AggressiveInlining() => Generate_SpecialTag("IMPL_AIL");
+    public static string Generate_Summary(string Comment) => Generate_SpecialTag("SUM<|" + Comment + "|>");
+    public static string Generate_SpecialTag(string Content) => SpecialSymbol + Content + SpecialSymbol;
+    
     public static string Generate_GeneratorComment(string Class) => "/* Сгенерировано с помощью " + WL.Core.Metadata.Project.Name + " " + WL.Core.Metadata.Project.Version + ", внутри класса \"" + Class + ".cs\" */";
     public static string Generate_Namespace(string Name) => "namespace " + Name + ";";
     public static string Generate_PublicClass(string Name, string? Parent = null, bool Static = false) => "public " + (Static ? "static " : "") + "class " + Name + (Parent != null ? " : " + Parent : "");
     public static string Generate_PublicStruct(string Name, string? Parent = null, bool Static = false) => "public " + (Static ? "static " : "") + "struct " + Name + (Parent != null ? " : " + Parent : "");
-    public static string Generate_Line() => "@LINE@";
-    public static string Generate_NextLine() => "@NEXTLINE@";
-    public static string Generate_AggressiveInlining() => "@IMPL_AIL@";
     public static string Generate_Using(string Name) => "using " + Name + ";";
 }

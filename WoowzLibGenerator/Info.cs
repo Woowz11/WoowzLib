@@ -20,6 +20,10 @@ public static class Info{
         DateTime
     }
 
+    public static readonly ValueType[] Numbers = [
+        ValueType.Float, ValueType.Double, ValueType.Int, ValueType.UInt, ValueType.Short, ValueType.UShort, ValueType.Long, ValueType.ULong, ValueType.Byte, ValueType.SByte, ValueType.Decimal
+    ];
+
     private static readonly string[] __ValueType_Name = [
         "BL","F","D","I","UI","S","US","L","UL","B","SB","C","ST","DE","O","DT"
     ];
@@ -71,6 +75,26 @@ public static class Info{
         "~" // DateTime
     ];
     public static string ValueType_One(ValueType VT) => __ValueType_One[(int)VT];
+    
+    private static readonly string[] __ValueType_One_Detail = [
+        "~",  // Bool
+        "1f",      // Float
+        "1.0",      // Double
+        "1",      // Int
+        "1",      // UInt
+        "1",      // Short
+        "1",      // UShort
+        "1",      // Long
+        "1",      // ULong
+        "255",      // Byte
+        "127",      // SByte
+        "~",   // Char
+        "~",   // String
+        "1m",      // Decimal
+        "~",   // Object
+        "~" // DateTime
+    ];
+    public static string ValueType_One_Detail(ValueType VT) => __ValueType_One_Detail[(int)VT];
     
     private static readonly string[] __ValueType_Half = [
         "~",  // Bool

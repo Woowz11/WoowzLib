@@ -1,4 +1,4 @@
-﻿namespace WL;
+namespace WL;
 
 public static class Math{
 	/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.200, внутри класса "Math.cs" */

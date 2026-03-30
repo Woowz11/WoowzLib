@@ -66,6 +66,22 @@ public static partial class String{
     }
     
     /// <summary>
+    /// Заменяет символы в строке
+    /// </summary>
+    public static string Replace(string S, string[] Old, string[] New){
+        if(IsEmpty(S) || Old.Length == 0 || New.Length == 0){ return S; }
+        int Count = int.Min(Old.Length, New.Length);
+        for(int i = 0; i < Count; i++){
+            string SO = Old[i];
+            string SN = New[i];
+            if(!IsEmpty(SO) && SO != SN){
+                S = S.Replace(SO, SN);
+            }   
+        }
+        return S;
+    }
+    
+    /// <summary>
     /// Заменяет левые символы из CharSet, на правые (или наоборот если Reverse включен)
     /// </summary>
     /// <param name="S">Строка</param>
