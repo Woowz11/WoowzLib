@@ -33,6 +33,8 @@ public class Run{
         Vector.Generate(WL.String.Path.Add(ForResult, "Vector"), WL.String.Path.Add(ForDebug, "Vector"));
         Rect  .Generate(WL.String.Path.Add(ForResult, "Rect"), WL.String.Path.Add(ForDebug, "Rect"));
         
+        Tests.Generate(WL.String.Path.Add(ForResult, "Tests"), WL.String.Path.Add(ForDebug, "Tests"));
+        
         Logger.Info("Конец генерации!");
     }
 }

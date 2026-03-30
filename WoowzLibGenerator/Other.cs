@@ -214,7 +214,8 @@ public static class Other{
 
     public static string Generate_GeneratorComment(string Class) => "/* Сгенерировано с помощью " + WL.Core.Metadata.Project.Name + " " + WL.Core.Metadata.Project.Version + ", внутри класса \"" + Class + ".cs\" */";
     public static string Generate_Namespace(string Name) => "namespace " + Name + ";";
-    public static string Generate_PublicStaticClass(string Name, string? Parent = null) => "public class " + Name + (Parent != null ? " : " + Parent : "");
+    public static string Generate_PublicClass(string Name, string? Parent = null, bool Static = false) => "public " + (Static ? "static " : "") + "class " + Name + (Parent != null ? " : " + Parent : "");
+    public static string Generate_PublicStruct(string Name, string? Parent = null, bool Static = false) => "public " + (Static ? "static " : "") + "struct " + Name + (Parent != null ? " : " + Parent : "");
     public static string Generate_Line() => "@LINE@";
     public static string Generate_NextLine() => "@NEXTLINE@";
     public static string Generate_AggressiveInlining() => "@IMPL_AIL@";

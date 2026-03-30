@@ -1,8 +1,8 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.130, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.160, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
-public class Vector3UI : IEquatable<Vector3UI>{
+public struct Vector3UI : IEquatable<Vector3UI>{
 	public Vector3UI(uint X, uint Y, uint Z){
 		this.X = X;
 		this.Y = Y;
@@ -32,23 +32,14 @@ public class Vector3UI : IEquatable<Vector3UI>{
 	// ----------------------------------------------------------------------
 	
 	public static readonly Vector3UI Zero = new Vector3UI(0, 0, 0);
-	public Vector3UI ToZero => new Vector3UI(0, 0, 0);
 	public static readonly Vector3UI One = new Vector3UI(1, 1, 1);
-	public Vector3UI ToOne => new Vector3UI(1, 1, 1);
 	public static readonly Vector3UI Right = new Vector3UI(1, 0, 0);
-	public Vector3UI ToRight => new Vector3UI(1, 0, 0);
 	public static readonly Vector3UI Up = new Vector3UI(0, 1, 0);
-	public Vector3UI ToUp => new Vector3UI(0, 1, 0);
 	public static readonly Vector3UI Front = new Vector3UI(0, 0, 1);
-	public Vector3UI ToFront => new Vector3UI(0, 0, 1);
 	public static readonly Vector3UI AxisX = new Vector3UI(1, 0, 0);
-	public Vector3UI ToAxisX => new Vector3UI(1, 0, 0);
 	public static readonly Vector3UI AxisY = new Vector3UI(0, 1, 0);
-	public Vector3UI ToAxisY => new Vector3UI(0, 1, 0);
 	public static readonly Vector3UI AxisZ = new Vector3UI(0, 0, 1);
-	public Vector3UI ToAxisZ => new Vector3UI(0, 0, 1);
 	public static readonly Vector3UI Double = new Vector3UI(2, 2, 2);
-	public Vector3UI ToDouble => new Vector3UI(2, 2, 2);
 	
 	// ----------------------------------------------------------------------
 	
@@ -87,15 +78,7 @@ public class Vector3UI : IEquatable<Vector3UI>{
 	public string ToPositionString() => X + ":" + Y + ":" + Z;
 	public string ToSizeString() => W + "x" + H + "x" + D;
 	
-	public bool Equals(Vector3UI? Other){
-		if(ReferenceEquals(Other, null)){
-			return false;
-		}
-		if(ReferenceEquals(this, Other)){
-			return true;
-		}
-		return X == Other.X && Y == Other.Y && Z == Other.Z;
-	}
+	public bool Equals(Vector3UI Other) => X == Other.X && Y == Other.Y && Z == Other.Z;
 	public override bool Equals(object? Object) => Object is Vector3UI Other && Equals(Other);
 	
 	public override int GetHashCode() => HashCode.Combine(X, Y, Z);
@@ -103,17 +86,9 @@ public class Vector3UI : IEquatable<Vector3UI>{
 	// ----------------------------------------------------------------------
 	
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool operator ==(Vector3UI? L, Vector3UI? R){
-		if(ReferenceEquals(L, R)){
-			return true;
-		}
-		if(L is null || R is null){
-			return false;
-		}
-		return L.Equals(R);
-	}
+	public static bool operator ==(Vector3UI L, Vector3UI R) => L.Equals(R);
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool operator !=(Vector3UI? L, Vector3UI? R) => !(L == R);
+	public static bool operator !=(Vector3UI L, Vector3UI R) => !L.Equals(R);
 	
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static Vector3UI operator +(Vector3UI L, Vector3UI R) => L.Add(R);

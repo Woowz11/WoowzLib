@@ -1,8 +1,8 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.129, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.156, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
-public class Vector4D : IEquatable<Vector4D>{
+public struct Vector4D : IEquatable<Vector4D>{
 	public Vector4D(double X, double Y, double Z, double W){
 		this.X = X;
 		this.Y = Y;
@@ -22,41 +22,23 @@ public class Vector4D : IEquatable<Vector4D>{
 	// ----------------------------------------------------------------------
 	
 	public static readonly Vector4D Zero = new Vector4D(0, 0, 0, 0);
-	public Vector4D ToZero => new Vector4D(0, 0, 0, 0);
 	public static readonly Vector4D One = new Vector4D(1, 1, 1, 1);
-	public Vector4D ToOne => new Vector4D(1, 1, 1, 1);
 	public static readonly Vector4D NOne = new Vector4D(-1, -1, -1, -1);
-	public Vector4D ToNOne => new Vector4D(-1, -1, -1, -1);
 	public static readonly Vector4D Half = new Vector4D(0.5, 0.5, 0.5, 0.5);
-	public Vector4D ToHalf => new Vector4D(0.5, 0.5, 0.5, 0.5);
 	public static readonly Vector4D Right = new Vector4D(1, 0, 0, 0);
-	public Vector4D ToRight => new Vector4D(1, 0, 0, 0);
 	public static readonly Vector4D Left = new Vector4D(-1, 0, 0, 0);
-	public Vector4D ToLeft => new Vector4D(-1, 0, 0, 0);
 	public static readonly Vector4D Up = new Vector4D(0, 1, 0, 0);
-	public Vector4D ToUp => new Vector4D(0, 1, 0, 0);
 	public static readonly Vector4D Down = new Vector4D(0, -1, 0, 0);
-	public Vector4D ToDown => new Vector4D(0, -1, 0, 0);
 	public static readonly Vector4D Front = new Vector4D(0, 0, 1, 0);
-	public Vector4D ToFront => new Vector4D(0, 0, 1, 0);
 	public static readonly Vector4D Back = new Vector4D(0, 0, -1, 0);
-	public Vector4D ToBack => new Vector4D(0, 0, -1, 0);
 	public static readonly Vector4D Ana = new Vector4D(0, 0, 0, 1);
-	public Vector4D ToAna => new Vector4D(0, 0, 0, 1);
 	public static readonly Vector4D Kata = new Vector4D(0, 0, 0, -1);
-	public Vector4D ToKata => new Vector4D(0, 0, 0, -1);
 	public static readonly Vector4D AxisX = new Vector4D(1, 0, 0, 0);
-	public Vector4D ToAxisX => new Vector4D(1, 0, 0, 0);
 	public static readonly Vector4D AxisY = new Vector4D(0, 1, 0, 0);
-	public Vector4D ToAxisY => new Vector4D(0, 1, 0, 0);
 	public static readonly Vector4D AxisZ = new Vector4D(0, 0, 1, 0);
-	public Vector4D ToAxisZ => new Vector4D(0, 0, 1, 0);
 	public static readonly Vector4D AxisW = new Vector4D(0, 0, 0, 1);
-	public Vector4D ToAxisW => new Vector4D(0, 0, 0, 1);
 	public static readonly Vector4D Double = new Vector4D(2, 2, 2, 2);
-	public Vector4D ToDouble => new Vector4D(2, 2, 2, 2);
 	public static readonly Vector4D Quarter = new Vector4D(0.25, 0.25, 0.25, 0.25);
-	public Vector4D ToQuarter => new Vector4D(0.25, 0.25, 0.25, 0.25);
 	
 	// ----------------------------------------------------------------------
 	
@@ -93,15 +75,7 @@ public class Vector4D : IEquatable<Vector4D>{
 	public override string ToString() => "Vector4D(" + X + ", " + Y + ", " + Z + ", " + W + ")";
 	public string ToShortString() => X + ", " + Y + ", " + Z + ", " + W;
 	
-	public bool Equals(Vector4D? Other){
-		if(ReferenceEquals(Other, null)){
-			return false;
-		}
-		if(ReferenceEquals(this, Other)){
-			return true;
-		}
-		return X == Other.X && Y == Other.Y && Z == Other.Z && W == Other.W;
-	}
+	public bool Equals(Vector4D Other) => X == Other.X && Y == Other.Y && Z == Other.Z && W == Other.W;
 	public override bool Equals(object? Object) => Object is Vector4D Other && Equals(Other);
 	
 	public override int GetHashCode() => HashCode.Combine(X, Y, Z, W);
@@ -109,17 +83,9 @@ public class Vector4D : IEquatable<Vector4D>{
 	// ----------------------------------------------------------------------
 	
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool operator ==(Vector4D? L, Vector4D? R){
-		if(ReferenceEquals(L, R)){
-			return true;
-		}
-		if(L is null || R is null){
-			return false;
-		}
-		return L.Equals(R);
-	}
+	public static bool operator ==(Vector4D L, Vector4D R) => L.Equals(R);
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool operator !=(Vector4D? L, Vector4D? R) => !(L == R);
+	public static bool operator !=(Vector4D L, Vector4D R) => !L.Equals(R);
 	
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static Vector4D operator +(Vector4D L, Vector4D R) => L.Add(R);

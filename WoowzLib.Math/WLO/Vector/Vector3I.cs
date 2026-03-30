@@ -1,8 +1,8 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.129, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.156, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
-public class Vector3I : IEquatable<Vector3I>{
+public struct Vector3I : IEquatable<Vector3I>{
 	public Vector3I(int X, int Y, int Z){
 		this.X = X;
 		this.Y = Y;
@@ -32,31 +32,18 @@ public class Vector3I : IEquatable<Vector3I>{
 	// ----------------------------------------------------------------------
 	
 	public static readonly Vector3I Zero = new Vector3I(0, 0, 0);
-	public Vector3I ToZero => new Vector3I(0, 0, 0);
 	public static readonly Vector3I One = new Vector3I(1, 1, 1);
-	public Vector3I ToOne => new Vector3I(1, 1, 1);
 	public static readonly Vector3I NOne = new Vector3I(-1, -1, -1);
-	public Vector3I ToNOne => new Vector3I(-1, -1, -1);
 	public static readonly Vector3I Right = new Vector3I(1, 0, 0);
-	public Vector3I ToRight => new Vector3I(1, 0, 0);
 	public static readonly Vector3I Left = new Vector3I(-1, 0, 0);
-	public Vector3I ToLeft => new Vector3I(-1, 0, 0);
 	public static readonly Vector3I Up = new Vector3I(0, 1, 0);
-	public Vector3I ToUp => new Vector3I(0, 1, 0);
 	public static readonly Vector3I Down = new Vector3I(0, -1, 0);
-	public Vector3I ToDown => new Vector3I(0, -1, 0);
 	public static readonly Vector3I Front = new Vector3I(0, 0, 1);
-	public Vector3I ToFront => new Vector3I(0, 0, 1);
 	public static readonly Vector3I Back = new Vector3I(0, 0, -1);
-	public Vector3I ToBack => new Vector3I(0, 0, -1);
 	public static readonly Vector3I AxisX = new Vector3I(1, 0, 0);
-	public Vector3I ToAxisX => new Vector3I(1, 0, 0);
 	public static readonly Vector3I AxisY = new Vector3I(0, 1, 0);
-	public Vector3I ToAxisY => new Vector3I(0, 1, 0);
 	public static readonly Vector3I AxisZ = new Vector3I(0, 0, 1);
-	public Vector3I ToAxisZ => new Vector3I(0, 0, 1);
 	public static readonly Vector3I Double = new Vector3I(2, 2, 2);
-	public Vector3I ToDouble => new Vector3I(2, 2, 2);
 	
 	// ----------------------------------------------------------------------
 	
@@ -95,15 +82,7 @@ public class Vector3I : IEquatable<Vector3I>{
 	public string ToPositionString() => X + ":" + Y + ":" + Z;
 	public string ToSizeString() => W + "x" + H + "x" + D;
 	
-	public bool Equals(Vector3I? Other){
-		if(ReferenceEquals(Other, null)){
-			return false;
-		}
-		if(ReferenceEquals(this, Other)){
-			return true;
-		}
-		return X == Other.X && Y == Other.Y && Z == Other.Z;
-	}
+	public bool Equals(Vector3I Other) => X == Other.X && Y == Other.Y && Z == Other.Z;
 	public override bool Equals(object? Object) => Object is Vector3I Other && Equals(Other);
 	
 	public override int GetHashCode() => HashCode.Combine(X, Y, Z);
@@ -111,17 +90,9 @@ public class Vector3I : IEquatable<Vector3I>{
 	// ----------------------------------------------------------------------
 	
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool operator ==(Vector3I? L, Vector3I? R){
-		if(ReferenceEquals(L, R)){
-			return true;
-		}
-		if(L is null || R is null){
-			return false;
-		}
-		return L.Equals(R);
-	}
+	public static bool operator ==(Vector3I L, Vector3I R) => L.Equals(R);
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool operator !=(Vector3I? L, Vector3I? R) => !(L == R);
+	public static bool operator !=(Vector3I L, Vector3I R) => !L.Equals(R);
 	
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static Vector3I operator +(Vector3I L, Vector3I R) => L.Add(R);

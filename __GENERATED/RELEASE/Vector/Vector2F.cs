@@ -1,8 +1,8 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.130, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.160, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
-public class Vector2F : IEquatable<Vector2F>{
+public struct Vector2F : IEquatable<Vector2F>{
 	public Vector2F(float X, float Y){
 		this.X = X;
 		this.Y = Y;
@@ -26,29 +26,17 @@ public class Vector2F : IEquatable<Vector2F>{
 	// ----------------------------------------------------------------------
 	
 	public static readonly Vector2F Zero = new Vector2F(0, 0);
-	public Vector2F ToZero => new Vector2F(0, 0);
 	public static readonly Vector2F One = new Vector2F(1, 1);
-	public Vector2F ToOne => new Vector2F(1, 1);
 	public static readonly Vector2F NOne = new Vector2F(-1, -1);
-	public Vector2F ToNOne => new Vector2F(-1, -1);
 	public static readonly Vector2F Half = new Vector2F(0.5f, 0.5f);
-	public Vector2F ToHalf => new Vector2F(0.5f, 0.5f);
 	public static readonly Vector2F Right = new Vector2F(1, 0);
-	public Vector2F ToRight => new Vector2F(1, 0);
 	public static readonly Vector2F Left = new Vector2F(-1, 0);
-	public Vector2F ToLeft => new Vector2F(-1, 0);
 	public static readonly Vector2F Up = new Vector2F(0, 1);
-	public Vector2F ToUp => new Vector2F(0, 1);
 	public static readonly Vector2F Down = new Vector2F(0, -1);
-	public Vector2F ToDown => new Vector2F(0, -1);
 	public static readonly Vector2F AxisX = new Vector2F(1, 0);
-	public Vector2F ToAxisX => new Vector2F(1, 0);
 	public static readonly Vector2F AxisY = new Vector2F(0, 1);
-	public Vector2F ToAxisY => new Vector2F(0, 1);
 	public static readonly Vector2F Double = new Vector2F(2, 2);
-	public Vector2F ToDouble => new Vector2F(2, 2);
 	public static readonly Vector2F Quarter = new Vector2F(0.25f, 0.25f);
-	public Vector2F ToQuarter => new Vector2F(0.25f, 0.25f);
 	
 	// ----------------------------------------------------------------------
 	
@@ -87,15 +75,7 @@ public class Vector2F : IEquatable<Vector2F>{
 	public string ToPositionString() => X + ":" + Y;
 	public string ToSizeString() => W + "x" + H;
 	
-	public bool Equals(Vector2F? Other){
-		if(ReferenceEquals(Other, null)){
-			return false;
-		}
-		if(ReferenceEquals(this, Other)){
-			return true;
-		}
-		return X == Other.X && Y == Other.Y;
-	}
+	public bool Equals(Vector2F Other) => X == Other.X && Y == Other.Y;
 	public override bool Equals(object? Object) => Object is Vector2F Other && Equals(Other);
 	
 	public override int GetHashCode() => HashCode.Combine(X, Y);
@@ -103,17 +83,9 @@ public class Vector2F : IEquatable<Vector2F>{
 	// ----------------------------------------------------------------------
 	
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool operator ==(Vector2F? L, Vector2F? R){
-		if(ReferenceEquals(L, R)){
-			return true;
-		}
-		if(L is null || R is null){
-			return false;
-		}
-		return L.Equals(R);
-	}
+	public static bool operator ==(Vector2F L, Vector2F R) => L.Equals(R);
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool operator !=(Vector2F? L, Vector2F? R) => !(L == R);
+	public static bool operator !=(Vector2F L, Vector2F R) => !L.Equals(R);
 	
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static Vector2F operator +(Vector2F L, Vector2F R) => L.Add(R);

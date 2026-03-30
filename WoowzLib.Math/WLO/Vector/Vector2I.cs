@@ -1,8 +1,8 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.129, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.156, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
-public class Vector2I : IEquatable<Vector2I>{
+public struct Vector2I : IEquatable<Vector2I>{
 	public Vector2I(int X, int Y){
 		this.X = X;
 		this.Y = Y;
@@ -26,25 +26,15 @@ public class Vector2I : IEquatable<Vector2I>{
 	// ----------------------------------------------------------------------
 	
 	public static readonly Vector2I Zero = new Vector2I(0, 0);
-	public Vector2I ToZero => new Vector2I(0, 0);
 	public static readonly Vector2I One = new Vector2I(1, 1);
-	public Vector2I ToOne => new Vector2I(1, 1);
 	public static readonly Vector2I NOne = new Vector2I(-1, -1);
-	public Vector2I ToNOne => new Vector2I(-1, -1);
 	public static readonly Vector2I Right = new Vector2I(1, 0);
-	public Vector2I ToRight => new Vector2I(1, 0);
 	public static readonly Vector2I Left = new Vector2I(-1, 0);
-	public Vector2I ToLeft => new Vector2I(-1, 0);
 	public static readonly Vector2I Up = new Vector2I(0, 1);
-	public Vector2I ToUp => new Vector2I(0, 1);
 	public static readonly Vector2I Down = new Vector2I(0, -1);
-	public Vector2I ToDown => new Vector2I(0, -1);
 	public static readonly Vector2I AxisX = new Vector2I(1, 0);
-	public Vector2I ToAxisX => new Vector2I(1, 0);
 	public static readonly Vector2I AxisY = new Vector2I(0, 1);
-	public Vector2I ToAxisY => new Vector2I(0, 1);
 	public static readonly Vector2I Double = new Vector2I(2, 2);
-	public Vector2I ToDouble => new Vector2I(2, 2);
 	
 	// ----------------------------------------------------------------------
 	
@@ -83,15 +73,7 @@ public class Vector2I : IEquatable<Vector2I>{
 	public string ToPositionString() => X + ":" + Y;
 	public string ToSizeString() => W + "x" + H;
 	
-	public bool Equals(Vector2I? Other){
-		if(ReferenceEquals(Other, null)){
-			return false;
-		}
-		if(ReferenceEquals(this, Other)){
-			return true;
-		}
-		return X == Other.X && Y == Other.Y;
-	}
+	public bool Equals(Vector2I Other) => X == Other.X && Y == Other.Y;
 	public override bool Equals(object? Object) => Object is Vector2I Other && Equals(Other);
 	
 	public override int GetHashCode() => HashCode.Combine(X, Y);
@@ -99,17 +81,9 @@ public class Vector2I : IEquatable<Vector2I>{
 	// ----------------------------------------------------------------------
 	
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool operator ==(Vector2I? L, Vector2I? R){
-		if(ReferenceEquals(L, R)){
-			return true;
-		}
-		if(L is null || R is null){
-			return false;
-		}
-		return L.Equals(R);
-	}
+	public static bool operator ==(Vector2I L, Vector2I R) => L.Equals(R);
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool operator !=(Vector2I? L, Vector2I? R) => !(L == R);
+	public static bool operator !=(Vector2I L, Vector2I R) => !L.Equals(R);
 	
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static Vector2I operator +(Vector2I L, Vector2I R) => L.Add(R);

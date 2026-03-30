@@ -1,8 +1,8 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.129, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.156, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
-public class Vector4UI : IEquatable<Vector4UI>{
+public struct Vector4UI : IEquatable<Vector4UI>{
 	public Vector4UI(uint X, uint Y, uint Z, uint W){
 		this.X = X;
 		this.Y = Y;
@@ -22,27 +22,16 @@ public class Vector4UI : IEquatable<Vector4UI>{
 	// ----------------------------------------------------------------------
 	
 	public static readonly Vector4UI Zero = new Vector4UI(0, 0, 0, 0);
-	public Vector4UI ToZero => new Vector4UI(0, 0, 0, 0);
 	public static readonly Vector4UI One = new Vector4UI(1, 1, 1, 1);
-	public Vector4UI ToOne => new Vector4UI(1, 1, 1, 1);
 	public static readonly Vector4UI Right = new Vector4UI(1, 0, 0, 0);
-	public Vector4UI ToRight => new Vector4UI(1, 0, 0, 0);
 	public static readonly Vector4UI Up = new Vector4UI(0, 1, 0, 0);
-	public Vector4UI ToUp => new Vector4UI(0, 1, 0, 0);
 	public static readonly Vector4UI Front = new Vector4UI(0, 0, 1, 0);
-	public Vector4UI ToFront => new Vector4UI(0, 0, 1, 0);
 	public static readonly Vector4UI Ana = new Vector4UI(0, 0, 0, 1);
-	public Vector4UI ToAna => new Vector4UI(0, 0, 0, 1);
 	public static readonly Vector4UI AxisX = new Vector4UI(1, 0, 0, 0);
-	public Vector4UI ToAxisX => new Vector4UI(1, 0, 0, 0);
 	public static readonly Vector4UI AxisY = new Vector4UI(0, 1, 0, 0);
-	public Vector4UI ToAxisY => new Vector4UI(0, 1, 0, 0);
 	public static readonly Vector4UI AxisZ = new Vector4UI(0, 0, 1, 0);
-	public Vector4UI ToAxisZ => new Vector4UI(0, 0, 1, 0);
 	public static readonly Vector4UI AxisW = new Vector4UI(0, 0, 0, 1);
-	public Vector4UI ToAxisW => new Vector4UI(0, 0, 0, 1);
 	public static readonly Vector4UI Double = new Vector4UI(2, 2, 2, 2);
-	public Vector4UI ToDouble => new Vector4UI(2, 2, 2, 2);
 	
 	// ----------------------------------------------------------------------
 	
@@ -79,15 +68,7 @@ public class Vector4UI : IEquatable<Vector4UI>{
 	public override string ToString() => "Vector4UI(" + X + ", " + Y + ", " + Z + ", " + W + ")";
 	public string ToShortString() => X + ", " + Y + ", " + Z + ", " + W;
 	
-	public bool Equals(Vector4UI? Other){
-		if(ReferenceEquals(Other, null)){
-			return false;
-		}
-		if(ReferenceEquals(this, Other)){
-			return true;
-		}
-		return X == Other.X && Y == Other.Y && Z == Other.Z && W == Other.W;
-	}
+	public bool Equals(Vector4UI Other) => X == Other.X && Y == Other.Y && Z == Other.Z && W == Other.W;
 	public override bool Equals(object? Object) => Object is Vector4UI Other && Equals(Other);
 	
 	public override int GetHashCode() => HashCode.Combine(X, Y, Z, W);
@@ -95,17 +76,9 @@ public class Vector4UI : IEquatable<Vector4UI>{
 	// ----------------------------------------------------------------------
 	
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool operator ==(Vector4UI? L, Vector4UI? R){
-		if(ReferenceEquals(L, R)){
-			return true;
-		}
-		if(L is null || R is null){
-			return false;
-		}
-		return L.Equals(R);
-	}
+	public static bool operator ==(Vector4UI L, Vector4UI R) => L.Equals(R);
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool operator !=(Vector4UI? L, Vector4UI? R) => !(L == R);
+	public static bool operator !=(Vector4UI L, Vector4UI R) => !L.Equals(R);
 	
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static Vector4UI operator +(Vector4UI L, Vector4UI R) => L.Add(R);

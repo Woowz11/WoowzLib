@@ -149,11 +149,6 @@ public class Window{
     /// Child/Parent окна
     /// </summary>
     public readonly SceneNode<Window> Hierarchy;
-
-    /// <summary>
-    /// Device Context окна
-    /// </summary>
-    public DeviceContext DeviceContext => new DeviceContext(this);
     
     // ----------------------------------------------------------------------
 

@@ -1,8 +1,8 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.130, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.160, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
-public class Vector3D : IEquatable<Vector3D>{
+public struct Vector3D : IEquatable<Vector3D>{
 	public Vector3D(double X, double Y, double Z){
 		this.X = X;
 		this.Y = Y;
@@ -32,35 +32,20 @@ public class Vector3D : IEquatable<Vector3D>{
 	// ----------------------------------------------------------------------
 	
 	public static readonly Vector3D Zero = new Vector3D(0, 0, 0);
-	public Vector3D ToZero => new Vector3D(0, 0, 0);
 	public static readonly Vector3D One = new Vector3D(1, 1, 1);
-	public Vector3D ToOne => new Vector3D(1, 1, 1);
 	public static readonly Vector3D NOne = new Vector3D(-1, -1, -1);
-	public Vector3D ToNOne => new Vector3D(-1, -1, -1);
 	public static readonly Vector3D Half = new Vector3D(0.5, 0.5, 0.5);
-	public Vector3D ToHalf => new Vector3D(0.5, 0.5, 0.5);
 	public static readonly Vector3D Right = new Vector3D(1, 0, 0);
-	public Vector3D ToRight => new Vector3D(1, 0, 0);
 	public static readonly Vector3D Left = new Vector3D(-1, 0, 0);
-	public Vector3D ToLeft => new Vector3D(-1, 0, 0);
 	public static readonly Vector3D Up = new Vector3D(0, 1, 0);
-	public Vector3D ToUp => new Vector3D(0, 1, 0);
 	public static readonly Vector3D Down = new Vector3D(0, -1, 0);
-	public Vector3D ToDown => new Vector3D(0, -1, 0);
 	public static readonly Vector3D Front = new Vector3D(0, 0, 1);
-	public Vector3D ToFront => new Vector3D(0, 0, 1);
 	public static readonly Vector3D Back = new Vector3D(0, 0, -1);
-	public Vector3D ToBack => new Vector3D(0, 0, -1);
 	public static readonly Vector3D AxisX = new Vector3D(1, 0, 0);
-	public Vector3D ToAxisX => new Vector3D(1, 0, 0);
 	public static readonly Vector3D AxisY = new Vector3D(0, 1, 0);
-	public Vector3D ToAxisY => new Vector3D(0, 1, 0);
 	public static readonly Vector3D AxisZ = new Vector3D(0, 0, 1);
-	public Vector3D ToAxisZ => new Vector3D(0, 0, 1);
 	public static readonly Vector3D Double = new Vector3D(2, 2, 2);
-	public Vector3D ToDouble => new Vector3D(2, 2, 2);
 	public static readonly Vector3D Quarter = new Vector3D(0.25, 0.25, 0.25);
-	public Vector3D ToQuarter => new Vector3D(0.25, 0.25, 0.25);
 	
 	// ----------------------------------------------------------------------
 	
@@ -99,15 +84,7 @@ public class Vector3D : IEquatable<Vector3D>{
 	public string ToPositionString() => X + ":" + Y + ":" + Z;
 	public string ToSizeString() => W + "x" + H + "x" + D;
 	
-	public bool Equals(Vector3D? Other){
-		if(ReferenceEquals(Other, null)){
-			return false;
-		}
-		if(ReferenceEquals(this, Other)){
-			return true;
-		}
-		return X == Other.X && Y == Other.Y && Z == Other.Z;
-	}
+	public bool Equals(Vector3D Other) => X == Other.X && Y == Other.Y && Z == Other.Z;
 	public override bool Equals(object? Object) => Object is Vector3D Other && Equals(Other);
 	
 	public override int GetHashCode() => HashCode.Combine(X, Y, Z);
@@ -115,17 +92,9 @@ public class Vector3D : IEquatable<Vector3D>{
 	// ----------------------------------------------------------------------
 	
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool operator ==(Vector3D? L, Vector3D? R){
-		if(ReferenceEquals(L, R)){
-			return true;
-		}
-		if(L is null || R is null){
-			return false;
-		}
-		return L.Equals(R);
-	}
+	public static bool operator ==(Vector3D L, Vector3D R) => L.Equals(R);
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool operator !=(Vector3D? L, Vector3D? R) => !(L == R);
+	public static bool operator !=(Vector3D L, Vector3D R) => !L.Equals(R);
 	
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static Vector3D operator +(Vector3D L, Vector3D R) => L.Add(R);

@@ -160,12 +160,13 @@ public static class Vector{
         try{
             Logger.Info("Создание вектора " + I.Name + "");
             Result = "";
+            Tests.Info_Vectors.Add(I);
 
             Result += "/* ReSharper disable NonReadonlyMemberInGetHashCode */";
             
             Result += Other.Generate_Namespace("WLO.Vector");
 
-            Result += Other.Generate_PublicStaticClass(I.Name, I.Parent);
+            Result += Other.Generate_PublicStruct(I.Name, I.Parent);
             Result += "{";
 
             VectorContent(I);
@@ -187,40 +188,41 @@ public static class Vector{
         }
     }
 
-    public static void VectorContent(Info_Vector I){
-        string RFEA(string Code, string Between = "", char[]? Chars = null, char[]? SecondChars = null){
-            Chars ??= I.Axis;
-            
-            string R = "";
-            for(int i = 0; i < Chars.Length; i++){
-                char C = Chars[i];
+    public static string RFEA(char[] Chars, string Code, string Between = "", char[]? SecondChars = null){
+        string R = "";
+        for(int i = 0; i < Chars.Length; i++){
+            char C = Chars[i];
 
-                if(i != 0){ R += Between; }
+            if(i != 0){ R += Between; }
 
-                string R__ = Code;
+            string R__ = Code;
                 
-                if(SecondChars != null){
-                    R__ = WL.String.Replace(R__, "@2", SecondChars[i].ToString());
-                }
-                
-                R += WL.String.Replace(R__, "@", C.ToString());
+            if(SecondChars != null){
+                R__ = WL.String.Replace(R__, "@2", SecondChars[i].ToString());
             }
-
-            return R;
+                
+            R += WL.String.Replace(WL.String.Replace(R__, "@I", i.ToString()), "@", C.ToString());
         }
+
+        return R;
+    }
         
-        string RFEAS(string[] Strings, string Code, string Between = ""){
-            string R = "";
-            for(int i = 0; i < Strings.Length; i++){
-                string S = Strings[i];
+    public static string RFEAS(string[] Strings, string Code, string Between = ""){
+        string R = "";
+        for(int i = 0; i < Strings.Length; i++){
+            string S = Strings[i];
 
-                if(i != 0){ R += Between; }
-                
-                R += WL.String.Replace(Code, "@", S);
-            }
-
-            return R;
+            if(i != 0){ R += Between; }
+            
+            R += WL.String.Replace(WL.String.Replace(Code, "@I", i.ToString()), "@", S);
         }
+
+        return R;
+    }
+    
+    public static void VectorContent(Info_Vector I){
+        string RFEA(string Code, string Between = "", char[]? Chars = null, char[]? SecondChars = null) => Vector.RFEA(Chars ?? I.Axis, Code, Between, SecondChars);
+        string RFEAS(string[] Strings, string Code, string Between = "") => Vector.RFEAS(Strings, Code, Between);
 
         void Generate_Constructors(){
             string Constructor = "public " + I.Name;
@@ -249,7 +251,6 @@ public static class Vector{
         void Generate_Consts(){
             void Generate_Const(Info_VectorConst2 VC2){
                 Result += "public static readonly " + I.Name + " " + VC2.Name + " = new " + I.Name + "(" + RFEAS(VC2.Values, "@", ", ") + ");";
-                Result += "public " + I.Name + " To" + VC2.Name + " => new " + I.Name + "(" + RFEAS(VC2.Values, "@", ", ") + ");";
             }
 
             foreach(Info_VectorConst2 VC2 in I.Consts){ Generate_Const(VC2); }
@@ -291,7 +292,7 @@ public static class Vector{
 
             Result += Other.Generate_NextLine();
             
-            Result += "public bool Equals(" + I.Name + "? Other){ if(ReferenceEquals(Other, null)){ return false; } if(ReferenceEquals(this, Other)){ return true; } return " + RFEA("@ == Other.@", " && ") + "; }";
+            Result += "public bool Equals(" + I.Name + " Other) => " + RFEA("@ == Other.@", " && ") + ";";
             Result += "public override bool Equals(object? Object) => Object is " + I.Name + " Other && Equals(Other);";
             
             Result += Other.Generate_NextLine();
@@ -308,8 +309,8 @@ public static class Vector{
                 Result += Other.Generate_AggressiveInlining() + "public static " + Return + " operator " + Operator + "(" + Params + ")" + (Lambda ? " => " : "{") + Inside + (Lambda ? ";" : "}");
             }
             
-            Generate_Operator("==", I.Name + "? L, " + I.Name + "? R", "if(ReferenceEquals(L, R)){ return true; } if(L is null || R is null){ return false; } return L.Equals(R);", "bool", false);
-            Generate_Operator("!=", I.Name + "? L, " + I.Name + "? R", "!(L == R)", "bool");
+            Generate_Operator("==", I.Name + " L, " + I.Name + " R", "L.Equals(R)", "bool");
+            Generate_Operator("!=", I.Name + " L, " + I.Name + " R", "!L.Equals(R)", "bool");
 
             Result += Other.Generate_NextLine();
 

@@ -1,8 +1,8 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.129, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.156, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
-public class Vector2UI : IEquatable<Vector2UI>{
+public struct Vector2UI : IEquatable<Vector2UI>{
 	public Vector2UI(uint X, uint Y){
 		this.X = X;
 		this.Y = Y;
@@ -26,19 +26,12 @@ public class Vector2UI : IEquatable<Vector2UI>{
 	// ----------------------------------------------------------------------
 	
 	public static readonly Vector2UI Zero = new Vector2UI(0, 0);
-	public Vector2UI ToZero => new Vector2UI(0, 0);
 	public static readonly Vector2UI One = new Vector2UI(1, 1);
-	public Vector2UI ToOne => new Vector2UI(1, 1);
 	public static readonly Vector2UI Right = new Vector2UI(1, 0);
-	public Vector2UI ToRight => new Vector2UI(1, 0);
 	public static readonly Vector2UI Up = new Vector2UI(0, 1);
-	public Vector2UI ToUp => new Vector2UI(0, 1);
 	public static readonly Vector2UI AxisX = new Vector2UI(1, 0);
-	public Vector2UI ToAxisX => new Vector2UI(1, 0);
 	public static readonly Vector2UI AxisY = new Vector2UI(0, 1);
-	public Vector2UI ToAxisY => new Vector2UI(0, 1);
 	public static readonly Vector2UI Double = new Vector2UI(2, 2);
-	public Vector2UI ToDouble => new Vector2UI(2, 2);
 	
 	// ----------------------------------------------------------------------
 	
@@ -77,15 +70,7 @@ public class Vector2UI : IEquatable<Vector2UI>{
 	public string ToPositionString() => X + ":" + Y;
 	public string ToSizeString() => W + "x" + H;
 	
-	public bool Equals(Vector2UI? Other){
-		if(ReferenceEquals(Other, null)){
-			return false;
-		}
-		if(ReferenceEquals(this, Other)){
-			return true;
-		}
-		return X == Other.X && Y == Other.Y;
-	}
+	public bool Equals(Vector2UI Other) => X == Other.X && Y == Other.Y;
 	public override bool Equals(object? Object) => Object is Vector2UI Other && Equals(Other);
 	
 	public override int GetHashCode() => HashCode.Combine(X, Y);
@@ -93,17 +78,9 @@ public class Vector2UI : IEquatable<Vector2UI>{
 	// ----------------------------------------------------------------------
 	
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool operator ==(Vector2UI? L, Vector2UI? R){
-		if(ReferenceEquals(L, R)){
-			return true;
-		}
-		if(L is null || R is null){
-			return false;
-		}
-		return L.Equals(R);
-	}
+	public static bool operator ==(Vector2UI L, Vector2UI R) => L.Equals(R);
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool operator !=(Vector2UI? L, Vector2UI? R) => !(L == R);
+	public static bool operator !=(Vector2UI L, Vector2UI R) => !L.Equals(R);
 	
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static Vector2UI operator +(Vector2UI L, Vector2UI R) => L.Add(R);

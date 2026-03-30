@@ -1,8 +1,8 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.129, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.156, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
-public class Vector4I : IEquatable<Vector4I>{
+public struct Vector4I : IEquatable<Vector4I>{
 	public Vector4I(int X, int Y, int Z, int W){
 		this.X = X;
 		this.Y = Y;
@@ -22,37 +22,21 @@ public class Vector4I : IEquatable<Vector4I>{
 	// ----------------------------------------------------------------------
 	
 	public static readonly Vector4I Zero = new Vector4I(0, 0, 0, 0);
-	public Vector4I ToZero => new Vector4I(0, 0, 0, 0);
 	public static readonly Vector4I One = new Vector4I(1, 1, 1, 1);
-	public Vector4I ToOne => new Vector4I(1, 1, 1, 1);
 	public static readonly Vector4I NOne = new Vector4I(-1, -1, -1, -1);
-	public Vector4I ToNOne => new Vector4I(-1, -1, -1, -1);
 	public static readonly Vector4I Right = new Vector4I(1, 0, 0, 0);
-	public Vector4I ToRight => new Vector4I(1, 0, 0, 0);
 	public static readonly Vector4I Left = new Vector4I(-1, 0, 0, 0);
-	public Vector4I ToLeft => new Vector4I(-1, 0, 0, 0);
 	public static readonly Vector4I Up = new Vector4I(0, 1, 0, 0);
-	public Vector4I ToUp => new Vector4I(0, 1, 0, 0);
 	public static readonly Vector4I Down = new Vector4I(0, -1, 0, 0);
-	public Vector4I ToDown => new Vector4I(0, -1, 0, 0);
 	public static readonly Vector4I Front = new Vector4I(0, 0, 1, 0);
-	public Vector4I ToFront => new Vector4I(0, 0, 1, 0);
 	public static readonly Vector4I Back = new Vector4I(0, 0, -1, 0);
-	public Vector4I ToBack => new Vector4I(0, 0, -1, 0);
 	public static readonly Vector4I Ana = new Vector4I(0, 0, 0, 1);
-	public Vector4I ToAna => new Vector4I(0, 0, 0, 1);
 	public static readonly Vector4I Kata = new Vector4I(0, 0, 0, -1);
-	public Vector4I ToKata => new Vector4I(0, 0, 0, -1);
 	public static readonly Vector4I AxisX = new Vector4I(1, 0, 0, 0);
-	public Vector4I ToAxisX => new Vector4I(1, 0, 0, 0);
 	public static readonly Vector4I AxisY = new Vector4I(0, 1, 0, 0);
-	public Vector4I ToAxisY => new Vector4I(0, 1, 0, 0);
 	public static readonly Vector4I AxisZ = new Vector4I(0, 0, 1, 0);
-	public Vector4I ToAxisZ => new Vector4I(0, 0, 1, 0);
 	public static readonly Vector4I AxisW = new Vector4I(0, 0, 0, 1);
-	public Vector4I ToAxisW => new Vector4I(0, 0, 0, 1);
 	public static readonly Vector4I Double = new Vector4I(2, 2, 2, 2);
-	public Vector4I ToDouble => new Vector4I(2, 2, 2, 2);
 	
 	// ----------------------------------------------------------------------
 	
@@ -89,15 +73,7 @@ public class Vector4I : IEquatable<Vector4I>{
 	public override string ToString() => "Vector4I(" + X + ", " + Y + ", " + Z + ", " + W + ")";
 	public string ToShortString() => X + ", " + Y + ", " + Z + ", " + W;
 	
-	public bool Equals(Vector4I? Other){
-		if(ReferenceEquals(Other, null)){
-			return false;
-		}
-		if(ReferenceEquals(this, Other)){
-			return true;
-		}
-		return X == Other.X && Y == Other.Y && Z == Other.Z && W == Other.W;
-	}
+	public bool Equals(Vector4I Other) => X == Other.X && Y == Other.Y && Z == Other.Z && W == Other.W;
 	public override bool Equals(object? Object) => Object is Vector4I Other && Equals(Other);
 	
 	public override int GetHashCode() => HashCode.Combine(X, Y, Z, W);
@@ -105,17 +81,9 @@ public class Vector4I : IEquatable<Vector4I>{
 	// ----------------------------------------------------------------------
 	
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool operator ==(Vector4I? L, Vector4I? R){
-		if(ReferenceEquals(L, R)){
-			return true;
-		}
-		if(L is null || R is null){
-			return false;
-		}
-		return L.Equals(R);
-	}
+	public static bool operator ==(Vector4I L, Vector4I R) => L.Equals(R);
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool operator !=(Vector4I? L, Vector4I? R) => !(L == R);
+	public static bool operator !=(Vector4I L, Vector4I R) => !L.Equals(R);
 	
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static Vector4I operator +(Vector4I L, Vector4I R) => L.Add(R);
