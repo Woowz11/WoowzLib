@@ -1,38 +1,27 @@
-﻿namespace WL;
+﻿using System.Runtime.CompilerServices;
+
+namespace WL;
 
 public static class Math{
-	/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.200, внутри класса "Math.cs" */
-	// ----------------------------------------------------------------------
+	/// <summary>
+	/// Число PI (π)
+	/// </summary>
+	public const double PiD = 3.141592653589793;
+	/// <summary>
+	/// Половина числа PI (π)
+	/// </summary>
+	public const double HalfPiD = PiD * 0.5;
 	
 	/// <summary>
-	/// Делает число не отрицательным (0 -> 0, 1 -> 1, -1 -> 1)
+	/// Число PI (π)
 	/// </summary>
-	public static float AbsF(float A) => float.Abs(A);
+	public const float PiF = (float)PiD;
 	/// <summary>
-	/// Делает число не отрицательным (0 -> 0, 1 -> 1, -1 -> 1)
+	/// Половина числа PI (π)
 	/// </summary>
-	public static double AbsD(double A) => double.Abs(A);
-	/// <summary>
-	/// Делает число не отрицательным (0 -> 0, 1 -> 1, -1 -> 1)
-	/// </summary>
-	public static int AbsI(int A) => int.Abs(A);
-	/// <summary>
-	/// Делает число не отрицательным (0 -> 0, 1 -> 1, -1 -> 1)
-	/// </summary>
-	public static short AbsS(short A) => short.Abs(A);
-	/// <summary>
-	/// Делает число не отрицательным (0 -> 0, 1 -> 1, -1 -> 1)
-	/// </summary>
-	public static long AbsL(long A) => long.Abs(A);
-	/// <summary>
-	/// Делает число не отрицательным (0 -> 0, 127 -> 127, -127 -> 127)
-	/// </summary>
-	public static sbyte AbsSB(sbyte A) => sbyte.Abs(A);
-	/// <summary>
-	/// Делает число не отрицательным (0 -> 0, 1 -> 1, -1 -> 1)
-	/// </summary>
-	public static decimal AbsDE(decimal A) => decimal.Abs(A);
+	public const float HalfPiF = PiF * 0.5f;
 	
+	/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.219, внутри класса "Math.cs" */
 	// ----------------------------------------------------------------------
 	
 	/// <summary>
@@ -411,6 +400,51 @@ public static class Math{
 		return M;
 	}
 	
+	/// <summary>
+	/// Ограничивает число между Min и Max
+	/// </summary>
+	public static float ClampF(float A, float Min, float Max) => float.Clamp(A, Min, Max);
+	/// <summary>
+	/// Ограничивает число между Min и Max
+	/// </summary>
+	public static double ClampD(double A, double Min, double Max) => double.Clamp(A, Min, Max);
+	/// <summary>
+	/// Ограничивает число между Min и Max
+	/// </summary>
+	public static int ClampI(int A, int Min, int Max) => int.Clamp(A, Min, Max);
+	/// <summary>
+	/// Ограничивает число между Min и Max
+	/// </summary>
+	public static uint ClampUI(uint A, uint Min, uint Max) => uint.Clamp(A, Min, Max);
+	/// <summary>
+	/// Ограничивает число между Min и Max
+	/// </summary>
+	public static short ClampS(short A, short Min, short Max) => short.Clamp(A, Min, Max);
+	/// <summary>
+	/// Ограничивает число между Min и Max
+	/// </summary>
+	public static ushort ClampUS(ushort A, ushort Min, ushort Max) => ushort.Clamp(A, Min, Max);
+	/// <summary>
+	/// Ограничивает число между Min и Max
+	/// </summary>
+	public static long ClampL(long A, long Min, long Max) => long.Clamp(A, Min, Max);
+	/// <summary>
+	/// Ограничивает число между Min и Max
+	/// </summary>
+	public static ulong ClampUL(ulong A, ulong Min, ulong Max) => ulong.Clamp(A, Min, Max);
+	/// <summary>
+	/// Ограничивает число между Min и Max
+	/// </summary>
+	public static byte ClampB(byte A, byte Min, byte Max) => byte.Clamp(A, Min, Max);
+	/// <summary>
+	/// Ограничивает число между Min и Max
+	/// </summary>
+	public static sbyte ClampSB(sbyte A, sbyte Min, sbyte Max) => sbyte.Clamp(A, Min, Max);
+	/// <summary>
+	/// Ограничивает число между Min и Max
+	/// </summary>
+	public static decimal ClampDE(decimal A, decimal Min, decimal Max) => decimal.Clamp(A, Min, Max);
+	
 	// ----------------------------------------------------------------------
 	
 	/// <summary>
@@ -462,21 +496,125 @@ public static class Math{
 	/// </summary>
 	public static double ACosD(double A) => double.Acos(A);
 	/// <summary>
-	/// Арктангенс числа ((1, 1) -> π/4, (0, 1) -> 0, (0, -1) -> π, (1, -1) -> 3π/4)
+	/// Арктангенс числа (0 -> 0, 1 -> π/4, -1 -> -π/4)
 	/// </summary>
 	public static float ATanF(float A) => float.Atan(A);
 	/// <summary>
-	/// Арктангенс числа ((1, 1) -> π/4, (0, 1) -> 0, (0, -1) -> π, (1, -1) -> 3π/4)
+	/// Арктангенс числа (0 -> 0, 1 -> π/4, -1 -> -π/4)
 	/// </summary>
 	public static double ATanD(double A) => double.Atan(A);
 	/// <summary>
-	/// Арктангенс по двум координатам
+	/// Арктангенс по двум координатам ((1, 1) -> π/4, (0, 1) -> 0, (0, -1) -> π, (1, -1) -> 3π/4)
 	/// </summary>
 	public static float ATan2F(float A, float B) => float.Atan2(A, B);
 	/// <summary>
-	/// Арктангенс по двум координатам
+	/// Арктангенс по двум координатам ((1, 1) -> π/4, (0, 1) -> 0, (0, -1) -> π, (1, -1) -> 3π/4)
 	/// </summary>
 	public static double ATan2D(double A, double B) => double.Atan2(A, B);
+	/// <summary>
+	/// Синус и косинус числа
+	/// </summary>
+	public static (float Sin, float Cos) SinCosF(float A) => float.SinCos(A);
+	/// <summary>
+	/// Синус и косинус числа
+	/// </summary>
+	public static (double Sin, double Cos) SinCosD(double A) => double.SinCos(A);
+	/// <summary>
+	/// Гиперболический синус числа (0 -> 0, π/2 -> 2.301, π -> 11.548)
+	/// </summary>
+	public static float HSinF(float A) => float.Sinh(A);
+	/// <summary>
+	/// Гиперболический синус числа (0 -> 0, π/2 -> 2.301, π -> 11.548)
+	/// </summary>
+	public static double HSinD(double A) => double.Sinh(A);
+	/// <summary>
+	/// Гиперболический косинус числа (0 -> 1, π/2 -> 2.509, π -> 11.592)
+	/// </summary>
+	public static float HCosF(float A) => float.Cosh(A);
+	/// <summary>
+	/// Гиперболический косинус числа (0 -> 1, π/2 -> 2.509, π -> 11.592)
+	/// </summary>
+	public static double HCosD(double A) => double.Cosh(A);
+	/// <summary>
+	/// Гиперболический тангенс числа (0 -> 0, π/2 -> 0.916, π -> 0.997)
+	/// </summary>
+	public static float HTanF(float A) => float.Tanh(A);
+	/// <summary>
+	/// Гиперболический тангенс числа (0 -> 0, π/2 -> 0.916, π -> 0.997)
+	/// </summary>
+	public static double HTanD(double A) => double.Tanh(A);
+	/// <summary>
+	/// Гиперболический арксинус числа [-1, 1] (0 -> 0, 1 -> 0.881, -1 -> -0.881)
+	/// </summary>
+	public static float HASinF(float A) => float.Asinh(A);
+	/// <summary>
+	/// Гиперболический арксинус числа [-1, 1] (0 -> 0, 1 -> 0.881, -1 -> -0.881)
+	/// </summary>
+	public static double HASinD(double A) => double.Asinh(A);
+	/// <summary>
+	/// Гиперболический арккосинус числа [-1, 1] (0 -> 0, 1 -> 1.317, 2 -> 1.762)
+	/// </summary>
+	public static float HACosF(float A) => float.Acosh(A);
+	/// <summary>
+	/// Гиперболический арккосинус числа [-1, 1] (0 -> 0, 1 -> 1.317, 2 -> 1.762)
+	/// </summary>
+	public static double HACosD(double A) => double.Acosh(A);
+	/// <summary>
+	/// Гиперболический арктангенс числа (0 -> 0, 0.5 -> 0.549, -0.75 -> -0.972)
+	/// </summary>
+	public static float HATanF(float A) => float.Atanh(A);
+	/// <summary>
+	/// Гиперболический арктангенс числа (0 -> 0, 0.5 -> 0.549, -0.75 -> -0.972)
+	/// </summary>
+	public static double HATanD(double A) => double.Atanh(A);
+	/// <summary>
+	/// Положительный синус числа, в диапазоне [0, 1]
+	/// </summary>
+	public static float DSinF(float A) => (WL.Math.SinF(A) + 1) * 0.5f;
+	/// <summary>
+	/// Положительный синус числа, в диапазоне [0, 1]
+	/// </summary>
+	public static double DSinD(double A) => (WL.Math.SinD(A) + 1) * 0.5;
+	/// <summary>
+	/// Положительный косинус числа, в диапазоне [0, 1]
+	/// </summary>
+	public static float DCosF(float A) => (WL.Math.CosF(A) + 1) * 0.5f;
+	/// <summary>
+	/// Положительный косинус числа, в диапазоне [0, 1]
+	/// </summary>
+	public static double DCosD(double A) => (WL.Math.CosD(A) + 1) * 0.5;
+	/// <summary>
+	/// Синус числа, с линейной скоростью
+	/// </summary>
+	public static float LSinF(float A) => WL.Math.AbsF((WL.Math.WrapF((HalfPiF - A) * 0.5f, PiF) / HalfPiF) - 1);
+	/// <summary>
+	/// Синус числа, с линейной скоростью
+	/// </summary>
+	public static double LSinD(double A) => WL.Math.AbsD((WL.Math.WrapD((HalfPiD - A) * 0.5, PiD) / HalfPiD) - 1);
+	/// <summary>
+	/// Косинус числа, с линейной скоростью
+	/// </summary>
+	public static float LCosF(float A) => WL.Math.AbsF((WL.Math.WrapF(A * 0.5f, PiF) / HalfPiF) - 1);
+	/// <summary>
+	/// Косинус числа, с линейной скоростью
+	/// </summary>
+	public static double LCosD(double A) => WL.Math.AbsD((WL.Math.WrapD(A * 0.5, PiD) / HalfPiD) - 1);
+	/// <summary>
+	/// Положительный синус числа, с линейной скоростью, в диапазоне [0, 1]
+	/// </summary>
+	public static float LDSinF(float A) => (WL.Math.LSinF(A) + 1) * 0.5f;
+	/// <summary>
+	/// Положительный синус числа, с линейной скоростью, в диапазоне [0, 1]
+	/// </summary>
+	public static double LDSinD(double A) => (WL.Math.LSinD(A) + 1) * 0.5;
+	/// <summary>
+	/// Положительный косинус числа, с линейной скоростью, в диапазоне [0, 1]
+	/// </summary>
+	public static float LDCosF(float A) => (WL.Math.LCosF(A) + 1) * 0.5f;
+	/// <summary>
+	/// Положительный косинус числа, с линейной скоростью, в диапазоне [0, 1]
+	/// </summary>
+	public static double LDCosD(double A) => (WL.Math.LCosD(A) + 1) * 0.5;
 	
 	// ----------------------------------------------------------------------
 	
@@ -488,8 +626,6 @@ public static class Math{
 	/// Возвращает экспоненту числа eˣ (0 -> 1, 1 -> 2.718, 2 -> 7.389)
 	/// </summary>
 	public static double ExpD(double A) => double.Exp(A);
-	
-	// ----------------------------------------------------------------------
 	
 	/// <summary>
 	/// Натуральный логарифм (1 -> 0, e -> 1, 7.389 -> 2)
@@ -598,6 +734,189 @@ public static class Math{
 	/// Возводит число в куб
 	/// </summary>
 	public static decimal CubeDE(decimal A) => A * A * A;
+	
+	// ----------------------------------------------------------------------
+	
+	/// <summary>
+	/// Округляет число в ближайшему чётному числу (0.25 -> 0, 0.5 -> 0, 0.75 -> 1)
+	/// </summary>
+	public static float RoundF(float A) => float.Round(A);
+	/// <summary>
+	/// Округляет число в ближайшему чётному числу (0.25 -> 0, 0.5 -> 0, 0.75 -> 1)
+	/// </summary>
+	public static double RoundD(double A) => double.Round(A);
+	/// <summary>
+	/// Округляет число в ближайшему чётному числу (0.25 -> 0, 0.5 -> 0, 0.75 -> 1)
+	/// </summary>
+	public static decimal RoundDE(decimal A) => decimal.Round(A);
+	/// <summary>
+	/// Округляет число в меньшую сторону (0.25 -> 0, 0.5 -> 0, 0.75 -> 0)
+	/// </summary>
+	public static float FloorF(float A) => float.Floor(A);
+	/// <summary>
+	/// Округляет число в меньшую сторону (0.25 -> 0, 0.5 -> 0, 0.75 -> 0)
+	/// </summary>
+	public static double FloorD(double A) => double.Floor(A);
+	/// <summary>
+	/// Округляет число в меньшую сторону (0.25 -> 0, 0.5 -> 0, 0.75 -> 0)
+	/// </summary>
+	public static decimal FloorDE(decimal A) => decimal.Floor(A);
+	/// <summary>
+	/// Округляет число в большую сторону (0.25 -> 1, 0.5 -> 1, 0.75 -> 1)
+	/// </summary>
+	public static float CeilF(float A) => float.Ceiling(A);
+	/// <summary>
+	/// Округляет число в большую сторону (0.25 -> 1, 0.5 -> 1, 0.75 -> 1)
+	/// </summary>
+	public static double CeilD(double A) => double.Ceiling(A);
+	/// <summary>
+	/// Округляет число в большую сторону (0.25 -> 1, 0.5 -> 1, 0.75 -> 1)
+	/// </summary>
+	public static decimal CeilDE(decimal A) => decimal.Ceiling(A);
+	
+	// ----------------------------------------------------------------------
+	
+	/// <summary>
+	/// Остаток от деления ((7, 3) -> 1, (-7, 3) -> -1, (7.5, 2) -> 1.5)
+	/// </summary>
+	public static float ModF(float A, float B) => A % B;
+	/// <summary>
+	/// Остаток от деления ((7, 3) -> 1, (-7, 3) -> -1, (7.5, 2) -> 1.5)
+	/// </summary>
+	public static double ModD(double A, double B) => A % B;
+	
+	/// <summary>
+	/// Остаток от деления, но в диапазоне [0, ∞] ((7, 3) -> 1, (-7, 3) -> 2, (7.5, 2) -> 1.5)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static float WrapF(float A, float B){
+		float R = A % B;
+		if(R < 0){
+			R += WL.Math.AbsF(B);
+		}
+		return R;
+	}
+	/// <summary>
+	/// Остаток от деления, но в диапазоне [0, ∞] ((7, 3) -> 1, (-7, 3) -> 2, (7.5, 2) -> 1.5)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static double WrapD(double A, double B){
+		double R = A % B;
+		if(R < 0){
+			R += WL.Math.AbsD(B);
+		}
+		return R;
+	}
+	
+	// ----------------------------------------------------------------------
+	
+	/// <summary>
+	/// Делает число не отрицательным (0 -> 0, 1 -> 1, -1 -> 1)
+	/// </summary>
+	public static float AbsF(float A) => float.Abs(A);
+	/// <summary>
+	/// Делает число не отрицательным (0 -> 0, 1 -> 1, -1 -> 1)
+	/// </summary>
+	public static double AbsD(double A) => double.Abs(A);
+	/// <summary>
+	/// Делает число не отрицательным (0 -> 0, 1 -> 1, -1 -> 1)
+	/// </summary>
+	public static int AbsI(int A) => int.Abs(A);
+	/// <summary>
+	/// Делает число не отрицательным (0 -> 0, 1 -> 1, -1 -> 1)
+	/// </summary>
+	public static short AbsS(short A) => short.Abs(A);
+	/// <summary>
+	/// Делает число не отрицательным (0 -> 0, 1 -> 1, -1 -> 1)
+	/// </summary>
+	public static long AbsL(long A) => long.Abs(A);
+	/// <summary>
+	/// Делает число не отрицательным (0 -> 0, 127 -> 127, -127 -> 127)
+	/// </summary>
+	public static sbyte AbsSB(sbyte A) => sbyte.Abs(A);
+	/// <summary>
+	/// Делает число не отрицательным (0 -> 0, 1 -> 1, -1 -> 1)
+	/// </summary>
+	public static decimal AbsDE(decimal A) => decimal.Abs(A);
+	
+	/// <summary>
+	/// Убирает дробную часть (3.5612 -> 3)
+	/// </summary>
+	public static float TruncF(float A) => float.Truncate(A);
+	/// <summary>
+	/// Убирает дробную часть (3.5612 -> 3)
+	/// </summary>
+	public static double TruncD(double A) => double.Truncate(A);
+	/// <summary>
+	/// Убирает дробную часть (3.5612 -> 3)
+	/// </summary>
+	public static decimal TruncDE(decimal A) => decimal.Truncate(A);
+	/// <summary>
+	/// Берёт дробную часть (3.5612 -> 0.5612, -2.61 -> -0.61)
+	/// </summary>
+	public static float FracF(float A) => A - WL.Math.TruncF(A);
+	/// <summary>
+	/// Берёт дробную часть (3.5612 -> 0.5612, -2.61 -> -0.61)
+	/// </summary>
+	public static double FracD(double A) => A - WL.Math.TruncD(A);
+	/// <summary>
+	/// Берёт дробную часть (3.5612 -> 0.5612, -2.61 -> -0.61)
+	/// </summary>
+	public static decimal FracDE(decimal A) => A - WL.Math.TruncDE(A);
+	
+	/// <summary>
+	/// Знак числа (12 -> 1, -612 -> -1, 0 -> 0)
+	/// </summary>
+	public static int SignF(float A) => float.Sign(A);
+	/// <summary>
+	/// Знак числа (12 -> 1, -612 -> -1, 0 -> 0)
+	/// </summary>
+	public static int SignD(double A) => double.Sign(A);
+	/// <summary>
+	/// Знак числа (12 -> 1, -612 -> -1, 0 -> 0)
+	/// </summary>
+	public static int SignI(int A) => int.Sign(A);
+	/// <summary>
+	/// Знак числа (12 -> 1, -612 -> -1, 0 -> 0)
+	/// </summary>
+	public static int SignS(short A) => short.Sign(A);
+	/// <summary>
+	/// Знак числа (12 -> 1, -612 -> -1, 0 -> 0)
+	/// </summary>
+	public static int SignL(long A) => long.Sign(A);
+	/// <summary>
+	/// Знак числа (12 -> 1, -612 -> -1, 0 -> 0)
+	/// </summary>
+	public static int SignSB(sbyte A) => sbyte.Sign(A);
+	/// <summary>
+	/// Знак числа (12 -> 1, -612 -> -1, 0 -> 0)
+	/// </summary>
+	public static int SignDE(decimal A) => decimal.Sign(A);
+	/// <summary>
+	/// Знак числа (12 -> 1, 0 -> 0)
+	/// </summary>
+	public static int SignUI(uint A) => uint.Sign(A);
+	/// <summary>
+	/// Знак числа (12 -> 1, 0 -> 0)
+	/// </summary>
+	public static int SignUS(ushort A) => ushort.Sign(A);
+	/// <summary>
+	/// Знак числа (12 -> 1, 0 -> 0)
+	/// </summary>
+	public static int SignUL(ulong A) => ulong.Sign(A);
+	/// <summary>
+	/// Знак числа (12 -> 1, 0 -> 0)
+	/// </summary>
+	public static int SignB(byte A) => byte.Sign(A);
+	
+	/// <summary>
+	/// Эквивалентно A * B + C, но быстрее и точнее
+	/// </summary>
+	public static float FmaF(float A, float B, float C) => float.FusedMultiplyAdd(A, B, C);
+	/// <summary>
+	/// Эквивалентно A * B + C, но быстрее и точнее
+	/// </summary>
+	public static double FmaD(double A, double B, double C) => double.FusedMultiplyAdd(A, B, C);
 	
 	// ----------------------------------------------------------------------
 	/* Конец генератора */
