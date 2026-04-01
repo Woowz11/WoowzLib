@@ -1,4 +1,5 @@
-﻿using File = WLO.File;
+﻿using WLO.Attribute;
+using File = WLO.File;
 
 namespace WoowzLibGenerator.Generator;
 
@@ -84,12 +85,63 @@ public static class Math{
                                               Info.ValueType_One(VT)
                                           ]));
         }
+
+        void Generate_Constants(){
+            void Generate_Constant(string Comment, string Name, string Content, bool CustomContent = false){
+                if(CustomContent){
+                    Result += Other.Generate_Summary(Comment) + "public const decimal " + Name + "DE = " + WL.String.Replace(Content, ["#", "!"], ["DE", "m"]) + ";";
+                    Result += Other.Generate_Summary(Comment) + "public const double " + Name + "D = " + WL.String.Replace(Content, ["#", "!"], ["D", ""]) + ";";
+                    Result += Other.Generate_Summary(Comment) + "public const float " + Name + "F = " + WL.String.Replace(Content, ["#", "!"], ["F", "f"]) + ";";
+                }else{
+                    Result += Other.Generate_Summary(Comment) + "public const decimal " + Name + "DE = " + Content + "m;";
+                    Result += Other.Generate_Summary(Comment) + "public const double " + Name + "D = (double)" + Name + "DE;";
+                    Result += Other.Generate_Summary(Comment) + "public const float " + Name + "F = (float)" + Name + "D;";
+                }
+            }
+            
+            Generate_Constant("Число PI (π)", "Pi", "3.1415926535897932384626433833");
+
+            Result += Other.Generate_NextLine();
+            
+            Generate_Constant("Половина числа PI (π/2)", "HalfPi", "PiDE * 0.5");
+            
+            Result += Other.Generate_NextLine();
+            
+            Generate_Constant("Два числа PI (2π)", "TwoPi", "PiDE * 2");
+            
+            Result += Other.Generate_NextLine();
+            
+            Generate_Constant("Число e (Экспонента)", "E", "2.7182818284590452353602874714");
+            
+            Result += Other.Generate_NextLine();
+            
+            Generate_Constant("Половина числа e (Экспонента)", "HalfE", "EDE * 0.5");
+            
+            Result += Other.Generate_NextLine();
+            
+            Generate_Constant("Корень из 2 (√2)", "Sqrt2", "1.4142135623730950488016887242");
+            
+            Result += Other.Generate_NextLine();
+            
+            Generate_Constant("Натуральный логарифм 2", "Ln2", "0.6931471805599453094172321215");
+            
+            Result += Other.Generate_NextLine();
+            
+            Generate_Constant("Натуральный логарифм 10", "Ln10", "2.3025850929940456840179914547");
+            
+            Result += Other.Generate_NextLine();
+            
+            Generate_Constant("Золотое сечение (φ)", "Phi", "1.6180339887498948482045868344");
+        }
+        Generate_Constants();
+        
+        Result += Other.Generate_Line();
         
         void Generate_MinMax(){
             void Generate_MinMax2(string Comment, string Func){
                 Result += RFM(Other.Generate_Summary("Выбирает " + Comment + " число из указанных") + "public static @ " + Func + "#(@ A, @ B) => @." + Func + "(A, B);");
 
-                Result += RFM(Other.Generate_Summary("Выбирает " + Comment + " число из указанных") + "public static @ " + Func + "#(params @[] A){ if(A.Length == 0){ return 0!; } @ M = A[0]; for(int i = 1; i < A.Length; i++){ M = WL.Math." + Func + "#(M, A[i]); } return M; }");
+                Result += RFM(Other.Generate_Summary("Выбирает " + Comment + " число из указанных") + Other.Generate_WLTag(Information.New) + "public static @ " + Func + "#(params @[] A){ if(A.Length == 0){ return 0!; } @ M = A[0]; for(int i = 1; i < A.Length; i++){ M = WL.Math." + Func + "#(M, A[i]); } return M; }");
             }
             Generate_MinMax2("минимальное", "Min");
             Result += Other.Generate_NextLine();
@@ -109,7 +161,7 @@ public static class Math{
             Generate_Trigonometry2("Синус числа (0 -> 0, π/2 -> 1, π -> 0)", "Sin");
             Generate_Trigonometry2("Косинус числа (0 -> 1, π/2 -> 0, π -> -1)", "Cos");
             Generate_Trigonometry2("Тангенс числа (0 -> 0, π/2 -> ∞, π -> 0)", "Tan");
-            Result += RFM(Other.Generate_Summary("Котангенс (0 -> ∞, π/2 -> 0, π -> ∞)") + "public static @ Cot#(@ A) => 1! / WL.Math.Tan#(A);", Numbers_FloatDouble);
+            Result += RFM(Other.Generate_Summary("Котангенс (0 -> ∞, π/2 -> 0, π -> ∞)") + Other.Generate_WLTag(Information.New) + "public static @ Cot#(@ A) => 1! / WL.Math.Tan#(A);", Numbers_FloatDouble);
             Generate_Trigonometry2("Арксинус числа [-1, 1] (0 -> 0, 1 -> π/2, -1 -> -π/2)", "ASin", "Asin");
             Generate_Trigonometry2("Арккосинус числа [-1, 1] (0 -> π/2, 1 -> 0, -1 -> π)", "ACos", "Acos");
             Generate_Trigonometry2("Арктангенс числа (0 -> 0, 1 -> π/4, -1 -> -π/4)", "ATan", "Atan");
@@ -125,14 +177,14 @@ public static class Math{
             Generate_Trigonometry2("Гиперболический арккосинус числа [-1, 1] (0 -> 0, 1 -> 1.317, 2 -> 1.762)", "HACos", "Acosh");
             Generate_Trigonometry2("Гиперболический арктангенс числа (0 -> 0, 0.5 -> 0.549, -0.75 -> -0.972)", "HATan", "Atanh");
 
-            Result += RFM(Other.Generate_Summary("Положительный синус числа, в диапазоне [0, 1]") + "public static @ DSin#(@ A) => (WL.Math.Sin#(A) + 1) * 0.5!;", Numbers_FloatDouble);
-            Result += RFM(Other.Generate_Summary("Положительный косинус числа, в диапазоне [0, 1]") + "public static @ DCos#(@ A) => (WL.Math.Cos#(A) + 1) * 0.5!;", Numbers_FloatDouble);
+            Result += RFM(Other.Generate_Summary("Положительный синус числа, в диапазоне [0, 1]") + Other.Generate_WLTag(Information.New) + "public static @ DSin#(@ A) => (WL.Math.Sin#(A) + 1) * 0.5!;", Numbers_FloatDouble);
+            Result += RFM(Other.Generate_Summary("Положительный косинус числа, в диапазоне [0, 1]") + Other.Generate_WLTag(Information.New) + "public static @ DCos#(@ A) => (WL.Math.Cos#(A) + 1) * 0.5!;", Numbers_FloatDouble);
             
-            Result += RFM(Other.Generate_Summary("Синус числа, с линейной скоростью") + "public static @ LSin#(@ A) => WL.Math.Abs#((WL.Math.Wrap#((HalfPi# - A) * 0.5!, Pi#) / HalfPi#) - 1);", Numbers_FloatDouble);
-            Result += RFM(Other.Generate_Summary("Косинус числа, с линейной скоростью") + "public static @ LCos#(@ A) => WL.Math.Abs#((WL.Math.Wrap#(A * 0.5!, Pi#) / HalfPi#) - 1);", Numbers_FloatDouble);
+            Result += RFM(Other.Generate_Summary("Синус числа, с линейной скоростью") + Other.Generate_WLTag(Information.New) + "public static @ LSin#(@ A) => WL.Math.Abs#((WL.Math.Wrap#((HalfPi# - A) * 0.5!, Pi#) / HalfPi#) - 1);", Numbers_FloatDouble);
+            Result += RFM(Other.Generate_Summary("Косинус числа, с линейной скоростью") + Other.Generate_WLTag(Information.New) + "public static @ LCos#(@ A) => WL.Math.Abs#((WL.Math.Wrap#(A * 0.5!, Pi#) / HalfPi#) - 1);", Numbers_FloatDouble);
             
-            Result += RFM(Other.Generate_Summary("Положительный синус числа, с линейной скоростью, в диапазоне [0, 1]") + "public static @ LDSin#(@ A) => (WL.Math.LSin#(A) + 1) * 0.5!;", Numbers_FloatDouble);
-            Result += RFM(Other.Generate_Summary("Положительный косинус числа, с линейной скоростью, в диапазоне [0, 1]") + "public static @ LDCos#(@ A) => (WL.Math.LCos#(A) + 1) * 0.5!;", Numbers_FloatDouble);
+            Result += RFM(Other.Generate_Summary("Положительный синус числа, с линейной скоростью, в диапазоне [0, 1]") + Other.Generate_WLTag(Information.New) + "public static @ LDSin#(@ A) => (WL.Math.LSin#(A) + 1) * 0.5!;", Numbers_FloatDouble);
+            Result += RFM(Other.Generate_Summary("Положительный косинус числа, с линейной скоростью, в диапазоне [0, 1]") + Other.Generate_WLTag(Information.New) + "public static @ LDCos#(@ A) => (WL.Math.LCos#(A) + 1) * 0.5!;", Numbers_FloatDouble);
         }
         Generate_Trigonometry();
         
@@ -153,17 +205,26 @@ public static class Math{
 
         void Generate_Pow(){
             Result += RFM(Other.Generate_Summary("Возводит в степень Aᴮ (A^B)") + "public static @ Pow#(@ A, @ B) => @.Pow(A, B);", Numbers_FloatDouble);
-            Result += RFM(Other.Generate_Summary("Квадратный корень") + "public static @ Sqrt#(@ A) => @.Sqrt(A);", Numbers_FloatDouble);
-            Result += RFM(Other.Generate_Summary("Кубический корень") + "public static @ Cbrt#(@ A) => @.Cbrt(A);", Numbers_FloatDouble);
-            Result += RFM(Other.Generate_Summary("Возводит число в квадрат") + "public static @ Sqr#(@ A) => A * A;", Numbers_NoByteShort);
-            Result += RFM(Other.Generate_Summary("Возводит число в куб") + "public static @ Cube#(@ A) => A * A * A;", Numbers_NoByteShort);
+            Result += RFM(Other.Generate_Summary("Возводит число в квадрат A² (A^2)") + "public static @ Sqr#(@ A) => WL.Math.Pow2#(A);", Numbers_NoByteShort);
+            Result += RFM(Other.Generate_Summary("Возводит число в куб A³ (A^3)") + "public static @ Cube#(@ A) => WL.Math.Pow3#(A);", Numbers_NoByteShort);
+            Result += RFM(Other.Generate_Summary("Возводит число в квадрат A² (A^2)") + "public static @ Pow2#(@ A) => A * A;", Numbers_NoByteShort);
+            Result += RFM(Other.Generate_Summary("Возводит число в куб A³ (A^3)") + "public static @ Pow3#(@ A) => A * A * A;", Numbers_NoByteShort);
+            Result += RFM(Other.Generate_Summary("Возводит число в степень 4 A⁴ (A^4)") + Other.Generate_AggressiveInlining() + Other.Generate_WLTag(Information.New) + "public static @ Pow4#(@ A){ @ A2 = A * A; return A2 * A2; }", Numbers_NoByteShort);
+            Result += RFM(Other.Generate_Summary("Возводит число в степень 8 A⁸ (A^8)") + Other.Generate_AggressiveInlining() + Other.Generate_WLTag(Information.New) + "public static @ Pow8#(@ A){ @ A2 = A * A; A2 = A2 * A2; return A2 * A2; }", Numbers_NoByteShort);
+            Result += RFM(Other.Generate_Summary("Возводит число в степень 10 A¹⁰ (A^10)") + Other.Generate_AggressiveInlining() + Other.Generate_WLTag(Information.New) + "public static @ Pow10#(@ A){ @ A2 = A * A; @ A4 = A2 * A2; return (A4 * A4) * A2; }", Numbers_NoByteShort);
+            
+            Result += Other.Generate_NextLine();
+            
+            Result += RFM(Other.Generate_Summary("Корень B из числа A √ᴮA (A^(1/B))") + "public static @ Root#(@ A, @ B) => WL.Math.Pow#(A, 1! / B);", Numbers_FloatDouble);
+            Result += RFM(Other.Generate_Summary("Квадратный корень √A") + "public static @ Sqrt#(@ A) => @.Sqrt(A);", Numbers_FloatDouble);
+            Result += RFM(Other.Generate_Summary("Кубический корень ∛A") + "public static @ Cbrt#(@ A) => @.Cbrt(A);", Numbers_FloatDouble);
         }
         Generate_Pow();
 
         Result += Other.Generate_Line();
         
         void Generate_Round(){
-            Result += RFM(Other.Generate_Summary("Округляет число в ближайшему чётному числу (0.25 -> 0, 0.5 -> 0, 0.75 -> 1)") + "public static @ Round#(@ A) => @.Round(A);", Numbers_SupportFractional);
+            Result += RFM(Other.Generate_Summary("Округляет число к ближайшему чётному числу (0.25 -> 0, 0.5 -> 0, 0.75 -> 1)") + "public static @ Round#(@ A) => @.Round(A);", Numbers_SupportFractional);
             Result += RFM(Other.Generate_Summary("Округляет число в меньшую сторону (0.25 -> 0, 0.5 -> 0, 0.75 -> 0)") + "public static @ Floor#(@ A) => @.Floor(A);", Numbers_SupportFractional);
             Result += RFM(Other.Generate_Summary("Округляет число в большую сторону (0.25 -> 1, 0.5 -> 1, 0.75 -> 1)") + "public static @ Ceil#(@ A) => @.Ceiling(A);", Numbers_SupportFractional);
         }
@@ -176,7 +237,7 @@ public static class Math{
             
             Result += Other.Generate_NextLine();
             
-            Result += RFM(Other.Generate_Summary("Остаток от деления, но в диапазоне [0, ∞] ((7, 3) -> 1, (-7, 3) -> 2, (7.5, 2) -> 1.5)") + Other.Generate_AggressiveInlining() + "public static @ Wrap#(@ A, @ B){ @ R = A % B; if(R < 0!){ R += WL.Math.Abs#(B); } return R; }", Numbers_FloatDouble);
+            Result += RFM(Other.Generate_Summary("Остаток от деления, но в диапазоне [0, ∞] ((7, 3) -> 1, (-7, 3) -> 2, (7.5, 2) -> 1.5)") + Other.Generate_AggressiveInlining() + Other.Generate_WLTag(Information.New) + "public static @ Wrap#(@ A, @ B){ @ R = A % B; if(R < 0!){ R += WL.Math.Abs#(B); } return R; }", Numbers_FloatDouble);
         }
         Generate_Mod();
         
@@ -200,5 +261,17 @@ public static class Math{
             Result += RFM(Other.Generate_Summary("Эквивалентно A * B + C, но быстрее и точнее") + "public static @ Fma#(@ A, @ B, @ C) => @.FusedMultiplyAdd(A, B, C);", Numbers_FloatDouble);
         }
         Generate_Other();
+
+        Result += Other.Generate_Line();
+        
+        void Generate_Fast(){
+            Result += RFM(Other.Generate_Summary("~") + Other.Generate_AggressiveInlining() + Other.Generate_WLTag(Information.New) + "public static int FastSign#(@ A) => (A > 0! ? 1 : 0) - (A < 0! ? 1 : 0);", Numbers_SupportNegative);
+            Result += RFM(Other.Generate_Summary("~") + Other.Generate_AggressiveInlining() + Other.Generate_WLTag(Information.New) + "public static int FastSign#(@ A) => A == 0 ? 0 : 1;", Numbers_NotSupportNegative);
+
+            Result += Other.Generate_NextLine();
+            
+            Result += RFM(Other.Generate_Summary("~") + Other.Generate_AggressiveInlining() + Other.Generate_WLTag(Information.New) + "public static @ FastClamp#(@ A, @ Min, @ Max) => A < Min ? Min : (A > Max ? Max : A);");
+        }
+        Generate_Fast();
     }
 }

@@ -1,27 +1,129 @@
 ﻿using System.Runtime.CompilerServices;
+using WLO.Attribute;
 
 namespace WL;
 
 public static class Math{
+	/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.239, внутри класса "Math.cs" */
+	// ----------------------------------------------------------------------
+	
 	/// <summary>
 	/// Число PI (π)
 	/// </summary>
-	public const double PiD = 3.141592653589793;
+	public const decimal PiDE = 3.1415926535897932384626433833m;
 	/// <summary>
-	/// Половина числа PI (π)
+	/// Число PI (π)
 	/// </summary>
-	public const double HalfPiD = PiD * 0.5;
-	
+	public const double PiD = (double)PiDE;
 	/// <summary>
 	/// Число PI (π)
 	/// </summary>
 	public const float PiF = (float)PiD;
-	/// <summary>
-	/// Половина числа PI (π)
-	/// </summary>
-	public const float HalfPiF = PiF * 0.5f;
 	
-	/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.219, внутри класса "Math.cs" */
+	/// <summary>
+	/// Половина числа PI (π/2)
+	/// </summary>
+	public const decimal HalfPiDE = PiDE * 0.5m;
+	/// <summary>
+	/// Половина числа PI (π/2)
+	/// </summary>
+	public const double HalfPiD = (double)HalfPiDE;
+	/// <summary>
+	/// Половина числа PI (π/2)
+	/// </summary>
+	public const float HalfPiF = (float)HalfPiD;
+	
+	/// <summary>
+	/// Два числа PI (2π)
+	/// </summary>
+	public const decimal TwoPiDE = PiDE * 2m;
+	/// <summary>
+	/// Два числа PI (2π)
+	/// </summary>
+	public const double TwoPiD = (double)TwoPiDE;
+	/// <summary>
+	/// Два числа PI (2π)
+	/// </summary>
+	public const float TwoPiF = (float)TwoPiD;
+	
+	/// <summary>
+	/// Число e (Экспонента)
+	/// </summary>
+	public const decimal EDE = 2.7182818284590452353602874714m;
+	/// <summary>
+	/// Число e (Экспонента)
+	/// </summary>
+	public const double ED = (double)EDE;
+	/// <summary>
+	/// Число e (Экспонента)
+	/// </summary>
+	public const float EF = (float)ED;
+	
+	/// <summary>
+	/// Половина числа e (Экспонента)
+	/// </summary>
+	public const decimal HalfEDE = EDE * 0.5m;
+	/// <summary>
+	/// Половина числа e (Экспонента)
+	/// </summary>
+	public const double HalfED = (double)HalfEDE;
+	/// <summary>
+	/// Половина числа e (Экспонента)
+	/// </summary>
+	public const float HalfEF = (float)HalfED;
+	
+	/// <summary>
+	/// Корень из 2 (√2)
+	/// </summary>
+	public const decimal Sqrt2DE = 1.4142135623730950488016887242m;
+	/// <summary>
+	/// Корень из 2 (√2)
+	/// </summary>
+	public const double Sqrt2D = (double)Sqrt2DE;
+	/// <summary>
+	/// Корень из 2 (√2)
+	/// </summary>
+	public const float Sqrt2F = (float)Sqrt2D;
+	
+	/// <summary>
+	/// Натуральный логарифм 2
+	/// </summary>
+	public const decimal Ln2DE = 0.6931471805599453094172321215m;
+	/// <summary>
+	/// Натуральный логарифм 2
+	/// </summary>
+	public const double Ln2D = (double)Ln2DE;
+	/// <summary>
+	/// Натуральный логарифм 2
+	/// </summary>
+	public const float Ln2F = (float)Ln2D;
+	
+	/// <summary>
+	/// Натуральный логарифм 10
+	/// </summary>
+	public const decimal Ln10DE = 2.3025850929940456840179914547m;
+	/// <summary>
+	/// Натуральный логарифм 10
+	/// </summary>
+	public const double Ln10D = (double)Ln10DE;
+	/// <summary>
+	/// Натуральный логарифм 10
+	/// </summary>
+	public const float Ln10F = (float)Ln10D;
+	
+	/// <summary>
+	/// Золотое сечение (φ)
+	/// </summary>
+	public const decimal PhiDE = 1.6180339887498948482045868344m;
+	/// <summary>
+	/// Золотое сечение (φ)
+	/// </summary>
+	public const double PhiD = (double)PhiDE;
+	/// <summary>
+	/// Золотое сечение (φ)
+	/// </summary>
+	public const float PhiF = (float)PhiD;
+	
 	// ----------------------------------------------------------------------
 	
 	/// <summary>
@@ -71,6 +173,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает минимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static float MinF(params float[] A){
 		if(A.Length == 0){
 			return 0;
@@ -84,6 +187,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает минимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static double MinD(params double[] A){
 		if(A.Length == 0){
 			return 0;
@@ -97,6 +201,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает минимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static int MinI(params int[] A){
 		if(A.Length == 0){
 			return 0;
@@ -110,6 +215,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает минимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static uint MinUI(params uint[] A){
 		if(A.Length == 0){
 			return 0;
@@ -123,6 +229,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает минимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static short MinS(params short[] A){
 		if(A.Length == 0){
 			return 0;
@@ -136,6 +243,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает минимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static ushort MinUS(params ushort[] A){
 		if(A.Length == 0){
 			return 0;
@@ -149,6 +257,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает минимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static long MinL(params long[] A){
 		if(A.Length == 0){
 			return 0;
@@ -162,6 +271,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает минимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static ulong MinUL(params ulong[] A){
 		if(A.Length == 0){
 			return 0;
@@ -175,6 +285,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает минимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static byte MinB(params byte[] A){
 		if(A.Length == 0){
 			return 0;
@@ -188,6 +299,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает минимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static sbyte MinSB(params sbyte[] A){
 		if(A.Length == 0){
 			return 0;
@@ -201,6 +313,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает минимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static decimal MinDE(params decimal[] A){
 		if(A.Length == 0){
 			return 0;
@@ -259,6 +372,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает максимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static float MaxF(params float[] A){
 		if(A.Length == 0){
 			return 0;
@@ -272,6 +386,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает максимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static double MaxD(params double[] A){
 		if(A.Length == 0){
 			return 0;
@@ -285,6 +400,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает максимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static int MaxI(params int[] A){
 		if(A.Length == 0){
 			return 0;
@@ -298,6 +414,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает максимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static uint MaxUI(params uint[] A){
 		if(A.Length == 0){
 			return 0;
@@ -311,6 +428,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает максимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static short MaxS(params short[] A){
 		if(A.Length == 0){
 			return 0;
@@ -324,6 +442,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает максимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static ushort MaxUS(params ushort[] A){
 		if(A.Length == 0){
 			return 0;
@@ -337,6 +456,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает максимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static long MaxL(params long[] A){
 		if(A.Length == 0){
 			return 0;
@@ -350,6 +470,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает максимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static ulong MaxUL(params ulong[] A){
 		if(A.Length == 0){
 			return 0;
@@ -363,6 +484,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает максимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static byte MaxB(params byte[] A){
 		if(A.Length == 0){
 			return 0;
@@ -376,6 +498,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает максимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static sbyte MaxSB(params sbyte[] A){
 		if(A.Length == 0){
 			return 0;
@@ -389,6 +512,7 @@ public static class Math{
 	/// <summary>
 	/// Выбирает максимальное число из указанных
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static decimal MaxDE(params decimal[] A){
 		if(A.Length == 0){
 			return 0;
@@ -474,10 +598,12 @@ public static class Math{
 	/// <summary>
 	/// Котангенс (0 -> ∞, π/2 -> 0, π -> ∞)
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static float CotF(float A) => 1 / WL.Math.TanF(A);
 	/// <summary>
 	/// Котангенс (0 -> ∞, π/2 -> 0, π -> ∞)
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static double CotD(double A) => 1 / WL.Math.TanD(A);
 	/// <summary>
 	/// Арксинус числа [-1, 1] (0 -> 0, 1 -> π/2, -1 -> -π/2)
@@ -570,50 +696,62 @@ public static class Math{
 	/// <summary>
 	/// Положительный синус числа, в диапазоне [0, 1]
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static float DSinF(float A) => (WL.Math.SinF(A) + 1) * 0.5f;
 	/// <summary>
 	/// Положительный синус числа, в диапазоне [0, 1]
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static double DSinD(double A) => (WL.Math.SinD(A) + 1) * 0.5;
 	/// <summary>
 	/// Положительный косинус числа, в диапазоне [0, 1]
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static float DCosF(float A) => (WL.Math.CosF(A) + 1) * 0.5f;
 	/// <summary>
 	/// Положительный косинус числа, в диапазоне [0, 1]
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static double DCosD(double A) => (WL.Math.CosD(A) + 1) * 0.5;
 	/// <summary>
 	/// Синус числа, с линейной скоростью
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static float LSinF(float A) => WL.Math.AbsF((WL.Math.WrapF((HalfPiF - A) * 0.5f, PiF) / HalfPiF) - 1);
 	/// <summary>
 	/// Синус числа, с линейной скоростью
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static double LSinD(double A) => WL.Math.AbsD((WL.Math.WrapD((HalfPiD - A) * 0.5, PiD) / HalfPiD) - 1);
 	/// <summary>
 	/// Косинус числа, с линейной скоростью
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static float LCosF(float A) => WL.Math.AbsF((WL.Math.WrapF(A * 0.5f, PiF) / HalfPiF) - 1);
 	/// <summary>
 	/// Косинус числа, с линейной скоростью
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static double LCosD(double A) => WL.Math.AbsD((WL.Math.WrapD(A * 0.5, PiD) / HalfPiD) - 1);
 	/// <summary>
 	/// Положительный синус числа, с линейной скоростью, в диапазоне [0, 1]
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static float LDSinF(float A) => (WL.Math.LSinF(A) + 1) * 0.5f;
 	/// <summary>
 	/// Положительный синус числа, с линейной скоростью, в диапазоне [0, 1]
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static double LDSinD(double A) => (WL.Math.LSinD(A) + 1) * 0.5;
 	/// <summary>
 	/// Положительный косинус числа, с линейной скоростью, в диапазоне [0, 1]
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static float LDCosF(float A) => (WL.Math.LCosF(A) + 1) * 0.5f;
 	/// <summary>
 	/// Положительный косинус числа, с линейной скоростью, в диапазоне [0, 1]
 	/// </summary>
+	[WoowzLibHint(Information.New)]
 	public static double LDCosD(double A) => (WL.Math.LCosD(A) + 1) * 0.5;
 	
 	// ----------------------------------------------------------------------
@@ -663,90 +801,358 @@ public static class Math{
 	/// </summary>
 	public static double PowD(double A, double B) => double.Pow(A, B);
 	/// <summary>
-	/// Квадратный корень
+	/// Возводит число в квадрат A² (A^2)
+	/// </summary>
+	public static float SqrF(float A) => WL.Math.Pow2F(A);
+	/// <summary>
+	/// Возводит число в квадрат A² (A^2)
+	/// </summary>
+	public static double SqrD(double A) => WL.Math.Pow2D(A);
+	/// <summary>
+	/// Возводит число в квадрат A² (A^2)
+	/// </summary>
+	public static int SqrI(int A) => WL.Math.Pow2I(A);
+	/// <summary>
+	/// Возводит число в квадрат A² (A^2)
+	/// </summary>
+	public static uint SqrUI(uint A) => WL.Math.Pow2UI(A);
+	/// <summary>
+	/// Возводит число в квадрат A² (A^2)
+	/// </summary>
+	public static long SqrL(long A) => WL.Math.Pow2L(A);
+	/// <summary>
+	/// Возводит число в квадрат A² (A^2)
+	/// </summary>
+	public static ulong SqrUL(ulong A) => WL.Math.Pow2UL(A);
+	/// <summary>
+	/// Возводит число в квадрат A² (A^2)
+	/// </summary>
+	public static decimal SqrDE(decimal A) => WL.Math.Pow2DE(A);
+	/// <summary>
+	/// Возводит число в куб A³ (A^3)
+	/// </summary>
+	public static float CubeF(float A) => WL.Math.Pow3F(A);
+	/// <summary>
+	/// Возводит число в куб A³ (A^3)
+	/// </summary>
+	public static double CubeD(double A) => WL.Math.Pow3D(A);
+	/// <summary>
+	/// Возводит число в куб A³ (A^3)
+	/// </summary>
+	public static int CubeI(int A) => WL.Math.Pow3I(A);
+	/// <summary>
+	/// Возводит число в куб A³ (A^3)
+	/// </summary>
+	public static uint CubeUI(uint A) => WL.Math.Pow3UI(A);
+	/// <summary>
+	/// Возводит число в куб A³ (A^3)
+	/// </summary>
+	public static long CubeL(long A) => WL.Math.Pow3L(A);
+	/// <summary>
+	/// Возводит число в куб A³ (A^3)
+	/// </summary>
+	public static ulong CubeUL(ulong A) => WL.Math.Pow3UL(A);
+	/// <summary>
+	/// Возводит число в куб A³ (A^3)
+	/// </summary>
+	public static decimal CubeDE(decimal A) => WL.Math.Pow3DE(A);
+	/// <summary>
+	/// Возводит число в квадрат A² (A^2)
+	/// </summary>
+	public static float Pow2F(float A) => A * A;
+	/// <summary>
+	/// Возводит число в квадрат A² (A^2)
+	/// </summary>
+	public static double Pow2D(double A) => A * A;
+	/// <summary>
+	/// Возводит число в квадрат A² (A^2)
+	/// </summary>
+	public static int Pow2I(int A) => A * A;
+	/// <summary>
+	/// Возводит число в квадрат A² (A^2)
+	/// </summary>
+	public static uint Pow2UI(uint A) => A * A;
+	/// <summary>
+	/// Возводит число в квадрат A² (A^2)
+	/// </summary>
+	public static long Pow2L(long A) => A * A;
+	/// <summary>
+	/// Возводит число в квадрат A² (A^2)
+	/// </summary>
+	public static ulong Pow2UL(ulong A) => A * A;
+	/// <summary>
+	/// Возводит число в квадрат A² (A^2)
+	/// </summary>
+	public static decimal Pow2DE(decimal A) => A * A;
+	/// <summary>
+	/// Возводит число в куб A³ (A^3)
+	/// </summary>
+	public static float Pow3F(float A) => A * A * A;
+	/// <summary>
+	/// Возводит число в куб A³ (A^3)
+	/// </summary>
+	public static double Pow3D(double A) => A * A * A;
+	/// <summary>
+	/// Возводит число в куб A³ (A^3)
+	/// </summary>
+	public static int Pow3I(int A) => A * A * A;
+	/// <summary>
+	/// Возводит число в куб A³ (A^3)
+	/// </summary>
+	public static uint Pow3UI(uint A) => A * A * A;
+	/// <summary>
+	/// Возводит число в куб A³ (A^3)
+	/// </summary>
+	public static long Pow3L(long A) => A * A * A;
+	/// <summary>
+	/// Возводит число в куб A³ (A^3)
+	/// </summary>
+	public static ulong Pow3UL(ulong A) => A * A * A;
+	/// <summary>
+	/// Возводит число в куб A³ (A^3)
+	/// </summary>
+	public static decimal Pow3DE(decimal A) => A * A * A;
+	/// <summary>
+	/// Возводит число в степень 4 A⁴ (A^4)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static float Pow4F(float A){
+		float A2 = A * A;
+		return A2 * A2;
+	}
+	/// <summary>
+	/// Возводит число в степень 4 A⁴ (A^4)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static double Pow4D(double A){
+		double A2 = A * A;
+		return A2 * A2;
+	}
+	/// <summary>
+	/// Возводит число в степень 4 A⁴ (A^4)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static int Pow4I(int A){
+		int A2 = A * A;
+		return A2 * A2;
+	}
+	/// <summary>
+	/// Возводит число в степень 4 A⁴ (A^4)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static uint Pow4UI(uint A){
+		uint A2 = A * A;
+		return A2 * A2;
+	}
+	/// <summary>
+	/// Возводит число в степень 4 A⁴ (A^4)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static long Pow4L(long A){
+		long A2 = A * A;
+		return A2 * A2;
+	}
+	/// <summary>
+	/// Возводит число в степень 4 A⁴ (A^4)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static ulong Pow4UL(ulong A){
+		ulong A2 = A * A;
+		return A2 * A2;
+	}
+	/// <summary>
+	/// Возводит число в степень 4 A⁴ (A^4)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static decimal Pow4DE(decimal A){
+		decimal A2 = A * A;
+		return A2 * A2;
+	}
+	/// <summary>
+	/// Возводит число в степень 8 A⁸ (A^8)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static float Pow8F(float A){
+		float A2 = A * A;
+		A2 = A2 * A2;
+		return A2 * A2;
+	}
+	/// <summary>
+	/// Возводит число в степень 8 A⁸ (A^8)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static double Pow8D(double A){
+		double A2 = A * A;
+		A2 = A2 * A2;
+		return A2 * A2;
+	}
+	/// <summary>
+	/// Возводит число в степень 8 A⁸ (A^8)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static int Pow8I(int A){
+		int A2 = A * A;
+		A2 = A2 * A2;
+		return A2 * A2;
+	}
+	/// <summary>
+	/// Возводит число в степень 8 A⁸ (A^8)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static uint Pow8UI(uint A){
+		uint A2 = A * A;
+		A2 = A2 * A2;
+		return A2 * A2;
+	}
+	/// <summary>
+	/// Возводит число в степень 8 A⁸ (A^8)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static long Pow8L(long A){
+		long A2 = A * A;
+		A2 = A2 * A2;
+		return A2 * A2;
+	}
+	/// <summary>
+	/// Возводит число в степень 8 A⁸ (A^8)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static ulong Pow8UL(ulong A){
+		ulong A2 = A * A;
+		A2 = A2 * A2;
+		return A2 * A2;
+	}
+	/// <summary>
+	/// Возводит число в степень 8 A⁸ (A^8)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static decimal Pow8DE(decimal A){
+		decimal A2 = A * A;
+		A2 = A2 * A2;
+		return A2 * A2;
+	}
+	/// <summary>
+	/// Возводит число в степень 10 A¹⁰ (A^10)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static float Pow10F(float A){
+		float A2 = A * A;
+		float A4 = A2 * A2;
+		return (A4 * A4) * A2;
+	}
+	/// <summary>
+	/// Возводит число в степень 10 A¹⁰ (A^10)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static double Pow10D(double A){
+		double A2 = A * A;
+		double A4 = A2 * A2;
+		return (A4 * A4) * A2;
+	}
+	/// <summary>
+	/// Возводит число в степень 10 A¹⁰ (A^10)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static int Pow10I(int A){
+		int A2 = A * A;
+		int A4 = A2 * A2;
+		return (A4 * A4) * A2;
+	}
+	/// <summary>
+	/// Возводит число в степень 10 A¹⁰ (A^10)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static uint Pow10UI(uint A){
+		uint A2 = A * A;
+		uint A4 = A2 * A2;
+		return (A4 * A4) * A2;
+	}
+	/// <summary>
+	/// Возводит число в степень 10 A¹⁰ (A^10)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static long Pow10L(long A){
+		long A2 = A * A;
+		long A4 = A2 * A2;
+		return (A4 * A4) * A2;
+	}
+	/// <summary>
+	/// Возводит число в степень 10 A¹⁰ (A^10)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static ulong Pow10UL(ulong A){
+		ulong A2 = A * A;
+		ulong A4 = A2 * A2;
+		return (A4 * A4) * A2;
+	}
+	/// <summary>
+	/// Возводит число в степень 10 A¹⁰ (A^10)
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static decimal Pow10DE(decimal A){
+		decimal A2 = A * A;
+		decimal A4 = A2 * A2;
+		return (A4 * A4) * A2;
+	}
+	
+	/// <summary>
+	/// Корень B из числа A √ᴮA (A^(1/B))
+	/// </summary>
+	public static float RootF(float A, float B) => WL.Math.PowF(A, 1 / B);
+	/// <summary>
+	/// Корень B из числа A √ᴮA (A^(1/B))
+	/// </summary>
+	public static double RootD(double A, double B) => WL.Math.PowD(A, 1 / B);
+	/// <summary>
+	/// Квадратный корень √A
 	/// </summary>
 	public static float SqrtF(float A) => float.Sqrt(A);
 	/// <summary>
-	/// Квадратный корень
+	/// Квадратный корень √A
 	/// </summary>
 	public static double SqrtD(double A) => double.Sqrt(A);
 	/// <summary>
-	/// Кубический корень
+	/// Кубический корень ∛A
 	/// </summary>
 	public static float CbrtF(float A) => float.Cbrt(A);
 	/// <summary>
-	/// Кубический корень
+	/// Кубический корень ∛A
 	/// </summary>
 	public static double CbrtD(double A) => double.Cbrt(A);
-	/// <summary>
-	/// Возводит число в квадрат
-	/// </summary>
-	public static float SqrF(float A) => A * A;
-	/// <summary>
-	/// Возводит число в квадрат
-	/// </summary>
-	public static double SqrD(double A) => A * A;
-	/// <summary>
-	/// Возводит число в квадрат
-	/// </summary>
-	public static int SqrI(int A) => A * A;
-	/// <summary>
-	/// Возводит число в квадрат
-	/// </summary>
-	public static uint SqrUI(uint A) => A * A;
-	/// <summary>
-	/// Возводит число в квадрат
-	/// </summary>
-	public static long SqrL(long A) => A * A;
-	/// <summary>
-	/// Возводит число в квадрат
-	/// </summary>
-	public static ulong SqrUL(ulong A) => A * A;
-	/// <summary>
-	/// Возводит число в квадрат
-	/// </summary>
-	public static decimal SqrDE(decimal A) => A * A;
-	/// <summary>
-	/// Возводит число в куб
-	/// </summary>
-	public static float CubeF(float A) => A * A * A;
-	/// <summary>
-	/// Возводит число в куб
-	/// </summary>
-	public static double CubeD(double A) => A * A * A;
-	/// <summary>
-	/// Возводит число в куб
-	/// </summary>
-	public static int CubeI(int A) => A * A * A;
-	/// <summary>
-	/// Возводит число в куб
-	/// </summary>
-	public static uint CubeUI(uint A) => A * A * A;
-	/// <summary>
-	/// Возводит число в куб
-	/// </summary>
-	public static long CubeL(long A) => A * A * A;
-	/// <summary>
-	/// Возводит число в куб
-	/// </summary>
-	public static ulong CubeUL(ulong A) => A * A * A;
-	/// <summary>
-	/// Возводит число в куб
-	/// </summary>
-	public static decimal CubeDE(decimal A) => A * A * A;
 	
 	// ----------------------------------------------------------------------
 	
 	/// <summary>
-	/// Округляет число в ближайшему чётному числу (0.25 -> 0, 0.5 -> 0, 0.75 -> 1)
+	/// Округляет число к ближайшему чётному числу (0.25 -> 0, 0.5 -> 0, 0.75 -> 1)
 	/// </summary>
 	public static float RoundF(float A) => float.Round(A);
 	/// <summary>
-	/// Округляет число в ближайшему чётному числу (0.25 -> 0, 0.5 -> 0, 0.75 -> 1)
+	/// Округляет число к ближайшему чётному числу (0.25 -> 0, 0.5 -> 0, 0.75 -> 1)
 	/// </summary>
 	public static double RoundD(double A) => double.Round(A);
 	/// <summary>
-	/// Округляет число в ближайшему чётному числу (0.25 -> 0, 0.5 -> 0, 0.75 -> 1)
+	/// Округляет число к ближайшему чётному числу (0.25 -> 0, 0.5 -> 0, 0.75 -> 1)
 	/// </summary>
 	public static decimal RoundDE(decimal A) => decimal.Round(A);
 	/// <summary>
@@ -789,6 +1195,7 @@ public static class Math{
 	/// Остаток от деления, но в диапазоне [0, ∞] ((7, 3) -> 1, (-7, 3) -> 2, (7.5, 2) -> 1.5)
 	/// </summary>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
 	public static float WrapF(float A, float B){
 		float R = A % B;
 		if(R < 0){
@@ -800,6 +1207,7 @@ public static class Math{
 	/// Остаток от деления, но в диапазоне [0, ∞] ((7, 3) -> 1, (-7, 3) -> 2, (7.5, 2) -> 1.5)
 	/// </summary>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
 	public static double WrapD(double A, double B){
 		double R = A % B;
 		if(R < 0){
@@ -917,6 +1325,142 @@ public static class Math{
 	/// Эквивалентно A * B + C, но быстрее и точнее
 	/// </summary>
 	public static double FmaD(double A, double B, double C) => double.FusedMultiplyAdd(A, B, C);
+	
+	// ----------------------------------------------------------------------
+	
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static int FastSignF(float A) => (A > 0 ? 1 : 0) - (A < 0 ? 1 : 0);
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static int FastSignD(double A) => (A > 0 ? 1 : 0) - (A < 0 ? 1 : 0);
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static int FastSignI(int A) => (A > 0 ? 1 : 0) - (A < 0 ? 1 : 0);
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static int FastSignS(short A) => (A > 0 ? 1 : 0) - (A < 0 ? 1 : 0);
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static int FastSignL(long A) => (A > 0 ? 1 : 0) - (A < 0 ? 1 : 0);
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static int FastSignSB(sbyte A) => (A > 0 ? 1 : 0) - (A < 0 ? 1 : 0);
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static int FastSignDE(decimal A) => (A > 0 ? 1 : 0) - (A < 0 ? 1 : 0);
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static int FastSignUI(uint A) => A == 0 ? 0 : 1;
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static int FastSignUS(ushort A) => A == 0 ? 0 : 1;
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static int FastSignUL(ulong A) => A == 0 ? 0 : 1;
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static int FastSignB(byte A) => A == 0 ? 0 : 1;
+	
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static float FastClampF(float A, float Min, float Max) => A < Min ? Min : (A > Max ? Max : A);
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static double FastClampD(double A, double Min, double Max) => A < Min ? Min : (A > Max ? Max : A);
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static int FastClampI(int A, int Min, int Max) => A < Min ? Min : (A > Max ? Max : A);
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static uint FastClampUI(uint A, uint Min, uint Max) => A < Min ? Min : (A > Max ? Max : A);
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static short FastClampS(short A, short Min, short Max) => A < Min ? Min : (A > Max ? Max : A);
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static ushort FastClampUS(ushort A, ushort Min, ushort Max) => A < Min ? Min : (A > Max ? Max : A);
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static long FastClampL(long A, long Min, long Max) => A < Min ? Min : (A > Max ? Max : A);
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static ulong FastClampUL(ulong A, ulong Min, ulong Max) => A < Min ? Min : (A > Max ? Max : A);
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static byte FastClampB(byte A, byte Min, byte Max) => A < Min ? Min : (A > Max ? Max : A);
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static sbyte FastClampSB(sbyte A, sbyte Min, sbyte Max) => A < Min ? Min : (A > Max ? Max : A);
+	/// <summary>
+	/// ~
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[WoowzLibHint(Information.New)]
+	public static decimal FastClampDE(decimal A, decimal Min, decimal Max) => A < Min ? Min : (A > Max ? Max : A);
 	
 	// ----------------------------------------------------------------------
 	/* Конец генератора */

@@ -1,5 +1,5 @@
-﻿using System.ComponentModel;
-using System.Text;
+﻿using System.Text;
+using WLO.Attribute;
 
 namespace WoowzLibGenerator;
 
@@ -165,6 +165,32 @@ public static class Other{
                         continue;
                     }
                 }
+                
+                if(WL.String.AtLeft(__Substring, SpecialSymbol + "WLHINT<|")){
+                    int Start = i + (SpecialSymbol + "WLHINT<|").Length;
+                    
+                    int Middle = Code.IndexOf("|" + SpecialSymbol + "|", Start, StringComparison.Ordinal);
+                    int End = Code.IndexOf("|>" + SpecialSymbol, Start, StringComparison.Ordinal);
+                    
+                    if(End != -1){
+                        string Hint;
+                        string? Message = null;
+
+                        if(Middle != -1 && Middle < End){
+                            Hint = Code.Substring(Start, Middle - Start);
+                            Message = Code.Substring(Middle + 3, End - (Middle + 3));
+                        }else{
+                            Hint = Code.Substring(Start, End - Start);
+                        }
+                        
+                        AddS("[WoowzLibHint(Information." + Hint + (Message != null ? ", \"" + Message + "\"" : "") + ")]");
+                        AddC();
+                        ApplyIndent();
+
+                        i = End + ("|>" + SpecialSymbol).Length - 1;
+                        continue;
+                    }
+                }
             }
            
             if(C == '"'){
@@ -264,6 +290,7 @@ public static class Other{
     public static string Generate_AggressiveInlining() => Generate_SpecialTag("IMPL_AIL");
     public static string Generate_Summary(string Comment) => Generate_SpecialTag("SUM<|" + Comment + "|>");
     public static string Generate_SpecialTag(string Content) => SpecialSymbol + Content + SpecialSymbol;
+    public static string Generate_WLTag(Information Hint, string? Message = null) => Generate_SpecialTag("WLHINT<|" + Hint + (Message != null ? "|" + SpecialSymbol + "|" + Message : "") + "|>");
     
     public static string Generate_GeneratorComment(string Class) => "/* Сгенерировано с помощью " + WL.Core.Metadata.Project.Name + " " + WL.Core.Metadata.Project.Version + ", внутри класса \"" + Class + ".cs\" */";
     public static string Generate_Namespace(string Name) => "namespace " + Name + ";";
