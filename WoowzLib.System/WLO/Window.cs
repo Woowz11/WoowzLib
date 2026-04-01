@@ -152,6 +152,29 @@ public class Window{
     
     // ----------------------------------------------------------------------
 
+    /// <summary>
+    /// Получает HDC окна, или возвращает HDC
+    /// </summary>
+    /// <param name="Release">Если указать, то вернёт указанный HDC</param>
+    /// <param name="AllWindow">Вернуть для рисования всю область окна (в том числе рамки)</param>
+    /// <returns>Если Release не указан, то получит HDC окна</returns>
+    public IntPtr? HDC(IntPtr? Release = null, bool AllWindow = false){
+        try{
+            CheckAlive();
+
+            if(Release.HasValue){
+                Native.Raw.Windows.ReleaseDC(Handle, Release.Value);
+                return null;
+            }
+            
+            return AllWindow ? Native.Raw.Windows.GetWindowDC(Handle) : Native.Raw.Windows.GetDC(Handle);
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при получении/возвращении HDC у окна [" + this + "]!\nВернуть: " + WL.String.ToString(Release) + "\nВсё окно: " + AllWindow, e);
+        }
+    }
+    
+    // ----------------------------------------------------------------------
+
     #region Заголовок
 
         /// <summary>

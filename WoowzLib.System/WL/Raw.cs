@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
+using WLO.Rect;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
@@ -328,6 +329,7 @@ public static partial class Native{
             [StructLayout(LayoutKind.Sequential)]
             public struct RECT{
                 public RECT(int left, int top, int right, int bottom){ this.left = left; this.top = top; this.right = right; this.bottom = bottom; }
+                public RECT(Rect2I Rect){ left = Rect.Left; top = Rect.Bottom; right = Rect.Right; bottom = Rect.Top; }
                 
                 public int left;
                 public int top;

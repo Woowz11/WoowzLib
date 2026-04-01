@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.156, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.263, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
@@ -72,7 +72,7 @@ public struct Vector4D : IEquatable<Vector4D>{
 	
 	// ----------------------------------------------------------------------
 	
-	public override string ToString() => "Vector4D(" + X + ", " + Y + ", " + Z + ", " + W + ")";
+	public override string ToString() => "Vector4D(" + ToShortString() + ")";
 	public string ToShortString() => X + ", " + Y + ", " + Z + ", " + W;
 	
 	public bool Equals(Vector4D Other) => X == Other.X && Y == Other.Y && Z == Other.Z && W == Other.W;

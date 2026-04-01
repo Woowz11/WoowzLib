@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.156, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.263, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
@@ -79,7 +79,7 @@ public struct Vector3D : IEquatable<Vector3D>{
 	
 	// ----------------------------------------------------------------------
 	
-	public override string ToString() => "Vector3D(" + X + ", " + Y + ", " + Z + ")";
+	public override string ToString() => "Vector3D(" + ToShortString() + ")";
 	public string ToShortString() => X + ", " + Y + ", " + Z;
 	public string ToPositionString() => X + ":" + Y + ":" + Z;
 	public string ToSizeString() => W + "x" + H + "x" + D;

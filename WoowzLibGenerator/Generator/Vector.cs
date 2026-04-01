@@ -282,7 +282,7 @@ public static class Vector{
         Result += Other.Generate_Line();
 
         void Generate_Other(){
-            Result += "public override string ToString() => \"" + I.Name + "(" + RFEA("\" + @ + \"", ", ") + ")" + "\";";
+            Result += "public override string ToString() => \"" + I.Name + "(\" + ToShortString() + \")" + "\";";
             Result += "public string ToShortString() => " + RFEA("@", " + \", \" + ") + ";";
             
             if(I.SupportSizes){
