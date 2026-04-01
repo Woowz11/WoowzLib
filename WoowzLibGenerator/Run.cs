@@ -34,7 +34,8 @@ public class Run{
         Generator.Math.Generate(WL.String.Path.Add(ForResult, "Math"), WL.String.Path.Add(ForDebug, "Math"));
         
         Vector.Generate(WL.String.Path.Add(ForResult, "Vector"), WL.String.Path.Add(ForDebug, "Vector"));
-        Rect  .Generate(WL.String.Path.Add(ForResult, "Rect"), WL.String.Path.Add(ForDebug, "Rect"));
+        Rect  .Generate(WL.String.Path.Add(ForResult, "Rect"  ), WL.String.Path.Add(ForDebug, "Rect"  ));
+        Color .Generate(WL.String.Path.Add(ForResult, "Color" ), WL.String.Path.Add(ForDebug, "Color" ));
         
         Tests.Generate(WL.String.Path.Add(ForResult, "Tests"), WL.String.Path.Add(ForDebug, "Tests"));
         

@@ -136,6 +136,26 @@ public static class Info{
     ];
     public static string ValueType_Quarter(ValueType VT) => __ValueType_Quarter[(int)VT];
     
+    private static readonly string[] __ValueType_ThreeQuarter = [
+        "~",  // Bool
+        "0.75f",      // Float
+        "0.75",      // Double
+        "~",      // Int
+        "~",      // UInt
+        "~",      // Short
+        "~",      // UShort
+        "~",      // Long
+        "~",      // ULong
+        "191",      // Byte
+        "97",      // SByte
+        "~",   // Char
+        "~",   // String
+        "0.75m",      // Decimal
+        "~",   // Object
+        "~" // DateTime
+    ];
+    public static string ValueType_ThreeQuarter(ValueType VT) => __ValueType_ThreeQuarter[(int)VT];
+    
     private static readonly string[] __ValueType_Double = [
         "~",  // Bool
         "2",      // Float

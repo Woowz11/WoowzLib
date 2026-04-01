@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.264, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.300, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;

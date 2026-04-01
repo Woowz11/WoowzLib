@@ -1,4 +1,5 @@
 ﻿using WL;
+using WLO.Attribute;
 using WLO.Rect;
 using WLO.Vector;
 
@@ -27,7 +28,7 @@ public class WLWindow{
 
             __Title = Config.Title;
             
-            __Window = new Window(Class, new Window.Constructor{
+            Original = new Window(Class, new Window.Constructor{
                 Title = __Title
             });
             
@@ -63,7 +64,7 @@ public class WLWindow{
     /// <summary>
     /// Оригинальное WINAPI окно, изменяйте его на свой страх и риск!
     /// </summary>
-    public Window Original => __Window;
+    public Window Original{ get; }
 
     // ----------------------------------------------------------------------
 
@@ -126,7 +127,7 @@ public class WLWindow{
                     
                     if(__Title == Title__){ return; }
 
-                    __Window.Title = Title__;
+                    Original.Title = Title__;
                 }catch(Exception e){
                     throw new Exception("Произошла ошибка при установке заголовка WL окна [" + this + "]!\nЗаголовок: " + value, e);
                 }
@@ -141,6 +142,7 @@ public class WLWindow{
         /// <summary>
         /// Координата X окна
         /// </summary>
+        [WoowzLibHint(Information.WorkInProgress)]
         public int X{
             get => __X;
             set{
@@ -159,6 +161,7 @@ public class WLWindow{
         /// <summary>
         /// Координата Y окна
         /// </summary>
+        [WoowzLibHint(Information.WorkInProgress)]
         public int Y{
             get => __Y;
             set{
@@ -177,6 +180,7 @@ public class WLWindow{
         /// <summary>
         /// Позиция окна
         /// </summary>
+        [WoowzLibHint(Information.WorkInProgress)]
         public Vector2I Position{
             get => new Vector2I(__X, __Y);
             set{
@@ -198,6 +202,7 @@ public class WLWindow{
         /// <summary>
         /// Ширина окна
         /// </summary>
+        [WoowzLibHint(Information.WorkInProgress)]
         public uint W{
             get => __W;
             set{
@@ -217,6 +222,7 @@ public class WLWindow{
         /// <summary>
         /// Высота окна
         /// </summary>
+        [WoowzLibHint(Information.WorkInProgress)]
         public uint H{
             get => __H;
             set{
@@ -236,6 +242,7 @@ public class WLWindow{
         /// <summary>
         /// Размер окна
         /// </summary>
+        [WoowzLibHint(Information.WorkInProgress)]
         public Vector2UI Size{
             get => new Vector2UI(__W, __H);
             set{
@@ -254,6 +261,7 @@ public class WLWindow{
     /// <summary>
     /// Позиция и размер окна
     /// </summary>
+    [WoowzLibHint(Information.WorkInProgress)]
     public Rect2I Rect{
         get => new Rect2I(Position, Size);
         set{
@@ -272,6 +280,7 @@ public class WLWindow{
     /// <summary>
     /// Цвет заднего фона
     /// </summary>
+    [WoowzLibHint(Information.WorkInProgress)]
     public uint BackgroundColor = 0x000000;
 
     /// <summary>
@@ -293,7 +302,7 @@ public class WLWindow{
         try{
             if(Died){ throw new Exception("Окно уже уничтоженное!"); }
             
-            __Window.Destroy();   
+            Original.Destroy();   
         }catch(Exception e){
             throw new Exception("Произошла ошибка при попытке уничтожить WL окно [" + this + "]!", e);
         }
@@ -302,7 +311,7 @@ public class WLWindow{
     /// <summary>
     /// Рендерит окно
     /// </summary>
-    /// <returns>Элементы окна были зарендерены?</returns>
+    /// <returns>Произошёл рендер элементов окна?</returns>
     public bool Render(){
         IntPtr? HDC__ = null;
 
@@ -369,11 +378,6 @@ public class WLWindow{
     /// Всего созданных оконных классов
     /// </summary>
     private static uint __TotalClasses;
-    
-    /// <summary>
-    /// WINAPI окно
-    /// </summary>
-    private readonly Window __Window;
 
     /// <summary>
     /// HDC двойного буфера
@@ -581,5 +585,5 @@ public class WLWindow{
 
     public override string ToString() => "WLWindow()";
 
-    public string ToFullString() => "WLWindow(" + __Window + ")";
+    public string ToFullString() => "WLWindow(" + Original + ")";
 }

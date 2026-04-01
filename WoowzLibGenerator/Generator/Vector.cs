@@ -206,6 +206,25 @@ public static class Vector{
 
         return R;
     }
+    
+    public static string RFEA2(char[] Chars, string Code, string Between = "", string[]? SecondStrings = null){
+        string R = "";
+        for(int i = 0; i < Chars.Length; i++){
+            char C = Chars[i];
+
+            if(i != 0){ R += Between; }
+
+            string R__ = Code;
+                
+            if(SecondStrings != null){
+                R__ = WL.String.Replace(R__, "@2", SecondStrings[i]);
+            }
+                
+            R += WL.String.Replace(WL.String.Replace(R__, "@I", i.ToString()), "@", C.ToString());
+        }
+
+        return R;
+    }
         
     public static string RFEAS(string[] Strings, string Code, string Between = ""){
         string R = "";
@@ -225,13 +244,9 @@ public static class Vector{
         string RFEAS(string[] Strings, string Code, string Between = "") => Vector.RFEAS(Strings, Code, Between);
 
         void Generate_Constructors(){
-            string Constructor = "public " + I.Name;
-
-            void Generate_Constructor(string Params, string Inside, string? Base = null) => Result += Constructor + "(" + Params + ")" + (Base != null ? " : this(" + Base + ")" : "") + "{" + Inside + "}";
-            
-            Generate_Constructor(RFEA(I.Primitive + " @", ", "), RFEA("this.@ = @;"));
-            Generate_Constructor(I.Primitive + " " + I.AllAxis, "", RFEA(I.AllAxis, ", "));
-            Generate_Constructor("", "");
+            Result += Other.Generate_Constructor(I.Name, RFEA(I.Primitive + " @", ", "), RFEA("this.@ = @;"));
+            Result += Other.Generate_Constructor(I.Name, I.Primitive + " " + I.AllAxis, "", RFEA(I.AllAxis, ", "));
+            Result += Other.Generate_Constructor(I.Name, "", "");
         }
         Generate_Constructors();
 
@@ -304,20 +319,15 @@ public static class Vector{
         Result += Other.Generate_Line();
 
         void Generate_Operators(){
-            void Generate_Operator(string Operator, string Params, string Inside, string? Return = null, bool Lambda = true){
-                Return ??= I.Name;
-                Result += Other.Generate_AggressiveInlining() + "public static " + Return + " operator " + Operator + "(" + Params + ")" + (Lambda ? " => " : "{") + Inside + (Lambda ? ";" : "}");
-            }
-            
-            Generate_Operator("==", I.Name + " L, " + I.Name + " R", "L.Equals(R)", "bool");
-            Generate_Operator("!=", I.Name + " L, " + I.Name + " R", "!L.Equals(R)", "bool");
+            Result += Other.Generate_Operator(I.Name, "==", I.Name + " L, " + I.Name + " R", "L.Equals(R)", "bool");
+            Result += Other.Generate_Operator(I.Name, "!=", I.Name + " L, " + I.Name + " R", "!L.Equals(R)", "bool");
 
             Result += Other.Generate_NextLine();
 
             void Generate_Operator_Pack(string Operator, string Func){
-                Generate_Operator(Operator, I.Name + " L, " + I.Name + " R", "L." + Func + "(R)");
-                Generate_Operator(Operator, I.Name + " V, " + I.Primitive + " S", "V." + Func + "(S)");
-                Generate_Operator(Operator, I.Primitive + " S, " + I.Name + " V", "V " + Operator + " S");
+                Result += Other.Generate_Operator(I.Name, Operator, I.Name + " L, " + I.Name + " R", "L." + Func + "(R)");
+                Result += Other.Generate_Operator(I.Name, Operator, I.Name + " V, " + I.Primitive + " S", "V." + Func + "(S)");
+                Result += Other.Generate_Operator(I.Name, Operator, I.Primitive + " S, " + I.Name + " V", "V " + Operator + " S");
             }
             
             Generate_Operator_Pack("+", "Add");

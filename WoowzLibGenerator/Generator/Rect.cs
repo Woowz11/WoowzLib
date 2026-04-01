@@ -136,13 +136,9 @@ public static class Rect{
         string RFEA(bool Position, string Code, string Between = "", char[]? Chars = null, char[]? SecondChars = null) => Rect.RFEAwithType(Chars ?? (Position ? I.Position : I.Size), Position ? I.Primitive : I.PrimitiveSize, Code, Between, SecondChars);
 
         void Generate_Constructors(){
-            string Constructor = "public " + I.Name;
-
-            void Generate_Constructor(string Params, string Inside, string? Base = null) => Result += Constructor + "(" + Params + ")" + (Base != null ? " : this(" + Base + ")" : "") + "{" + Inside + "}";
-            
-            Generate_Constructor(I.Primitive + " " + I.Position[0] + ", " + I.Primitive + " " + I.Position[1] + (I.Three ? ", " + I.Primitive + " " + I.Position[2] : "") + ", " + I.PrimitiveSize + " " + I.Size[0] + ", " + I.PrimitiveSize + " " + I.Size[1] + (I.Three ? ", " + I.PrimitiveSize + " " + I.Size[2] : ""), "this." + I.Position[0] + " = " + I.Position[0] + ";" + "this." + I.Position[1] + " = " + I.Position[1] + ";" + (I.Three ? "this." + I.Position[2] + " = " + I.Position[2] + ";" : "") + "this." + I.Size[0] + " = " + I.Size[0] + ";" + "this." + I.Size[1] + " = " + I.Size[1] + ";" + (I.Three ? "this." + I.Size[2] + " = " + I.Size[2] + ";" : ""));
-            Generate_Constructor(I.VectorPosition + " Position, " + I.VectorSize + " Size", "this.Position = Position; this.Size = Size;");
-            Generate_Constructor("", "");
+            Result += Other.Generate_Constructor(I.Name, I.Primitive + " " + I.Position[0] + ", " + I.Primitive + " " + I.Position[1] + (I.Three ? ", " + I.Primitive + " " + I.Position[2] : "") + ", " + I.PrimitiveSize + " " + I.Size[0] + ", " + I.PrimitiveSize + " " + I.Size[1] + (I.Three ? ", " + I.PrimitiveSize + " " + I.Size[2] : ""), "this." + I.Position[0] + " = " + I.Position[0] + ";" + "this." + I.Position[1] + " = " + I.Position[1] + ";" + (I.Three ? "this." + I.Position[2] + " = " + I.Position[2] + ";" : "") + "this." + I.Size[0] + " = " + I.Size[0] + ";" + "this." + I.Size[1] + " = " + I.Size[1] + ";" + (I.Three ? "this." + I.Size[2] + " = " + I.Size[2] + ";" : ""));
+            Result += Other.Generate_Constructor(I.Name, I.VectorPosition + " Position, " + I.VectorSize + " Size", "this.Position = Position; this.Size = Size;");
+            Result += Other.Generate_Constructor(I.Name, "", "");
         }
         Generate_Constructors();
         
@@ -199,13 +195,8 @@ public static class Rect{
         Result += Other.Generate_Line();
 
         void Generate_Operators(){
-            void Generate_Operator(string Operator, string Params, string Inside, string? Return = null, bool Lambda = true){
-                Return ??= I.Name;
-                Result += Other.Generate_AggressiveInlining() + "public static " + Return + " operator " + Operator + "(" + Params + ")" + (Lambda ? " => " : "{") + Inside + (Lambda ? ";" : "}");
-            }
-            
-            Generate_Operator("==", I.Name + " L, " + I.Name + " R", "L.Equals(R)", "bool");
-            Generate_Operator("!=", I.Name + " L, " + I.Name + " R", "!L.Equals(R)", "bool");
+            Result += Other.Generate_Operator(I.Name, "==", I.Name + " L, " + I.Name + " R", "L.Equals(R)", "bool");
+            Result += Other.Generate_Operator(I.Name, "!=", I.Name + " L, " + I.Name + " R", "!L.Equals(R)", "bool");
         }
         Generate_Operators();
     }

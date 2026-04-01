@@ -297,4 +297,6 @@ public static class Other{
     public static string Generate_PublicClass(string Name, string? Parent = null, bool Static = false) => "public " + (Static ? "static " : "") + "class " + Name + (Parent != null ? " : " + Parent : "");
     public static string Generate_PublicStruct(string Name, string? Parent = null, bool Static = false) => "public " + (Static ? "static " : "") + "struct " + Name + (Parent != null ? " : " + Parent : "");
     public static string Generate_Using(string Name) => "using " + Name + ";";
+    public static string Generate_Constructor(string Name, string Params, string Inside, string? Base = null) => "public " + Name + "(" + Params + ")" + (Base != null ? " : this(" + Base + ")" : "") + "{" + Inside + "}";
+    public static string Generate_Operator(string Name, string Operator, string Params, string Inside, string? Return = null, bool Lambda = true) => Other.Generate_AggressiveInlining() + "public static " + (Return ?? Name) + " operator " + Operator + "(" + Params + ")" + (Lambda ? " => " : "{") + Inside + (Lambda ? ";" : "}");
 }
