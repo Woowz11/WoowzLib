@@ -1,4 +1,5 @@
 ﻿using WL;
+using WLO.Rect;
 using WLO.Vector;
 
 namespace WLO;
@@ -67,29 +68,39 @@ public class WLWindow{
     // ----------------------------------------------------------------------
 
     /// <summary>
-    /// Вызывается при уничтожении (окно)
+    /// Вызывается при уничтожении (Окно)
     /// </summary>
     public event Action<WLWindow>? OnDestroy;
 
     /// <summary>
-    /// Вызывается при закрытии окна (окно) => (закрыть окно?)
+    /// Вызывается при закрытии окна (Окно) => (Закрыть окно?)
     /// </summary>
     public event Func<WLWindow, bool>? OnClose;
 
     /// <summary>
-    /// Вызывается при изменении заголовка окна (окно, заголовок) => (новый заголовок (если вернуть null, не изменит заголовок))
+    /// Вызывается при изменении заголовка окна (Окно, Заголовок) => (Новый заголовок (если вернуть null, не изменит))
     /// </summary>
     public event Func<WLWindow, string, string?>? OnTitle;
 
     /// <summary>
-    /// Вызывается в начале рендера (HDC, Рендерить элементы?) => (Рендерить элементы?)
+    /// Вызывается в начале рендера (Окно, HDC, Рендерить элементы?) => (Рендерить элементы?)
     /// </summary>
-    public event Func<IntPtr, bool, bool>? OnRender;
+    public event Func<WLWindow, IntPtr, bool, bool>? OnRender;
     
     /// <summary>
-    /// Вызывается в конце рендера (HDC)
+    /// Вызывается в конце рендера (Окно, HDC)
     /// </summary>
-    public event Action<IntPtr>? OnPostRender;
+    public event Action<WLWindow, IntPtr>? OnPostRender;
+
+    
+    public event Action<WLWindow, Vector2I>? OnPosition;
+    
+    public event Action<WLWindow, Vector2UI>? OnSize;
+
+    /// <summary>
+    /// Вызывается при изменении позиции или размера окна (Окно, Позиция и размер) => (Новая позиция и размер (если вернуть null, не изменит))
+    /// </summary>
+    public event Func<WLWindow, Rect2I, Rect2I?>? OnRect;
     
     // ----------------------------------------------------------------------
 
@@ -127,26 +138,56 @@ public class WLWindow{
 
     #region Позиция
 
+        /// <summary>
+        /// Координата X окна
+        /// </summary>
         public int X{
             get => __X;
             set{
-                
+                try{
+                    CheckAlive();
+                    
+                    if(__X == value){ return; }
+                    
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при установке координаты X WL окна [" + this + "]!\nКоордината X: " + value, e);
+                }
             }
         }
         private int __X;
 
+        /// <summary>
+        /// Координата Y окна
+        /// </summary>
         public int Y{
             get => __Y;
             set{
-                
+                try{
+                    CheckAlive();
+                    
+                    if(__Y == value){ return; }
+                    
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при установке координаты Y WL окна [" + this + "]!\nКоордината Y: " + value, e);
+                }
             }
         }
         private int __Y;
         
+        /// <summary>
+        /// Позиция окна
+        /// </summary>
         public Vector2I Position{
             get => new Vector2I(__X, __Y);
             set{
-                
+                try{
+                    CheckAlive();
+                    
+                    if(__X == value.X && __Y == value.Y){ return; }
+                    
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при установке позиции WL окна [" + this + "]!\nПозиция: " + value, e);
+                }
             }
         }
 
@@ -154,26 +195,94 @@ public class WLWindow{
 
     #region Размер
 
+        /// <summary>
+        /// Ширина окна
+        /// </summary>
         public uint W{
             get => __W;
+            set{
+                try{
+                    CheckAlive();
+                    
+                    if(__W == value){ return; }
+                    
+                    
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при установке ширины WL окна [" + this + "]!\nШирина: " + value, e);
+                }
+            }
         }
         private uint __W;
 
+        /// <summary>
+        /// Высота окна
+        /// </summary>
         public uint H{
             get => __H;
+            set{
+                try{
+                    CheckAlive();
+                    
+                    if(__H == value){ return; }
+                    
+                    
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при установке высоты WL окна [" + this + "]!\nВысота: " + value, e);
+                }
+            }
         }
         private uint __H;
         
+        /// <summary>
+        /// Размер окна
+        /// </summary>
         public Vector2UI Size{
             get => new Vector2UI(__W, __H);
+            set{
+                try{
+                    CheckAlive();
+                    
+                    if(__W == value.W && __H == value.H){ return; }
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при установке размера WL окна [" + this + "]!\nРазмер: " + value, e);
+                }
+            }
         }
 
     #endregion
+
+    /// <summary>
+    /// Позиция и размер окна
+    /// </summary>
+    public Rect2I Rect{
+        get => new Rect2I(Position, Size);
+        set{
+            try{
+                CheckAlive();
+                    
+                if(__X == value.X && __Y == value.Y && __W == value.W && __H == value.H){ return; }
+                
+                
+            }catch(Exception e){
+                throw new Exception("Произошла ошибка при установке позиции и размера WL окна [" + this + "]!\nПрямоугольник: " + value, e);
+            }
+        }
+    }
     
     /// <summary>
     /// Цвет заднего фона
     /// </summary>
     public uint BackgroundColor = 0x000000;
+
+    /// <summary>
+    /// Очищать буфер рендера при вызове рендера?
+    /// </summary>
+    public bool ClearRenderBuffer = true;
+
+    /// <summary>
+    /// Включить двойной буфер рендера?
+    /// </summary>
+    public bool DoubleRenderBuffer = true;
     
     // ----------------------------------------------------------------------
     
@@ -201,34 +310,49 @@ public class WLWindow{
             CheckAlive();
 
             HDC__ = Original.HDC()!;
-            IntPtr HDC = HDC__.Value;
+            IntPtr WindowHDC = HDC__.Value;
 
-            IntPtr BackgroundBrush = WL.System.Draw.CreateBrush(BackgroundColor);
-            WL.System.Draw.SelectBrush(HDC, BackgroundBrush);
-            WL.System.Draw.Fill(HDC);
-            WL.System.Draw.DestroyBrush(BackgroundBrush);
+            Vector2UI RenderSize__ = WL.System.Draw.CurrentSize(WindowHDC);
+            if(RenderSize__ != __RenderSize){ __UpdateDoubleBuffer(WindowHDC, RenderSize__); }
+
+            IntPtr HDC = DoubleRenderBuffer ? __DoubleBufferHDC : WindowHDC;
             
-            bool RenderElements = true;
-            try{
-                if(OnRender != null){
-                    RenderElements = OnRender.Invoke(HDC, RenderElements);
+            #region Рендер
+
+                if(ClearRenderBuffer){
+                    IntPtr BackgroundBrush = WL.System.Draw.CreateBrush(BackgroundColor);
+                    WL.System.Draw.SelectBrush(HDC, BackgroundBrush);
+                    WL.System.Draw.Fill(HDC, new Rect2I(Vector2I.Zero, __RenderSize));
+                    WL.System.Draw.DestroyBrush(BackgroundBrush);
                 }
-            }
-            catch(Exception e){
-                Logger.Error("Произошла ошибка в ивенте OnRender в WL окне [" + this + "]!", e);
-            }
 
-            if(!RenderElements){ return false; }
+                bool RenderElements = true;
+                try{
+                    if(OnRender != null){
+                        RenderElements = OnRender.Invoke(this, HDC, RenderElements);
+                    }
+                }
+                catch(Exception e){
+                    Logger.Error("Произошла ошибка в ивенте OnRender в WL окне [" + this + "]!", e);
+                }
 
-            __RenderElements(HDC);
+                if(!RenderElements){ return false; }
 
-            try{
-                OnPostRender?.Invoke(HDC);
+                __RenderElements(HDC);
+
+                try{
+                    OnPostRender?.Invoke(this, HDC);
+                }
+                catch(Exception e){
+                    Logger.Error("Произошла ошибка в ивенте OnPostRender в WL окне [" + this + "]!", e);
+                }
+
+            #endregion
+
+            if(DoubleRenderBuffer){
+                WL.System.Draw.CopyHDC(WindowHDC, HDC, __RenderSize);
             }
-            catch(Exception e){
-                Logger.Error("Произошла ошибка в ивенте OnPostRender в WL окне [" + this + "]!", e);
-            }
-
+            
             return true;
         }catch(Exception e){
             throw new Exception("Произошла ошибка во время рендера WL окна [" + this + "]!", e);
@@ -252,6 +376,21 @@ public class WLWindow{
     private readonly Window __Window;
 
     /// <summary>
+    /// HDC двойного буфера
+    /// </summary>
+    private IntPtr __DoubleBufferHDC;
+
+    /// <summary>
+    /// Изображение двойного буфера
+    /// </summary>
+    private IntPtr __DoubleBufferBitmap;
+
+    /// <summary>
+    /// Область рендера
+    /// </summary>
+    private Vector2UI __RenderSize;
+
+    /// <summary>
     /// Уничтожает окно
     /// </summary>
     private void __Destroy(){
@@ -269,6 +408,8 @@ public class WLWindow{
             }catch(Exception e){
                 Logger.Error("Произошла ошибка в ивенте OnGlobalDestroy в WL окне [" + this + "]!", e);
             }
+            
+            __DestroyDoubleBuffer();
             
             Alive = false;
             
@@ -323,10 +464,46 @@ public class WLWindow{
                 }
 
                 // Изменился заголовок окна
-                case Native.Raw.Windows.WM_SETTEXT:{
+                case Native.Raw.Windows.WM_SETTEXT: {
                     __Title = WL.System.Memory.LoadString(LP) ?? string.Empty;
                     
                     break;
+                }
+
+                // Перед изменением позиции и размера окна
+                case Native.Raw.Windows.WM_WINDOWPOSCHANGING: {
+                    Native.Raw.Windows.WINDOWPOS WindowPos = WL.System.Memory.LoadStruct<Native.Raw.Windows.WINDOWPOS>(LP);
+                    bool Changed = false;
+
+                    __X = WindowPos.x;
+                    __Y = WindowPos.y;
+
+                    __W = (uint)WindowPos.cx;
+                    __H = (uint)WindowPos.cy;
+                    
+                    try{
+                        Rect2I Rect = new Rect2I(__X, __Y, __W, __H);
+                        Rect2I? NewRect = OnRect?.Invoke(this, Rect);
+                        if(NewRect != null){
+                            if(Rect != NewRect){
+                                Changed = true;
+                                WindowPos.x  = NewRect.Value.X;
+                                WindowPos.y  = NewRect.Value.Y;
+                                WindowPos.cx = (int)NewRect.Value.W;
+                                WindowPos.cy = (int)NewRect.Value.H;
+                                
+                                __X = WindowPos.x;
+                                __Y = WindowPos.y;
+
+                                __W = (uint)WindowPos.cx;
+                                __H = (uint)WindowPos.cy;
+                            }
+                        }
+                    }catch(Exception e){
+                        Logger.Error("Произошла ошибка при вызове ивента OnPosition у WL окна [" + this + "] внутри WINDOWPOSCHANGED!", e);
+                    }
+                    
+                    if(Changed){ WL.System.Memory.SetStruct(LP, WindowPos); return IntPtr.Zero; } break;
                 }
             }
             
@@ -336,6 +513,36 @@ public class WLWindow{
         return null;
     }
 
+    /// <summary>
+    /// Обновляет двойной буфер
+    /// </summary>
+    private void __UpdateDoubleBuffer(IntPtr HDC, Vector2UI RenderSize){
+        try{
+            __DestroyDoubleBuffer();
+
+            __RenderSize = RenderSize;
+            
+            __DoubleBufferHDC    = WL.System.Draw.CreateMemoryHDC(HDC);
+            __DoubleBufferBitmap = WL.System.Draw.CreateMemoryBitmap(HDC, __RenderSize);
+
+            WL.System.Draw.SelectBitmap(__DoubleBufferHDC, __DoubleBufferBitmap);
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при обновлении двойного буфера у WL окна [" + this + "]!", e);
+        }
+    }
+
+    /// <summary>
+    /// Уничтожает двойной буфер
+    /// </summary>
+    private void __DestroyDoubleBuffer(){
+        try{
+            if(__DoubleBufferBitmap != IntPtr.Zero){ WL.System.Draw.DestroyBitmap(__DoubleBufferBitmap); __DoubleBufferBitmap = IntPtr.Zero; }
+            if(__DoubleBufferHDC != IntPtr.Zero){ WL.System.Draw.DestroyHDC(__DoubleBufferHDC); __DoubleBufferHDC = IntPtr.Zero; }
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при уничтожении двойного буфера у WL окна [" + this + "]!", e);
+        }
+    }
+    
     /// <summary>
     /// Рендерит элементы окна
     /// </summary>

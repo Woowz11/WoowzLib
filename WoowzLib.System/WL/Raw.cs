@@ -247,6 +247,21 @@ public static partial class Native{
             [DllImport(DLL_GDI)]
             public static extern IntPtr SelectObject(IntPtr hdc, IntPtr hObject);
             
+            [DllImport(DLL_GDI)]
+            public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+            
+            [DllImport(DLL_GDI)]
+            public static extern IntPtr CreateCompatibleDC(IntPtr hdc);
+            
+            [DllImport(DLL_GDI)]
+            public static extern IntPtr CreateCompatibleBitmap(IntPtr hdc, int cx, int cy);
+            
+            [DllImport(DLL_GDI)]
+            public static extern bool BitBlt(IntPtr hdcDest, int xDest, int yDest, int w, int h, IntPtr hdcSrc, int xSrc, int ySrc, uint rop);
+            
+            [DllImport(DLL_GDI)]
+            public static extern bool DeleteDC(IntPtr hdc);
+            
             // ----------------------------------------------------------------------
             
             [UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -352,6 +367,17 @@ public static partial class Native{
                 public byte[] rgbReserved;
             }
             
+            [StructLayout(LayoutKind.Sequential)]
+            public struct WINDOWPOS{
+                public IntPtr hwnd;
+                public IntPtr hwndInsertAfter;
+                public int    x;
+                public int    y;
+                public int    cx;
+                public int    cy;
+                public uint   flags;
+            }
+            
             // ----------------------------------------------------------------------
 
             public static readonly IntPtr CURSOR_Arrow = LoadCursor(IntPtr.Zero, IDC_ARROW);
@@ -397,6 +423,7 @@ public static partial class Native{
             public const uint WM_SIZE                    = 0x0005;
             public const uint WM_SHOWWINDOW              = 0x0018;
             public const uint WM_WINDOWPOSCHANGED        = 0x0047;
+            public const uint WM_WINDOWPOSCHANGING       = 0x0046;
             public const uint WM_ERASEBKGND              = 0x0014;
             public const uint WM_COMMAND                 = 0x0111;
             public const int  SW_HIDE                    = 0;
@@ -425,6 +452,23 @@ public static partial class Native{
             public const int  WS_EX_LAYERED              = 0x00080000;
             public const uint LWA_COLORKEY               = 0x00000001;
             public const uint LWA_ALPHA                  = 0x00000002;
+            public const int  HORZRES                    = 8;
+            public const int  VERTRES                    = 10;
+            public const uint SRCCOPY                    = 0x00CC0020;
+            public const uint SRCPAINT                   = 0x00EE0086;
+            public const uint SRCAND                     = 0x008800C6;
+            public const uint SRCINVERT                  = 0x00660046;
+            public const uint SRCERASE                   = 0x00440328;
+            public const uint NOTSRCCOPY                 = 0x00330008;
+            public const uint NOTSRCERASE                = 0x001100A6;
+            public const uint MERGECOPY                  = 0x00C000CA;
+            public const uint MERGEPAINT                 = 0x00BB0226;
+            public const uint PATCOPY                    = 0x00F00021;
+            public const uint PATPAINT                   = 0x00FB0A09;
+            public const uint PATINVERT                  = 0x005A0049;
+            public const uint DSTINVERT                  = 0x00550009;
+            public const uint BLACKNESS                  = 0x00000042;
+            public const uint WHITENESS                  = 0x00FF0062;
         }
     }
 }

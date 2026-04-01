@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 
 namespace WL;
 
@@ -31,6 +32,22 @@ public static partial class System{
         /// <param name="Delegate">Функция</param>
         /// <returns>Ссылка</returns>
         public static IntPtr SaveDelegate(Delegate Delegate) => Marshal.GetFunctionPointerForDelegate(Delegate);
+
+        /// <summary>
+        /// Записывает Struct в память
+        /// </summary>
+        /// <param name="Pointer">Ссылка</param>
+        /// <param name="Struct">Struct</param>
+        /// <typeparam name="S">Тип Struct</typeparam>
+        public static void SetStruct<S>(IntPtr Pointer, [DisallowNull] S Struct) => Marshal.StructureToPtr(Struct, Pointer, true);
+        
+        /// <summary>
+        /// Получает Struct из памяти
+        /// </summary>
+        /// <param name="Pointer">Ссылка</param>
+        /// <typeparam name="S">Тип Struct</typeparam>
+        /// <returns>Struct</returns>
+        public static S? LoadStruct<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)]S>(IntPtr Pointer) => Marshal.PtrToStructure<S>(Pointer);
         
         /// <summary>
         /// Освобождает выделенную память
