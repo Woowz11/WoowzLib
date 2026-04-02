@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.300, внутри класса "Color.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.306, внутри класса "Color.cs" */
 using WLO.Attribute;
 using System.Runtime.CompilerServices;
 namespace WLO.Color;
@@ -36,11 +36,23 @@ public struct Color4B : IEquatable<Color4B>{
 			R = (byte)(value & 0xFF);
 		}
 	}
+	/// <summary>
+	/// Подходит для WINAPI
+	/// </summary>
+	public uint AiBGR{
+		get => (uint)((255 - A) << 24 | B << 16 | G << 8 | R);
+		set{
+			A = (byte)(255 - ((value >> 24) & 0xFF));
+			B = (byte)((value >> 16) & 0xFF);
+			G = (byte)((value >> 8) & 0xFF);
+			R = (byte)(value & 0xFF);
+		}
+	}
 	
 	// ----------------------------------------------------------------------
 	
 	public static readonly Color4B Red = new Color4B(255, 0, 0, 255);
-	public static readonly Color4B Orage = new Color4B(255, 127, 0, 255);
+	public static readonly Color4B Orange = new Color4B(255, 127, 0, 255);
 	public static readonly Color4B Yellow = new Color4B(255, 255, 0, 255);
 	public static readonly Color4B Lime = new Color4B(127, 255, 0, 255);
 	public static readonly Color4B Green = new Color4B(0, 255, 0, 255);

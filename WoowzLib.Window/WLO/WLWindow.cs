@@ -1,5 +1,6 @@
 ﻿using WL;
 using WLO.Attribute;
+using WLO.Color;
 using WLO.Rect;
 using WLO.Vector;
 
@@ -280,8 +281,7 @@ public class WLWindow{
     /// <summary>
     /// Цвет заднего фона
     /// </summary>
-    [WoowzLibHint(Information.WorkInProgress)]
-    public uint BackgroundColor = 0x000000;
+    public Color4B BackgroundColor = Color4B.Black;
 
     /// <summary>
     /// Очищать буфер рендера при вызове рендера?

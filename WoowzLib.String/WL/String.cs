@@ -205,4 +205,18 @@ public static partial class String{
     /// Разъединяет строку (несколько вариантов)
     /// </summary>
     public static string[] Split(string S, params char[] Splitters) => S.Split(Splitters, StringSplitOptions.None);
+    
+    /// <summary>
+    /// Ограничивает число указанным кол-во знаков после запятой
+    /// </summary>
+    /// <param name="Value">Число</param>
+    /// <param name="Places">Кол-во знаков после запятой</param>
+    public static string LimitF(double Value, int Places){ if(Places < 0){ Places = 0; } return Value.ToString("F" + Places); }
+
+    /// <summary>
+    /// Ограничивает число указанным кол-во знаков после запятой
+    /// </summary>
+    /// <param name="Value">Число</param>
+    /// <param name="Places">Кол-во знаков после запятой</param>
+    public static string LimitF(float Value, int Places) => LimitF((double)Value, Places);
 }

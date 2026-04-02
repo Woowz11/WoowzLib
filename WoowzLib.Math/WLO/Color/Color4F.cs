@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.300, внутри класса "Color.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.306, внутри класса "Color.cs" */
 using WLO.Attribute;
 using System.Runtime.CompilerServices;
 namespace WLO.Color;
@@ -57,7 +57,7 @@ public struct Color4F : IEquatable<Color4F>{
 	// ----------------------------------------------------------------------
 	
 	public static readonly Color4F Red = new Color4F(1f, 0, 0, 1f);
-	public static readonly Color4F Orage = new Color4F(1f, 0.5f, 0, 1f);
+	public static readonly Color4F Orange = new Color4F(1f, 0.5f, 0, 1f);
 	public static readonly Color4F Yellow = new Color4F(1f, 1f, 0, 1f);
 	public static readonly Color4F Lime = new Color4F(0.5f, 1f, 0, 1f);
 	public static readonly Color4F Green = new Color4F(0, 1f, 0, 1f);

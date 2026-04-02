@@ -18,7 +18,7 @@ public static class Color{
      */
     public static readonly Info_ColorConst[] Info_Color_Constants = [
         new Info_ColorConst{ Name = "Red", Values = ['1', '0', '0', '1'] },
-        new Info_ColorConst{ Name = "Orage", Values = ['1', '5', '0', '1'] },
+        new Info_ColorConst{ Name = "Orange", Values = ['1', '5', '0', '1'] },
         new Info_ColorConst{ Name = "Yellow", Values = ['1', '1', '0', '1'] },
         new Info_ColorConst{ Name = "Lime", Values = ['5', '1', '0', '1'] },
         new Info_ColorConst{ Name = "Green", Values = ['0', '1', '0', '1'] },
@@ -235,6 +235,10 @@ public static class Color{
                 }
                 Generate_ByteConvert(0, 1, 2, 3);
                 Generate_ByteConvert(3, 2, 1, 0);
+
+                if(I.HasAlpha){
+                    Result += Other.Generate_Summary("Подходит для WINAPI") + "public uint AiBGR{get => (uint)((255 - A) << 24 | B << 16 | G << 8 | R);set{A = (byte)(255 - ((value >> 24) & 0xFF));B = (byte)((value >> 16) & 0xFF);G = (byte)((value >> 8) & 0xFF);R = (byte)(value & 0xFF);}}";
+                }
             }
         }
         Generate_Values();

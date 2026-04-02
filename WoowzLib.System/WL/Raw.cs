@@ -262,6 +262,12 @@ public static partial class Native{
             [DllImport(DLL_GDI)]
             public static extern bool DeleteDC(IntPtr hdc);
             
+            [DllImport(DLL_Kernel)]
+            public static extern bool QueryPerformanceCounter(out long lpPerformanceCount);
+
+            [DllImport(DLL_Kernel)]
+            public static extern bool QueryPerformanceFrequency(out long lpFrequency);
+            
             // ----------------------------------------------------------------------
             
             [UnmanagedFunctionPointer(CallingConvention.StdCall)]

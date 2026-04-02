@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using WL;
 using WLO;
+using WLO.Color;
 using WLO.Rect;
 using WLO.Vector;
 
@@ -187,11 +188,11 @@ namespace WL{
             /// <summary>
             /// Создаёт кисть (нужно очищать!)
             /// </summary>
-            /// <param name="Color">Цвет кисти (BBGGRR, AABBGGRR)</param>
+            /// <param name="Color">Цвет кисти</param>
             /// <param name="Width">Ширина кисти (не все типы поддерживают)</param>
             /// <param name="Type">Тип кисти</param>
             /// <returns></returns>
-            public static IntPtr CreateBrush(uint Color, uint Width = 1, BrushType Type = BrushType.Solid) => WL.Native.Raw.Windows.CreatePen((int)Type, (int)Width, Color);
+            public static IntPtr CreateBrush(Color4B Color, uint Width = 1, BrushType Type = BrushType.Solid) => WL.Native.Raw.Windows.CreatePen((int)Type, (int)Width, Color.AiBGR);
 
             /// <summary>
             /// Уничтожает кисть
