@@ -7,44 +7,49 @@ public static class Test_Base{
     public static void Run(){
         Test.Run("Base", () => {
             Test.F("BiDictionary", () => {
-                var dict = new WLO.BiDictionary<char>();
+                var dict = new WLO.BiDictionary<char, string>();
 
                 // Добавляем пары
-                dict.Add('a', 'A');
-                dict.Add('b', 'B');
-                dict.Add('c', 'C');
+                dict.Add('a', "Apple");
+                dict.Add('b', "Banana");
+                dict.Add('c', "Cherry");
 
                 // Проверяем Count
                 Test.CheckResult(dict.Count, 3, "Count сломан!");
 
-                // Прямой доступ через индексатор
-                Test.CheckResult(dict['a'], 'A', "Indexer 1 прямой сломан!");
-                Test.CheckResult(dict['b'], 'B', "Indexer 2 прямой сломан!");
-                Test.CheckResult(dict['c'], 'C', "Indexer 3 прямой сломан!");
+                // Прямой доступ через индексатор ключ -> значение
+                Test.CheckResult(dict['a'], "Apple", "Indexer прямой сломан!");
+                Test.CheckResult(dict['b'], "Banana", "Indexer прямой сломан!");
+                Test.CheckResult(dict['c'], "Cherry", "Indexer прямой сломан!");
 
-                // Обратный доступ через Reverse = true
-                Test.CheckResult(dict['A', true], 'a', "Indexer 1 обратный сломан!");
-                Test.CheckResult(dict['B', true], 'b', "Indexer 2 обратный сломан!");
-                Test.CheckResult(dict['C', true], 'c', "Indexer 3 обратный сломан!");
+                // Обратный доступ через индексатор значение -> ключ
+                Test.CheckResult(dict["Apple"], 'a', "Indexer обратный сломан!");
+                Test.CheckResult(dict["Banana"], 'b', "Indexer обратный сломан!");
+                Test.CheckResult(dict["Cherry"], 'c', "Indexer обратный сломан!");
 
-                // TryGet прямой
-                Test.CheckResult(dict.TryGet('a', out char v1), true, "TryGet прямой сломан!");
-                Test.CheckResult(v1, 'A', "TryGet прямой значение сломано!");
+                // TryGetValue прямой
+                Test.CheckResult(dict.TryGetValue('a', out string v1), true, "TryGetValue прямой сломан!");
+                Test.CheckResult(v1, "Apple", "TryGetValue прямой значение сломано!");
 
-                // TryGet обратный
-                Test.CheckResult(dict.TryGet('A', out char k1, true), true, "TryGet обратный сломан!");
-                Test.CheckResult(k1, 'a', "TryGet обратный значение сломано!");
+                // TryGetKey обратный
+                Test.CheckResult(dict.TryGetKey("Apple", out char k1), true, "TryGetKey обратный сломан!");
+                Test.CheckResult(k1, 'a', "TryGetKey обратный значение сломано!");
 
                 // ContainsKey / ContainsValue
                 Test.CheckResult(dict.ContainsKey('b'), true, "ContainsKey сломан!");
-                Test.CheckResult(dict.ContainsValue('C'), true, "ContainsValue сломан!");
+                Test.CheckResult(dict.ContainsValue("Cherry"), true, "ContainsValue сломан!");
                 Test.CheckResult(dict.ContainsKey('z'), false, "ContainsKey false сломан!");
-                Test.CheckResult(dict.ContainsValue('Z'), false, "ContainsValue false сломан!");
+                Test.CheckResult(dict.ContainsValue("Zebra"), false, "ContainsValue false сломан!");
 
-                // Перезапись значения
-                dict['a'] = 'X';
-                Test.CheckResult(dict['a'], 'X', "Перезапись индексатора сломана!");
-                Test.CheckResult(dict['X', true], 'a', "Перезапись обратного доступа сломана!");
+                // Перезапись значения по ключу
+                dict['a'] = "Avocado";
+                Test.CheckResult(dict['a'], "Avocado", "Перезапись индексатора ключ->значение сломана!");
+                Test.CheckResult(dict["Avocado"], 'a', "Перезапись индексатора значение->ключ сломана!");
+
+                // Перезапись ключа по значению
+                dict["Avocado"] = 'X'; // меняем ключ 'a' -> 'X', значение остаётся "Avocado"
+                Test.CheckResult(dict['X'], "Avocado", "Перезапись ключа сломана!");
+                Test.CheckResult(dict["Avocado"], 'X', "Обратная связь ключа сломана!");
             });
         });
     }

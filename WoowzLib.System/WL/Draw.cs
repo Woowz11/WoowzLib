@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+﻿using System.Runtime.CompilerServices;
 using WL;
 using WLO;
 using WLO.Color;
@@ -7,15 +7,15 @@ using WLO.Vector;
 
 namespace WLO{
     /// <summary>
-    /// Тип кисти
+    /// Тип кисти при рисовании контура
     /// </summary>
-    public enum BrushType : int{
+    public enum BrushContourType : int{
         /// <summary>
         /// Сплошная линия
         /// </summary>
         Solid = 0,
         /// <summary>
-        /// Пуктирная линяя
+        /// Пунктирная линяя
         /// </summary>
         Dash = 1,
         /// <summary>
@@ -23,11 +23,11 @@ namespace WLO{
         /// </summary>
         Dot = 2,
         /// <summary>
-        /// Пуктирно-точечная линия
+        /// Пунктирно-точечная линия
         /// </summary>
         DashDot = 3,
         /// <summary>
-        /// Пуктирно-точечная-точечная линия
+        /// Пунктирно-точечная-точечная линия
         /// </summary>
         DashDotDot = 4,
         /// <summary>
@@ -38,6 +38,16 @@ namespace WLO{
         /// Внутри контура
         /// </summary>
         InsideCircuit = 6
+    }
+
+    /// <summary>
+    /// Тип кисти при заливке фона
+    /// </summary>
+    public enum BrushFillType{
+        /// <summary>
+        /// Сплошной цвет
+        /// </summary>
+        Solid
     }
 
     public enum CopyType : uint{
@@ -101,6 +111,72 @@ namespace WLO{
         /// Инвертирует текущее изображение [old = !old]
         /// </summary>
         InvertCurrent = Native.Raw.Windows.DSTINVERT
+    }
+
+    public interface IBrush{
+        uint __Color{ get; }
+    }
+    
+    public readonly struct BrushContour : IBrush, IEquatable<BrushContour>{
+        public BrushContour(Color4B Color, uint Width = 1, BrushContourType Type = BrushContourType.Solid){
+            this.Color = Color;
+            this.Width = Width;
+            this.Type  = Type;
+            
+            __Color = Color.AiBGR;
+        }
+
+        public readonly Color4B          Color;
+        public readonly uint             Width;
+        public readonly BrushContourType Type;
+
+        public uint __Color{ get; }
+        
+        // ----------------------------------------------------------------------
+        
+        public override string ToString() => "BrushContour(" + Color + ", " + Width + ", " + Type + ")";
+	
+        public bool Equals(BrushContour Other) => __Color == Other.__Color && Width == Other.Width && Type == Other.Type;
+        public override bool Equals(object? Object) => Object is BrushContour Other && Equals(Other);
+	
+        public override int GetHashCode() => HashCode.Combine(__Color, Width, Type);
+	
+        // ----------------------------------------------------------------------
+	
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator ==(BrushContour L, BrushContour R) => L.Equals(R);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(BrushContour L, BrushContour R) => !L.Equals(R);
+    }
+
+    public readonly struct BrushFill : IBrush, IEquatable<BrushFill>{
+        public BrushFill(Color4B Color, BrushFillType Type = BrushFillType.Solid){
+            this.Color = Color;
+            this.Type  = Type;
+
+            __Color = Color.AiBGR;
+        }
+
+        public readonly Color4B       Color;
+        public readonly BrushFillType Type;
+        
+        public uint __Color{ get; }
+        
+        // ----------------------------------------------------------------------
+        
+        public override string ToString() => "BrushFill(" + Color + ", " + Type + ")";
+	
+        public bool Equals(BrushFill Other) => __Color == Other.__Color && Type == Other.Type;
+        public override bool Equals(object? Object) => Object is BrushContour Other && Equals(Other);
+	
+        public override int GetHashCode() => HashCode.Combine(__Color, Type);
+	
+        // ----------------------------------------------------------------------
+	
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator ==(BrushFill L, BrushFill R) => L.Equals(R);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(BrushFill L, BrushFill R) => !L.Equals(R);
     }
 }
 
@@ -182,49 +258,23 @@ namespace WL{
                     throw new Exception("Произошла ошибка при уничтожении Draw изображения [" + Bitmap + "]!", e);
                 }
             }
-            
+
             // ----------------------------------------------------------------------
 
-            /// <summary>
-            /// Создаёт кисть (нужно очищать!)
-            /// </summary>
-            /// <param name="Color">Цвет кисти</param>
-            /// <param name="Width">Ширина кисти (не все типы поддерживают)</param>
-            /// <param name="Type">Тип кисти</param>
-            /// <returns></returns>
-            public static IntPtr CreateBrush(Color4B Color, uint Width = 1, BrushType Type = BrushType.Solid){
-                IntPtr Brush = WL.Native.Raw.Windows.CreatePen((int)Type, (int)Width, Color.AiBGR);
-                __BrushColor[Brush] = Color.AiBGR;
-                return Brush;
+            private static readonly Dictionary<IntPtr, BiDictionary<BrushContour, IntPtr>> __BrushesContour = [];
+            
+            public static IntPtr CreateBrushContour(IntPtr HDC, BrushContour Info, bool Select = true){
+                return IntPtr.Zero;
             }
-
-            /// <summary>
-            /// Уничтожает кисть
-            /// </summary>
-            /// <param name="Brush">Кисть</param>
-            public static void DestroyBrush(IntPtr Brush){
-                try{
-                    if(!WL.Native.Raw.Windows.DeleteObject(Brush)){ throw new Exception("Произошла ошибка в DeleteObject!"); }
-                }catch(Exception e){
-                    throw new Exception("Произошла ошибка при уничтожении Draw кисти [" + Brush + "]!", e);
-                }
+            
+            private static readonly Dictionary<IntPtr, BiDictionary<BrushFill, IntPtr>> __BrushesFill = [];
+            
+            public static IntPtr CreateBrushFill(IntPtr HDC, BrushFill Info, bool Select = true){
+                return IntPtr.Zero;
             }
-
-            /// <summary>
-            /// Выбирает кисть
-            /// </summary>
-            /// <param name="HDC">Где выбрать?</param>
-            /// <param name="Brush">Кисть</param>
-            /// <returns>Старая кисть, или текущая</returns>
-            public static IntPtr SelectBrush(IntPtr HDC, IntPtr Brush){
-                if(__CurrentBrush.TryGetValue(HDC, out IntPtr CurrentBrush) && CurrentBrush == Brush){ return CurrentBrush; }
-                IntPtr OldBrush = WL.Native.Raw.Windows.SelectObject(HDC, Brush);
-                __CurrentBrush[HDC] = Brush;
-                return OldBrush;
-            }
-            private static readonly Dictionary<IntPtr, IntPtr> __CurrentBrush = [];
-            private static readonly Dictionary<IntPtr, uint  > __BrushColor   = [];
-
+            
+            public static (IntPtr Contour, IntPtr Fill) CreateBrush(IntPtr HDC, BrushContour ContourInfo, BrushFill FillInfo, bool Select = true) => (CreateBrushContour(HDC, ContourInfo, Select), CreateBrushFill(HDC, FillInfo, Select));
+            
             // ----------------------------------------------------------------------
 
             /// <summary>
@@ -232,9 +282,9 @@ namespace WL{
             /// </summary>
             /// <param name="HDC">Куда рисовать?</param>
             /// <param name="Rect">Область</param>
-            public static void Fill(IntPtr HDC, Rect2I Rect){
+            public static void Fill(IntPtr HDC, Rect2I Rect, BrushFill Fill){
                 WL.Native.Raw.Windows.RECT Rect__ = new WL.Native.Raw.Windows.RECT(Rect);
-                WL.Native.Raw.Windows.FillRect(HDC, ref Rect__, __CurrentBrush[HDC]);
+                WL.Native.Raw.Windows.FillRect(HDC, ref Rect__, CreateBrushFill(HDC, Fill, false));
             }
             
             /// <summary>
@@ -243,7 +293,8 @@ namespace WL{
             /// <param name="HDC">Куда рисовать?</param>
             /// <param name="Start">Начало линии</param>
             /// <param name="End">Конец линии</param>
-            public static void Line(IntPtr HDC, Vector2I Start, Vector2I End){
+            public static void Line(IntPtr HDC, Vector2I Start, Vector2I End, BrushContour Contour){
+                CreateBrushContour(HDC, Contour);
                 WL.Native.Raw.Windows.MoveToEx(HDC, Start.X, Start.Y, out WL.Native.Raw.Windows.POINT _);
                 WL.Native.Raw.Windows.LineTo(HDC, End.X, End.Y);
             }
@@ -253,21 +304,27 @@ namespace WL{
             /// </summary>
             /// <param name="HDC">Куда рисовать?</param>
             /// <param name="Rect">Прямоугольник</param>
-            public static void Rectangle(IntPtr HDC, Rect2I Rect) => WL.Native.Raw.Windows.Rectangle(HDC, Rect.Left, Rect.Bottom, Rect.Right, Rect.Top);
+            public static void Rectangle(IntPtr HDC, Rect2I Rect, BrushContour Contour, BrushFill Fill){
+                CreateBrush(HDC, Contour, Fill);
+                WL.Native.Raw.Windows.Rectangle(HDC, Rect.Left, Rect.Bottom, Rect.Right, Rect.Top);
+            }
 
             /// <summary>
             /// Рисует круг
             /// </summary>
             /// <param name="HDC">Куда рисовать?</param>
             /// <param name="Ellipse">Круг</param>
-            public static void Ellipse(IntPtr HDC, Rect2I Ellipse) => WL.Native.Raw.Windows.Ellipse(HDC, Ellipse.Left, Ellipse.Bottom, Ellipse.Right, Ellipse.Top);
+            public static void Ellipse(IntPtr HDC, Rect2I Ellipse, BrushContour Contour, BrushFill Fill){
+                CreateBrush(HDC, Contour, Fill);
+                WL.Native.Raw.Windows.Ellipse(HDC, Ellipse.Left, Ellipse.Bottom, Ellipse.Right, Ellipse.Top);
+            }
 
             /// <summary>
             /// Рисует пиксель
             /// </summary>
             /// <param name="HDC">Куда рисовать?</param>
             /// <param name="Position">Позиция</param>
-            public static void Pixel(IntPtr HDC, Vector2I Position) => WL.Native.Raw.Windows.SetPixel(HDC, Position.X, Position.Y, __BrushColor[__CurrentBrush[HDC]]);
+            public static void Pixel(IntPtr HDC, Vector2I Position, IBrush Brush) => WL.Native.Raw.Windows.SetPixel(HDC, Position.X, Position.Y, Brush.__Color);
 
             /// <summary>
             /// Рисует полигон

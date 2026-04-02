@@ -8,7 +8,7 @@ namespace WL;
 
 public static partial class String{
     static String(){
-        DictionaryUpperCase = new BiDictionary<char>();
+        DictionaryUpperCase = new BiDictionary<char, char>();
 
         for(char C = 'a'; C <= 'z'; C++){
             DictionaryUpperCase.Add(C, (char)(C - 32));
@@ -88,13 +88,15 @@ public static partial class String{
     /// <param name="S">Строка</param>
     /// <param name="CharSet">Заменяемые символы</param>
     /// <param name="Reverse">Обратить?</param>
-    public static string ReplaceDictionary(string S, BiDictionary<char> CharSet, bool Reverse = false){
+    public static string ReplaceDictionary(string S, BiDictionary<char, char> CharSet, bool Reverse = false){
         try{
             if(IsEmpty(S) || CharSet.Count == 0){ return S; }
 
             StringBuilder SB = new StringBuilder(S.Length);
 
-            foreach(char C in S){ SB.Append(CharSet.TryGet(C, out char C__, Reverse) ? C__ : C); }
+            foreach(char C in S){
+                SB.Append(CharSet.TryGet(C, out char C__, Reverse) ? C__ : C);
+            }
 
             return SB.ToString();
         }catch(Exception e){
@@ -107,7 +109,7 @@ public static partial class String{
     /// <summary>
     /// CharSet для UpperCase
     /// </summary>
-    public static readonly BiDictionary<char> DictionaryUpperCase;
+    public static readonly BiDictionary<char, char> DictionaryUpperCase;
     
     /// <summary>
     /// Сделать буквы заглавными

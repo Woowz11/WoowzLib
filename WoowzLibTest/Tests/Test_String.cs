@@ -80,10 +80,10 @@ public static class Test_String{
                 S = WL.String.LowerCase("АБВГД Ё ABC 123 321 _1 ВУВЗ вувз");
                 Test.CheckResult(S, "абвгд ё abc 123 321 _1 вувз вувз", "LowerCase сломан!");
 
-                BiDictionary<char> CharSet = new BiDictionary<char>();
+                BiDictionary<char, char> CharSet = new BiDictionary<char, char>();
 
-                CharSet['0'] = '1';
-                CharSet['1'] = '!';
+                CharSet.SetValue('0', '1');
+                CharSet.SetValue('1', '!');
                 
                 S = WL.String.ReplaceDictionary("01234567890", CharSet);
                 Test.CheckResult(S, "1!234567891", "ReplaceDictionary сломан!");
