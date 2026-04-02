@@ -2,11 +2,12 @@
 
 # WoowzLib
 
-|Модуль|
-|:-:|
-|Base|
-|Core|
-|Logger|
-|System|
-|Math|
-|Window|
+|  Модуль   |
+|:---------:|
+|   Base    |
+|   Core    |
+|  Logger   |
+|  System   |
+|   Math    |
+|  Window   |
+| Algorithm |

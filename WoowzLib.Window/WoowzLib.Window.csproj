@@ -7,10 +7,11 @@
         <Configurations>Release</Configurations>
         <Platforms>AnyCPU</Platforms>
 
-        <Version>0.0.0.30</Version>
+        <Version>0.0.0.31</Version>
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\WoowzLib.Algorithm\WoowzLib.Algorithm.csproj" />
       <ProjectReference Include="..\WoowzLib.System\WoowzLib.System.csproj" />
     </ItemGroup>
 
