@@ -1,6 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
 using WLO.Rect;
+using WLO.Vector;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
@@ -227,6 +228,15 @@ public static partial class Native{
             public static extern bool Ellipse(IntPtr hdc, int left, int top, int right, int bottom);
             
             [DllImport(DLL_GDI, SetLastError = true)]
+            public static extern int SetPixel(IntPtr hdc, int x, int y, uint color);
+            
+            [DllImport(DLL_GDI, SetLastError = true)]
+            public static extern bool Polygon(IntPtr hdc, POINT[] points, int count);
+
+            [DllImport(DLL_GDI, SetLastError = true)]
+            public static extern bool Polyline(IntPtr hdc, POINT[] points, int count);
+            
+            [DllImport(DLL_GDI, SetLastError = true)]
             public static extern bool MoveToEx(IntPtr hdc, int x, int y, out POINT lpPoint);
             
             [DllImport(DLL_GDI, SetLastError = true)]
@@ -302,6 +312,7 @@ public static partial class Native{
             [StructLayout(LayoutKind.Sequential)]
             public struct POINT{
                 public POINT(int X, int Y){ this.X = X; this.Y = Y; }
+                public POINT(Vector2I V) : this(V.X, V.Y){}
                 
                 public int X;
                 public int Y;

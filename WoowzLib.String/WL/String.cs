@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Text;
 using WLO;
 using WLO.Attribute;
@@ -211,7 +212,7 @@ public static partial class String{
     /// </summary>
     /// <param name="Value">Число</param>
     /// <param name="Places">Кол-во знаков после запятой</param>
-    public static string LimitF(double Value, int Places){ if(Places < 0){ Places = 0; } return Value.ToString("F" + Places); }
+    public static string LimitF(double Value, int Places){ if(Places < 0){ Places = 0; } return Value.ToString("F" + Places, CultureInfo.InvariantCulture); }
 
     /// <summary>
     /// Ограничивает число указанным кол-во знаков после запятой

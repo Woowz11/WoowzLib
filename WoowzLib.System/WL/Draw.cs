@@ -184,7 +184,7 @@ namespace WL{
             }
             
             // ----------------------------------------------------------------------
-            
+
             /// <summary>
             /// Создаёт кисть (нужно очищать!)
             /// </summary>
@@ -192,7 +192,11 @@ namespace WL{
             /// <param name="Width">Ширина кисти (не все типы поддерживают)</param>
             /// <param name="Type">Тип кисти</param>
             /// <returns></returns>
-            public static IntPtr CreateBrush(Color4B Color, uint Width = 1, BrushType Type = BrushType.Solid) => WL.Native.Raw.Windows.CreatePen((int)Type, (int)Width, Color.AiBGR);
+            public static IntPtr CreateBrush(Color4B Color, uint Width = 1, BrushType Type = BrushType.Solid){
+                IntPtr Brush = WL.Native.Raw.Windows.CreatePen((int)Type, (int)Width, Color.AiBGR);
+                __BrushColor[Brush] = Color.AiBGR;
+                return Brush;
+            }
 
             /// <summary>
             /// Уничтожает кисть
@@ -219,8 +223,19 @@ namespace WL{
                 return OldBrush;
             }
             private static readonly Dictionary<IntPtr, IntPtr> __CurrentBrush = [];
+            private static readonly Dictionary<IntPtr, uint  > __BrushColor   = [];
 
             // ----------------------------------------------------------------------
+
+            /// <summary>
+            /// Закрашивает область (быстро)
+            /// </summary>
+            /// <param name="HDC">Куда рисовать?</param>
+            /// <param name="Rect">Область</param>
+            public static void Fill(IntPtr HDC, Rect2I Rect){
+                WL.Native.Raw.Windows.RECT Rect__ = new WL.Native.Raw.Windows.RECT(Rect);
+                WL.Native.Raw.Windows.FillRect(HDC, ref Rect__, __CurrentBrush[HDC]);
+            }
             
             /// <summary>
             /// Рисует линию
@@ -234,14 +249,66 @@ namespace WL{
             }
 
             /// <summary>
-            /// Закрашивает полностью всю область
+            /// Рисует прямоугольник
             /// </summary>
             /// <param name="HDC">Куда рисовать?</param>
-            /// <param name="Rect">Область</param>
-            public static void Fill(IntPtr HDC, Rect2I Rect){
-                WL.Native.Raw.Windows.RECT Rect__ = new WL.Native.Raw.Windows.RECT(Rect);
-                WL.Native.Raw.Windows.FillRect(HDC, ref Rect__, __CurrentBrush[HDC]);
+            /// <param name="Rect">Прямоугольник</param>
+            public static void Rectangle(IntPtr HDC, Rect2I Rect) => WL.Native.Raw.Windows.Rectangle(HDC, Rect.Left, Rect.Bottom, Rect.Right, Rect.Top);
+
+            /// <summary>
+            /// Рисует круг
+            /// </summary>
+            /// <param name="HDC">Куда рисовать?</param>
+            /// <param name="Ellipse">Круг</param>
+            public static void Ellipse(IntPtr HDC, Rect2I Ellipse) => WL.Native.Raw.Windows.Ellipse(HDC, Ellipse.Left, Ellipse.Bottom, Ellipse.Right, Ellipse.Top);
+
+            /// <summary>
+            /// Рисует пиксель
+            /// </summary>
+            /// <param name="HDC">Куда рисовать?</param>
+            /// <param name="Position">Позиция</param>
+            public static void Pixel(IntPtr HDC, Vector2I Position) => WL.Native.Raw.Windows.SetPixel(HDC, Position.X, Position.Y, __BrushColor[__CurrentBrush[HDC]]);
+
+            /// <summary>
+            /// Рисует полигон
+            /// </summary>
+            /// <param name="HDC">Куда рисовать?</param>
+            /// <param name="Points">Точки</param>
+            public static void Polygon(IntPtr HDC, Vector2I[] Points){
+                WL.Native.Raw.Windows.POINT[] Points__ = new WL.Native.Raw.Windows.POINT[Points.Length];
+                for(int i = 0; i < Points.Length; i++){ Points__[i] = new WL.Native.Raw.Windows.POINT(Points[i]); }
+                WL.Native.Raw.Windows.Polygon(HDC, Points__, Points__.Length);
             }
+
+            /// <summary>
+            /// Рисует линию (по указанным точкам)
+            /// </summary>
+            /// <param name="HDC">КУда рисовать?</param>
+            /// <param name="Points">Точки</param>
+            public static void Line(IntPtr HDC, Vector2I[] Points){
+                WL.Native.Raw.Windows.POINT[] Points__ = new WL.Native.Raw.Windows.POINT[Points.Length];
+                for(int i = 0; i < Points.Length; i++){ Points__[i] = new WL.Native.Raw.Windows.POINT(Points[i]); }
+                WL.Native.Raw.Windows.Polyline(HDC, Points__, Points__.Length);
+            }
+
+            /// <summary>
+            /// Рисует треугольник
+            /// </summary>
+            /// <param name="HDC">Куда рисовать?</param>
+            /// <param name="A">Точка 1</param>
+            /// <param name="B">Точка 2</param>
+            /// <param name="C">Точка 3</param>
+            public static void Triangle(IntPtr HDC, Vector2I A, Vector2I B, Vector2I C) => Polygon(HDC, [A, B, C]);
+            
+            /// <summary>
+            /// Рисует параллелограмм
+            /// </summary>
+            /// <param name="HDC">Куда рисовать?</param>
+            /// <param name="A">Точка 1</param>
+            /// <param name="B">Точка 2</param>
+            /// <param name="C">Точка 3</param>
+            /// <param name="D">Точка 4</param>
+            public static void Parallelogram(IntPtr HDC, Vector2I A, Vector2I B, Vector2I C, Vector2I D) => Polygon(HDC, [A, B, C, D]);
         }
     }
 }

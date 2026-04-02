@@ -7,9 +7,9 @@ public static partial class System{
         /// <summary>
         /// Ограничивает поток через условие, не останавливая цикл (вызывает функцию если совпало всё)
         /// </summary>
-        /// <param name="LastTime">Последнее время</param>
+        /// <param name="LastTime">Последнее время (должен быть уникальным!)</param>
         /// <param name="TargetDeltaTime">Целевой DeltaTime</param>
-        /// <param name="TD">Информация об DeltaTime</param>
+        /// <param name="TD">Информация об DeltaTime (должен быть уникальным!)</param>
         /// <returns>Ограничения прошли успешно</returns>
         public static bool Limit(ref double LastTime, double TargetDeltaTime, ref TickData TD){
             try{
@@ -34,9 +34,9 @@ public static partial class System{
         /// <summary>
         /// Ограничивает поток через условие, не останавливая цикл (вызывает функцию если совпало всё)
         /// </summary>
-        /// <param name="LastTime">Последнее время</param>
+        /// <param name="LastTime">Последнее время (должен быть уникальным!)</param>
         /// <param name="TargetFPS">Целевой FPS</param>
-        /// <param name="TD">Информация об DeltaTime</param>
+        /// <param name="TD">Информация об DeltaTime (должен быть уникальным!)</param>
         /// <returns>Ограничения прошли успешно</returns>
         public static bool LimitFPS(ref double LastTime, double TargetFPS, ref TickData TD) => Limit(ref LastTime, TickData.FPSToDeltaTime(TargetFPS), ref TD);
     }

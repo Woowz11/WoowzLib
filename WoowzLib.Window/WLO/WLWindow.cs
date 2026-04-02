@@ -85,9 +85,9 @@ public class WLWindow{
     public event Func<WLWindow, string, string?>? OnTitle;
 
     /// <summary>
-    /// Вызывается в начале рендера (Окно, HDC, Рендерить элементы?) => (Рендерить элементы?)
+    /// Вызывается в начале рендера (Окно, HDC)
     /// </summary>
-    public event Func<WLWindow, IntPtr, bool, bool>? OnRender;
+    public event Action<WLWindow, IntPtr>? OnRender;
     
     /// <summary>
     /// Вызывается в конце рендера (Окно, HDC)
@@ -292,6 +292,11 @@ public class WLWindow{
     /// Включить двойной буфер рендера?
     /// </summary>
     public bool DoubleRenderBuffer = true;
+
+    /// <summary>
+    /// Рендерить элементы окна?
+    /// </summary>
+    public bool RenderElements = true;
     
     // ----------------------------------------------------------------------
     
@@ -311,8 +316,7 @@ public class WLWindow{
     /// <summary>
     /// Рендерит окно
     /// </summary>
-    /// <returns>Произошёл рендер элементов окна?</returns>
-    public bool Render(){
+    public void Render(){
         IntPtr? HDC__ = null;
 
         try{
@@ -335,24 +339,17 @@ public class WLWindow{
                     WL.System.Draw.DestroyBrush(BackgroundBrush);
                 }
 
-                bool RenderElements = true;
                 try{
-                    if(OnRender != null){
-                        RenderElements = OnRender.Invoke(this, HDC, RenderElements);
-                    }
-                }
-                catch(Exception e){
+                    OnRender?.Invoke(this, HDC);
+                }catch(Exception e){
                     Logger.Error("Произошла ошибка в ивенте OnRender в WL окне [" + this + "]!", e);
                 }
 
-                if(!RenderElements){ return false; }
-
-                __RenderElements(HDC);
+                if(RenderElements){ __RenderElements(HDC); }
 
                 try{
                     OnPostRender?.Invoke(this, HDC);
-                }
-                catch(Exception e){
+                }catch(Exception e){
                     Logger.Error("Произошла ошибка в ивенте OnPostRender в WL окне [" + this + "]!", e);
                 }
 
@@ -361,14 +358,10 @@ public class WLWindow{
             if(DoubleRenderBuffer){
                 WL.System.Draw.CopyHDC(WindowHDC, HDC, __RenderSize);
             }
-            
-            return true;
         }catch(Exception e){
             throw new Exception("Произошла ошибка во время рендера WL окна [" + this + "]!", e);
         }finally{
-            if(HDC__.HasValue){
-                Original.HDC(HDC__.Value);
-            }
+            if(HDC__.HasValue){ Original.HDC(HDC__.Value); }
         }
     }
     
