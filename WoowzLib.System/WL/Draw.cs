@@ -198,7 +198,7 @@ namespace WL{
             /// <param name="HDC">Временный HDC</param>
             public static void DestroyHDC(IntPtr HDC){
                 try{
-                    if(!WL.Native.Raw.Windows.DeleteDC(HDC)){ throw new Exception("Произошла ошибка в DeleteObject!"); }
+                    if(!WL.Native.Raw.Windows.DeleteDC(HDC)){ throw new Exception("Произошла ошибка в DeleteObject!\nОшибка: " + WL.System.LastOSError()); }
                 }catch(Exception e){
                     throw new Exception("Произошла ошибка при уничтожении Draw HDC [" + HDC + "]!", e);
                 }
@@ -223,7 +223,7 @@ namespace WL{
             public static void CopyHDC(IntPtr To, IntPtr From, Vector2UI Size, Vector2I ToPosition = default, Vector2I FromPosition = default, CopyType Type = CopyType.FullCopy){
                 try{
                     if(!WL.Native.Raw.Windows.BitBlt(To, ToPosition.X, ToPosition.Y, (int)Size.W, (int)Size.H, From, FromPosition.X, FromPosition.Y, (uint)Type)){
-                        throw new Exception("Произошла ошибка в BitBlt!");
+                        throw new Exception("Произошла ошибка в BitBlt!\nОшибка: " + WL.System.LastOSError());
                     }
                 }catch(Exception e){
                     throw new Exception("Произошла ошибка при копировании пикселей из одного HDC в другой HDC!\nВ: " + To + "\nИз: " + From + "\nРазмер: " + Size + "\n\"В\" позиция: " + ToPosition + "\n\"Из\" позиция: " + FromPosition + "\nТип копирования: " + Type, e);
@@ -238,7 +238,7 @@ namespace WL{
             /// <param name="HDC">Где создать новое изображение</param>
             /// <param name="Size">Размер изображения</param>
             /// <returns>Новое изображение в памяти</returns>
-            public static IntPtr CreateMemoryBitmap(IntPtr HDC, Vector2UI Size) => WL.Native.Raw.Windows.CreateCompatibleBitmap(HDC, (int)Size.X, (int)Size.Y);
+            public static IntPtr CreateMemoryBitmap(IntPtr HDC, Vector2UI Size) => WL.Native.Raw.Windows.CreateCompatibleBitmap(HDC, (int)Size.W, (int)Size.H);
 
             /// <summary>
             /// Выбирает изображение
@@ -262,7 +262,7 @@ namespace WL{
 
             // ----------------------------------------------------------------------
 
-            private static readonly BiDictionary<BrushContour, IntPtr> __BrushesContour = new BiDictionary<BrushContour, IntPtr>();
+            private static (BrushContour Info, IntPtr Brush)?  __CurrentBrushContour;
             
             /// <summary>
             /// Получает старую контурную кисть (если разные, то удаляет и создаёт новую) или создаёт новую
@@ -271,30 +271,26 @@ namespace WL{
             /// <param name="HDC">Если указан, то автоматически выбрать кисть в нём</param>
             public static IntPtr CreateBrushContour(BrushContour Info, IntPtr? HDC = null){
                 try{
-                    if(__BrushesContour.TryGetValue(Info, out IntPtr OBrush)){
-                        if(OBrush != IntPtr.Zero){
-                            if(HDC.HasValue){ WL.Native.Raw.Windows.SelectObject(HDC.Value, OBrush); }
-                            return OBrush;
+                    if(__CurrentBrushContour.HasValue){
+                        if(__CurrentBrushContour.Value.Info == Info){
+                            if(HDC != null){ WL.Native.Raw.Windows.SelectObject(HDC.Value, __CurrentBrushContour.Value.Brush); }
+                            return __CurrentBrushContour.Value.Brush;
                         }
+                        
+                        WL.Native.Raw.Windows.DeleteObject(__CurrentBrushContour.Value.Brush);
                     }
+
+                    __CurrentBrushContour = (Info, WL.Native.Raw.Windows.CreatePen((int)Info.Type, (int)Info.Width, Info.__Color));
                     
-                    IntPtr NBrush = WL.Native.Raw.Windows.CreatePen((int)Info.Type, (int)Info.Width, Info.__Color);
+                    if(HDC != null){ WL.Native.Raw.Windows.SelectObject(HDC.Value, __CurrentBrushContour.Value.Brush); }
 
-                    if(OBrush != IntPtr.Zero){ WL.Native.Raw.Windows.DeleteObject(OBrush); }
-
-                    __BrushesContour[Info] = NBrush;
-
-                    if(HDC.HasValue){
-                        WL.Native.Raw.Windows.SelectObject(HDC.Value, NBrush);
-                    }
-
-                    return NBrush;
+                    return __CurrentBrushContour.Value.Brush;
                 }catch(Exception e){
                     throw new Exception("Произошла ошибка при создании контурной кисти в Draw!", e);
                 }
             }
-            
-            private static readonly BiDictionary<BrushFill, IntPtr> __BrushesFill = new BiDictionary<BrushFill, IntPtr>();
+
+            private static (BrushFill Info, IntPtr Brush)? __CurrentBrushFill;
             
             /// <summary>
             /// Получает старую заполняющую кисть (если разные, то удаляет и создаёт новую) или создаёт новую
@@ -304,24 +300,20 @@ namespace WL{
             [WoowzLibHint(Information.WorkInProgress, "не указаны другие типы пока-что")]
             public static IntPtr CreateBrushFill(BrushFill Info, IntPtr? HDC = null){
                 try{
-                    if(__BrushesFill.TryGetValue(Info, out IntPtr OBrush)){
-                        if(OBrush != IntPtr.Zero){
-                            if(HDC.HasValue){ WL.Native.Raw.Windows.SelectObject(HDC.Value, OBrush); }
-                            return OBrush;
+                    if(__CurrentBrushFill.HasValue){
+                        if(__CurrentBrushFill.Value.Info == Info){
+                            if(HDC != null){ WL.Native.Raw.Windows.SelectObject(HDC.Value, __CurrentBrushFill.Value.Brush); }
+                            return __CurrentBrushFill.Value.Brush;
                         }
+                        
+                        WL.Native.Raw.Windows.DeleteObject(__CurrentBrushFill.Value.Brush);
                     }
+
+                    __CurrentBrushFill = (Info, WL.Native.Raw.Windows.CreateSolidBrush(Info.__Color));
                     
-                    IntPtr NBrush = WL.Native.Raw.Windows.CreateSolidBrush(Info.__Color);
+                    if(HDC != null){ WL.Native.Raw.Windows.SelectObject(HDC.Value, __CurrentBrushFill.Value.Brush); }
 
-                    if(OBrush != IntPtr.Zero){ WL.Native.Raw.Windows.DeleteObject(OBrush); }
-
-                    __BrushesFill[Info] = NBrush;
-
-                    if(HDC.HasValue){
-                        WL.Native.Raw.Windows.SelectObject(HDC.Value, NBrush);
-                    }
-
-                    return NBrush;
+                    return __CurrentBrushFill.Value.Brush;
                 }catch(Exception e){
                     throw new Exception("Произошла ошибка при создании заполняющей кисти в Draw!", e);
                 }

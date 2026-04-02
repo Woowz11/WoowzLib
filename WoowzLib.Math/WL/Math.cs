@@ -574,7 +574,7 @@ public static class Math{
 	/// <summary>
 	/// Синус числа (0 -> 0, π/2 -> 1, π -> 0)
 	/// </summary>
-	public static float SinF(float A) => float.Sin(A);
+	public static float SinF(float A) => MathF.Sin(A);
 	/// <summary>
 	/// Синус числа (0 -> 0, π/2 -> 1, π -> 0)
 	/// </summary>

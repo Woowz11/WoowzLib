@@ -85,14 +85,14 @@ public class WLWindow{
     public event Func<WLWindow, string, string?>? OnTitle;
 
     /// <summary>
-    /// Вызывается в начале рендера (Окно, HDC)
+    /// Вызывается в начале рендера (Окно, HDC, Размер HDC)
     /// </summary>
-    public event Action<WLWindow, IntPtr>? OnRender;
+    public event Action<WLWindow, IntPtr, Vector2UI>? OnRender;
     
     /// <summary>
-    /// Вызывается в конце рендера (Окно, HDC)
+    /// Вызывается в конце рендера (Окно, HDC, Размер HDC)
     /// </summary>
-    public event Action<WLWindow, IntPtr>? OnPostRender;
+    public event Action<WLWindow, IntPtr, Vector2UI>? OnPostRender;
 
     
     public event Action<WLWindow, Vector2I>? OnPosition;
@@ -299,6 +299,13 @@ public class WLWindow{
     public bool RenderElements = true;
     
     // ----------------------------------------------------------------------
+
+    /// <summary>
+    /// Размер клиентской области
+    /// </summary>
+    public Vector2UI ClientSize => Original.ClientSize;
+    
+    // ----------------------------------------------------------------------
     
     /// <summary>
     /// Уничтожает окно
@@ -325,7 +332,7 @@ public class WLWindow{
             HDC__ = Original.HDC()!;
             IntPtr WindowHDC = HDC__.Value;
 
-            Vector2UI RenderSize__ = WL.System.Draw.CurrentSize(WindowHDC);
+            Vector2UI RenderSize__ = ClientSize;
             if(RenderSize__ != __RenderSize){ __UpdateDoubleBuffer(WindowHDC, RenderSize__); }
 
             IntPtr HDC = DoubleRenderBuffer ? __DoubleBufferHDC : WindowHDC;
@@ -337,15 +344,15 @@ public class WLWindow{
                 }
 
                 try{
-                    OnRender?.Invoke(this, HDC);
+                    OnRender?.Invoke(this, HDC, ClientSize);
                 }catch(Exception e){
                     Logger.Error("Произошла ошибка в ивенте OnRender в WL окне [" + this + "]!", e);
                 }
 
-                if(RenderElements){ __RenderElements(HDC); }
+                if(RenderElements){ __RenderElements(HDC, ClientSize); }
 
                 try{
-                    OnPostRender?.Invoke(this, HDC);
+                    OnPostRender?.Invoke(this, HDC, ClientSize);
                 }catch(Exception e){
                     Logger.Error("Произошла ошибка в ивенте OnPostRender в WL окне [" + this + "]!", e);
                 }
@@ -353,6 +360,7 @@ public class WLWindow{
             #endregion
 
             if(DoubleRenderBuffer){
+                if(__RenderSize != Original.ClientSize){ Logger.Error("DILODA"); }
                 WL.System.Draw.CopyHDC(WindowHDC, HDC, __RenderSize);
             }
         }catch(Exception e){
@@ -516,7 +524,7 @@ public class WLWindow{
 
             __RenderSize = RenderSize;
             
-            __DoubleBufferHDC    = WL.System.Draw.CreateMemoryHDC(HDC);
+            __DoubleBufferHDC    = WL.System.Draw.CreateMemoryHDC   (HDC              );
             __DoubleBufferBitmap = WL.System.Draw.CreateMemoryBitmap(HDC, __RenderSize);
 
             WL.System.Draw.SelectBitmap(__DoubleBufferHDC, __DoubleBufferBitmap);
@@ -531,7 +539,7 @@ public class WLWindow{
     private void __DestroyDoubleBuffer(){
         try{
             if(__DoubleBufferBitmap != IntPtr.Zero){ WL.System.Draw.DestroyBitmap(__DoubleBufferBitmap); __DoubleBufferBitmap = IntPtr.Zero; }
-            if(__DoubleBufferHDC != IntPtr.Zero){ WL.System.Draw.DestroyHDC(__DoubleBufferHDC); __DoubleBufferHDC = IntPtr.Zero; }
+            if(__DoubleBufferHDC    != IntPtr.Zero){ WL.System.Draw.DestroyHDC   (__DoubleBufferHDC   ); __DoubleBufferHDC    = IntPtr.Zero; }
         }catch(Exception e){
             throw new Exception("Произошла ошибка при уничтожении двойного буфера у WL окна [" + this + "]!", e);
         }
@@ -540,7 +548,7 @@ public class WLWindow{
     /// <summary>
     /// Рендерит элементы окна
     /// </summary>
-    private void __RenderElements(IntPtr HDC){
+    private void __RenderElements(IntPtr HDC, Vector2UI ClientSize){
         try{
                
         }catch(Exception e){

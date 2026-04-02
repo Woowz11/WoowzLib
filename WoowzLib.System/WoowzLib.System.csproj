@@ -7,7 +7,7 @@
         <Configurations>Release</Configurations>
         <Platforms>AnyCPU</Platforms>
 
-        <Version>0.0.0.470</Version>
+        <Version>0.0.0.477</Version>
     </PropertyGroup>
 
     <ItemGroup>
