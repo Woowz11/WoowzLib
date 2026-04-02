@@ -333,10 +333,7 @@ public class WLWindow{
             #region Рендер
 
                 if(ClearRenderBuffer){
-                    /*IntPtr BackgroundBrush = WL.System.Draw.CreateBrush(BackgroundColor);
-                    WL.System.Draw.SelectBrush(HDC, BackgroundBrush);
-                    WL.System.Draw.Fill(HDC, new Rect2I(Vector2I.Zero, __RenderSize));
-                    WL.System.Draw.DestroyBrush(BackgroundBrush);*/
+                    WL.System.Draw.Fill(HDC, new Rect2I(Vector2I.Zero, __RenderSize), new BrushFill(BackgroundColor));
                 }
 
                 try{

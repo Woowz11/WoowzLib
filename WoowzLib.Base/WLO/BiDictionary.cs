@@ -6,8 +6,14 @@
 /// <typeparam name="K">Ключи</typeparam>
 /// <typeparam name="V">Значения</typeparam>
 public class BiDictionary<K, V> where K : notnull where V : notnull{
-    private readonly Dictionary<K, V> __K = new Dictionary<K, V>();
-    private readonly Dictionary<V, K> __V = new Dictionary<V, K>();
+    public BiDictionary(int Capacity){
+        __K = new Dictionary<K, V>(Capacity);
+        __V = new Dictionary<V, K>(Capacity);
+    }
+    public BiDictionary() : this(0){}
+
+    private readonly Dictionary<K, V> __K;
+    private readonly Dictionary<V, K> __V;
 
     public void Add(K Key, V Value){
         try{

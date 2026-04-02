@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using WL;
 using WLO;
+using WLO.Attribute;
 using WLO.Color;
 using WLO.Rect;
 using WLO.Vector;
@@ -261,19 +262,72 @@ namespace WL{
 
             // ----------------------------------------------------------------------
 
-            private static readonly Dictionary<IntPtr, BiDictionary<BrushContour, IntPtr>> __BrushesContour = [];
+            private static readonly BiDictionary<BrushContour, IntPtr> __BrushesContour = new BiDictionary<BrushContour, IntPtr>();
             
-            public static IntPtr CreateBrushContour(IntPtr HDC, BrushContour Info, bool Select = true){
-                return IntPtr.Zero;
+            /// <summary>
+            /// Получает старую контурную кисть (если разные, то удаляет и создаёт новую) или создаёт новую
+            /// </summary>
+            /// <param name="Info">Информация об кисти</param>
+            /// <param name="HDC">Если указан, то автоматически выбрать кисть в нём</param>
+            public static IntPtr CreateBrushContour(BrushContour Info, IntPtr? HDC = null){
+                try{
+                    if(__BrushesContour.TryGetValue(Info, out IntPtr OBrush)){
+                        if(OBrush != IntPtr.Zero){
+                            if(HDC.HasValue){ WL.Native.Raw.Windows.SelectObject(HDC.Value, OBrush); }
+                            return OBrush;
+                        }
+                    }
+                    
+                    IntPtr NBrush = WL.Native.Raw.Windows.CreatePen((int)Info.Type, (int)Info.Width, Info.__Color);
+
+                    if(OBrush != IntPtr.Zero){ WL.Native.Raw.Windows.DeleteObject(OBrush); }
+
+                    __BrushesContour[Info] = NBrush;
+
+                    if(HDC.HasValue){
+                        WL.Native.Raw.Windows.SelectObject(HDC.Value, NBrush);
+                    }
+
+                    return NBrush;
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при создании контурной кисти в Draw!", e);
+                }
             }
             
-            private static readonly Dictionary<IntPtr, BiDictionary<BrushFill, IntPtr>> __BrushesFill = [];
+            private static readonly BiDictionary<BrushFill, IntPtr> __BrushesFill = new BiDictionary<BrushFill, IntPtr>();
             
-            public static IntPtr CreateBrushFill(IntPtr HDC, BrushFill Info, bool Select = true){
-                return IntPtr.Zero;
+            /// <summary>
+            /// Получает старую заполняющую кисть (если разные, то удаляет и создаёт новую) или создаёт новую
+            /// </summary>
+            /// <param name="Info">Информация об кисти</param>
+            /// <param name="HDC">Если указан, то автоматически выбрать кисть в нём</param>
+            [WoowzLibHint(Information.WorkInProgress, "не указаны другие типы пока-что")]
+            public static IntPtr CreateBrushFill(BrushFill Info, IntPtr? HDC = null){
+                try{
+                    if(__BrushesFill.TryGetValue(Info, out IntPtr OBrush)){
+                        if(OBrush != IntPtr.Zero){
+                            if(HDC.HasValue){ WL.Native.Raw.Windows.SelectObject(HDC.Value, OBrush); }
+                            return OBrush;
+                        }
+                    }
+                    
+                    IntPtr NBrush = WL.Native.Raw.Windows.CreateSolidBrush(Info.__Color);
+
+                    if(OBrush != IntPtr.Zero){ WL.Native.Raw.Windows.DeleteObject(OBrush); }
+
+                    __BrushesFill[Info] = NBrush;
+
+                    if(HDC.HasValue){
+                        WL.Native.Raw.Windows.SelectObject(HDC.Value, NBrush);
+                    }
+
+                    return NBrush;
+                }catch(Exception e){
+                    throw new Exception("Произошла ошибка при создании заполняющей кисти в Draw!", e);
+                }
             }
             
-            public static (IntPtr Contour, IntPtr Fill) CreateBrush(IntPtr HDC, BrushContour ContourInfo, BrushFill FillInfo, bool Select = true) => (CreateBrushContour(HDC, ContourInfo, Select), CreateBrushFill(HDC, FillInfo, Select));
+            public static (IntPtr Contour, IntPtr Fill) CreateBrush(BrushContour ContourInfo, BrushFill FillInfo, IntPtr? HDC = null) => (CreateBrushContour(ContourInfo, HDC), CreateBrushFill(FillInfo, HDC));
             
             // ----------------------------------------------------------------------
 
@@ -284,7 +338,7 @@ namespace WL{
             /// <param name="Rect">Область</param>
             public static void Fill(IntPtr HDC, Rect2I Rect, BrushFill Fill){
                 WL.Native.Raw.Windows.RECT Rect__ = new WL.Native.Raw.Windows.RECT(Rect);
-                WL.Native.Raw.Windows.FillRect(HDC, ref Rect__, CreateBrushFill(HDC, Fill, false));
+                WL.Native.Raw.Windows.FillRect(HDC, ref Rect__, CreateBrushFill(Fill));
             }
             
             /// <summary>
@@ -294,7 +348,7 @@ namespace WL{
             /// <param name="Start">Начало линии</param>
             /// <param name="End">Конец линии</param>
             public static void Line(IntPtr HDC, Vector2I Start, Vector2I End, BrushContour Contour){
-                CreateBrushContour(HDC, Contour);
+                CreateBrushContour(Contour, HDC);
                 WL.Native.Raw.Windows.MoveToEx(HDC, Start.X, Start.Y, out WL.Native.Raw.Windows.POINT _);
                 WL.Native.Raw.Windows.LineTo(HDC, End.X, End.Y);
             }
@@ -305,7 +359,7 @@ namespace WL{
             /// <param name="HDC">Куда рисовать?</param>
             /// <param name="Rect">Прямоугольник</param>
             public static void Rectangle(IntPtr HDC, Rect2I Rect, BrushContour Contour, BrushFill Fill){
-                CreateBrush(HDC, Contour, Fill);
+                CreateBrush(Contour, Fill, HDC);
                 WL.Native.Raw.Windows.Rectangle(HDC, Rect.Left, Rect.Bottom, Rect.Right, Rect.Top);
             }
 
@@ -315,7 +369,7 @@ namespace WL{
             /// <param name="HDC">Куда рисовать?</param>
             /// <param name="Ellipse">Круг</param>
             public static void Ellipse(IntPtr HDC, Rect2I Ellipse, BrushContour Contour, BrushFill Fill){
-                CreateBrush(HDC, Contour, Fill);
+                CreateBrush(Contour, Fill, HDC);
                 WL.Native.Raw.Windows.Ellipse(HDC, Ellipse.Left, Ellipse.Bottom, Ellipse.Right, Ellipse.Top);
             }
 
@@ -331,7 +385,9 @@ namespace WL{
             /// </summary>
             /// <param name="HDC">Куда рисовать?</param>
             /// <param name="Points">Точки</param>
-            public static void Polygon(IntPtr HDC, Vector2I[] Points){
+            public static void Polygon(IntPtr HDC, Vector2I[] Points, BrushContour Contour, BrushFill Fill){
+                CreateBrush(Contour, Fill, HDC);
+                
                 WL.Native.Raw.Windows.POINT[] Points__ = new WL.Native.Raw.Windows.POINT[Points.Length];
                 for(int i = 0; i < Points.Length; i++){ Points__[i] = new WL.Native.Raw.Windows.POINT(Points[i]); }
                 WL.Native.Raw.Windows.Polygon(HDC, Points__, Points__.Length);
@@ -342,7 +398,9 @@ namespace WL{
             /// </summary>
             /// <param name="HDC">КУда рисовать?</param>
             /// <param name="Points">Точки</param>
-            public static void Line(IntPtr HDC, Vector2I[] Points){
+            public static void Line(IntPtr HDC, Vector2I[] Points, BrushContour Contour){
+                CreateBrushContour(Contour, HDC);
+                
                 WL.Native.Raw.Windows.POINT[] Points__ = new WL.Native.Raw.Windows.POINT[Points.Length];
                 for(int i = 0; i < Points.Length; i++){ Points__[i] = new WL.Native.Raw.Windows.POINT(Points[i]); }
                 WL.Native.Raw.Windows.Polyline(HDC, Points__, Points__.Length);
@@ -355,7 +413,7 @@ namespace WL{
             /// <param name="A">Точка 1</param>
             /// <param name="B">Точка 2</param>
             /// <param name="C">Точка 3</param>
-            public static void Triangle(IntPtr HDC, Vector2I A, Vector2I B, Vector2I C) => Polygon(HDC, [A, B, C]);
+            public static void Triangle(IntPtr HDC, Vector2I A, Vector2I B, Vector2I C, BrushContour Contour, BrushFill Fill) => Polygon(HDC, [A, B, C], Contour, Fill);
             
             /// <summary>
             /// Рисует параллелограмм
@@ -365,7 +423,7 @@ namespace WL{
             /// <param name="B">Точка 2</param>
             /// <param name="C">Точка 3</param>
             /// <param name="D">Точка 4</param>
-            public static void Parallelogram(IntPtr HDC, Vector2I A, Vector2I B, Vector2I C, Vector2I D) => Polygon(HDC, [A, B, C, D]);
+            public static void Parallelogram(IntPtr HDC, Vector2I A, Vector2I B, Vector2I C, Vector2I D, BrushContour Contour, BrushFill Fill) => Polygon(HDC, [A, B, C, D], Contour, Fill);
         }
     }
 }
