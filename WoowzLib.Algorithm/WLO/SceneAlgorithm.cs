@@ -2,78 +2,104 @@
 
 namespace WLO;
 
-/// <summary>
-/// Сцена с детьми
-/// </summary>
 [WoowzLibHint(Information.WorkInProgress)]
 public class SceneAlgorithm<T>{
-    private readonly List<SceneNode<T>> __Childrens    = [];
-    private readonly List<SceneNode<T>> __AllChildrens = [];
-
-    public IReadOnlyList<SceneNode<T>> Childrens => __Childrens;
-    public IReadOnlyList<SceneNode<T>> AllChildrens => __AllChildrens;
+    // Переменная, указывающая на сколько возможен по глубине иерархия
     
-    public bool Containts(T Child) => __Childrens.Any(N => EqualityComparer<T>.Default.Equals(N.Self, Child));
-    public bool ContaintsToAll(T Child) => __AllChildrens.Any(N => EqualityComparer<T>.Default.Equals(N.Self, Child));
     
-    public bool Containts(SceneNode<T> Child) => __Childrens.Any(N => EqualityComparer<SceneNode<T>>.Default.Equals(N, Child));
-    public bool ContaintsToAll(SceneNode<T> Child) => __AllChildrens.Any(N => EqualityComparer<SceneNode<T>>.Default.Equals(N, Child));
+    // добавляет новый объект
+    public void Add(T NewChild){
+        Add(new SceneNode<T>(NewChild));
+    }
 
-    public void Add(T Child) => Add(new SceneNode<T>(Child));
+    // добавляет существующий объект
     public void Add(SceneNode<T> Child){
-        try{
-            if(ContaintsToAll(Child)){ throw new Exception("Этот элемент уже есть на сцене!"); }
-
-            Child.Scene = this;
-        }catch(Exception e){
-            throw new Exception();
-        }
+        
     }
 
+    // удаляет существующий объект
     public void Remove(SceneNode<T> Child){
-        try{
-            
-        }catch(Exception e){
-            throw new Exception();
+        
+    }
+    
+    // ищет по значению
+    public bool Contains(T Object) => false;
+    
+    // ищет объект
+    public bool Contains(SceneNode<T> Object) => false;
+
+    // всего объектов на сцене
+    public int Count => Childrens.Count;
+
+    // возвращает объекты на определённом слое
+    public SceneNode<T>[] GetLayer(uint Layer){
+        if(Layer == 0){
+            return Layer0.ToArray();
+        }else{
+            return [];
         }
     }
+
+    // все объекты на каждом слое
+    public List<SceneNode<T>> Layer0 = [];
+
+    // все объекты у сцены
+    public List<SceneNode<T>> Childrens = [];
 }
 
-/// <summary>
-/// Сценичный объект, который имеет детей и родителя
-/// </summary>
 [WoowzLibHint(Information.WorkInProgress)]
 public class SceneNode<T>{
     public SceneNode(T Self){
         this.Self = Self;
     }
 
-    public SceneAlgorithm<T>? Scene{
-        get => __Scene;
-        set{
-            try{
-                if(__Scene == value){ return; }
-                
-                if(__Scene != null){
-                    
-                }
-                
-                __Scene = value;
-                
-                if(__Scene != null){
-                       
-                }
-            }catch(Exception e){
-                throw new Exception();
-            }
+    // объект к которому привязан нод
+    public readonly T Self;
+
+    // сцена к которой привязан объект
+    public SceneAlgorithm<T>? Scene;
+
+    // в памяти?
+    public bool InMemory => Scene == null;
+    
+    // родитель
+    public SceneNode<T>? Parent;
+    
+    
+    
+    // добавляет новый объект
+    public void Add(T NewChild){
+        Add(new SceneNode<T>(NewChild));
+    }
+
+    // добавляет существующий объект
+    public void Add(SceneNode<T> Child){
+        
+    }
+
+    // удаляет существующий объект
+    public void Remove(SceneNode<T> Child){
+        
+    }
+    
+    // ищет по значению
+    public bool Contains(T Object) => false;
+    
+    // ищет объект
+    public bool Contains(SceneNode<T> Object) => false;
+    
+    // возвращает объекты на определённом слое
+    public SceneNode<T>[] GetLayer(uint Layer){
+        if(Layer == 0){
+            return Layer0.ToArray();
+        }else{
+            return [];
         }
     }
-    private SceneAlgorithm<T>? __Scene;
 
-    public bool InMemory => __Scene == null;
-    
-    public SceneNode<T>? Parent;
-    public readonly List<SceneNode<T>> Childrens = [];
+    // все объекты на каждом слое
+    public List<SceneNode<T>> Layer0 = [];
 
-    public T Self;
+    // все объекты
+    public List<SceneNode<T>> Childrens = [];
 }

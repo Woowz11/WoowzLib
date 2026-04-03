@@ -18,6 +18,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\WoowzLib.Algorithm\WoowzLib.Algorithm.csproj" />
       <ProjectReference Include="..\WoowzLib.Base\WoowzLib.Base.csproj" />
       <ProjectReference Include="..\WoowzLib.Core\WoowzLib.Core.csproj" />
       <ProjectReference Include="..\WoowzLib.Logger\WoowzLib.Logger.csproj" />
