@@ -8,16 +8,39 @@ namespace WoowzLibTest.Tests;
 public static class Test_Scene{
     public static void Run(){
         Test.Run("Scene", () => {
-            Test.F("idk", () => {
+            Test.F("Базовое (с примитивами)", () => {
                 SceneAlgorithm<int> Scene = new SceneAlgorithm<int>();
+
+                var c = Scene.Add(1);
                 
-                Test.CheckResult(Scene.Contains(2), false, "Contains не работает!");
+                // check count == 1
                 
-                Scene.Add(5);
+                Scene.Remove(c);
+                
+                // check count == 0
+
+                c = Scene.Add(4);
                 Scene.Add(2);
-                Scene.Add(-2);
+                Scene.Add(128);
                 
-                Test.CheckResult(Scene.Contains(2), true, "Contains 2 не работает!");
+                // check count == 3
+                
+                // check Scene.Contains(2)
+
+                Scene.Clear();
+                
+                // check count == 0
+
+                var c2 = new SceneNode<int>(3);
+                c2.Add(5);
+                c2.Add(7);
+                var c3 = c2.Add(3);
+
+                Scene.Add(c3); // c3.Parent != c2, c2 in memory
+
+                Scene.Add(c2); // c2 in scene, and childs c2 in scene too
+                
+                Scene.Remove(c2); // c2 now in memory, and c2 childs too
             });
         });
     }
