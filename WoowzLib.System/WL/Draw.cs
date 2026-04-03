@@ -261,8 +261,6 @@ namespace WL{
             }
 
             // ----------------------------------------------------------------------
-
-            private static (BrushContour Info, IntPtr Brush)?  __CurrentBrushContour;
             
             /// <summary>
             /// Получает старую контурную кисть (если разные, то удаляет и создаёт новую) или создаёт новую
@@ -286,11 +284,10 @@ namespace WL{
 
                     return __CurrentBrushContour.Value.Brush;
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при создании контурной кисти в Draw!", e);
+                    throw new Exception("Произошла ошибка при создании контурной кисти в Draw!\nИнформация: " + Info + "\nHDC: " + WL.String.ToString(HDC), e);
                 }
             }
-
-            private static (BrushFill Info, IntPtr Brush)? __CurrentBrushFill;
+            private static (BrushContour Info, IntPtr Brush)?  __CurrentBrushContour;
             
             /// <summary>
             /// Получает старую заполняющую кисть (если разные, то удаляет и создаёт новую) или создаёт новую
@@ -315,10 +312,17 @@ namespace WL{
 
                     return __CurrentBrushFill.Value.Brush;
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при создании заполняющей кисти в Draw!", e);
+                    throw new Exception("Произошла ошибка при создании заполняющей кисти в Draw!\nИнформация: " + Info + "\nHDC: " + WL.String.ToString(HDC), e);
                 }
             }
+            private static (BrushFill Info, IntPtr Brush)? __CurrentBrushFill;
             
+            /// <summary>
+            /// Получает старую контурную/заполняющую кисть (если разные, то удаляет и создаёт новую) или создаёт новую
+            /// </summary>
+            /// <param name="ContourInfo">Информация об контурной кисти</param>
+            /// <param name="FillInfo">Информация об заполняющей кисти</param>
+            /// <param name="HDC">Если указан, то автоматически выбрать кисть в нём</param>
             public static (IntPtr Contour, IntPtr Fill) CreateBrush(BrushContour ContourInfo, BrushFill FillInfo, IntPtr? HDC = null) => (CreateBrushContour(ContourInfo, HDC), CreateBrushFill(FillInfo, HDC));
             
             // ----------------------------------------------------------------------
