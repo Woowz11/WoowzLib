@@ -40,6 +40,8 @@ public class WLWindow{
             }catch(Exception e){
                 Logger.Error("Произошла ошибка в ивенте OnGlobalCreate в WL окне [" + this + "]!", e);
             }
+
+            Scene = new SceneAlgorithm<WLElement.WLElement>(this, SceneCacheMode.SceneOnly);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании WL окна [" + this + "]!", e);
         }
@@ -63,9 +65,14 @@ public class WLWindow{
     public void CheckAlive(){ if(Died){ throw new Exception("Окно мёртвое!"); } }
     
     /// <summary>
-    /// Оригинальное WINAPI окно, изменяйте его на свой страх и риск!
+    /// Оригинальное WINAPI окно
     /// </summary>
     public Window Original{ get; }
+
+    /// <summary>
+    /// Элементы окна
+    /// </summary>
+    public readonly SceneAlgorithm<WLElement.WLElement> Scene;
 
     // ----------------------------------------------------------------------
 
@@ -94,9 +101,10 @@ public class WLWindow{
     /// </summary>
     public event Action<WLWindow, IntPtr, Vector2UI>? OnPostRender;
 
-    
+    [WoowzLibHint(Information.WorkInProgress)] 
     public event Action<WLWindow, Vector2I>? OnPosition;
     
+    [WoowzLibHint(Information.WorkInProgress)]
     public event Action<WLWindow, Vector2UI>? OnSize;
 
     /// <summary>
@@ -279,6 +287,13 @@ public class WLWindow{
     }
     
     /// <summary>
+    /// Размер клиентской области
+    /// </summary>
+    public Vector2UI ClientSize => Original.ClientSize;
+    
+    // ----------------------------------------------------------------------
+    
+    /// <summary>
     /// Цвет заднего фона
     /// </summary>
     public Color4B BackgroundColor = Color4B.Black;
@@ -297,13 +312,6 @@ public class WLWindow{
     /// Рендерить элементы окна?
     /// </summary>
     public bool RenderElements = true;
-    
-    // ----------------------------------------------------------------------
-
-    /// <summary>
-    /// Размер клиентской области
-    /// </summary>
-    public Vector2UI ClientSize => Original.ClientSize;
     
     // ----------------------------------------------------------------------
     
@@ -550,7 +558,17 @@ public class WLWindow{
     /// </summary>
     private void __RenderElements(IntPtr HDC, Vector2UI ClientSize){
         try{
-               
+            void __Render(SceneNode<WLElement.WLElement> Element){
+                Element.Self.__Render(this, HDC);
+                
+                foreach(SceneNode<WLElement.WLElement> Element__ in Element.Level0){
+                    __Render(Element__);
+                }
+            }
+            
+            foreach(SceneNode<WLElement.WLElement> Element in Scene.Level0){
+                __Render(Element);
+            }
         }catch(Exception e){
             throw new Exception("Произошла ошибка при рендере элементов WL окна [" + this + "]!", e);
         }

@@ -9,7 +9,7 @@ namespace WLO;
 /// окно
 /// </summary>
 [WoowzLibHint(Information.WorkInProgress, "Не реализована смена стиля (WS_CHILD) и родителя при изменении Hierarchy")]
-public class Window{
+public class Window : SceneObject<Window>{
     static Window(){
         WL.Core.OnTerminate += CloseReason => {
             foreach(Window Window in Windows.Values.ToArray()){
@@ -79,8 +79,6 @@ public class Window{
             this.Class = Class;
             ClassName  = Class.Name;
 
-            //Scene = new SceneNode<Window>(this);
-
             __CreateWindow(ClassName, Config);
         }catch(Exception e){
             throw new Exception("Произошла ошибка при создании окна!\nКласс: " + Class + "\nКонфиг: " + WL.__Base.Other.ToString(Config), e);
@@ -93,8 +91,6 @@ public class Window{
 
             Class     = null;
             ClassName = ExistingClass;
-            
-            //Scene = new SceneNode<Window>(this);
 
             __CreateWindow(ClassName, Config);
         }catch(Exception e){
@@ -144,11 +140,6 @@ public class Window{
     /// Название класса
     /// </summary>
     public readonly string ClassName;
-
-    /// <summary>
-    /// Parenting окна
-    /// </summary>
-    //public readonly SceneNode<Window> Scene;
     
     // ----------------------------------------------------------------------
 
@@ -457,8 +448,8 @@ public class Window{
 
                     uint Style__ = value;
 
-                    //if(Scene.Parent != null){ Style__ = AddStyle(Style__, Native.Raw.Windows.WS_CHILD, out bool _); }
-                    if(Visible                 ){ Style__ = AddStyle(Style__, Native.Raw.Windows.WS_VISIBLE, out bool _); }
+                    if(Node.HasParent){ Style__ = AddStyle(Style__, Native.Raw.Windows.WS_CHILD  , out bool _); }
+                    if(Visible       ){ Style__ = AddStyle(Style__, Native.Raw.Windows.WS_VISIBLE, out bool _); }
                     
                     Native.Raw.Windows.SetWindowLong(Handle, Native.Raw.Windows.GWL_STYLE, (int)Style__);
 
@@ -609,9 +600,9 @@ public class Window{
         try{
             if(!Windows.ContainsKey(ID)){ return; }
             
-            //Scene.ClearAll();
-            //Scene.Parent = null;
-            //Scene.CanUse = false;
+            Node.Clear();
+            Node.Parent = null;
+            Node.Freeze();
             
             try{
                 OnDestroy?.Invoke(this);
@@ -689,7 +680,7 @@ public class Window{
             }
         }
 
-        //Scene.Parent = Config.Parent?.Scene;
+        Node.Parent = Config.Parent?.Node;
         
         if(Config.Visible){ Visible = true; }
             
@@ -765,7 +756,7 @@ public class Window{
     
     // ----------------------------------------------------------------------
 
-    public override string ToString() => "Window(" + ID + ", " + (Alive ? ("\"" + Title + "\", " + Handle + ", " + Size.ToSizeString() + ", " + Position.ToPositionString() + ", " + /*Scene.ToStringWithoutSelf()*/"") : "Уничтожено") + ", " + (Class == null ? ClassName : Class) + ")";
+    public override string ToString() => "Window(" + ID + ", " + (Alive ? ("\"" + Title + "\", " + Handle + ", " + Size.ToSizeString() + ", " + Position.ToPositionString() + ", " + Node.Count) : "Уничтожено") + ", " + (Class == null ? ClassName : Class) + ")";
 
     public string ToShortString() => "Window(" + ID + ", " + (Alive ? Handle : "Уничтожено") + ", " + (Class == null ? ClassName : Class) + ")";
     

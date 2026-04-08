@@ -2,7 +2,7 @@
 
 namespace WLO.WLElement;
 
-public abstract class WLElement{
+public abstract class WLElement : SceneObject<WLElement>{
     protected WLElement(){
         Name = DefaultName();
         Transform = new TransformAlgorithm();

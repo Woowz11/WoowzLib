@@ -9,6 +9,6 @@ public class Panel : WLElement{
     public Color4B BackgroundColor = Color4B.Silver;
 
     public override void Render(WLWindow Window, IntPtr HDC){
-        
+        WL.System.Draw.Fill(HDC, Transform.Rect, new BrushFill(BackgroundColor));
     }
 }

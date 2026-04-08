@@ -21,7 +21,7 @@ public enum SceneCacheMode{
     Full
 }
 
-[WoowzLibHint(Information.Testing)]
+[WoowzLibHint(Information.New)]
 public class SceneAlgorithm<T> where T : SceneObject<T>{
     public SceneAlgorithm(object? Data = null, SceneCacheMode Mode = SceneCacheMode.SceneOnly){ ID = __ID++; this.Data = Data; CacheMode = Mode; }
 
@@ -174,7 +174,7 @@ public class SceneAlgorithm<T> where T : SceneObject<T>{
     public override int GetHashCode() => ID.GetHashCode();
 }
 
-[WoowzLibHint(Information.Testing)]
+[WoowzLibHint(Information.New)]
 public class SceneNode<T> where T : SceneObject<T>{
     public SceneNode(T Self){ ID = __ID++; this.Self = Self; }
     
@@ -191,11 +191,81 @@ public class SceneNode<T> where T : SceneObject<T>{
     /// Используется кеширование Childrens у детей сцены?
     /// </summary>
     public bool UseNodeCache  => __Scene?.CacheMode == SceneCacheMode.Full;
-    
+
+    /// <summary>
+    /// Нельзя изменять?
+    /// </summary>
+    public bool IsReadOnly{ get; private set; }
+
+    /// <summary>
+    /// На какой сцене находится объект?
+    /// </summary>
+    public SceneAlgorithm<T>? Scene{
+        get => __Scene;
+        set{
+            if(__Scene == value){ return; }
+            if(IsReadOnly){ throw new Exception("Нельзя изменять!"); }
+
+            if(value != null){ Parent = null; }
+
+            if(__Scene != null){
+                __Scene.__Level0.Remove(this);
+
+                if(__Scene.UseSceneCache){ __Scene.__RemoveTree(this); }
+            }
+
+            __Scene = value;
+
+            if(__Scene != null){
+                __Scene.__Level0.Add(this);
+
+                if(__Scene.UseSceneCache){
+                    __Scene.__AddTree(this);
+                }
+            }
+
+            foreach(SceneNode<T> Node in __Level0){ Node.__SetScene(__Scene); }
+        }
+    }
+
     /// <summary>
     /// В памяти? (есть сцена?)
     /// </summary>
     public bool InMemory => __Scene == null;
+    
+    /// <summary>
+    /// Родитель объекта
+    /// </summary>
+    public SceneNode<T>? Parent{
+        get => __Parent;
+        set{
+            if(__Parent == value){ return; }
+            if(IsReadOnly){ throw new Exception("Нельзя изменять!"); }
+
+            if(__Parent != null){
+                __Parent.__Level0.Remove(this);
+                __Parent.__PropagateRemove(this);
+
+                if(__Parent.__Scene?.UseSceneCache == true){ __Parent.__Scene.__RemoveTree(this); }
+            }
+
+            __Parent = value;
+
+            if(__Parent != null){
+                __Parent.__Level0.Add(this);
+                __Parent.__PropagateAdd(this);
+
+                if(__Parent.__Scene?.UseSceneCache == true){ __Parent.__Scene.__AddTree(this); }
+
+                __SetScene(__Parent.__Scene);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Есть родитель?
+    /// </summary>
+    public bool HasParent => Parent != null;
     
     /// /// <summary>
     /// Корневые дети (первый слой)
@@ -228,64 +298,6 @@ public class SceneNode<T> where T : SceneObject<T>{
     }
     
     /// <summary>
-    /// На какой сцене находится объект?
-    /// </summary>
-    public SceneAlgorithm<T>? Scene{
-        get => __Scene;
-        set{
-            if(__Scene == value){ return; }
-
-            if(value != null){ Parent = null; }
-
-            if(__Scene != null){
-                __Scene.__Level0.Remove(this);
-
-                if(__Scene.UseSceneCache){ __Scene.__RemoveTree(this); }
-            }
-
-            __Scene = value;
-
-            if(__Scene != null){
-                __Scene.__Level0.Add(this);
-
-                if(__Scene.UseSceneCache){
-                    __Scene.__AddTree(this);
-                }
-            }
-
-            foreach(SceneNode<T> Node in __Level0){ Node.__SetScene(__Scene); }
-        }
-    }
-
-    /// <summary>
-    /// Родитель объекта
-    /// </summary>
-    public SceneNode<T>? Parent{
-        get => __Parent;
-        set{
-            if(__Parent == value){ return; }
-
-            if(__Parent != null){
-                __Parent.__Level0.Remove(this);
-                __Parent.__PropagateRemove(this);
-
-                if(__Parent.__Scene?.UseSceneCache == true){ __Parent.__Scene.__RemoveTree(this); }
-            }
-
-            __Parent = value;
-
-            if(__Parent != null){
-                __Parent.__Level0.Add(this);
-                __Parent.__PropagateAdd(this);
-
-                if(__Parent.__Scene?.UseSceneCache == true){ __Parent.__Scene.__AddTree(this); }
-
-                __SetScene(__Parent.__Scene);
-            }
-        }
-    }
-    
-    /// <summary>
     /// Добавить новый объект в объект
     /// </summary>
     /// <returns>Новый объект</returns>
@@ -296,8 +308,13 @@ public class SceneNode<T> where T : SceneObject<T>{
     /// </summary>
     /// <returns>Добавленный объект</returns>
     public SceneNode<T> Add(SceneNode<T> Node){
-        Node.Parent = this;
-        return Node;
+        try{
+            if(IsReadOnly){ throw new Exception("Нельзя изменять!"); }
+            Node.Parent = this;
+            return Node;
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при добавлении объекта объекту [" + this + "]!\nОбъект: " + Node, e);
+        }
     }
 
     /// <summary>
@@ -306,7 +323,8 @@ public class SceneNode<T> where T : SceneObject<T>{
     public void Remove(SceneNode<T> Node){
         try{
             if(Node.Parent != this){ throw new Exception("Родитель указанного объекта, не является указанным родителем"); }
-
+            if(IsReadOnly){ throw new Exception("Нельзя изменять!"); }
+            
             Node.Parent = null;
         }catch(Exception e){
             throw new Exception("Произошла ошибка при удалении объекта с объекта [" + this + "]!\nОбъект: " + Node, e);
@@ -316,7 +334,19 @@ public class SceneNode<T> where T : SceneObject<T>{
     /// <summary>
     /// Удаляет все объекты
     /// </summary>
-    public void Clear(){ foreach(SceneNode<T> Node in __Level0.ToList()){ Remove(Node); } }
+    public void Clear(){
+        try{
+            if(IsReadOnly){ throw new Exception("Нельзя изменять!"); }
+            foreach(SceneNode<T> Node in __Level0.ToList()){ Remove(Node); }
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при удалении всех объектов у объекта [" + this + "]!", e);
+        }
+    }
+
+    /// <summary>
+    /// Запретить изменять
+    /// </summary>
+    public void Freeze() => IsReadOnly = true;
     
     // ----------------------------------------------------------------------
     
@@ -406,7 +436,7 @@ public class SceneNode<T> where T : SceneObject<T>{
     public override int GetHashCode() => ID.GetHashCode();
 }
 
-[WoowzLibHint(Information.Testing)]
+[WoowzLibHint(Information.New)]
 public abstract class SceneObject<T> where T : SceneObject<T>{
     private SceneNode<T>? __Node;
 
