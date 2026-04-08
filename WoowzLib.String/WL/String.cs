@@ -111,6 +111,7 @@ public static partial class String{
     /// <param name="Object">List, HashSet, Dictionary</param>
     /// <param name="Flat">Сделать строку плоской</param>
     /// <param name="Indent">Кол-во табуляции</param>
+    [WoowzLibHint(Information.Brainstorming)]
     public static string ToTableString(object? Object, bool Flat = false, int Indent = 0){
         try{
             if(Object == null){ return "null"; }

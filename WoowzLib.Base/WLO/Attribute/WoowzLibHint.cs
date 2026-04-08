@@ -21,7 +21,15 @@
         /// <summary>
         /// Нужно переделать
         /// </summary>
-        NeedRemake
+        NeedRemake,
+        /// <summary>
+        /// Нужно обдумать
+        /// </summary>
+        Brainstorming,
+        /// <summary>
+        /// Нужно тестить и смотреть
+        /// </summary>
+        Testing
     }
     
     /// <summary>

@@ -1,8 +1,9 @@
-﻿using WLO.Attribute;
+﻿using System.Text;
+using WLO.Attribute;
 
 namespace WLO;
 
-[WoowzLibHint(Information.WorkInProgress)]
+[WoowzLibHint(Information.Testing)]
 public class SceneAlgorithm<T> where T : SceneObject<T>{
     // Переменная, указывающая на сколько возможен по глубине иерархия
 
@@ -36,6 +37,13 @@ public class SceneAlgorithm<T> where T : SceneObject<T>{
     }
 
     public int Count => __Layer0.Count;
+
+    public bool Contains(SceneNode<T> Node) => __Layer0.Contains(Node);
+    
+    public bool ContainsDescendant(SceneNode<T> Node){
+        if(!CacheChildrens){ Logger.Warn("бебебе бабабаба"); }
+        return Childrens.Contains(Node);
+    }
     
     public SceneNode<T> Add(T Object) => Add(Object.Node);
     
@@ -95,7 +103,19 @@ public class SceneAlgorithm<T> where T : SceneObject<T>{
     // ----------------------------------------------------------------------
 
     public override string ToString() => "SceneAlg.(" + Count + (CacheChildrens ? "(" + __Childrens.Count + ")" : "") + ")";
-    public string ToShortString() => "";
+    
+    public string ToHierarchyString(){
+        StringBuilder SB = new StringBuilder();
+
+        SB.Append(ToString() + "\n");
+        
+        var roots = __Layer0.ToList();
+        for(int i = 0; i < roots.Count; i++){
+            bool isLast = i == roots.Count - 1;
+            SB.Append(roots[i].ToHierarchyString("", isLast));
+        }
+        return SB.ToString();
+    }
     
     public override bool Equals(object? obj){
         if(obj is SceneAlgorithm<T> other){ return ID == other.ID; }
@@ -107,7 +127,7 @@ public class SceneAlgorithm<T> where T : SceneObject<T>{
     }
 }
 
-[WoowzLibHint(Information.WorkInProgress)]
+[WoowzLibHint(Information.Testing)]
 public class SceneNode<T> where T : SceneObject<T>{
     public SceneNode(T Self, bool CacheChildrens = true){
         ID = TotalID++;
@@ -119,29 +139,37 @@ public class SceneNode<T> where T : SceneObject<T>{
     public readonly T Self;
 
     public bool CacheChildrens => Scene is{ CacheChildrens: true };
+
+    public bool InMemory => Scene == null;
     
     // ----------------------------------------------------------------------
 
+    private void __SetScene(SceneAlgorithm<T>? value, bool changeparent){
+        if(__Scene == value){ return; }
+
+        if(changeparent){ Parent = null; }
+            
+        if(__Scene != null){
+            __Scene.__Layer0.Remove(this);
+            if(CacheChildrens){ __Scene.__RemoveTree(this); }
+        }
+            
+        __Scene = value;
+
+        if(__Scene != null){
+            __Scene.__Layer0.Add(this);
+            if(CacheChildrens){ __Scene.__AddTree(this); }
+        }
+            
+        foreach(var child in __Layer0){
+            child.__Scene = value; // без изменения parent
+        }
+    }
+    
     private SceneAlgorithm<T>? __Scene;
     public SceneAlgorithm<T>? Scene{
         get => __Scene;
-        set{
-            if(__Scene == value){ return; }
-
-            Parent = null;
-            
-            if(__Scene != null){
-                __Scene.__Layer0.Remove(this);
-                if(CacheChildrens){ __Scene.__RemoveTree(this); }
-            }
-            
-            __Scene = value;
-
-            if(__Scene != null){
-                __Scene.__Layer0.Add(this);
-                if(CacheChildrens){ __Scene.__AddTree(this); }
-            }
-        }
+        set => __SetScene(value, true);
     }
 
     private SceneNode<T>? __Parent;
@@ -166,7 +194,7 @@ public class SceneNode<T> where T : SceneObject<T>{
                     __Parent.Scene!.__AddTree(this);
                 }
 
-                Scene = __Parent.Scene;
+                __SetScene(__Parent.Scene, false);
             }
         }
     }
@@ -184,6 +212,13 @@ public class SceneNode<T> where T : SceneObject<T>{
     }
 
     public int Count => __Layer0.Count;
+    
+    public bool Contains(SceneNode<T> Node) => __Layer0.Contains(Node);
+
+    public bool ContainsDescendant(SceneNode<T> Node){
+        if(!CacheChildrens){ Logger.Warn("бебебе бабабаба"); }
+        return Childrens.Contains(Node);
+    }
     
     public SceneNode<T> Add(T Object) => Add(Object.Node);
     
@@ -230,6 +265,24 @@ public class SceneNode<T> where T : SceneObject<T>{
     
     public override string ToString() => "SN(" + Self + ", " + WL.__Base.Other.ToString(Parent) + " (" + (Scene == null ? "В памяти" : "На сцене") + "), " + Layer0.Count + " (" + Childrens.Count + "))";
 
+    public string ToHierarchyString(string Indent = "", bool Last = true){
+        StringBuilder SB = new StringBuilder();
+
+        string pointer = Last ? "└─ " : "├─ ";
+        SB.Append(Indent + pointer + Self + "\n");
+
+        // Формируем новый префикс для детей
+        string childIndent = Indent + (Last ? "   " : "│  ");
+
+        var children = __Layer0.ToList();
+        for(int i = 0; i < children.Count; i++){
+            bool isLast = i == children.Count - 1;
+            SB.Append(children[i].ToHierarchyString(childIndent, isLast));
+        }
+
+        return SB.ToString();
+    }
+    
     public override bool Equals(object? obj){
         if(obj is SceneNode<T> other){ return ID == other.ID; }
         return false;
@@ -238,6 +291,7 @@ public class SceneNode<T> where T : SceneObject<T>{
     public override int GetHashCode() => ID.GetHashCode();
 }
 
+[WoowzLibHint(Information.Testing)]
 public abstract class SceneObject<T> where T : SceneObject<T>{
     internal SceneNode<T>? __Node;
 
