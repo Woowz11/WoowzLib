@@ -56,17 +56,17 @@ public static class Test{
     /// <summary>
     /// Сравнивает значения
     /// </summary>
-    public static void CheckResult<T>(T Result, T Expected, string ErrorMessage = "Значения не равны!"){ if(!EqualityComparer<T>.Default.Equals(Expected, Result)){ throw new Exception(ErrorMessage + "\n" + WL.String.ToBeautifulString(Expected) + " != " + WL.String.ToBeautifulString(Result)); } }
+    public static void CheckResult<T>(T Result, T Expected, string ErrorMessage = "Значения не равны!"){ if(!EqualityComparer<T>.Default.Equals(Expected, Result)){ throw new Exception(ErrorMessage + "\n" + WL.String.ToBeautifulString(Result) + " != " + WL.String.ToBeautifulString(Expected)); } }
     
     /// <summary>
     /// Сравнивает значения
     /// </summary>
-    public static void CheckResult<T>(T[] Result, T[] Expected, string ErrorMessage = "Значения не равны!"){ if(!Result.SequenceEqual(Expected)){ throw new Exception(ErrorMessage + "\n" + WL.String.ToBeautifulString(Expected) + " != " + WL.String.ToBeautifulString(Result)); } }
+    public static void CheckResult<T>(T[] Result, T[] Expected, string ErrorMessage = "Значения не равны!"){ if(!Result.SequenceEqual(Expected)){ throw new Exception(ErrorMessage + "\n" + WL.String.ToBeautifulString(Result) + " != " + WL.String.ToBeautifulString(Expected)); } }
     
     /// <summary>
     /// Не сравнивает значения
     /// </summary>
-    public static void NotCheckResult<T>(T Result, T NotExpected, string ErrorMessage = "Значения равны!"){ if(EqualityComparer<T>.Default.Equals(NotExpected, Result)){ throw new Exception(ErrorMessage + "\n" + WL.String.ToBeautifulString(NotExpected) + " == " + WL.String.ToBeautifulString(Result)); } }
+    public static void NotCheckResult<T>(T Result, T NotExpected, string ErrorMessage = "Значения равны!"){ if(EqualityComparer<T>.Default.Equals(NotExpected, Result)){ throw new Exception(ErrorMessage + "\n" + WL.String.ToBeautifulString(Result) + " == " + WL.String.ToBeautifulString(NotExpected)); } }
     
     /// <summary>
     /// Run функция

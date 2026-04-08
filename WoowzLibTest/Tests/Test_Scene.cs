@@ -17,12 +17,17 @@ public static class Test_Scene{
 
                 var c = Scene.Add(new TestObject{ VALUE = 1 });
                 
-                // check count == 1
+                Logger.Debug(WL.String.ToTableString(c.Layer0));
+                Logger.Debug(WL.String.ToTableString(c.Childrens));
+                
+                Test.CheckResult(c.Count, 1, "1");
                 
                 Scene.Remove(c);
                 
-                // check count == 0
+                Test.CheckResult(c.Count, 0, "2");
 
+                return;
+                
                 c = Scene.Add(new TestObject{ VALUE = 4 });
                 Scene.Add(new TestObject{ VALUE = 2 });
                 Scene.Add(new TestObject{ VALUE = 128 });

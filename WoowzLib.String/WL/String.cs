@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 using WLO;
@@ -101,6 +102,48 @@ public static partial class String{
             return SB.ToString();
         }catch(Exception e){
             throw new Exception("Произошла ошибка при замене символов с левых на правых!\nОбратно: " + Reverse + "\nСимволы: " + CharSet + "\nСтрока:\n" + S, e);
+        }
+    }
+
+    /// <summary>
+    /// Превращает коллекцию (List, HashSet, Dictionary) в строку
+    /// </summary>
+    /// <param name="Object">List, HashSet, Dictionary</param>
+    /// <param name="Flat">Сделать строку плоской</param>
+    /// <param name="Indent">Кол-во табуляции</param>
+    public static string ToTableString(object? Object, bool Flat = false, int Indent = 0){
+        try{
+            if(Object == null){ return "null"; }
+
+            string Tab = Flat ? "" : new string('\t', Indent);
+
+            if(Object is IDictionary D){
+                StringBuilder SB = new StringBuilder();
+                SB.Append(Flat ? "{" : "{\n");
+                foreach(DictionaryEntry Entry in D){
+                    string Key   = ToTableString(Entry.Key  , Flat, Indent + 1);
+                    string Value = ToTableString(Entry.Value, Flat, Indent + 1);
+                    SB.Append(Flat ? Key + ": " + Value + "," : Tab + "\t" + Key + ": " + Value + ",\n");
+                }
+                if(SB.Length > 0 && SB[^1] == ',' || SB[^1] == '\n'){ SB.Length--; }
+                SB.Append(Flat ? "}" : Tab + "}");
+                return SB.ToString();
+            }
+
+            if(Object is IEnumerable E and not string){
+                StringBuilder SB = new StringBuilder();
+                SB.Append(Flat ? "[" : "[\n");
+                foreach(object? Item in E){
+                    SB.Append(Flat ? ToTableString(Item, Flat, 0) + ", " : Tab + "\t" + ToTableString(Item, Flat, Indent + 1) + ",\n");
+                }
+                if(SB.Length > 0 && SB[^1] == ',' || SB[^1] == '\n'){ SB.Length--; }
+                SB.Append(Flat ? "]" : Tab + "]");
+                return SB.ToString();
+            }
+
+            return ToBeautifulString(Object);
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при превращении таблицы в строку!\nТаблица: " + ToString(Object) + "\nПлоская?: " + Flat + "\nТабуляция: " + Indent, e);
         }
     }
     

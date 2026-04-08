@@ -79,7 +79,7 @@ public class Window{
             this.Class = Class;
             ClassName  = Class.Name;
 
-            Hierarchy = new SceneNode<Window>(this);
+            //Scene = new SceneNode<Window>(this);
 
             __CreateWindow(ClassName, Config);
         }catch(Exception e){
@@ -94,7 +94,7 @@ public class Window{
             Class     = null;
             ClassName = ExistingClass;
             
-            Hierarchy = new SceneNode<Window>(this);
+            //Scene = new SceneNode<Window>(this);
 
             __CreateWindow(ClassName, Config);
         }catch(Exception e){
@@ -146,9 +146,9 @@ public class Window{
     public readonly string ClassName;
 
     /// <summary>
-    /// Child/Parent окна
+    /// Parenting окна
     /// </summary>
-    public readonly SceneNode<Window> Hierarchy;
+    //public readonly SceneNode<Window> Scene;
     
     // ----------------------------------------------------------------------
 
@@ -457,7 +457,7 @@ public class Window{
 
                     uint Style__ = value;
 
-                    if(Hierarchy.Parent != null){ Style__ = AddStyle(Style__, Native.Raw.Windows.WS_CHILD, out bool _); }
+                    //if(Scene.Parent != null){ Style__ = AddStyle(Style__, Native.Raw.Windows.WS_CHILD, out bool _); }
                     if(Visible                 ){ Style__ = AddStyle(Style__, Native.Raw.Windows.WS_VISIBLE, out bool _); }
                     
                     Native.Raw.Windows.SetWindowLong(Handle, Native.Raw.Windows.GWL_STYLE, (int)Style__);
@@ -609,9 +609,9 @@ public class Window{
         try{
             if(!Windows.ContainsKey(ID)){ return; }
             
-            Hierarchy.ClearAll();
-            Hierarchy.Parent = null;
-            Hierarchy.CanUse = false;
+            //Scene.ClearAll();
+            //Scene.Parent = null;
+            //Scene.CanUse = false;
             
             try{
                 OnDestroy?.Invoke(this);
@@ -689,7 +689,7 @@ public class Window{
             }
         }
 
-        Hierarchy.Parent = Config.Parent?.Hierarchy;
+        //Scene.Parent = Config.Parent?.Scene;
         
         if(Config.Visible){ Visible = true; }
             
@@ -765,7 +765,7 @@ public class Window{
     
     // ----------------------------------------------------------------------
 
-    public override string ToString() => "Window(" + ID + ", " + (Alive ? ("\"" + Title + "\", " + Handle + ", " + Size.ToSizeString() + ", " + Position.ToPositionString() + ", " + Hierarchy.ToStringWithoutSelf()) : "Уничтожено") + ", " + (Class == null ? ClassName : Class) + ")";
+    public override string ToString() => "Window(" + ID + ", " + (Alive ? ("\"" + Title + "\", " + Handle + ", " + Size.ToSizeString() + ", " + Position.ToPositionString() + ", " + /*Scene.ToStringWithoutSelf()*/"") : "Уничтожено") + ", " + (Class == null ? ClassName : Class) + ")";
 
     public string ToShortString() => "Window(" + ID + ", " + (Alive ? Handle : "Уничтожено") + ", " + (Class == null ? ClassName : Class) + ")";
     

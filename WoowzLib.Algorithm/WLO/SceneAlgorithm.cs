@@ -48,6 +48,13 @@ public class SceneAlgorithm<T> where T : SceneObject<T>{
         if(Node.Scene != this){ throw new Exception("Сцена Node не равна указанной сцене!"); }
         Node.Scene = null;
     }
+
+    public void Clear(){
+        List<SceneNode<T>> Layer0__ = __Layer0.ToList();
+        foreach(SceneNode<T> VARIABLE in Layer0__){
+            Remove(VARIABLE);
+        }
+    }
     
     // ----------------------------------------------------------------------
 
@@ -73,15 +80,15 @@ public class SceneAlgorithm<T> where T : SceneObject<T>{
 
     internal void __AddTree(SceneNode<T> Node){
         if(!__Childrens.Add(Node)){ return; }
-        foreach(var VARIABLE in Node.__Layer0){
-            __AddTree(VARIABLE);
+        foreach(SceneNode<T> Node__ in Node.__Layer0){
+            __AddTree(Node__);
         }
     }
     
     internal void __RemoveTree(SceneNode<T> Node){
         if(!__Childrens.Remove(Node)){ return; }
-        foreach(var VARIABLE in Node.__Layer0){
-            __RemoveTree(VARIABLE);
+        foreach(SceneNode<T> Node__ in Node.__Layer0){
+            __RemoveTree(Node__);
         }
     }
     
@@ -188,6 +195,13 @@ public class SceneNode<T> where T : SceneObject<T>{
     public void Remove(SceneNode<T> Node){
         if(Node.Parent != this){ throw new Exception("Родитель Node не равен указанному родителю!"); }
         Node.Parent = null;
+    }
+    
+    public void Clear(){
+        List<SceneNode<T>> Layer0__ = __Layer0.ToList();
+        foreach(SceneNode<T> VARIABLE in Layer0__){
+            Remove(VARIABLE);
+        }
     }
     
     // ----------------------------------------------------------------------
