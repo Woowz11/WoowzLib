@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.311, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.329, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
@@ -19,15 +19,37 @@ public struct Vector4D : IEquatable<Vector4D>{
 	public double Z;
 	public double W;
 	
+	public double L{
+		get => X;
+		set => X = value;
+	}
+	public double T{
+		get => Y;
+		set => Y = value;
+	}
+	public double R{
+		get => Z;
+		set => Z = value;
+	}
+	public double B{
+		get => W;
+		set => W = value;
+	}
+	
 	// ----------------------------------------------------------------------
 	
 	public static readonly Vector4D Zero = new Vector4D(0, 0, 0, 0);
 	public static readonly Vector4D One = new Vector4D(1, 1, 1, 1);
 	public static readonly Vector4D NOne = new Vector4D(-1, -1, -1, -1);
 	public static readonly Vector4D Half = new Vector4D(0.5, 0.5, 0.5, 0.5);
+	public static readonly Vector4D Max = new Vector4D(double.MaxValue, double.MaxValue, double.MaxValue, double.MaxValue);
 	public static readonly Vector4D Right = new Vector4D(1, 0, 0, 0);
 	public static readonly Vector4D Left = new Vector4D(-1, 0, 0, 0);
 	public static readonly Vector4D Up = new Vector4D(0, 1, 0, 0);
+	public static readonly Vector4D RightTop = new Vector4D(1, 1, 0, 0);
+	public static readonly Vector4D RightBottom = new Vector4D(1, -1, 0, 0);
+	public static readonly Vector4D LeftTop = new Vector4D(-1, 1, 0, 0);
+	public static readonly Vector4D LeftBottom = new Vector4D(-1, -1, 0, 0);
 	public static readonly Vector4D Down = new Vector4D(0, -1, 0, 0);
 	public static readonly Vector4D Front = new Vector4D(0, 0, 1, 0);
 	public static readonly Vector4D Back = new Vector4D(0, 0, -1, 0);

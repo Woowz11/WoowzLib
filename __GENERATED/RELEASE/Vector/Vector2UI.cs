@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.311, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.329, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
@@ -14,6 +14,7 @@ public struct Vector2UI : IEquatable<Vector2UI>{
 	
 	public uint X;
 	public uint Y;
+	
 	public uint W{
 		get => X;
 		set => X = value;
@@ -23,12 +24,23 @@ public struct Vector2UI : IEquatable<Vector2UI>{
 		set => Y = value;
 	}
 	
+	public uint L{
+		get => X;
+		set => X = value;
+	}
+	public uint T{
+		get => Y;
+		set => Y = value;
+	}
+	
 	// ----------------------------------------------------------------------
 	
 	public static readonly Vector2UI Zero = new Vector2UI(0, 0);
 	public static readonly Vector2UI One = new Vector2UI(1, 1);
+	public static readonly Vector2UI Max = new Vector2UI(uint.MaxValue, uint.MaxValue);
 	public static readonly Vector2UI Right = new Vector2UI(1, 0);
 	public static readonly Vector2UI Up = new Vector2UI(0, 1);
+	public static readonly Vector2UI RightTop = new Vector2UI(1, 1);
 	public static readonly Vector2UI AxisX = new Vector2UI(1, 0);
 	public static readonly Vector2UI AxisY = new Vector2UI(0, 1);
 	public static readonly Vector2UI Double = new Vector2UI(2, 2);

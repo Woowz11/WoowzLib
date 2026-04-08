@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.311, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.329, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
@@ -19,12 +19,31 @@ public struct Vector4UI : IEquatable<Vector4UI>{
 	public uint Z;
 	public uint W;
 	
+	public uint L{
+		get => X;
+		set => X = value;
+	}
+	public uint T{
+		get => Y;
+		set => Y = value;
+	}
+	public uint R{
+		get => Z;
+		set => Z = value;
+	}
+	public uint B{
+		get => W;
+		set => W = value;
+	}
+	
 	// ----------------------------------------------------------------------
 	
 	public static readonly Vector4UI Zero = new Vector4UI(0, 0, 0, 0);
 	public static readonly Vector4UI One = new Vector4UI(1, 1, 1, 1);
+	public static readonly Vector4UI Max = new Vector4UI(uint.MaxValue, uint.MaxValue, uint.MaxValue, uint.MaxValue);
 	public static readonly Vector4UI Right = new Vector4UI(1, 0, 0, 0);
 	public static readonly Vector4UI Up = new Vector4UI(0, 1, 0, 0);
+	public static readonly Vector4UI RightTop = new Vector4UI(1, 1, 0, 0);
 	public static readonly Vector4UI Front = new Vector4UI(0, 0, 1, 0);
 	public static readonly Vector4UI Ana = new Vector4UI(0, 0, 0, 1);
 	public static readonly Vector4UI AxisX = new Vector4UI(1, 0, 0, 0);

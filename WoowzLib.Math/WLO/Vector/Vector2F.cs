@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.263, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.329, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
@@ -14,11 +14,21 @@ public struct Vector2F : IEquatable<Vector2F>{
 	
 	public float X;
 	public float Y;
+	
 	public float W{
 		get => X;
 		set => X = value;
 	}
 	public float H{
+		get => Y;
+		set => Y = value;
+	}
+	
+	public float L{
+		get => X;
+		set => X = value;
+	}
+	public float T{
 		get => Y;
 		set => Y = value;
 	}
@@ -29,9 +39,14 @@ public struct Vector2F : IEquatable<Vector2F>{
 	public static readonly Vector2F One = new Vector2F(1, 1);
 	public static readonly Vector2F NOne = new Vector2F(-1, -1);
 	public static readonly Vector2F Half = new Vector2F(0.5f, 0.5f);
+	public static readonly Vector2F Max = new Vector2F(float.MaxValue, float.MaxValue);
 	public static readonly Vector2F Right = new Vector2F(1, 0);
 	public static readonly Vector2F Left = new Vector2F(-1, 0);
 	public static readonly Vector2F Up = new Vector2F(0, 1);
+	public static readonly Vector2F RightTop = new Vector2F(1, 1);
+	public static readonly Vector2F RightBottom = new Vector2F(1, -1);
+	public static readonly Vector2F LeftTop = new Vector2F(-1, 1);
+	public static readonly Vector2F LeftBottom = new Vector2F(-1, -1);
 	public static readonly Vector2F Down = new Vector2F(0, -1);
 	public static readonly Vector2F AxisX = new Vector2F(1, 0);
 	public static readonly Vector2F AxisY = new Vector2F(0, 1);

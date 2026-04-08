@@ -1,4 +1,5 @@
-﻿using WLO.Rect;
+﻿using WLO.Attribute;
+using WLO.Rect;
 using WLO.Vector;
 
 namespace WLO;
@@ -237,4 +238,95 @@ public class TransformAlgorithm{
     public string ToShortString() => Rect.ToShortString() + ", " + CallAnyway;
     
     public string ToVeryShortString() => Rect.ToShortString();
+}
+
+public class WorldTransformAlgorithm<T> where T : SceneObject<T>{
+    public WorldTransformAlgorithm(T Self){
+        this.Self = Self;
+
+        bool Sync = false;
+        
+        Local.OnRect += (Transform, Rect) => {
+            if(Sync){ return Rect; }
+
+            Rect2I Result = LocalToWorld(Rect);
+            
+            Sync = true; World.Rect = Result; Sync = false;
+            
+            return Rect;
+        };
+
+        World.OnRect += (Transform, Rect) => {
+            if(Sync){ return Rect; }
+
+            Rect2I Result = WorldToLocal(Rect);
+            
+            Sync = true; Local.Rect = Result; Sync = false;
+
+            return Rect;
+        };
+    }
+
+    public readonly T Self;
+
+    /// <summary>
+    /// Локальная трансформация, явялется основной
+    /// </summary>
+    public readonly TransformAlgorithm Local = new TransformAlgorithm();
+    
+    /// <summary>
+    /// Мировая трансформация, только счёт
+    /// </summary>
+    public readonly TransformAlgorithm World = new TransformAlgorithm();
+
+    /// <summary>
+    /// Если true, то ивенты вызываются в любом случае, даже если значения совпадают
+    /// </summary>
+    public bool CallAnyway{
+        get => Local.CallAnyway;
+        set{
+            Local.CallAnyway = value;
+            World.CallAnyway = value;
+        }
+    }
+    
+    // ----------------------------------------------------------------------
+
+    public Func<SceneAlgorithm<T>, WorldTransformAlgorithm<T>, Rect2I, Rect2I>? OnSceneTransform;
+    
+    public Func<SceneAlgorithm<T>, WorldTransformAlgorithm<T>, Rect2I, Rect2I>? OnSceneTransformReverse;
+
+    public Func<SceneNode<T>, WorldTransformAlgorithm<T>, Rect2I, Rect2I>? OnParentTransform;
+    
+    public Func<SceneNode<T>, WorldTransformAlgorithm<T>, Rect2I, Rect2I>? OnParentTransformReverse;
+    
+    // ----------------------------------------------------------------------
+
+    private Rect2I LocalToWorld(Rect2I Rect){
+        if(!Self.Node.InMemory){
+            Rect = Self.Node.Parents().Aggregate(Rect, (current, Parent) => OnParentTransform?.Invoke(Parent, this, current) ?? current);
+
+            Rect = OnSceneTransform?.Invoke(Self.Node.Scene!, this, Rect) ?? Rect;
+        }
+
+        return Rect;
+    }
+
+    private Rect2I WorldToLocal(Rect2I Rect){
+        if(!Self.Node.InMemory){
+            Rect = OnSceneTransformReverse?.Invoke(Self.Node.Scene!, this, Rect) ?? Rect;
+
+            Rect = Self.Node.Parents().Reverse().Aggregate(Rect, (current, Parent) => OnParentTransformReverse?.Invoke(Parent, this, current) ?? current);
+        }
+
+        return Rect;
+    }
+    
+    // ----------------------------------------------------------------------
+
+    public override string ToString() => "WorldTransformAlg.(" + ToShortString() + ")";
+    
+    public string ToShortString() => Local.Rect.ToShortString() + ", " + Local.CallAnyway;
+    
+    public string ToVeryShortString() => Local.Rect.ToShortString();
 }

@@ -342,6 +342,17 @@ public class SceneNode<T> where T : SceneObject<T>{
             throw new Exception("Произошла ошибка при удалении всех объектов у объекта [" + this + "]!", e);
         }
     }
+    
+    /// <summary>
+    /// Возвращает всех родителей этого объекта, заканчивая сценой (null)
+    /// </summary>
+    public IEnumerable<SceneNode<T>> Parents(){
+        SceneNode<T>? Current = Parent;
+        while(Current != null){
+            yield return Current;
+            Current = Current.Parent;
+        }
+    }
 
     /// <summary>
     /// Запретить изменять

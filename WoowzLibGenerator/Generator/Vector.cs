@@ -6,8 +6,9 @@ public static class Vector{
 
     public static readonly Info.ValueType[] Info_Vector_Types = [Info.ValueType.Int, Info.ValueType.UInt, Info.ValueType.Float, Info.ValueType.Double/*, Info.ValueType.Decimal, Info.ValueType.Short, Info.ValueType.UShort, Info.ValueType.Long, Info.ValueType.ULong, Info.ValueType.Byte, Info.ValueType.SByte*/];
     
-    public static readonly char[] Info_Vector_Axis = ['X', 'Y', 'Z', 'W'];
-    public static readonly char[] Info_Vector_Size = ['W', 'H', 'D'];
+    public static readonly char  [] Info_Vector_Axis      = ['X', 'Y', 'Z', 'W'];
+    public static readonly char  [] Info_Vector_Size      = ['W', 'H', 'D'];
+    public static readonly string[] Info_Vector_Direction = ["L", "T", "R", "B"];
 
     /*
      * 0 - Это нулевое значение
@@ -16,15 +17,24 @@ public static class Vector{
      * - - Это отрицательный 1
      * 2 - Это 1 * 2
      * 3 - Это 1 / 4
+     * m - Это максимальное число
      */
     public static readonly Info_VectorConst[] Info_Vector_Constants = [
         new Info_VectorConst{ Name = "Zero", Values = ['0', '0'] },
         new Info_VectorConst{ Name = "One", Values = ['1', '1'], Other = '1' },
         new Info_VectorConst{ Name = "NOne", Values = ['-', '-'], Other = '-' },
         new Info_VectorConst{ Name = "Half", Values = ['5', '5'], Other = '5' },
+        new Info_VectorConst{ Name = "Max", Values = ['m', 'm'], Other = 'm' },
+        
         new Info_VectorConst{ Name = "Right", Values = ['1', '0'] },
         new Info_VectorConst{ Name = "Left", Values = ['-', '0'] },
         new Info_VectorConst{ Name = "Up", Values = ['0', '1'] },
+        
+        new Info_VectorConst{ Name = "RightTop", Values = ['1', '1'] },
+        new Info_VectorConst{ Name = "RightBottom", Values = ['1', '-'] },
+        new Info_VectorConst{ Name = "LeftTop", Values = ['-', '1'] },
+        new Info_VectorConst{ Name = "LeftBottom", Values = ['-', '-'] },
+        
         new Info_VectorConst{ Name = "Down", Values = ['0', '-'] },
         new Info_VectorConst{ Name = "Front", Values = ['0', '0', '1'] },
         new Info_VectorConst{ Name = "Back", Values = ['0', '0', '-'] },
@@ -43,6 +53,7 @@ public static class Vector{
         public int                 AxisCount;
         public char[]              Axis;
         public char[]              Sizes;
+        public string[]            Directions;
         public bool                SupportSizes;
         public string              Name;
         public string              Parent;
@@ -83,10 +94,11 @@ public static class Vector{
                 string Primitive = Info.ValueType_Primitive(VT);
                 
                 string Zero = Info.ValueType_Default(VT);
-                string One  = Info.ValueType_One(VT);
-                string Half = Info.ValueType_Half(VT);
+                string One  = Info.ValueType_One    (VT);
+                string Half = Info.ValueType_Half   (VT);
                 string Quar = Info.ValueType_Quarter(VT);
-                string Duab = Info.ValueType_Double(VT);
+                string Duab = Info.ValueType_Double (VT);
+                string Max  = Info.ValueType_Max    (VT);
                 
                 for(int i = 2; i <= Info_Vector_Axis.Length; i++){
                     string Name = "Vector" + i + Info.ValueType_Name(VT);
@@ -107,7 +119,8 @@ public static class Vector{
                             '-' => "-" + One,
                             '5' => Half,
                             '3' => Quar,
-                            '2' => Duab
+                            '2' => Duab,
+                            'm' => Max
                         };
                         
                         for(int j = 0; j < i; j++){
@@ -143,7 +156,8 @@ public static class Vector{
                         SupportSizes = i <= Info_Vector_Size.Length,
                         SupportNegative = SupportNegative,
                         SupportFraction = SupportFraction,
-                        Consts = VectorConsts.ToArray()
+                        Consts = VectorConsts.ToArray(),
+                        Directions = Info_Vector_Direction.Take(i).ToArray()
                     });
                 }
             }
@@ -241,6 +255,7 @@ public static class Vector{
     
     public static void VectorContent(Info_Vector I){
         string RFEA(string Code, string Between = "", char[]? Chars = null, char[]? SecondChars = null) => Vector.RFEA(Chars ?? I.Axis, Code, Between, SecondChars);
+        string RFEA2(string Code, string Between = "", char[]? Chars = null, string[]? SecondStrings = null) => Vector.RFEA2(Chars ?? I.Axis, Code, Between, SecondStrings);
         string RFEAS(string[] Strings, string Code, string Between = "") => Vector.RFEAS(Strings, Code, Between);
 
         void Generate_Constructors(){
@@ -256,8 +271,12 @@ public static class Vector{
             Result += RFEA("public " + I.Primitive + " @;");
 
             if(I.SupportSizes){
+                Result += Other.Generate_NextLine();
                 Result += RFEA("public " + I.Primitive + " @{ get => @2; set => @2 = value; }", "", I.Sizes, I.Axis);
             }
+            
+            Result += Other.Generate_NextLine();
+            Result += RFEA2("public " + I.Primitive + " @2{ get => @; set => @ = value; }", "", I.Axis, I.Directions);
         }
         Generate_Values();
         

@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.311, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.329, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
@@ -19,14 +19,36 @@ public struct Vector4I : IEquatable<Vector4I>{
 	public int Z;
 	public int W;
 	
+	public int L{
+		get => X;
+		set => X = value;
+	}
+	public int T{
+		get => Y;
+		set => Y = value;
+	}
+	public int R{
+		get => Z;
+		set => Z = value;
+	}
+	public int B{
+		get => W;
+		set => W = value;
+	}
+	
 	// ----------------------------------------------------------------------
 	
 	public static readonly Vector4I Zero = new Vector4I(0, 0, 0, 0);
 	public static readonly Vector4I One = new Vector4I(1, 1, 1, 1);
 	public static readonly Vector4I NOne = new Vector4I(-1, -1, -1, -1);
+	public static readonly Vector4I Max = new Vector4I(int.MaxValue, int.MaxValue, int.MaxValue, int.MaxValue);
 	public static readonly Vector4I Right = new Vector4I(1, 0, 0, 0);
 	public static readonly Vector4I Left = new Vector4I(-1, 0, 0, 0);
 	public static readonly Vector4I Up = new Vector4I(0, 1, 0, 0);
+	public static readonly Vector4I RightTop = new Vector4I(1, 1, 0, 0);
+	public static readonly Vector4I RightBottom = new Vector4I(1, -1, 0, 0);
+	public static readonly Vector4I LeftTop = new Vector4I(-1, 1, 0, 0);
+	public static readonly Vector4I LeftBottom = new Vector4I(-1, -1, 0, 0);
 	public static readonly Vector4I Down = new Vector4I(0, -1, 0, 0);
 	public static readonly Vector4I Front = new Vector4I(0, 0, 1, 0);
 	public static readonly Vector4I Back = new Vector4I(0, 0, -1, 0);

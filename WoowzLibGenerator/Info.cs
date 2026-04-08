@@ -176,6 +176,26 @@ public static class Info{
     ];
     public static string ValueType_Double(ValueType VT) => __ValueType_Double[(int)VT];
     
+    private static readonly string[] __ValueType_Max = [
+        "true",  // Bool
+        "float.MaxValue",      // Float
+        "double.MaxValue",      // Double
+        "int.MaxValue",      // Int
+        "uint.MaxValue",      // UInt
+        "short.MaxValue",      // Short
+        "ushort.MaxValue",      // UShort
+        "long.MaxValue",      // Long
+        "ulong.MaxValue",      // ULong
+        "byte.MaxValue",      // Byte
+        "sbyte.MaxValue",      // SByte
+        "char.MaxValue",   // Char
+        "\"∞\"",   // String
+        "decimal.MaxValue",      // Decimal
+        "~",   // Object
+        "DateTime.MaxValue" // DateTime
+    ];
+    public static string ValueType_Max(ValueType VT) => __ValueType_Max[(int)VT];
+    
     private static readonly string[] __ValueType_Default = [
         "false",  // Bool
         ValueType_Zero(ValueType.Float),      // Float

@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.311, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.329, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
@@ -16,6 +16,7 @@ public struct Vector3F : IEquatable<Vector3F>{
 	public float X;
 	public float Y;
 	public float Z;
+	
 	public float W{
 		get => X;
 		set => X = value;
@@ -29,15 +30,33 @@ public struct Vector3F : IEquatable<Vector3F>{
 		set => Z = value;
 	}
 	
+	public float L{
+		get => X;
+		set => X = value;
+	}
+	public float T{
+		get => Y;
+		set => Y = value;
+	}
+	public float R{
+		get => Z;
+		set => Z = value;
+	}
+	
 	// ----------------------------------------------------------------------
 	
 	public static readonly Vector3F Zero = new Vector3F(0, 0, 0);
 	public static readonly Vector3F One = new Vector3F(1, 1, 1);
 	public static readonly Vector3F NOne = new Vector3F(-1, -1, -1);
 	public static readonly Vector3F Half = new Vector3F(0.5f, 0.5f, 0.5f);
+	public static readonly Vector3F Max = new Vector3F(float.MaxValue, float.MaxValue, float.MaxValue);
 	public static readonly Vector3F Right = new Vector3F(1, 0, 0);
 	public static readonly Vector3F Left = new Vector3F(-1, 0, 0);
 	public static readonly Vector3F Up = new Vector3F(0, 1, 0);
+	public static readonly Vector3F RightTop = new Vector3F(1, 1, 0);
+	public static readonly Vector3F RightBottom = new Vector3F(1, -1, 0);
+	public static readonly Vector3F LeftTop = new Vector3F(-1, 1, 0);
+	public static readonly Vector3F LeftBottom = new Vector3F(-1, -1, 0);
 	public static readonly Vector3F Down = new Vector3F(0, -1, 0);
 	public static readonly Vector3F Front = new Vector3F(0, 0, 1);
 	public static readonly Vector3F Back = new Vector3F(0, 0, -1);

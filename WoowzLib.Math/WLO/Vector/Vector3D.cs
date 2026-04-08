@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.263, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.329, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
@@ -16,6 +16,7 @@ public struct Vector3D : IEquatable<Vector3D>{
 	public double X;
 	public double Y;
 	public double Z;
+	
 	public double W{
 		get => X;
 		set => X = value;
@@ -29,15 +30,33 @@ public struct Vector3D : IEquatable<Vector3D>{
 		set => Z = value;
 	}
 	
+	public double L{
+		get => X;
+		set => X = value;
+	}
+	public double T{
+		get => Y;
+		set => Y = value;
+	}
+	public double R{
+		get => Z;
+		set => Z = value;
+	}
+	
 	// ----------------------------------------------------------------------
 	
 	public static readonly Vector3D Zero = new Vector3D(0, 0, 0);
 	public static readonly Vector3D One = new Vector3D(1, 1, 1);
 	public static readonly Vector3D NOne = new Vector3D(-1, -1, -1);
 	public static readonly Vector3D Half = new Vector3D(0.5, 0.5, 0.5);
+	public static readonly Vector3D Max = new Vector3D(double.MaxValue, double.MaxValue, double.MaxValue);
 	public static readonly Vector3D Right = new Vector3D(1, 0, 0);
 	public static readonly Vector3D Left = new Vector3D(-1, 0, 0);
 	public static readonly Vector3D Up = new Vector3D(0, 1, 0);
+	public static readonly Vector3D RightTop = new Vector3D(1, 1, 0);
+	public static readonly Vector3D RightBottom = new Vector3D(1, -1, 0);
+	public static readonly Vector3D LeftTop = new Vector3D(-1, 1, 0);
+	public static readonly Vector3D LeftBottom = new Vector3D(-1, -1, 0);
 	public static readonly Vector3D Down = new Vector3D(0, -1, 0);
 	public static readonly Vector3D Front = new Vector3D(0, 0, 1);
 	public static readonly Vector3D Back = new Vector3D(0, 0, -1);

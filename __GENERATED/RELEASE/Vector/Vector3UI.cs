@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.311, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.329, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
@@ -16,6 +16,7 @@ public struct Vector3UI : IEquatable<Vector3UI>{
 	public uint X;
 	public uint Y;
 	public uint Z;
+	
 	public uint W{
 		get => X;
 		set => X = value;
@@ -29,12 +30,27 @@ public struct Vector3UI : IEquatable<Vector3UI>{
 		set => Z = value;
 	}
 	
+	public uint L{
+		get => X;
+		set => X = value;
+	}
+	public uint T{
+		get => Y;
+		set => Y = value;
+	}
+	public uint R{
+		get => Z;
+		set => Z = value;
+	}
+	
 	// ----------------------------------------------------------------------
 	
 	public static readonly Vector3UI Zero = new Vector3UI(0, 0, 0);
 	public static readonly Vector3UI One = new Vector3UI(1, 1, 1);
+	public static readonly Vector3UI Max = new Vector3UI(uint.MaxValue, uint.MaxValue, uint.MaxValue);
 	public static readonly Vector3UI Right = new Vector3UI(1, 0, 0);
 	public static readonly Vector3UI Up = new Vector3UI(0, 1, 0);
+	public static readonly Vector3UI RightTop = new Vector3UI(1, 1, 0);
 	public static readonly Vector3UI Front = new Vector3UI(0, 0, 1);
 	public static readonly Vector3UI AxisX = new Vector3UI(1, 0, 0);
 	public static readonly Vector3UI AxisY = new Vector3UI(0, 1, 0);

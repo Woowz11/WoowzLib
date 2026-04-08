@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.263, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.329, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
@@ -16,6 +16,7 @@ public struct Vector3I : IEquatable<Vector3I>{
 	public int X;
 	public int Y;
 	public int Z;
+	
 	public int W{
 		get => X;
 		set => X = value;
@@ -29,14 +30,32 @@ public struct Vector3I : IEquatable<Vector3I>{
 		set => Z = value;
 	}
 	
+	public int L{
+		get => X;
+		set => X = value;
+	}
+	public int T{
+		get => Y;
+		set => Y = value;
+	}
+	public int R{
+		get => Z;
+		set => Z = value;
+	}
+	
 	// ----------------------------------------------------------------------
 	
 	public static readonly Vector3I Zero = new Vector3I(0, 0, 0);
 	public static readonly Vector3I One = new Vector3I(1, 1, 1);
 	public static readonly Vector3I NOne = new Vector3I(-1, -1, -1);
+	public static readonly Vector3I Max = new Vector3I(int.MaxValue, int.MaxValue, int.MaxValue);
 	public static readonly Vector3I Right = new Vector3I(1, 0, 0);
 	public static readonly Vector3I Left = new Vector3I(-1, 0, 0);
 	public static readonly Vector3I Up = new Vector3I(0, 1, 0);
+	public static readonly Vector3I RightTop = new Vector3I(1, 1, 0);
+	public static readonly Vector3I RightBottom = new Vector3I(1, -1, 0);
+	public static readonly Vector3I LeftTop = new Vector3I(-1, 1, 0);
+	public static readonly Vector3I LeftBottom = new Vector3I(-1, -1, 0);
 	public static readonly Vector3I Down = new Vector3I(0, -1, 0);
 	public static readonly Vector3I Front = new Vector3I(0, 0, 1);
 	public static readonly Vector3I Back = new Vector3I(0, 0, -1);

@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.311, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.329, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
@@ -14,6 +14,7 @@ public struct Vector2I : IEquatable<Vector2I>{
 	
 	public int X;
 	public int Y;
+	
 	public int W{
 		get => X;
 		set => X = value;
@@ -23,14 +24,28 @@ public struct Vector2I : IEquatable<Vector2I>{
 		set => Y = value;
 	}
 	
+	public int L{
+		get => X;
+		set => X = value;
+	}
+	public int T{
+		get => Y;
+		set => Y = value;
+	}
+	
 	// ----------------------------------------------------------------------
 	
 	public static readonly Vector2I Zero = new Vector2I(0, 0);
 	public static readonly Vector2I One = new Vector2I(1, 1);
 	public static readonly Vector2I NOne = new Vector2I(-1, -1);
+	public static readonly Vector2I Max = new Vector2I(int.MaxValue, int.MaxValue);
 	public static readonly Vector2I Right = new Vector2I(1, 0);
 	public static readonly Vector2I Left = new Vector2I(-1, 0);
 	public static readonly Vector2I Up = new Vector2I(0, 1);
+	public static readonly Vector2I RightTop = new Vector2I(1, 1);
+	public static readonly Vector2I RightBottom = new Vector2I(1, -1);
+	public static readonly Vector2I LeftTop = new Vector2I(-1, 1);
+	public static readonly Vector2I LeftBottom = new Vector2I(-1, -1);
 	public static readonly Vector2I Down = new Vector2I(0, -1);
 	public static readonly Vector2I AxisX = new Vector2I(1, 0);
 	public static readonly Vector2I AxisY = new Vector2I(0, 1);

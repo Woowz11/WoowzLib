@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.311, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.329, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
@@ -19,15 +19,37 @@ public struct Vector4F : IEquatable<Vector4F>{
 	public float Z;
 	public float W;
 	
+	public float L{
+		get => X;
+		set => X = value;
+	}
+	public float T{
+		get => Y;
+		set => Y = value;
+	}
+	public float R{
+		get => Z;
+		set => Z = value;
+	}
+	public float B{
+		get => W;
+		set => W = value;
+	}
+	
 	// ----------------------------------------------------------------------
 	
 	public static readonly Vector4F Zero = new Vector4F(0, 0, 0, 0);
 	public static readonly Vector4F One = new Vector4F(1, 1, 1, 1);
 	public static readonly Vector4F NOne = new Vector4F(-1, -1, -1, -1);
 	public static readonly Vector4F Half = new Vector4F(0.5f, 0.5f, 0.5f, 0.5f);
+	public static readonly Vector4F Max = new Vector4F(float.MaxValue, float.MaxValue, float.MaxValue, float.MaxValue);
 	public static readonly Vector4F Right = new Vector4F(1, 0, 0, 0);
 	public static readonly Vector4F Left = new Vector4F(-1, 0, 0, 0);
 	public static readonly Vector4F Up = new Vector4F(0, 1, 0, 0);
+	public static readonly Vector4F RightTop = new Vector4F(1, 1, 0, 0);
+	public static readonly Vector4F RightBottom = new Vector4F(1, -1, 0, 0);
+	public static readonly Vector4F LeftTop = new Vector4F(-1, 1, 0, 0);
+	public static readonly Vector4F LeftBottom = new Vector4F(-1, -1, 0, 0);
 	public static readonly Vector4F Down = new Vector4F(0, -1, 0, 0);
 	public static readonly Vector4F Front = new Vector4F(0, 0, 1, 0);
 	public static readonly Vector4F Back = new Vector4F(0, 0, -1, 0);
