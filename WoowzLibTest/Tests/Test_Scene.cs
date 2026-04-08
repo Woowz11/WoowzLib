@@ -15,16 +15,16 @@ public static class Test_Scene{
             Test.F("Базовое (с примитивами)", () => {
                 SceneAlgorithm<TestObject> Scene = new SceneAlgorithm<TestObject>();
 
-                var c = Scene.Add(new TestObject{ VALUE = 1 });
+                SceneNode<TestObject> c = Scene.Add(new TestObject{ VALUE = 1 });
                 
-                Logger.Debug(WL.String.ToTableString(c.Layer0));
-                Logger.Debug(WL.String.ToTableString(c.Childrens));
+                Logger.Debug(WL.String.ToTableString(Scene.Layer0));
+                Logger.Debug(WL.String.ToTableString(Scene.Childrens));
                 
-                Test.CheckResult(c.Count, 1, "1");
+                Test.CheckResult(Scene.Count, 1, "1");
                 
                 Scene.Remove(c);
                 
-                Test.CheckResult(c.Count, 0, "2");
+                Test.CheckResult(Scene.Count, 0, "2");
 
                 return;
                 

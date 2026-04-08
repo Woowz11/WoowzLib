@@ -131,13 +131,14 @@ public static partial class String{
             }
 
             if(Object is IEnumerable E and not string){
+                List<object?> List = E.Cast<object?>().ToList();
                 StringBuilder SB = new StringBuilder();
-                SB.Append(Flat ? "[" : "[\n");
-                foreach(object? Item in E){
-                    SB.Append(Flat ? ToTableString(Item, Flat, 0) + ", " : Tab + "\t" + ToTableString(Item, Flat, Indent + 1) + ",\n");
+                SB.Append("<" + List.Count + ">[");
+                for(int i = 0; i < List.Count; i++){
+                    SB.Append(ToTableString(List[i], true, 0));
+                    if(i < List.Count - 1) SB.Append(", ");
                 }
-                if(SB.Length > 0 && SB[^1] == ',' || SB[^1] == '\n'){ SB.Length--; }
-                SB.Append(Flat ? "]" : Tab + "]");
+                SB.Append(']');
                 return SB.ToString();
             }
 
