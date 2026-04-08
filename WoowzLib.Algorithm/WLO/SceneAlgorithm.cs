@@ -11,7 +11,8 @@ public enum SceneCacheMode{
 
 [WoowzLibHint(Information.Testing)]
 public class SceneAlgorithm<T> where T : SceneObject<T>{
-
+    public SceneAlgorithm(object? Data = null, SceneCacheMode Mode = SceneCacheMode.SceneOnly){ ID = __ID++; this.Data = Data; CacheMode = Mode; }
+    
     private static long __ID;
     public readonly long ID;
 
@@ -21,108 +22,76 @@ public class SceneAlgorithm<T> where T : SceneObject<T>{
     public readonly object? Data;
     public readonly SceneCacheMode CacheMode;
 
-    public SceneAlgorithm(object? data = null, SceneCacheMode mode = SceneCacheMode.SceneOnly){
-        ID = __ID++;
-        Data = data;
-        CacheMode = mode;
-    }
-
     public bool UseSceneCache => CacheMode != SceneCacheMode.None;
     public bool UseNodeCache  => CacheMode == SceneCacheMode.Full;
 
     public IReadOnlyCollection<SceneNode<T>> Level0 => __Level0;
 
-    public IReadOnlyCollection<SceneNode<T>> Childrens =>
-        UseSceneCache ? __Descendants : __CalculateDescendants();
+    public IReadOnlyCollection<SceneNode<T>> Childrens => UseSceneCache ? __Descendants : __CalculateDescendants();
 
     public int Count => __Level0.Count;
 
-    public bool Contains(SceneNode<T> node){
-        return __Level0.Contains(node);
-    }
+    public bool Contains(SceneNode<T> Node) => __Level0.Contains(Node);
 
     public bool ContainsDescendant(SceneNode<T> node){
+        if(!UseSceneCache){ Logger.Warn("gagag"); }
         return Childrens.Contains(node);
     }
 
-    public SceneNode<T> Add(T obj){
-        return Add(obj.Node);
+    public SceneNode<T> Add(T Object) => Add(Object.Node);
+
+    public SceneNode<T> Add(SceneNode<T> Node){
+        if(Node.Scene == this){ return Node; }
+
+        if(Node.Scene != null){ Node.Scene.Remove(Node); }
+
+        Node.Parent = null;
+
+        __Level0.Add(Node);
+        Node.__SetScene(this);
+
+        if(UseSceneCache){ __AddTree(Node); }
+
+        return Node;
     }
 
-    public SceneNode<T> Add(SceneNode<T> node){
+    public void Remove(SceneNode<T> Node){
+        if(!__Level0.Remove(Node)){ throw new InvalidOperationException("Node не принадлежит сцене"); }
 
-        if(node.Scene == this){
-            return node;
-        }
+        if(UseSceneCache){ __RemoveTree(Node); }
 
-        if(node.Scene != null){
-            node.Scene.Remove(node);
-        }
-
-        node.Parent = null;
-
-        __Level0.Add(node);
-        node.__SetScene(this);
-
-        if(UseSceneCache){
-            __AddTree(node);
-        }
-
-        return node;
-    }
-
-    public void Remove(SceneNode<T> node){
-
-        if(!__Level0.Remove(node)){
-            throw new InvalidOperationException("Node не принадлежит сцене");
-        }
-
-        if(UseSceneCache){
-            __RemoveTree(node);
-        }
-
-        node.__SetScene(null);
+        Node.__SetScene(null);
     }
 
     public void Clear(){
-        foreach(SceneNode<T> n in __Level0.ToList()){
-            Remove(n);
+        foreach(SceneNode<T> Node in __Level0.ToList()){
+            Remove(Node);
         }
     }
 
-    internal void __AddTree(SceneNode<T> node){
+    internal void __AddTree(SceneNode<T> Node){
+        if(!__Descendants.Add(Node)){ return; }
 
-        if(!__Descendants.Add(node)){
-            return;
-        }
-
-        foreach(SceneNode<T> c in node.Level0){
-            __AddTree(c);
-        }
+        foreach(SceneNode<T> c in Node.Level0){ __AddTree(c); }
     }
 
-    internal void __RemoveTree(SceneNode<T> node){
+    internal void __RemoveTree(SceneNode<T> Node){
+        if(!__Descendants.Remove(Node)){ return; }
 
-        if(!__Descendants.Remove(node)){
-            return;
-        }
-
-        foreach(SceneNode<T> c in node.Level0){
-            __RemoveTree(c);
-        }
+        foreach(SceneNode<T> Node__ in Node.Level0){ __RemoveTree(Node__); }
     }
 
     private HashSet<SceneNode<T>> __CalculateDescendants(){
         HashSet<SceneNode<T>> Result = [];
 
-        void Recurse(SceneNode<T> n){
+        void Recurse(SceneNode<T> Node){
 
-            if(!Result.Add(n)){ return; }
+            if(!Result.Add(Node)){ return; }
 
-            foreach(SceneNode<T> c in n.Level0){ Recurse(c); }
+            foreach(SceneNode<T> Node__ in Node.Level0){ Recurse(Node__); }
         }
 
-        foreach(SceneNode<T> n in __Level0){ Recurse(n); }
+        foreach(SceneNode<T> Node__ in __Level0){ Recurse(Node__); }
 
         return Result;
     }
@@ -140,186 +109,137 @@ public class SceneAlgorithm<T> where T : SceneObject<T>{
         return SB.ToString();
     }
 
-    public override bool Equals(object? obj){
-        return obj is SceneAlgorithm<T> other && ID == other.ID;
-    }
+    public override bool Equals(object? Object) => Object is SceneAlgorithm<T> Other && ID == Other.ID;
 
-    public override int GetHashCode(){
-        return ID.GetHashCode();
-    }
+    public override int GetHashCode() => ID.GetHashCode();
 }
 
 [WoowzLibHint(Information.Testing)]
 public class SceneNode<T> where T : SceneObject<T>{
-
+    public SceneNode(T Self){ ID = __ID++; this.Self = Self; }
+    
     private static long __ID;
     public readonly long ID;
 
-    private SceneAlgorithm<T>? SceneRef;
-    private SceneNode<T>?      ParentRef;
+    private SceneAlgorithm<T>? __Scene;
+    private SceneNode<T>?      __Parent;
 
-    private readonly HashSet<SceneNode<T>> Level0Set      = [];
-    private readonly HashSet<SceneNode<T>> DescendantsSet = [];
+    private readonly HashSet<SceneNode<T>> __Level0      = [];
+    private readonly HashSet<SceneNode<T>> __Descendants = [];
 
     public readonly T Self;
 
-    public SceneNode(T self){
-        ID = __ID++;
-        Self = self;
-    }
+    public bool UseNodeCache  => __Scene?.CacheMode == SceneCacheMode.Full;
+    public bool UseSceneCache => __Scene?.CacheMode != SceneCacheMode.None;
+    public bool InMemory      => __Scene == null;
 
-    public bool UseNodeCache  => SceneRef?.CacheMode == SceneCacheMode.Full;
-    public bool UseSceneCache => SceneRef?.CacheMode != SceneCacheMode.None;
-    public bool InMemory      => SceneRef == null;
+    public IReadOnlyCollection<SceneNode<T>> Level0 => __Level0;
 
-    public IReadOnlyCollection<SceneNode<T>> Level0 => Level0Set;
+    public IReadOnlyCollection<SceneNode<T>> Childrens => UseNodeCache ? __Descendants : __CalculateDescendants();
 
-    public IReadOnlyCollection<SceneNode<T>> Childrens =>
-        UseNodeCache ? DescendantsSet : __CalculateDescendants();
-
-    public int Count => Level0Set.Count;
+    public int Count => __Level0.Count;
 
     public SceneAlgorithm<T>? Scene{
-        get => SceneRef;
+        get => __Scene;
         set{
+            if(__Scene == value){ return; }
 
-            if(SceneRef == value){
-                return;
+            if(value != null){ Parent = null; }
+
+            if(__Scene != null){
+                __Scene.__Level0.Remove(this);
+
+                if(__Scene.UseSceneCache){ __Scene.__RemoveTree(this); }
             }
 
-            if(value != null){
-                Parent = null;
-            }
+            __Scene = value;
 
-            if(SceneRef != null){
+            if(__Scene != null){
+                __Scene.__Level0.Add(this);
 
-                SceneRef.__Level0.Remove(this);
-
-                if(SceneRef.UseSceneCache){
-                    SceneRef.__RemoveTree(this);
+                if(__Scene.UseSceneCache){
+                    __Scene.__AddTree(this);
                 }
             }
 
-            SceneRef = value;
-
-            if(SceneRef != null){
-
-                SceneRef.__Level0.Add(this);
-
-                if(SceneRef.UseSceneCache){
-                    SceneRef.__AddTree(this);
-                }
-            }
-
-            foreach(SceneNode<T> c in Level0Set){
-                c.__SetScene(SceneRef);
-            }
+            foreach(SceneNode<T> Node in __Level0){ Node.__SetScene(__Scene); }
         }
     }
 
     public SceneNode<T>? Parent{
-        get => ParentRef;
+        get => __Parent;
         set{
+            if(__Parent == value){ return; }
 
-            if(ParentRef == value){
-                return;
+            if(__Parent != null){
+                __Parent.__Level0.Remove(this);
+                __Parent.__PropagateRemove(this);
+
+                if(__Parent.__Scene?.UseSceneCache == true){ __Parent.__Scene.__RemoveTree(this); }
             }
 
-            if(ParentRef != null){
+            __Parent = value;
 
-                ParentRef.Level0Set.Remove(this);
-                ParentRef.__PropagateRemove(this);
+            if(__Parent != null){
+                __Parent.__Level0.Add(this);
+                __Parent.__PropagateAdd(this);
 
-                if(ParentRef.SceneRef?.UseSceneCache == true){
-                    ParentRef.SceneRef.__RemoveTree(this);
-                }
-            }
+                if(__Parent.__Scene?.UseSceneCache == true){ __Parent.__Scene.__AddTree(this); }
 
-            ParentRef = value;
-
-            if(ParentRef != null){
-
-                ParentRef.Level0Set.Add(this);
-                ParentRef.__PropagateAdd(this);
-
-                if(ParentRef.SceneRef?.UseSceneCache == true){
-                    ParentRef.SceneRef.__AddTree(this);
-                }
-
-                __SetScene(ParentRef.SceneRef);
+                __SetScene(__Parent.__Scene);
             }
         }
     }
 
-    internal void __SetScene(SceneAlgorithm<T>? scene){
+    internal void __SetScene(SceneAlgorithm<T>? Scene){
+        __Scene = Scene;
 
-        SceneRef = scene;
+        foreach(SceneNode<T> Node in __Level0){ Node.__SetScene(Scene); }
+    }
 
-        foreach(SceneNode<T> c in Level0Set){
-            c.__SetScene(scene);
+    internal void __AddTree(SceneNode<T> Node){
+        if(!__Descendants.Add(Node)){ return; }
+
+        foreach(SceneNode<T> Node__ in Node.Level0){ __AddTree(Node__); }
+    }
+
+    internal void __RemoveTree(SceneNode<T> Node){
+        if(!__Descendants.Remove(Node)){ return; }
+
+        foreach(SceneNode<T> Node__ in Node.Level0){ __RemoveTree(Node__); }
+    }
+
+    private void __PropagateAdd(SceneNode<T> Node){
+        SceneNode<T>? Current = this;
+
+        while(Current != null){
+            if(Current.UseNodeCache){ Current.__AddTree(Node); }
+
+            Current = Current.Parent;
         }
     }
 
-    internal void __AddTree(SceneNode<T> node){
+    private void __PropagateRemove(SceneNode<T> Node){
 
-        if(!DescendantsSet.Add(node)){
-            return;
-        }
+        SceneNode<T>? Current = this;
 
-        foreach(SceneNode<T> c in node.Level0){
-            __AddTree(c);
-        }
-    }
+        while(Current != null){
+            if(Current.UseNodeCache){ Current.__RemoveTree(Node); }
 
-    internal void __RemoveTree(SceneNode<T> node){
-
-        if(!DescendantsSet.Remove(node)){
-            return;
-        }
-
-        foreach(SceneNode<T> c in node.Level0){
-            __RemoveTree(c);
-        }
-    }
-
-    private void __PropagateAdd(SceneNode<T> node){
-
-        SceneNode<T>? current = this;
-
-        while(current != null){
-
-            if(current.UseNodeCache){
-                current.__AddTree(node);
-            }
-
-            current = current.Parent;
-        }
-    }
-
-    private void __PropagateRemove(SceneNode<T> node){
-
-        SceneNode<T>? current = this;
-
-        while(current != null){
-
-            if(current.UseNodeCache){
-                current.__RemoveTree(node);
-            }
-
-            current = current.Parent;
+            Current = Current.Parent;
         }
     }
 
     private HashSet<SceneNode<T>> __CalculateDescendants(){
         HashSet<SceneNode<T>> Result = [];
 
-        void Recurse(SceneNode<T> N){
-            if(!Result.Add(N)){ return; }
+        void Recurse(SceneNode<T> Node){
+            if(!Result.Add(Node)){ return; }
 
-            foreach(SceneNode<T> C in N.Level0){ Recurse(C); }
+            foreach(SceneNode<T> Node__ in Node.Level0){ Recurse(Node__); }
         }
 
-        foreach(SceneNode<T> C in Level0Set){ Recurse(C); }
+        foreach(SceneNode<T> Node__ in __Level0){ Recurse(Node__); }
 
         return Result;
     }
@@ -332,16 +252,13 @@ public class SceneNode<T> where T : SceneObject<T>{
     }
 
     public void Remove(SceneNode<T> Node){
-
-        if(Node.Parent != this){
-            throw new InvalidOperationException("Node родитель не совпадает");
-        }
+        if(Node.Parent != this){ throw new InvalidOperationException("Node родитель не совпадает"); }
 
         Node.Parent = null;
     }
 
     public void Clear(){
-        foreach(SceneNode<T> Node in Level0Set.ToList()){
+        foreach(SceneNode<T> Node in __Level0.ToList()){
             Remove(Node);
         }
     }
@@ -350,22 +267,20 @@ public class SceneNode<T> where T : SceneObject<T>{
 
         StringBuilder SB = new StringBuilder();
 
-        string pointer = Last ? "└─ " : "├─ ";
-        SB.AppendLine($"{Indent}{pointer}{Self}");
+        string Pointer = Last ? "└─ " : "├─ ";
+        SB.AppendLine($"{Indent}{Pointer}{Self}");
 
-        string childIndent = Indent + (Last ? "   " : "│  ");
-        List<SceneNode<T>> list = Level0Set.ToList();
+        string ChildIndent = Indent + (Last ? "   " : "│  ");
+        List<SceneNode<T>> List = __Level0.ToList();
 
-        for(int i = 0; i < list.Count; i++){
-            SB.Append(list[i].ToHierarchyString(childIndent, i == list.Count - 1));
-        }
+        for(int i = 0; i < List.Count; i++){ SB.Append(List[i].ToHierarchyString(ChildIndent, i == List.Count - 1)); }
 
         return SB.ToString();
     }
 
     public override string ToString() => $"SN({Self}, {(Parent != null ? Parent.Self.ToString() : "null")}, {Count})";
 
-    public override bool Equals(object? obj) => obj is SceneNode<T> other && ID == other.ID;
+    public override bool Equals(object? Object) => Object is SceneNode<T> Other && ID == Other.ID;
 
     public override int GetHashCode() => ID.GetHashCode();
 }

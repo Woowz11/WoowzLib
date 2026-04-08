@@ -6,7 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
 
-        <Version>0.0.0.215</Version>
+        <Version>0.0.0.216</Version>
 
         <Configurations>Release</Configurations>
 

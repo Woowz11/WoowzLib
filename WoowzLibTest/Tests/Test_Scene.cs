@@ -81,7 +81,7 @@ public static class Test_Scene{
             
             Test.F("SceneCacheMode.None", () =>
             {
-                var scene = new SceneAlgorithm<TestObject>(mode: SceneCacheMode.None);
+                var scene = new SceneAlgorithm<TestObject>(Mode: SceneCacheMode.None);
 
                 var root = scene.Add(new TestObject());
                 var child = root.Add(new TestObject());
@@ -101,7 +101,7 @@ public static class Test_Scene{
             
             Test.F("SceneCacheMode.SceneOnly", () =>
             {
-                var scene = new SceneAlgorithm<TestObject>(mode: SceneCacheMode.SceneOnly);
+                var scene = new SceneAlgorithm<TestObject>(Mode: SceneCacheMode.SceneOnly);
 
                 var root = scene.Add(new TestObject());
                 var child = root.Add(new TestObject());
@@ -118,7 +118,7 @@ public static class Test_Scene{
             
             Test.F("SceneCacheMode.Full", () =>
             {
-                var scene = new SceneAlgorithm<TestObject>(mode: SceneCacheMode.Full);
+                var scene = new SceneAlgorithm<TestObject>(Mode: SceneCacheMode.Full);
 
                 var root = scene.Add(new TestObject());
                 var child = root.Add(new TestObject());
@@ -140,7 +140,7 @@ public static class Test_Scene{
             
             Test.F("Reparenting", () =>
             {
-                var scene = new SceneAlgorithm<TestObject>(mode: SceneCacheMode.Full);
+                var scene = new SceneAlgorithm<TestObject>(Mode: SceneCacheMode.Full);
 
                 var a = scene.Add(new TestObject());
                 var b = scene.Add(new TestObject());
@@ -154,8 +154,8 @@ public static class Test_Scene{
             
             Test.F("Scene transfer", () =>
             {
-                var s1 = new SceneAlgorithm<TestObject>(mode: SceneCacheMode.Full);
-                var s2 = new SceneAlgorithm<TestObject>(mode: SceneCacheMode.Full);
+                var s1 = new SceneAlgorithm<TestObject>(Mode: SceneCacheMode.Full);
+                var s2 = new SceneAlgorithm<TestObject>(Mode: SceneCacheMode.Full);
 
                 var node = s1.Add(new TestObject());
 
