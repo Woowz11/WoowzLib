@@ -3,43 +3,87 @@ using WLO.Attribute;
 
 namespace WLO;
 
+/// <summary>
+/// Режимы кеширования для SceneAlgorithm
+/// </summary>
 public enum SceneCacheMode{
+    /// <summary>
+    /// Не кеширует Childrens, каждый вызов Childrens высчитывает его с нуля
+    /// </summary>
     None,
+    /// <summary>
+    /// Кеширует Childrens только у SceneAlgorithm
+    /// </summary>
     SceneOnly,
+    /// <summary>
+    /// Кеширует Childrens везде, у SceneAlgorithm и у SceneNode, но потребляет больше памяти и возможны фризы при изменении детей/родителей
+    /// </summary>
     Full
 }
 
 [WoowzLibHint(Information.Testing)]
 public class SceneAlgorithm<T> where T : SceneObject<T>{
     public SceneAlgorithm(object? Data = null, SceneCacheMode Mode = SceneCacheMode.SceneOnly){ ID = __ID++; this.Data = Data; CacheMode = Mode; }
-    
-    private static long __ID;
-    public readonly long ID;
 
-    internal readonly HashSet<SceneNode<T>> __Level0      = [];
-    internal readonly HashSet<SceneNode<T>> __Descendants = [];
-
+    /// <summary>
+    /// Произвольные данные сцены, возможно объект к которому привязана сцена
+    /// </summary>
     public readonly object? Data;
+    
+    /// <summary>
+    /// Режим кеширования
+    /// </summary>
     public readonly SceneCacheMode CacheMode;
 
+    /// <summary>
+    /// Используется кеширование Childrens у сцены?
+    /// </summary>
     public bool UseSceneCache => CacheMode != SceneCacheMode.None;
+    /// <summary>
+    /// Используется кеширование Childrens у детей сцены?
+    /// </summary>
     public bool UseNodeCache  => CacheMode == SceneCacheMode.Full;
-
+    
+    /// <summary>
+    /// Корневые дети (первый слой)
+    /// </summary>
     public IReadOnlyCollection<SceneNode<T>> Level0 => __Level0;
 
+    /// <summary>
+    /// Все дети сцены, и корневые (CacheMode влияет)
+    /// </summary>
     public IReadOnlyCollection<SceneNode<T>> Childrens => UseSceneCache ? __Descendants : __CalculateDescendants();
-
+    
+    // ----------------------------------------------------------------------
+    
+    /// <summary>
+    /// Кол-во корневых детей
+    /// </summary>
     public int Count => __Level0.Count;
-
+    
+    /// <summary>
+    /// Есть объект в корневых детях?
+    /// </summary>
     public bool Contains(SceneNode<T> Node) => __Level0.Contains(Node);
 
+    /// <summary>
+    /// Есть объект на сцене? (CacheMode влияет)
+    /// </summary>
     public bool ContainsDescendant(SceneNode<T> node){
-        if(!UseSceneCache){ Logger.Warn("gagag"); }
+        if(!UseSceneCache){ Logger.Warn("Вызван \"ContainsDescendant\" у [" + this + "], лучше установить другой CacheMode, потому-что каждый раз при вызове происходит пересборка Childrens!"); }
         return Childrens.Contains(node);
     }
 
+    /// <summary>
+    /// Добавить новый объект на сцену
+    /// </summary>
+    /// <returns>Новый объект</returns>
     public SceneNode<T> Add(T Object) => Add(Object.Node);
 
+    /// <summary>
+    /// Добавить объект на сцену
+    /// </summary>
+    /// <returns>Добавленный объект</returns>
     public SceneNode<T> Add(SceneNode<T> Node){
         if(Node.Scene == this){ return Node; }
 
@@ -55,20 +99,34 @@ public class SceneAlgorithm<T> where T : SceneObject<T>{
         return Node;
     }
 
+    /// <summary>
+    /// Удалить объект со сцены
+    /// </summary>
     public void Remove(SceneNode<T> Node){
-        if(!__Level0.Remove(Node)){ throw new InvalidOperationException("Node не принадлежит сцене"); }
+        try{
+            if(!__Level0.Remove(Node)){ throw new Exception("Сцена указанного объекта, не является указанной сценой"); }
 
-        if(UseSceneCache){ __RemoveTree(Node); }
+            if(UseSceneCache){ __RemoveTree(Node); }
 
-        Node.__SetScene(null);
-    }
-
-    public void Clear(){
-        foreach(SceneNode<T> Node in __Level0.ToList()){
-            Remove(Node);
+            Node.__SetScene(null);
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при удалении объекта со сцены [" + this + "]!\nОбъект: " + Node, e);
         }
     }
 
+    /// <summary>
+    /// Удалить все объекты на сцене
+    /// </summary>
+    public void Clear(){ foreach(SceneNode<T> Node in __Level0.ToList()){ Remove(Node); } }
+    
+    // ----------------------------------------------------------------------
+    
+    private static  long __ID;
+    public readonly long ID;
+    
+    internal readonly HashSet<SceneNode<T>> __Level0      = [];
+    internal readonly HashSet<SceneNode<T>> __Descendants = [];
+    
     internal void __AddTree(SceneNode<T> Node){
         if(!__Descendants.Add(Node)){ return; }
 
@@ -95,8 +153,10 @@ public class SceneAlgorithm<T> where T : SceneObject<T>{
 
         return Result;
     }
+    
+    // ----------------------------------------------------------------------
 
-    public override string ToString() => $"SceneAlg({Count}{(UseSceneCache ? $" ({__Descendants.Count})" : "")})";
+    public override string ToString() => $"SceneAlg.({Count}{(UseSceneCache ? $" ({__Descendants.Count})" : "")})";
 
     public string ToHierarchyString(){
         StringBuilder SB = new StringBuilder();
@@ -118,27 +178,58 @@ public class SceneAlgorithm<T> where T : SceneObject<T>{
 public class SceneNode<T> where T : SceneObject<T>{
     public SceneNode(T Self){ ID = __ID++; this.Self = Self; }
     
-    private static long __ID;
-    public readonly long ID;
-
-    private SceneAlgorithm<T>? __Scene;
-    private SceneNode<T>?      __Parent;
-
-    private readonly HashSet<SceneNode<T>> __Level0      = [];
-    private readonly HashSet<SceneNode<T>> __Descendants = [];
-
+    /// <summary>
+    /// Сам объект
+    /// </summary>
     public readonly T Self;
 
-    public bool UseNodeCache  => __Scene?.CacheMode == SceneCacheMode.Full;
+    /// <summary>
+    /// Используется кеширование Childrens у сцены?
+    /// </summary>
     public bool UseSceneCache => __Scene?.CacheMode != SceneCacheMode.None;
-    public bool InMemory      => __Scene == null;
-
+    /// <summary>
+    /// Используется кеширование Childrens у детей сцены?
+    /// </summary>
+    public bool UseNodeCache  => __Scene?.CacheMode == SceneCacheMode.Full;
+    
+    /// <summary>
+    /// В памяти? (есть сцена?)
+    /// </summary>
+    public bool InMemory => __Scene == null;
+    
+    /// /// <summary>
+    /// Корневые дети (первый слой)
+    /// </summary>
     public IReadOnlyCollection<SceneNode<T>> Level0 => __Level0;
 
+    /// <summary>
+    /// Все дети объекта, и корневые (CacheMode влияет)
+    /// </summary>
     public IReadOnlyCollection<SceneNode<T>> Childrens => UseNodeCache ? __Descendants : __CalculateDescendants();
+    
+    // ----------------------------------------------------------------------
 
+    /// <summary>
+    /// Кол-во корневых детей
+    /// </summary>
     public int Count => __Level0.Count;
 
+    /// <summary>
+    /// Есть объект в корневых детях?
+    /// </summary>
+    public bool Contains(SceneNode<T> Node) => __Level0.Contains(Node);
+
+    /// <summary>
+    /// Есть объект на сцене? (CacheMode влияет)
+    /// </summary>
+    public bool ContainsDescendant(SceneNode<T> node){
+        if(!UseSceneCache){ Logger.Warn("Вызван \"ContainsDescendant\" у [" + this + "], лучше установить другой CacheMode, потому-что каждый раз при вызове происходит пересборка Childrens!"); }
+        return Childrens.Contains(node);
+    }
+    
+    /// <summary>
+    /// На какой сцене находится объект?
+    /// </summary>
     public SceneAlgorithm<T>? Scene{
         get => __Scene;
         set{
@@ -166,6 +257,9 @@ public class SceneNode<T> where T : SceneObject<T>{
         }
     }
 
+    /// <summary>
+    /// Родитель объекта
+    /// </summary>
     public SceneNode<T>? Parent{
         get => __Parent;
         set{
@@ -190,7 +284,51 @@ public class SceneNode<T> where T : SceneObject<T>{
             }
         }
     }
+    
+    /// <summary>
+    /// Добавить новый объект в объект
+    /// </summary>
+    /// <returns>Новый объект</returns>
+    public SceneNode<T> Add(T Object) => Add(Object.Node);
 
+    /// <summary>
+    /// Добавить объект в объект
+    /// </summary>
+    /// <returns>Добавленный объект</returns>
+    public SceneNode<T> Add(SceneNode<T> Node){
+        Node.Parent = this;
+        return Node;
+    }
+
+    /// <summary>
+    /// Удаляет объект
+    /// </summary>
+    public void Remove(SceneNode<T> Node){
+        try{
+            if(Node.Parent != this){ throw new Exception("Родитель указанного объекта, не является указанным родителем"); }
+
+            Node.Parent = null;
+        }catch(Exception e){
+            throw new Exception("Произошла ошибка при удалении объекта с объекта [" + this + "]!\nОбъект: " + Node, e);
+        }
+    }
+
+    /// <summary>
+    /// Удаляет все объекты
+    /// </summary>
+    public void Clear(){ foreach(SceneNode<T> Node in __Level0.ToList()){ Remove(Node); } }
+    
+    // ----------------------------------------------------------------------
+    
+    private static  long __ID;
+    public readonly long ID;
+
+    private SceneAlgorithm<T>? __Scene;
+    private SceneNode<T>?      __Parent;
+
+    private readonly HashSet<SceneNode<T>> __Level0      = [];
+    private readonly HashSet<SceneNode<T>> __Descendants = [];
+    
     internal void __SetScene(SceneAlgorithm<T>? Scene){
         __Scene = Scene;
 
@@ -243,26 +381,11 @@ public class SceneNode<T> where T : SceneObject<T>{
 
         return Result;
     }
+    
+    // ----------------------------------------------------------------------
 
-    public SceneNode<T> Add(T Object) => Add(Object.Node);
-
-    public SceneNode<T> Add(SceneNode<T> Node){
-        Node.Parent = this;
-        return Node;
-    }
-
-    public void Remove(SceneNode<T> Node){
-        if(Node.Parent != this){ throw new InvalidOperationException("Node родитель не совпадает"); }
-
-        Node.Parent = null;
-    }
-
-    public void Clear(){
-        foreach(SceneNode<T> Node in __Level0.ToList()){
-            Remove(Node);
-        }
-    }
-
+    public override string ToString() => $"SN({Self}, {(Parent != null ? Parent.Self.ToString() : "null")}, {Count})";
+    
     public string ToHierarchyString(string Indent = "", bool Last = true){
 
         StringBuilder SB = new StringBuilder();
@@ -278,8 +401,6 @@ public class SceneNode<T> where T : SceneObject<T>{
         return SB.ToString();
     }
 
-    public override string ToString() => $"SN({Self}, {(Parent != null ? Parent.Self.ToString() : "null")}, {Count})";
-
     public override bool Equals(object? Object) => Object is SceneNode<T> Other && ID == Other.ID;
 
     public override int GetHashCode() => ID.GetHashCode();
@@ -289,5 +410,8 @@ public class SceneNode<T> where T : SceneObject<T>{
 public abstract class SceneObject<T> where T : SceneObject<T>{
     private SceneNode<T>? __Node;
 
+    /// <summary>
+    /// Нода объекта
+    /// </summary>
     public SceneNode<T> Node => __Node ??= new SceneNode<T>((T)this);
 }

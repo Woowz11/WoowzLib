@@ -164,6 +164,87 @@ public static class Test_Scene{
                 Test.CheckResult(node.Scene, s2, "Scene transfer");
                 Test.CheckResult(s1.Contains(node), false, "Removed from old scene");
             });
+            
+            Test.F("Проверка Contains и ContainsDescendant без кеша", () =>
+            {
+                var scene = new SceneAlgorithm<TestObject>(Mode: SceneCacheMode.None);
+                var root = scene.Add(new TestObject{ VALUE = 10 });
+                var child = root.Add(new TestObject{ VALUE = 20 });
+                var grand = child.Add(new TestObject{ VALUE = 30 });
+
+                // Корневой объект
+                Test.CheckResult(scene.Contains(root), true, "Contains корень");
+                // Потомки
+                Test.CheckResult(scene.ContainsDescendant(child), true, "ContainsDescendant ребёнок");
+                Test.CheckResult(scene.ContainsDescendant(grand), true, "ContainsDescendant внук");
+
+                // Проверка уровня Node
+                Test.CheckResult(root.Contains(child), true, "Node.Contains ребёнок");
+                Test.CheckResult(root.ContainsDescendant(grand), true, "Node.ContainsDescendant внук");
+            });
+            
+            Test.F("Защита от циклов", () =>
+            {
+                var scene = new SceneAlgorithm<TestObject>();
+                var root = scene.Add(new TestObject());
+                var child = root.Add(new TestObject());
+
+                bool exceptionThrown = false;
+                try{
+                    root.Parent = child; // Попытка сделать родителем своего потомка
+                }catch(Exception){
+                    exceptionThrown = true;
+                }
+
+                Test.CheckResult(exceptionThrown, true, "Нельзя сделать родителем потомка");
+            });
+            
+            Test.F("Очистка сцены и кешей", () =>
+            {
+                var scene = new SceneAlgorithm<TestObject>(Mode: SceneCacheMode.Full);
+                var root = scene.Add(new TestObject());
+                var child = root.Add(new TestObject());
+                var grand = child.Add(new TestObject());
+
+                scene.Clear();
+
+                Test.CheckResult(scene.Count, 0, "Count после Clear");
+                Test.CheckResult(root.Parent, null, "Root.Parent после Clear");
+                Test.CheckResult(child.Scene, null, "Child.Scene после Clear");
+                Test.CheckResult(grand.Scene, null, "Grand.Scene после Clear");
+
+                // Кеши должны быть очищены
+                Test.CheckResult(scene.ContainsDescendant(grand), false, "ContainsDescendant после Clear");
+            });
+            
+            Test.F("Перепривязка нескольких уровней", () =>
+            {
+                var scene = new SceneAlgorithm<TestObject>(Mode: SceneCacheMode.Full);
+
+                var a = scene.Add(new TestObject{ VALUE = 1 });
+                var b = scene.Add(new TestObject{ VALUE = 2 });
+                var c = a.Add(new TestObject{ VALUE = 3 });
+                var d = c.Add(new TestObject{ VALUE = 4 });
+
+                // Перепривязка "сверху"
+                b.Add(c);
+
+                Test.CheckResult(c.Parent, b, "C.Parent после reparent");
+                Test.CheckResult(d.Parent, c, "D.Parent остаётся прежним");
+                Test.CheckResult(a.Childrens.Contains(c), false, "A.Childrens не содержит C после reparent");
+                Test.CheckResult(b.Childrens.Contains(c), true, "B.Childrens содержит C после reparent");
+            });
+            
+            Test.F("Установка Scene через Node.Scene", () =>
+            {
+                var scene = new SceneAlgorithm<TestObject>();
+                var node = new TestObject().Node;
+
+                node.Scene = scene;
+
+                Test.CheckResult(node.Scene, scene, "Node.Scene установлена");
+                Test.CheckResult(scene.Contains(node), true, "Сцена содержит Node после установки через Node.Scene");
+            });
         });
     }
 }
