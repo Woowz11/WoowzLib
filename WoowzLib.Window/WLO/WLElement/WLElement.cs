@@ -5,7 +5,7 @@ using WLO.Vector;
 
 namespace WLO.WLElement;
 
-public abstract class WLElement : SceneObject<WLElement>{
+public abstract class WLElement : SceneObject<WLElement>, ITransform{
     protected WLElement(){ Name = DefaultName(); Transform = new WLElementTransform(this); }
 
     /// <summary>
@@ -42,6 +42,8 @@ public abstract class WLElement : SceneObject<WLElement>{
             WL.System.Draw.Fill(HDC, Transform.World.Rect, new BrushFill(Color4B.Magenta));
         }
     }
+
+    internal void __UpdateTransform(object? Data = null) => Transform.Recalculate((bool)Data!);
     
     // ----------------------------------------------------------------------
 

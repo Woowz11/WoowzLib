@@ -240,7 +240,11 @@ public class TransformAlgorithm{
     public string ToVeryShortString() => Rect.ToShortString();
 }
 
-public class WorldTransformAlgorithm<T> where T : SceneObject<T>{
+public interface ITransform{
+    internal void __UpdateTransform(object? Data = null){}
+}
+
+public class WorldTransformAlgorithm<T> where T : SceneObject<T>, ITransform{
     public WorldTransformAlgorithm(T Self){
         this.Self = Self;
 
@@ -248,12 +252,14 @@ public class WorldTransformAlgorithm<T> where T : SceneObject<T>{
         
         Local.OnRect += (Transform, Rect) => {
             if(Sync){ return Rect; }
-
+            
             Rect2I Result = LocalToWorld(Rect);
             
             Sync = true; World.Rect = Result; Sync = false;
+
+            __UpdateChildren(Self.Node, true);
             
-            return Rect;
+            return Result;
         };
 
         World.OnRect += (Transform, Rect) => {
@@ -263,7 +269,9 @@ public class WorldTransformAlgorithm<T> where T : SceneObject<T>{
             
             Sync = true; Local.Rect = Result; Sync = false;
 
-            return Rect;
+            __UpdateChildren(Self.Node, false);
+            
+            return Result;
         };
     }
 
@@ -303,9 +311,9 @@ public class WorldTransformAlgorithm<T> where T : SceneObject<T>{
     // ----------------------------------------------------------------------
 
     private Rect2I LocalToWorld(Rect2I Rect){
+        Rect = Self.Node.Parents().Aggregate(Rect, (Current, Parent) => OnParentTransform?.Invoke(Parent, this, Current) ?? Current);
+        
         if(!Self.Node.InMemory){
-            Rect = Self.Node.Parents().Aggregate(Rect, (current, Parent) => OnParentTransform?.Invoke(Parent, this, current) ?? current);
-
             Rect = OnSceneTransform?.Invoke(Self.Node.Scene!, this, Rect) ?? Rect;
         }
 
@@ -315,11 +323,32 @@ public class WorldTransformAlgorithm<T> where T : SceneObject<T>{
     private Rect2I WorldToLocal(Rect2I Rect){
         if(!Self.Node.InMemory){
             Rect = OnSceneTransformReverse?.Invoke(Self.Node.Scene!, this, Rect) ?? Rect;
-
-            Rect = Self.Node.Parents().Reverse().Aggregate(Rect, (current, Parent) => OnParentTransformReverse?.Invoke(Parent, this, current) ?? current);
         }
+        
+        Rect = Self.Node.Parents().Reverse().Aggregate(Rect, (Current, Parent) => OnParentTransformReverse?.Invoke(Parent, this, Current) ?? Current);
 
         return Rect;
+    }
+    
+    /// <summary>
+    /// Обновляет Local/World
+    /// </summary>
+    /// <param name="LocalToWorld">Обновить World?</param>
+    public void Recalculate(bool LocalToWorld){
+        if(LocalToWorld){
+            World.Rect = this.LocalToWorld(Local.Rect);
+        }else{
+            Local.Rect = this.WorldToLocal(World.Rect);
+        }
+        
+        __UpdateChildren(Self.Node, LocalToWorld);
+    }
+
+    private void __UpdateChildren(SceneNode<T> Node, bool LocalToWorld){
+        foreach(SceneNode<T> Child in Node.Level0){
+            Child.Self.__UpdateTransform(LocalToWorld);
+            __UpdateChildren(Child, LocalToWorld);
+        }
     }
     
     // ----------------------------------------------------------------------
