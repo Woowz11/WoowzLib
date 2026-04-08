@@ -78,6 +78,92 @@ public static class Test_Scene{
                 
                 Logger.Debug(Scene.ToHierarchyString());
             });
+            
+            Test.F("SceneCacheMode.None", () =>
+            {
+                var scene = new SceneAlgorithm<TestObject>(mode: SceneCacheMode.None);
+
+                var root = scene.Add(new TestObject());
+                var child = root.Add(new TestObject());
+                var sub = child.Add(new TestObject());
+
+                Test.CheckResult(scene.Count, 1, "Root count");
+                Test.CheckResult(root.Count, 1, "Child count");
+
+                // нет кеша → должно работать через пересчёт
+                Test.CheckResult(scene.ContainsDescendant(sub), true, "Descendant calc");
+
+                scene.Remove(root);
+
+                Test.CheckResult(scene.Count, 0, "Remove root");
+                Test.CheckResult(sub.Scene, null, "Scene cleared");
+            });
+            
+            Test.F("SceneCacheMode.SceneOnly", () =>
+            {
+                var scene = new SceneAlgorithm<TestObject>(mode: SceneCacheMode.SceneOnly);
+
+                var root = scene.Add(new TestObject());
+                var child = root.Add(new TestObject());
+                var sub = child.Add(new TestObject());
+
+                // проверка кеша сцены
+                Test.CheckResult(scene.ContainsDescendant(sub), true, "Scene cache works");
+
+                // удаление
+                scene.Remove(root);
+
+                Test.CheckResult(scene.ContainsDescendant(sub), false, "Cache updated");
+            });
+            
+            Test.F("SceneCacheMode.Full", () =>
+            {
+                var scene = new SceneAlgorithm<TestObject>(mode: SceneCacheMode.Full);
+
+                var root = scene.Add(new TestObject());
+                var child = root.Add(new TestObject());
+                var sub = child.Add(new TestObject());
+
+                // проверка кеша ноды
+                Test.CheckResult(root.Childrens.Contains(sub), true, "Node cache works");
+
+                // проверка propagate вверх
+                var deep = sub.Add(new TestObject());
+
+                Test.CheckResult(root.Childrens.Contains(deep), true, "Propagate add");
+
+                // удаление
+                child.Remove(sub);
+
+                Test.CheckResult(root.Childrens.Contains(sub), false, "Propagate remove");
+            });
+            
+            Test.F("Reparenting", () =>
+            {
+                var scene = new SceneAlgorithm<TestObject>(mode: SceneCacheMode.Full);
+
+                var a = scene.Add(new TestObject());
+                var b = scene.Add(new TestObject());
+                var x = a.Add(new TestObject());
+
+                b.Add(x);
+
+                Test.CheckResult(x.Parent, b, "Reparent");
+                Test.CheckResult(a.Childrens.Contains(x), false, "Removed from old parent");
+            });
+            
+            Test.F("Scene transfer", () =>
+            {
+                var s1 = new SceneAlgorithm<TestObject>(mode: SceneCacheMode.Full);
+                var s2 = new SceneAlgorithm<TestObject>(mode: SceneCacheMode.Full);
+
+                var node = s1.Add(new TestObject());
+
+                s2.Add(node);
+
+                Test.CheckResult(node.Scene, s2, "Scene transfer");
+                Test.CheckResult(s1.Contains(node), false, "Removed from old scene");
+            });
         });
     }
 }
