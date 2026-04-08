@@ -73,9 +73,7 @@ public static class Test_Scene{
 
                 c = c3;
                 for(int i = 0; i < 30; i++){
-                    SceneNode<TestObject> SN = new TestObject().Node;
-                    SN.Parent = c;
-                    c = SN;
+                    c = c.Add(new TestObject());
                 }
                 
                 Logger.Debug(Scene.ToHierarchyString());

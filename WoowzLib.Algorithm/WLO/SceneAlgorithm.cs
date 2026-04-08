@@ -1,304 +1,258 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using WLO.Attribute;
 
 namespace WLO;
 
 [WoowzLibHint(Information.Testing)]
-public class SceneAlgorithm<T> where T : SceneObject<T>{
-    // Переменная, указывающая на сколько возможен по глубине иерархия
+public class SceneAlgorithm<T> where T : SceneObject<T>
+{
+    public readonly HashSet<SceneNode<T>> _roots = new();
+    private readonly HashSet<SceneNode<T>> _cachedDescendants = new();
+    private static long _globalId;
 
+    public long Id { get; }
+    public object? Data { get; }
+    public bool CacheChildrens { get; }
 
-    public SceneAlgorithm(object? Data = null, bool CacheChildrens = true){ ID = TotalID++; this.Data = Data; this.CacheChildrens = CacheChildrens; }
-    private readonly long ID;
-    private static   long TotalID;
-
-    /// <summary>
-    /// Дополнительная информация, возможно привязанный компонент
-    /// </summary>
-    public object? Data{ get; private set; }
-
-    /// <summary>
-    /// Кешировать детей? Если да, то будет получать список Childrens со скоростью O(1), но будет больше потреблять памяти, иначе каждый раз будет вычислять список со скоростью O(N)
-    /// </summary>
-    public readonly bool CacheChildrens;
-
-    // ----------------------------------------------------------------------
-
-    public IReadOnlyCollection<SceneNode<T>> Layer0 => __Layer0;
-
-    public IReadOnlyCollection<SceneNode<T>> Childrens{
-        get{
-            if(CacheChildrens){
-                return __Childrens;
-            }else{
-                return __CalculateChildrens();
-            }    
-        }  
+    public SceneAlgorithm(object? data = null, bool cacheChildrens = true)
+    {
+        Id = _globalId++;
+        Data = data;
+        CacheChildrens = cacheChildrens;
     }
 
-    public int Count => __Layer0.Count;
+    public IReadOnlyCollection<SceneNode<T>> RootNodes => _roots;
+    public IReadOnlyCollection<SceneNode<T>> Childrens => CacheChildrens ? _cachedDescendants : CalculateDescendants();
+    public int Count => _roots.Count;
 
-    public bool Contains(SceneNode<T> Node) => __Layer0.Contains(Node);
-    
-    public bool ContainsDescendant(SceneNode<T> Node){
-        if(!CacheChildrens){ Logger.Warn("бебебе бабабаба"); }
-        return Childrens.Contains(Node);
-    }
-    
-    public SceneNode<T> Add(T Object) => Add(Object.Node);
-    
-    public SceneNode<T> Add(SceneNode<T> Node){
-        Node.Scene = this;
-        return Node;
+    public bool Contains(SceneNode<T> node) => _roots.Contains(node);
+    public bool ContainsDescendant(SceneNode<T> node) => Childrens.Contains(node);
+
+    public SceneNode<T> Add(T obj) => Add(obj.Node);
+
+    public SceneNode<T> Add(SceneNode<T> node)
+    {
+        if (node.Scene == this) return node;
+
+        node.Parent = null; // разрываем родителя
+        _roots.Add(node);
+        node.SetScene(this);
+
+        if (CacheChildrens)
+            AddTree(node);
+
+        return node;
     }
 
-    public void Remove(SceneNode<T> Node){
-        if(Node.Scene != this){ throw new Exception("Сцена Node не равна указанной сцене!"); }
-        Node.Scene = null;
+    public void Remove(SceneNode<T> node)
+    {
+        if (!_roots.Remove(node))
+            throw new InvalidOperationException("Node не принадлежит сцене");
+
+        if (CacheChildrens)
+            RemoveTree(node);
+
+        node.SetScene(null); // только сцена, родитель остаётся
     }
 
-    public void Clear(){
-        List<SceneNode<T>> Layer0__ = __Layer0.ToList();
-        foreach(SceneNode<T> VARIABLE in Layer0__){
-            Remove(VARIABLE);
+    public void Clear()
+    {
+        foreach (var node in _roots.ToList())
+            Remove(node);
+    }
+
+    internal void AddTree(SceneNode<T> node)
+    {
+        if (_cachedDescendants.Add(node))
+        {
+            foreach (var child in node.Children)
+                AddTree(child);
         }
     }
-    
-    // ----------------------------------------------------------------------
 
-    internal readonly HashSet<SceneNode<T>> __Layer0    = [];
-    internal readonly HashSet<SceneNode<T>> __Childrens = [];
-
-    private HashSet<SceneNode<T>> __CalculateChildrens(){
-        HashSet<SceneNode<T>> Result = [];
-
-        void __Add(SceneNode<T> Node){
-            if(!Result.Add(Node)){ return; }
-            foreach(SceneNode<T> Node__ in Node.__Layer0){
-                __Add(Node__);
-            }
-        }
-        
-        foreach(SceneNode<T> Node in __Layer0){
-            __Add(Node);
-        }
-        
-        return Result;
-    }
-
-    internal void __AddTree(SceneNode<T> Node){
-        if(!__Childrens.Add(Node)){ return; }
-        foreach(SceneNode<T> Node__ in Node.__Layer0){
-            __AddTree(Node__);
+    internal void RemoveTree(SceneNode<T> node)
+    {
+        if (_cachedDescendants.Remove(node))
+        {
+            foreach (var child in node.Children)
+                RemoveTree(child);
         }
     }
-    
-    internal void __RemoveTree(SceneNode<T> Node){
-        if(!__Childrens.Remove(Node)){ return; }
-        foreach(SceneNode<T> Node__ in Node.__Layer0){
-            __RemoveTree(Node__);
+
+    private HashSet<SceneNode<T>> CalculateDescendants()
+    {
+        var result = new HashSet<SceneNode<T>>();
+        void Recurse(SceneNode<T> n)
+        {
+            if (!result.Add(n)) return;
+            foreach (var c in n.Children)
+                Recurse(c);
         }
-    }
-    
-    // ----------------------------------------------------------------------
 
-    public override string ToString() => "SceneAlg.(" + Count + (CacheChildrens ? "(" + __Childrens.Count + ")" : "") + ")";
-    
-    public string ToHierarchyString(){
-        StringBuilder SB = new StringBuilder();
+        foreach (var root in _roots)
+            Recurse(root);
 
-        SB.Append(ToString() + "\n");
-        
-        var roots = __Layer0.ToList();
-        for(int i = 0; i < roots.Count; i++){
-            bool isLast = i == roots.Count - 1;
-            SB.Append(roots[i].ToHierarchyString("", isLast));
-        }
-        return SB.ToString();
-    }
-    
-    public override bool Equals(object? obj){
-        if(obj is SceneAlgorithm<T> other){ return ID == other.ID; }
-        return false;
+        return result;
     }
 
-    public override int GetHashCode(){
-        return ID.GetHashCode();
+    public override string ToString() => $"SceneAlg({Count}{(CacheChildrens ? $"({_cachedDescendants.Count})" : "")})";
+
+    public string ToHierarchyString()
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine(ToString());
+        var roots = _roots.ToList();
+        for (int i = 0; i < roots.Count; i++)
+            sb.Append(roots[i].ToHierarchyString("", i == roots.Count - 1));
+        return sb.ToString();
     }
+
+    public override bool Equals(object? obj) => obj is SceneAlgorithm<T> other && Id == other.Id;
+    public override int GetHashCode() => Id.GetHashCode();
 }
 
 [WoowzLibHint(Information.Testing)]
-public class SceneNode<T> where T : SceneObject<T>{
-    public SceneNode(T Self, bool CacheChildrens = true){
-        ID = TotalID++;
-        this.Self = Self;
-    }
-    private readonly long ID;
-    private static   long TotalID;
+public class SceneNode<T> where T : SceneObject<T>
+{
+    private static long _globalId;
+    private SceneAlgorithm<T>? _scene;
+    private SceneNode<T>? _parent;
+    private readonly HashSet<SceneNode<T>> _children = new();
 
+    public long Id { get; }
     public readonly T Self;
 
-    public bool CacheChildrens => Scene is{ CacheChildrens: true };
+    public SceneNode(T self)
+    {
+        Id = _globalId++;
+        Self = self;
+    }
 
+    public bool CacheChildrens => Scene?.CacheChildrens ?? true;
     public bool InMemory => Scene == null;
+
+    public IReadOnlyCollection<SceneNode<T>> Children => _children;
+
+    public int Count => _children.Count;
     
-    // ----------------------------------------------------------------------
+    public SceneAlgorithm<T>? Scene
+    {
+        get => _scene;
+        set
+        {
+            if (_scene == value) return;
 
-    private void __SetScene(SceneAlgorithm<T>? value, bool changeparent){
-        if(__Scene == value){ return; }
+            if (value != null)
+                Parent = null; // разрываем родителя при присвоении сцены
 
-        if(changeparent){ Parent = null; }
-            
-        if(__Scene != null){
-            __Scene.__Layer0.Remove(this);
-            if(CacheChildrens){ __Scene.__RemoveTree(this); }
-        }
-            
-        __Scene = value;
+            _scene?.RemoveTree(this);
+            _scene?._roots.Remove(this);
 
-        if(__Scene != null){
-            __Scene.__Layer0.Add(this);
-            if(CacheChildrens){ __Scene.__AddTree(this); }
-        }
-            
-        foreach(var child in __Layer0){
-            child.__Scene = value; // без изменения parent
-        }
-    }
-    
-    private SceneAlgorithm<T>? __Scene;
-    public SceneAlgorithm<T>? Scene{
-        get => __Scene;
-        set => __SetScene(value, true);
-    }
+            _scene = value;
 
-    private SceneNode<T>? __Parent;
-
-    public SceneNode<T>? Parent{
-        get => __Parent;
-        set{
-            if(__Parent == value){ return; }
-
-            if(__Parent != null){
-                __Parent.__Layer0.Remove(this);
-                if(__Parent.CacheChildrens){
-                    __Parent.Scene!.__RemoveTree(this);
-                }
+            if (_scene != null)
+            {
+                _scene._roots.Add(this);
+                if (_scene.CacheChildrens)
+                    _scene.AddTree(this);
             }
 
-            __Parent = value;
-
-            if(__Parent != null){
-                __Parent.__Layer0.Add(this);
-                if(__Parent.CacheChildrens){
-                    __Parent.Scene!.__AddTree(this);
-                }
-
-                __SetScene(__Parent.Scene, false);
-            }
+            foreach (var child in _children)
+                child.SetScene(_scene);
         }
     }
-    
-    public IReadOnlyCollection<SceneNode<T>> Layer0 => __Layer0;
 
-    public IReadOnlyCollection<SceneNode<T>> Childrens{
-        get{
-            if(CacheChildrens){
-                return __Childrens;
-            }else{
-                return __CalculateChildrens();
+    public SceneNode<T>? Parent
+    {
+        get => _parent;
+        set
+        {
+            if (_parent == value) return;
+
+            _parent?._children.Remove(this);
+            if (_parent?.Scene != null && _parent.CacheChildrens)
+                _parent.Scene.RemoveTree(this);
+
+            _parent = value;
+
+            if (_parent != null)
+            {
+                _parent._children.Add(this);
+                if (_parent.Scene != null && _parent.CacheChildrens)
+                    _parent.Scene.AddTree(this);
+
+                SetScene(_parent.Scene);
             }
         }
     }
 
-    public int Count => __Layer0.Count;
-    
-    public bool Contains(SceneNode<T> Node) => __Layer0.Contains(Node);
-
-    public bool ContainsDescendant(SceneNode<T> Node){
-        if(!CacheChildrens){ Logger.Warn("бебебе бабабаба"); }
-        return Childrens.Contains(Node);
-    }
-    
-    public SceneNode<T> Add(T Object) => Add(Object.Node);
-    
-    public SceneNode<T> Add(SceneNode<T> Node){
-        Node.Parent = this;
-        return Node;
+    internal void SetScene(SceneAlgorithm<T>? scene)
+    {
+        _scene = scene;
+        foreach (var child in _children)
+            child.SetScene(scene);
     }
 
-    public void Remove(SceneNode<T> Node){
-        if(Node.Parent != this){ throw new Exception("Родитель Node не равен указанному родителю!"); }
-        Node.Parent = null;
+    public SceneNode<T> Add(T obj) => Add(obj.Node);
+
+    public SceneNode<T> Add(SceneNode<T> node)
+    {
+        node.Parent = this;
+        return node;
     }
-    
-    public void Clear(){
-        List<SceneNode<T>> Layer0__ = __Layer0.ToList();
-        foreach(SceneNode<T> VARIABLE in Layer0__){
-            Remove(VARIABLE);
-        }
+
+    public void Remove(SceneNode<T> node)
+    {
+        if (node.Parent != this)
+            throw new InvalidOperationException("Node родитель не совпадает");
+        node.Parent = null;
     }
-    
-    // ----------------------------------------------------------------------
 
-    internal readonly HashSet<SceneNode<T>> __Layer0    = [];
-    internal readonly HashSet<SceneNode<T>> __Childrens = [];
-
-    private HashSet<SceneNode<T>> __CalculateChildrens(){
-        HashSet<SceneNode<T>> Result = [];
-
-        void __Add(SceneNode<T> Node){
-            if(!Result.Add(Node)){ return; }
-            foreach(SceneNode<T> Node__ in Node.__Layer0){
-                __Add(Node__);
-            }
-        }
-        
-        foreach(SceneNode<T> Node in __Layer0){
-            __Add(Node);
-        }
-        
-        return Result;
+    public void Clear()
+    {
+        foreach (var child in _children.ToList())
+            Remove(child);
     }
-    
-    // ----------------------------------------------------------------------
-    
-    public override string ToString() => "SN(" + Self + ", " + WL.__Base.Other.ToString(Parent) + " (" + (Scene == null ? "В памяти" : "На сцене") + "), " + Layer0.Count + " (" + Childrens.Count + "))";
 
-    public string ToHierarchyString(string Indent = "", bool Last = true){
-        StringBuilder SB = new StringBuilder();
-
-        string pointer = Last ? "└─ " : "├─ ";
-        SB.Append(Indent + pointer + Self + "\n");
-
-        // Формируем новый префикс для детей
-        string childIndent = Indent + (Last ? "   " : "│  ");
-
-        var children = __Layer0.ToList();
-        for(int i = 0; i < children.Count; i++){
-            bool isLast = i == children.Count - 1;
-            SB.Append(children[i].ToHierarchyString(childIndent, isLast));
+    private HashSet<SceneNode<T>> CalculateDescendants()
+    {
+        var result = new HashSet<SceneNode<T>>();
+        void Recurse(SceneNode<T> n)
+        {
+            if (!result.Add(n)) return;
+            foreach (var c in n.Children)
+                Recurse(c);
         }
 
-        return SB.ToString();
-    }
-    
-    public override bool Equals(object? obj){
-        if(obj is SceneNode<T> other){ return ID == other.ID; }
-        return false;
+        foreach (var child in _children)
+            Recurse(child);
+
+        return result;
     }
 
-    public override int GetHashCode() => ID.GetHashCode();
+    public string ToHierarchyString(string indent = "", bool last = true)
+    {
+        var sb = new StringBuilder();
+        var pointer = last ? "└─ " : "├─ ";
+        sb.AppendLine($"{indent}{pointer}{Self}");
+        var childIndent = indent + (last ? "   " : "│  ");
+        var childrenList = _children.ToList();
+        for (int i = 0; i < childrenList.Count; i++)
+            sb.Append(childrenList[i].ToHierarchyString(childIndent, i == childrenList.Count - 1));
+        return sb.ToString();
+    }
+
+    public override string ToString() => $"SN({Self}, {(Parent != null ? Parent.Self.ToString() : "null")}, {Children.Count})";
+    public override bool Equals(object? obj) => obj is SceneNode<T> other && Id == other.Id;
+    public override int GetHashCode() => Id.GetHashCode();
 }
 
 [WoowzLibHint(Information.Testing)]
-public abstract class SceneObject<T> where T : SceneObject<T>{
-    internal SceneNode<T>? __Node;
-
-    public SceneNode<T> Node{
-        get{
-            __Node ??= new SceneNode<T>((T)this);
-            return __Node;
-        }
-    }
+public abstract class SceneObject<T> where T : SceneObject<T>
+{
+    private SceneNode<T>? _node;
+    public SceneNode<T> Node => _node ??= new SceneNode<T>((T)this);
 }
