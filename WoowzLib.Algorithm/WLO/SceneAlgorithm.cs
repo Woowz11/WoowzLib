@@ -3,75 +3,79 @@
 namespace WLO;
 
 [WoowzLibHint(Information.WorkInProgress)]
-public class SceneAlgorithm<T>{
+public class SceneAlgorithm<T> where T : SceneObject<T>{
     // Переменная, указывающая на сколько возможен по глубине иерархия
 
 
-    public SceneAlgorithm(){
-        ID = TotalID++;
-    }
-    
+    public SceneAlgorithm(object? Data = null){ ID = TotalID++; this.Data = Data; }
     private readonly long ID;
     private static   long TotalID;
+
+    /// <summary>
+    /// Дополнительная информация, возможно привязанный компонент
+    /// </summary>
+    public object? Data{ get; private set; }
+
+    // ----------------------------------------------------------------------
+
+    public readonly List<SceneNode<T>>    Layer0    = [];
+    public readonly HashSet<SceneNode<T>> Childrens = [];
+
+    public SceneNode<T> Add(T Object) => Add(Object.Node);
     
-    // добавляет новый объект
-    public SceneNode<T> Add(T NewChild) => Add(new SceneNode<T>(NewChild));
-
-    // добавляет существующий объект
-    public SceneNode<T> Add(SceneNode<T> Child){
-        if(Child.Scene == this){ throw new Exception("Объект уже добавлен на сцену!"); }
-        
-        Child.Scene = this;
-        
-        return Child;
-    }
-
-    // удаляет существующий объект
-    public void Remove(SceneNode<T> Child){
-        if(Child.Scene != this){ throw new Exception("Объект привязан к другой сцене, или вообще не привязан!"); }
-        
-        Child.Scene = null;
+    public SceneNode<T> Add(SceneNode<T> Node){
+        __Add(Node);
+        return Node;
     }
     
-    // ищет по значению
-    public bool Contains(T Object) => false;
-    
-    // ищет объект
-    public bool Contains(SceneNode<T> Object) => false;
+    // ----------------------------------------------------------------------
 
-    // всего объектов на сцене
-    public int Count => Childrens.Count;
+    internal void __Add(SceneNode<T> Node){
+        if(Node.Scene == this){ return; }
+        
+        if(Node.Parent != null){ Node.Parent.__Remove(Node); }
 
-    // возвращает объекты на определённом слое
-    public SceneNode<T>[] GetLayer(uint Layer){
-        if(Layer == 0){
-            return Layer0.ToArray();
-        }else{
-            return [];
+        if(Node.Scene != null){
+            Node.Scene.__Remove(Node);
+        }
+
+        Node.Scene = this;
+        
+        Layer0.Add(Node);
+        
+        __RegisterTree(Node);
+    }
+
+    internal void __Remove(SceneNode<T> Node){
+        if(Node.Scene != this){ throw new Exception("Node не привязан к этой сцене!"); }
+
+        Layer0.Remove(Node);
+        
+        __UnregisterTree(Node);
+
+        Node.Scene = null;
+    }
+
+    internal void __RegisterTree(SceneNode<T> Node){
+        if(!Childrens.Add(Node)){ return; }
+
+        foreach(SceneNode<T> VARIABLE in Node.Childrens){
+            Childrens.Add(VARIABLE);
         }
     }
-
-    // все объекты на каждом слое
-    public List<SceneNode<T>> Layer0 = [];
-
-    // все объекты у сцены
-    public List<SceneNode<T>> Childrens = [];
-
-    internal void __Add(SceneNode<T> Child){
-        
-    }
     
-    internal void __Remove(SceneNode<T> Child){
-        
-    }
+    internal void __UnregisterTree(SceneNode<T> Node){
+        if(!Childrens.Remove(Node)){ return; }
 
-    internal void __Update(){
-        
+        foreach(SceneNode<T> VARIABLE in Node.Childrens){
+            Childrens.Remove(VARIABLE);
+        }
     }
     
     // ----------------------------------------------------------------------
 
     public override string ToString() => "SceneAlg.(" + Layer0.Count + " (" + Count + "))";
+    public string ToShortString() => "";
     
     public override bool Equals(object? obj){
         if(obj is SceneAlgorithm<T> other){ return ID == other.ID; }
@@ -84,84 +88,43 @@ public class SceneAlgorithm<T>{
 }
 
 [WoowzLibHint(Information.WorkInProgress)]
-public class SceneNode<T>{
+public class SceneNode<T> where T : SceneObject<T>{
     public SceneNode(T Self){
         ID = TotalID++;
         this.Self = Self;
     }
-
     private readonly long ID;
     private static   long TotalID;
-    
-    // объект к которому привязан нод
+
     public readonly T Self;
 
-    // сцена к которой привязан объект
-    public SceneAlgorithm<T>? Scene{
-        get => __Scene;
-        set{
-            if(__Scene == value){ return; }
+    // ----------------------------------------------------------------------
 
-            if(__Scene != null){
-                __Scene.__Remove(this);
-            }
-            
-            __Scene = value;
-            Parent = null;
-            
-            if(__Scene != null){
-                __Scene.__Add(this);
-            }
-        }
+    public SceneAlgorithm<T>? Scene;
+    public SceneNode<T>?      Parent;
+    
+    public readonly List<SceneNode<T>>    Layer0    = [];
+    public readonly HashSet<SceneNode<T>> Childrens = [];
+    
+    public SceneNode<T> Add(T Object) => Add(Object.Node);
+    
+    public SceneNode<T> Add(SceneNode<T> Node){
+        __Add(Node);
+        return Node;
     }
-    private SceneAlgorithm<T>? __Scene;
-
-    // в памяти?
-    public bool InMemory => Scene == null;
-    
-    // родитель
-    public SceneNode<T>? Parent;
-    
-    
-    
-    // добавляет новый объект
-    public void Add(T NewChild){
-        Add(new SceneNode<T>(NewChild));
-    }
-
-    // добавляет существующий объект
-    public void Add(SceneNode<T> Child){
-        
-    }
-
-    // удаляет существующий объект
-    public void Remove(SceneNode<T> Child){
-        
-    }
-    
-    // ищет по значению
-    public bool Contains(T Object) => false;
-    
-    // ищет объект
-    public bool Contains(SceneNode<T> Object) => false;
-    
-    // возвращает объекты на определённом слое
-    public SceneNode<T>[] GetLayer(uint Layer){
-        if(Layer == 0){
-            return Layer0.ToArray();
-        }else{
-            return [];
-        }
-    }
-
-    // все объекты на каждом слое
-    public List<SceneNode<T>> Layer0 = [];
-
-    // все объекты
-    public List<SceneNode<T>> Childrens = [];
     
     // ----------------------------------------------------------------------
 
+    internal void __Add(SceneNode<T> Node){
+        
+    }
+
+    internal void __Remove(SceneNode<T> Node){
+        
+    }
+
+    // ----------------------------------------------------------------------
+    
     public override string ToString() => "SN(" + Self + ", " + WL.__Base.Other.ToString(Parent) + " (" + (Scene == null ? "В памяти" : "На сцене") + "), " + Layer0.Count + " (" + Childrens.Count + "))";
 
     public override bool Equals(object? obj){
@@ -169,7 +132,16 @@ public class SceneNode<T>{
         return false;
     }
 
-    public override int GetHashCode(){
-        return ID.GetHashCode();
+    public override int GetHashCode() => ID.GetHashCode();
+}
+
+public abstract class SceneObject<T> where T : SceneObject<T>{
+    internal SceneNode<T>? __Node;
+
+    public SceneNode<T> Node{
+        get{
+            __Node ??= new SceneNode<T>((T)this);
+            return __Node;
+        }
     }
 }
