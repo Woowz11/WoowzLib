@@ -241,7 +241,7 @@ public class TransformAlgorithm{
 }
 
 public interface ITransform{
-    internal void __UpdateTransform(object? Data = null){}
+    public void __UpdateTransform(object? Data = null){}
 }
 
 public class WorldTransformAlgorithm<T> where T : SceneObject<T>, ITransform{

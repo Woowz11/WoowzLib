@@ -88,12 +88,13 @@ public static class Test{
     }
     
     public static void Run(){
-        Test_CSharp  .Run();
-        Test_Base    .Run();
-        Test_Vector  .Run();
-        Test_String  .Run();
-        Test_Explorer.Run();
-        Test_Scene   .Run();
+        Test_CSharp   .Run();
+        Test_Base     .Run();
+        Test_Vector   .Run();
+        Test_String   .Run();
+        Test_Explorer .Run();
+        Test_Scene    .Run();
+        Test_Transform.Run();
 
         if(FailedTests > 0){
             Logger.Error("Есть проваленные тесты! Проваленных тестов: " + FailedTests);

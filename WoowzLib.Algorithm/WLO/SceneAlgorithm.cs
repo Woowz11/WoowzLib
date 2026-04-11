@@ -242,11 +242,23 @@ public class SceneNode<T> where T : SceneObject<T>{
             if(__Parent == value){ return; }
             if(IsReadOnly){ throw new Exception("Нельзя изменять!"); }
 
+            if(value != null){
+                SceneNode<T>? Current = value;
+                while(Current != null){
+                    if(Current == this){
+                        throw new Exception("Нельзя сделать родителем своего потомка! (цикл)");
+                    }
+                    Current = Current.Parent;
+                }
+            }
+
             if(__Parent != null){
                 __Parent.__Level0.Remove(this);
                 __Parent.__PropagateRemove(this);
 
-                if(__Parent.__Scene?.UseSceneCache == true){ __Parent.__Scene.__RemoveTree(this); }
+                if(__Parent.__Scene?.UseSceneCache == true){
+                    __Parent.__Scene.__RemoveTree(this);
+                }
             }
 
             __Parent = value;
@@ -255,7 +267,9 @@ public class SceneNode<T> where T : SceneObject<T>{
                 __Parent.__Level0.Add(this);
                 __Parent.__PropagateAdd(this);
 
-                if(__Parent.__Scene?.UseSceneCache == true){ __Parent.__Scene.__AddTree(this); }
+                if(__Parent.__Scene?.UseSceneCache == true){
+                    __Parent.__Scene.__AddTree(this);
+                }
 
                 __SetScene(__Parent.__Scene);
             }
