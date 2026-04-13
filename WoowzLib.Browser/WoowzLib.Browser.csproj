@@ -12,6 +12,15 @@
 
     <ItemGroup>
       <ProjectReference Include="..\WoowzLib.Core\WoowzLib.Core.csproj" />
+      <ProjectReference Include="..\WoowzLib.System\WoowzLib.System.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3965-prerelease" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="WLO\" />
     </ItemGroup>
 
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
