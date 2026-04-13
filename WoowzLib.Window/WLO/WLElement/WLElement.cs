@@ -53,7 +53,7 @@ public abstract class WLElement : SceneObject<WLElement>, ITransform{
     public string ToShortString() => "\"" + Name + "\", " + Transform.Local.ToVeryShortString();
 }
 
-[WoowzLibHint(Information.Abandoned)]
+[WoowzLibHint(Information.WorkInProgress)]
 public class WLElementTransform : WorldTransformAlgorithm<WLElement>{
     public WLElementTransform(WLElement Self) : base(Self){
         OnSceneTransform = (Scene, _, Rect) => {
@@ -90,45 +90,109 @@ public class WLElementTransform : WorldTransformAlgorithm<WLElement>{
     /// <summary>
     /// Центр расчёта
     /// </summary>
-    public Vector2I Anchor = Vector2I.LeftTop;
+    public Vector2I Anchor{
+        get => __Anchor;
+        set{
+            if(__Anchor == value){ return; }
+            __Anchor = value;
+            Recalculate(true);
+        }
+    }
+    private Vector2I __Anchor = Vector2I.LeftTop;
     
     /// <summary>
     /// Относительная позиция по пикселям
     /// </summary>
-    public Vector2I PixelOffset = Vector2I.Zero;
-
+    public Vector2I PixelOffset{
+        get => __PixelOffset;
+        set{
+            if(__PixelOffset == value){ return; }
+            __PixelOffset = value;
+            Recalculate(true);
+        }
+    }
+    private Vector2I __PixelOffset = Vector2I.Zero;
+    
     /// <summary>
     /// Относительная позиция по размеру
     /// </summary>
-    public Vector2D Offset = Vector2D.Zero;
-
+    public Vector2D Offset{
+        get => __Offset;
+        set{
+            if(__Offset == value){ return; }
+            __Offset = value;
+            Recalculate(true);
+        }
+    }
+    private Vector2D __Offset = Vector2D.Zero;
+    
     /// <summary>
     /// Относительный размер по размеру
     /// </summary>
-    public Vector2D Scale = Vector2D.One;
+    public Vector2D Scale{
+        get => __Scale;
+        set{
+            if(__Scale == value){ return; }
+            __Scale = value;
+            Recalculate(true);
+        }
+    }
+    private Vector2D __Scale = Vector2D.One;
 
     /// <summary>
     /// Внутренний отступ элемента
     /// </summary>
-    public Vector4I Padding = Vector4I.Zero;
+    public Vector4I Padding{
+        get => __Padding;
+        set{
+            if(__Padding == value){ return; }
+            __Padding = value;
+            Recalculate(true);
+        }
+    }
+    private Vector4I __Padding = Vector4I.Zero;
     
     /// <summary>
     /// Внешний отступ элемента
     /// </summary>
-    public Vector4I Margin = Vector4I.Zero;
+    public Vector4I Margin{
+        get => __Margin;
+        set{
+            if(__Margin == value){ return; }
+            __Margin = value;
+            Recalculate(true);
+        }
+    }
+    private Vector4I __Margin = Vector4I.Zero;
     
     /// <summary>
     /// Минимальный размер
     /// </summary>
-    public Vector2UI MinSize = Vector2UI.Zero;
+    public Vector2UI MinSize{
+        get => __MinSize;
+        set{
+            if(__MinSize == value){ return; }
+            __MinSize = value;
+            Recalculate(true);
+        }
+    }
+    private Vector2UI __MinSize = Vector2UI.Zero;
 
     /// <summary>
     /// Максимальный размер
     /// </summary>
-    public Vector2UI MaxSize = Vector2UI.Max;
+    public Vector2UI MaxSize{
+        get => __MaxSize;
+        set{
+            if(__MaxSize == value){ return; }
+            __MaxSize = value;
+            Recalculate(true);
+        }
+    }
+    private Vector2UI __MaxSize = Vector2UI.Max;
     
     // ----------------------------------------------------------------------
-
+    
     public static Rect2I ApplyTransform(Rect2I A, Rect2I B, Vector2I AAnchor, Vector2I BAnchor, Vector2I APixelOffset, Vector2I BPixelOffset, Vector2D AOffset, Vector2D BOffset, Vector2D AScale, Vector2D BScale, Vector4I APadding, Vector4I BPadding, Vector4I AMargin, Vector4I BMargin, Vector2UI AMinSize, Vector2UI BMinSize, Vector2UI AMaxSize, Vector2UI BMaxSize){
         uint W = (uint)WL.Math.RoundD(A.W * AScale.X / BScale.X) + (uint)(AMargin.L + AMargin.R);
         uint H = (uint)WL.Math.RoundD(A.H * AScale.Y / BScale.Y) + (uint)(AMargin.T + AMargin.B);

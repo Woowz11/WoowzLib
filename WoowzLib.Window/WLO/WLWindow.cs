@@ -599,7 +599,7 @@ public class WLWindow{
     
     // ----------------------------------------------------------------------
 
-    public override string ToString() => "WLWindow()";
-
-    public string ToFullString() => "WLWindow(" + Original + ")";
+    public override string ToString() => $"WLWindow(\"{Title}\")";
+    
+    public string ToFullString() => $"WLWindow({Original})";
 }

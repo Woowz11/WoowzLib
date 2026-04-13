@@ -245,6 +245,140 @@ public static class Test_Scene{
                 Test.CheckResult(node.Scene, scene, "Node.Scene установлена");
                 Test.CheckResult(scene.Contains(node), true, "Сцена содержит Node после установки через Node.Scene");
             });
+            
+            Test.F("Event: OnAfterAdd", () =>
+            {
+                var scene = new SceneAlgorithm<TestObject>();
+
+                var log = new List<int>();
+
+                scene.OnAfterAdd += (s, n) => log.Add(1);
+                scene.OnAfterAdd += (s, n) => log.Add(2);
+
+                var node = scene.Add(new TestObject());
+
+                Test.CheckResult(log.Count, 2, "call count");
+                Test.CheckResult(log[0], 1, "order 1");
+                Test.CheckResult(log[1], 2, "order 2");
+            });
+            
+            Test.F("Event: OnAfterRemove", () =>
+            {
+                var scene = new SceneAlgorithm<TestObject>();
+
+                var log = new List<int>();
+
+                scene.OnAfterRemove += (s, n) => log.Add(10);
+                scene.OnAfterRemove += (s, n) => log.Add(20);
+
+                var node = scene.Add(new TestObject());
+
+                scene.Remove(node);
+
+                Test.CheckResult(log.SequenceEqual(new[] { 10, 20 }), true, "order + calls");
+            });
+            
+            Test.F("Event: OnBeforeRemove cancel", () =>
+            {
+                var scene = new SceneAlgorithm<TestObject>();
+
+                var node = scene.Add(new TestObject());
+
+                scene.OnBeforeRemove += (s, n) => false; // блокируем удаление
+
+                scene.Remove(node);
+
+                Test.CheckResult(scene.Contains(node), true, "node still exists");
+            });
+            
+            Test.F("Event: OnBeforeAdd transform", () =>
+            {
+                var scene = new SceneAlgorithm<TestObject>();
+
+                scene.OnBeforeAdd += (s, n) =>
+                {
+                    n.Self.VALUE = 999;
+                    return n;
+                };
+
+                var node = scene.Add(new TestObject());
+
+                Test.CheckResult(node.Self.VALUE, 999, "modified before add");
+            });
+            
+            Test.F("Event: OnBeforeAdd replace node", () =>
+            {
+                var scene = new SceneAlgorithm<TestObject>();
+
+                var replacement = new SceneNode<TestObject>(new TestObject { VALUE = 777 });
+
+                scene.OnBeforeAdd += (s, n) => replacement;
+
+                var node = scene.Add(new TestObject { VALUE = 1 });
+
+                Test.CheckResult(node, replacement, "node replaced");
+            });
+            
+            Test.F("Event: OnSceneChangeAfter", () =>
+            {
+                var scene = new SceneAlgorithm<TestObject>();
+
+                var node = new TestObject().Node;
+
+                SceneAlgorithm<TestObject>? oldScene = null;
+                SceneAlgorithm<TestObject>? newScene = null;
+
+                node.OnSceneChangeAfter += (n, old, neu) =>
+                {
+                    oldScene = old;
+                    newScene = neu;
+                };
+
+                node.Scene = scene;
+
+                Test.CheckResult(oldScene, null, "old scene");
+                Test.CheckResult(newScene, scene, "new scene");
+            });
+            
+            Test.F("Event: OnParentChangeAfter", () =>
+            {
+                var scene = new SceneAlgorithm<TestObject>();
+
+                var a = scene.Add(new TestObject());
+                var b = scene.Add(new TestObject());
+                var c = a.Add(new TestObject());
+
+                SceneNode<TestObject>? oldParent = null;
+                SceneNode<TestObject>? newParent = null;
+
+                c.OnParentChangeAfter += (n, old, neu) =>
+                {
+                    oldParent = old;
+                    newParent = neu;
+                };
+
+                b.Add(c);
+
+                Test.CheckResult(oldParent, a, "old parent");
+                Test.CheckResult(newParent, b, "new parent");
+            });
+            
+            Test.F("Event: OnSceneChangeBefore cancel", () =>
+            {
+                var scene = new SceneAlgorithm<TestObject>();
+
+                var node = new TestObject().Node;
+
+                bool afterCalled = false;
+
+                node.OnSceneChangeBefore += (n, old, neu) => false;
+                node.OnSceneChangeAfter += (n, old, neu) => afterCalled = true;
+
+                node.Scene = scene;
+
+                Test.CheckResult(afterCalled, false, "after must not fire");
+                Test.CheckResult(node.Scene, null, "scene unchanged");
+            });
         });
     }
 }

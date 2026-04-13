@@ -756,9 +756,9 @@ public class Window : SceneObject<Window>{
     
     // ----------------------------------------------------------------------
 
-    public override string ToString() => "Window(" + ID + ", " + (Alive ? ("\"" + Title + "\", " + Handle + ", " + Size.ToSizeString() + ", " + Position.ToPositionString() + ", " + Node.Count) : "Уничтожено") + ", " + (Class == null ? ClassName : Class) + ")";
+    public override string ToString() => $"Window({ID}, {(Alive ? ($"\"{Title}\", {Handle}, {Size.ToSizeString()}, {Position.ToPositionString()}, {Node.Count}") : "Уничтожено")}, {(Class == null ? ClassName : Class)})";
 
-    public string ToShortString() => "Window(" + ID + ", " + (Alive ? Handle : "Уничтожено") + ", " + (Class == null ? ClassName : Class) + ")";
+    public string ToShortString() => $"Window({ID}, {(Alive ? Handle : "Уничтожено")}, {(Class == null ? ClassName : Class)})";
     
     public override bool Equals(object? Object){
         if(Object is not Window Other){ return false; }

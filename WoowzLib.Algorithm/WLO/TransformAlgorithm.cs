@@ -244,6 +244,7 @@ public interface ITransform{
     public void __UpdateTransform(object? Data = null){}
 }
 
+[WoowzLibHint(Information.WorkInProgress | Information.Testing)]
 public class WorldTransformAlgorithm<T> where T : SceneObject<T>, ITransform{
     public WorldTransformAlgorithm(T Self){
         this.Self = Self;
@@ -273,6 +274,16 @@ public class WorldTransformAlgorithm<T> where T : SceneObject<T>, ITransform{
             
             return Result;
         };
+
+        // я думаю тут нужна отписка......
+        
+        Self.Node.OnSceneChangeAfter += (Node, Old, New) => {
+            __UpdateChildren(Node, true);
+        };
+
+        Self.Node.OnParentChangeAfter += (Node, Old, New) => {
+            __UpdateChildren(Node, true);
+        };
     }
 
     public readonly T Self;
@@ -300,12 +311,24 @@ public class WorldTransformAlgorithm<T> where T : SceneObject<T>, ITransform{
     
     // ----------------------------------------------------------------------
 
+    /// <summary>
+    /// Вызывает изменения относительно сцены
+    /// </summary>
     public Func<SceneAlgorithm<T>, WorldTransformAlgorithm<T>, Rect2I, Rect2I>? OnSceneTransform;
     
+    /// <summary>
+    /// Возвращает изменения относительно сцены
+    /// </summary>
     public Func<SceneAlgorithm<T>, WorldTransformAlgorithm<T>, Rect2I, Rect2I>? OnSceneTransformReverse;
 
+    /// <summary>
+    /// Вызывает изменения относительно родителя
+    /// </summary>
     public Func<SceneNode<T>, WorldTransformAlgorithm<T>, Rect2I, Rect2I>? OnParentTransform;
     
+    /// <summary>
+    /// Возвращает изменения относительно родителя
+    /// </summary>
     public Func<SceneNode<T>, WorldTransformAlgorithm<T>, Rect2I, Rect2I>? OnParentTransformReverse;
     
     // ----------------------------------------------------------------------
@@ -335,6 +358,8 @@ public class WorldTransformAlgorithm<T> where T : SceneObject<T>, ITransform{
     /// </summary>
     /// <param name="LocalToWorld">Обновить World?</param>
     public void Recalculate(bool LocalToWorld){
+        Logger.Info(this + " RECALCULATE");
+        
         if(LocalToWorld){
             World.Rect = this.LocalToWorld(Local.Rect);
         }else{
