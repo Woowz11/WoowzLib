@@ -11,3 +11,4 @@
 |   Math    |
 |  Window   |
 | Algorithm |
+|  Browser  |

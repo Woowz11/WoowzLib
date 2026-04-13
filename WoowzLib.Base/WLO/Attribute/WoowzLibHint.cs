@@ -29,7 +29,11 @@
         /// <summary>
         /// Нужно тестить и смотреть
         /// </summary>
-        Testing
+        Testing,
+        /// <summary>
+        /// Заброшен, нужно доделать в будущем
+        /// </summary>
+        Abandoned
     }
     
     /// <summary>

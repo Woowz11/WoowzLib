@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using WLO.Attribute;
 using WLO.Color;
 using WLO.Rect;
 using WLO.Vector;
@@ -52,6 +53,7 @@ public abstract class WLElement : SceneObject<WLElement>, ITransform{
     public string ToShortString() => "\"" + Name + "\", " + Transform.Local.ToVeryShortString();
 }
 
+[WoowzLibHint(Information.Abandoned)]
 public class WLElementTransform : WorldTransformAlgorithm<WLElement>{
     public WLElementTransform(WLElement Self) : base(Self){
         OnSceneTransform = (Scene, _, Rect) => {
