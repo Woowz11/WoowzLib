@@ -50,7 +50,7 @@ public static partial class Explorer{
         /// </summary>
         public static WLO.File GetOrCreate(string Path, string Content = ""){
             try{
-                return IsFile(Path) ? new WLO.File(Path) : new WLO.File(Path, Content);
+                return new WLO.File(Path, IsFile(Path) ? null : Content);
             }catch(Exception e){
                 throw new Exception("Произошла ошибка при получении или создании файла [\"" + Path + "\"]!\nСтартовое содержимое:\n" + Content, e);
             }

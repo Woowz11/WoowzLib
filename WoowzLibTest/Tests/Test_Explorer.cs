@@ -1,4 +1,7 @@
-﻿namespace WoowzLibTest.Tests;
+﻿using WLO;
+using File = WLO.File;
+
+namespace WoowzLibTest.Tests;
 
 /// <summary>
 /// Тест работы с Explorer
@@ -42,6 +45,52 @@ public static class Test_Explorer{
                 Test.CheckResult(WL.String.Path.IsCorrect("C:/test/file/file:test"), false, "IsCorrect 9 не работает!");
                 Test.CheckResult(WL.String.Path.IsCorrect("f?ile"), false, "IsCorrect 10 не работает!");
                 Test.CheckResult(WL.String.Path.IsCorrect("file!!!!!"), true, "IsCorrect 11 не работает!");
+            });
+            
+            Test.F("Файлы/Папки", () => {
+                string PATH = "W:/Other/WoowzLib/WoowzLibTest/TEST_EXPLORER/";
+                
+                Test.CheckResult(WL.Explorer.Folder.Exist(PATH), true, "PATH для теста не найден!");
+                
+                WL.Explorer.Folder.Clear(PATH);
+                
+                Test.CheckResult(WL.Explorer.Folder.Files(PATH).Length, 0, "Clear не сработал для файлов!");
+                Test.CheckResult(WL.Explorer.Folder.Folders(PATH).Length, 0, "Clear не сработал для папок!");
+
+                // ----------------------------------------------------------------------
+                
+                string Content = "Hi, welcome here!";
+                
+                File File = WL.Explorer.File.GetOrCreate(PATH + "FILE.txt", Content);
+                
+                Test.CheckResult(WL.Explorer.File.Exist(PATH + "FILE.txt"), true, "File.Exist не работает!");
+                Test.CheckResult(WL.Explorer.Folder.Files(PATH).Length, 1, "Files/File.GetOrCreate не работает!");
+                
+                Test.CheckResult(File.Content, Content, "File.Content неверное содержимое!");
+                
+                Test.CheckResult(File.Type, FileType.File, "File.Type не работает!");
+
+                Content = "Okay, now bye!";
+                File.Content = Content;
+                
+                Test.CheckResult(File.Content, Content, "File.Content 2 неверное содержимое!");
+                
+                // ----------------------------------------------------------------------
+                
+                File Folder = WL.Explorer.Folder.GetOrCreate(PATH + "FOLDER");
+                
+                Test.CheckResult(WL.Explorer.Folder.Exist(PATH + "FOLDER"), true, "Folder.Exist не работает!");
+                Test.CheckResult(WL.Explorer.Folder.Folders(PATH).Length, 1, "Folders/Folder.GetOrCreate не работает!");
+                
+                Test.CheckResult(Folder.Type, FileType.Folder, "Folder.Type не работает!");
+                
+                // ----------------------------------------------------------------------
+                
+                File.Delete();
+                Test.CheckResult(File.Exist, false, "File.Delete не работает!");
+                
+                Folder.Delete();
+                Test.CheckResult(Folder.Exist, false, "Folder.Delete не работает!");
             });
         });
     }
