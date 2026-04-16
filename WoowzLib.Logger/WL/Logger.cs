@@ -15,10 +15,10 @@ public static class Logger{
             
             StatusInfo.Clear();
             StatusInfo[(byte)MessageStatus.Default ] = new StatusInfo{ Symbol = 'I'};
-            StatusInfo[(byte)MessageStatus.Warning ] = new StatusInfo{ Symbol = 'W'};
-            StatusInfo[(byte)MessageStatus.Error   ] = new StatusInfo{ Symbol = 'E'};
-            StatusInfo[(byte)MessageStatus.Fatal   ] = new StatusInfo{ Symbol = 'F'};
-            StatusInfo[(byte)MessageStatus.Debug   ] = new StatusInfo{ Symbol = 'D'};
+            StatusInfo[(byte)MessageStatus.Warning ] = new StatusInfo{ Symbol = 'W', Color = WLO.StatusInfo.ANSI_Yellow};
+            StatusInfo[(byte)MessageStatus.Error   ] = new StatusInfo{ Symbol = 'E', Color = WLO.StatusInfo.ANSI_Red};
+            StatusInfo[(byte)MessageStatus.Fatal   ] = new StatusInfo{ Symbol = 'F', Color = WLO.StatusInfo.ANSI_Magenta};
+            StatusInfo[(byte)MessageStatus.Debug   ] = new StatusInfo{ Symbol = 'D', Color = WLO.StatusInfo.ANSI_Green};
             StatusInfo[(byte)MessageStatus.External] = new StatusInfo{ Symbol = '?'};
             
             WL.Core.Output = (Status, ExtraInfo, Message) => {
@@ -38,6 +38,8 @@ public static class Logger{
 
                     SB.Append(Line);
 
+                    SB.Append(Suffix(StatusInfo));
+                    
                     if(i < Lines.Length - 1){ SB.Append('\n'); }
                 }
 
@@ -57,7 +59,11 @@ public static class Logger{
     /// Генерирует префикс сообщения
     /// </summary>
     public static string Prefix(byte Status, StatusInfo StatusInfo, bool NewLine = false){
-        return (NewLine ? '~' : (StatusInfo.Symbol == ' ' ? Status : StatusInfo.Symbol)) + ": ";
+        return (NewLine ? '~' : (StatusInfo.Symbol == ' ' ? Status : StatusInfo.Symbol)) + ": " + StatusInfo.Color;
+    }
+
+    public static string Suffix(StatusInfo StatusInfo){
+        return WLO.StatusInfo.ANSI_End;
     }
     
     // ----------------------------------------------------------------------

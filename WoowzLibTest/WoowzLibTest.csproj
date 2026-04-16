@@ -6,7 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
 
-        <Version>0.0.0.226</Version>
+        <Version>0.0.0.234</Version>
 
         <Configurations>Release</Configurations>
 
@@ -23,6 +23,7 @@
       <ProjectReference Include="..\WoowzLib.Core\WoowzLib.Core.csproj" />
       <ProjectReference Include="..\WoowzLib.Logger\WoowzLib.Logger.csproj" />
       <ProjectReference Include="..\WoowzLib.System\WoowzLib.System.csproj" />
+      <ProjectReference Include="..\WoowzLib.Window\WoowzLib.Window.csproj" />
     </ItemGroup>
 
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
