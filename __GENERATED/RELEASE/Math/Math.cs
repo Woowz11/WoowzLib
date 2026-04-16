@@ -4,7 +4,7 @@ using WLO.Attribute;
 namespace WL;
 
 public static class Math{
-	/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.329, внутри класса "Math.cs" */
+	/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.334, внутри класса "Math.cs" */
 	// ----------------------------------------------------------------------
 	
 	/// <summary>

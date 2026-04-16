@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.329, внутри класса "Color.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.334, внутри класса "Color.cs" */
 using WLO.Attribute;
 using System.Runtime.CompilerServices;
 namespace WLO.Color;
@@ -69,6 +69,9 @@ public struct Color3F : IEquatable<Color3F>{
 	public static readonly Color3F Gray = new Color3F(0.5f, 0.5f, 0.5f);
 	public static readonly Color3F Charcoal = new Color3F(0.25f, 0.25f, 0.25f);
 	public static readonly Color3F Black = new Color3F(0, 0, 0);
+	
+	// ----------------------------------------------------------------------
+	
 	
 	// ----------------------------------------------------------------------
 	

@@ -256,6 +256,15 @@ public static class Color{
         
         Result += Other.Generate_Line();
 
+        void Generate_Extra(){
+            if(I is{ Type: Info.ValueType.Byte, HasAlpha: false }){
+                Result += "public string ToANSI(bool Background = false) => ANSI.ToColorANSI(Background ? ANSI.Code.Custom_BG : ANSI.Code.Custom, R, G, B);";
+            }
+        }
+        Generate_Extra();
+        
+        Result += Other.Generate_Line();
+        
         void Generate_Other(){
             Result += "public override string ToString() => \"" + I.Name + "(\" + ToShortString() + \")" + "\";";
             Result += "public string ToShortString() => " + RFEA("@", " + \", \" + ") + ";";

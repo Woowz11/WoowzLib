@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.306, внутри класса "Color.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.333, внутри класса "Color.cs" */
 using WLO.Attribute;
 using System.Runtime.CompilerServices;
 namespace WLO.Color;
@@ -59,6 +59,10 @@ public struct Color3B : IEquatable<Color3B>{
 	public static readonly Color3B Gray = new Color3B(127, 127, 127);
 	public static readonly Color3B Charcoal = new Color3B(63, 63, 63);
 	public static readonly Color3B Black = new Color3B(0, 0, 0);
+	
+	// ----------------------------------------------------------------------
+	
+	public string ToANSI(bool Background = false) => ANSI.ToColorANSI(Background ? ANSI.Code.Custom_BG : ANSI.Code.Custom, R, G, B);
 	
 	// ----------------------------------------------------------------------
 	

@@ -1,4 +1,6 @@
-﻿namespace WoowzLibTest.Tests;
+﻿using WLO;
+
+namespace WoowzLibTest.Tests;
 
 /// <summary>
 /// Тест Logger
@@ -17,6 +19,10 @@ public static class Test_Logger{
             Test.F("Просто сообщения", () => {
                 Message();
                 Message("MULTI\nLINE\nMESSAGE");
+
+                foreach(MessageStatus MS in Enum.GetValues<MessageStatus>()){
+                    for(int i = 0; i < 3; i++){ Logger.Custom((byte)MS, null, "###"); }
+                }
             });
         });
     }

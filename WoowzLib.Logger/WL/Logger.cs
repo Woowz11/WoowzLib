@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections;
+using System.Text;
 using WLO;
 
 namespace WL;
@@ -14,28 +15,37 @@ public static class Logger{
             if(Settings.HasValue){ WL.Logger.Settings = Settings.Value; }
             
             StatusInfo.Clear();
-            StatusInfo[(byte)MessageStatus.Default ] = new StatusInfo{ Symbol = 'I'};
-            StatusInfo[(byte)MessageStatus.Warning ] = new StatusInfo{ Symbol = 'W', Color = WLO.StatusInfo.ANSI_Yellow};
-            StatusInfo[(byte)MessageStatus.Error   ] = new StatusInfo{ Symbol = 'E', Color = WLO.StatusInfo.ANSI_Red};
-            StatusInfo[(byte)MessageStatus.Fatal   ] = new StatusInfo{ Symbol = 'F', Color = WLO.StatusInfo.ANSI_Magenta};
-            StatusInfo[(byte)MessageStatus.Debug   ] = new StatusInfo{ Symbol = 'D', Color = WLO.StatusInfo.ANSI_Green};
-            StatusInfo[(byte)MessageStatus.External] = new StatusInfo{ Symbol = '?'};
-            
+            StatusInfo[(byte)MessageStatus.Default ] = new StatusInfo{ Symbol = 'I', Color = ANSI.Code.White  , Color_Second = ANSI.Code.GrayB   };
+            StatusInfo[(byte)MessageStatus.Warning ] = new StatusInfo{ Symbol = 'W', Color = ANSI.Code.Yellow , Color_Second = ANSI.Code.YellowB };
+            StatusInfo[(byte)MessageStatus.Error   ] = new StatusInfo{ Symbol = 'E', Color = ANSI.Code.Red    , Color_Second = ANSI.Code.RedB    };
+            StatusInfo[(byte)MessageStatus.Fatal   ] = new StatusInfo{ Symbol = 'F', Color = ANSI.Code.Magenta, Color_Second = ANSI.Code.MagentaB};
+            StatusInfo[(byte)MessageStatus.Debug   ] = new StatusInfo{ Symbol = 'D', Color = ANSI.Code.Green  , Color_Second = ANSI.Code.GreenB  };
+            StatusInfo[(byte)MessageStatus.External] = new StatusInfo{ Symbol = '?', Color = ANSI.Code.Cyan   , Color_Second = ANSI.Code.CyanB   };
+
+            bool Eval = false;
+            byte OldStatus = 0;
             WL.Core.Output = (Status, ExtraInfo, Message) => {
                 StringBuilder SB = new StringBuilder();
 
                 StatusInfo StatusInfo = Logger.StatusInfo[Status];
 
                 string[] Lines = Message.Split('\n');
+
+                if(OldStatus != Status){
+                    OldStatus = Status;
+                    Eval = false;
+                }
                 
-                string  Prefix        =                    WL.Logger.Prefix(Status, StatusInfo);
-                string? PrefixNewLine = Lines.Length > 0 ? WL.Logger.Prefix(Status, StatusInfo, true) : null;
+                string  Prefix        =                    WL.Logger.Prefix(Status, StatusInfo, false, Eval);
+                string? PrefixNewLine = Lines.Length > 0 ? WL.Logger.Prefix(Status, StatusInfo, true , Eval) : null;
 
                 for(int i = 0; i < Lines.Length; i++){
                     string Line = Lines[i].TrimEnd('\r');
 
                     SB.Append(i == 0 ? Prefix : PrefixNewLine);
 
+                    if(i == 0){ Eval = !Eval; }
+                    
                     SB.Append(Line);
 
                     SB.Append(Suffix(StatusInfo));
@@ -58,12 +68,16 @@ public static class Logger{
     /// <summary>
     /// Генерирует префикс сообщения
     /// </summary>
-    public static string Prefix(byte Status, StatusInfo StatusInfo, bool NewLine = false){
-        return (NewLine ? '~' : (StatusInfo.Symbol == ' ' ? Status : StatusInfo.Symbol)) + ": " + StatusInfo.Color;
+    public static string Prefix(byte Status, StatusInfo StatusInfo, bool NewLine = false, bool Eval = false){
+        string Color = ANSI.ToANSI(Eval ? StatusInfo.Color_Second : StatusInfo.Color);
+        return Color + (NewLine ? '~' : (StatusInfo.Symbol == ' ' ? Status : StatusInfo.Symbol)) + ANSI.ToANSI(ANSI.Code.Reset) + ": " + Color;
     }
 
+    /// <summary>
+    /// Генерирует суффикс сообщения
+    /// </summary>
     public static string Suffix(StatusInfo StatusInfo){
-        return WLO.StatusInfo.ANSI_End;
+        return ANSI.ToANSI(ANSI.Code.Reset);
     }
     
     // ----------------------------------------------------------------------
@@ -71,7 +85,7 @@ public static class Logger{
     /// <summary>
     /// Класс, для информации об статусе
     /// </summary>
-    public class StatusInfoCollection{
+    public class StatusInfoCollection : IEnumerable<StatusInfo>{
         private readonly StatusInfo[] __StatusInfos = new StatusInfo[255];
 
         /// <summary>
@@ -83,6 +97,9 @@ public static class Logger{
             get => __StatusInfos[Status];
             set => __StatusInfos[Status] = value;
         }
+        
+        public IEnumerator<StatusInfo> GetEnumerator() => ((IEnumerable<StatusInfo>)__StatusInfos).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
     /// <summary>
