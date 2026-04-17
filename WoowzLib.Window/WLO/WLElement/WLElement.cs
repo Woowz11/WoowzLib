@@ -44,192 +44,69 @@ public abstract class WLElement : SceneObject<WLElement>, ITransform{
         }
     }
 
-    internal void __UpdateTransform(object? Data = null) => Transform.Recalculate((bool)Data!);
+    //internal void __UpdateTransform(object? Data = null) => Transform.Recalculate((bool)Data!);
     
     // ----------------------------------------------------------------------
 
     public override string ToString() => GetType().Name + "(" + ToShortString() + ")";
+    public void __UpdateTransform(object? Data = null){
+        
+    }
 
-    public string ToShortString() => "\"" + Name + "\", " + Transform.Local.ToVeryShortString();
+    public string ToShortString() => "\"" + Name + "\", "/* + Transform.Local.ToVeryShortString()*/;
 }
 
 [WoowzLibHint(Information.WorkInProgress)]
-public class WLElementTransform : WorldTransformAlgorithm<WLElement>{
-    public WLElementTransform(WLElement Self) : base(Self){
-        OnSceneTransform = (Scene, _, Rect) => {
-            WLElementTransform Transform = _.Self.Transform;
-            WLWindow Window = (WLWindow)Scene.Data!;
-            
-            return Rect;
-        };
-        
-        OnParentTransform = (Parent, _, Rect) => {
-            WLElementTransform T = Parent.Self.Transform;
-            
-            return ApplyTransform(Local.Rect, Rect, Anchor, T.Anchor, PixelOffset, T.PixelOffset, Offset, T.Offset, Scale, T.Scale, Padding, T.Padding, Margin, T.Margin, MinSize, T.MinSize, MaxSize, T.MaxSize);
-        };
-        
-        // ----------------------------------------------------------------------
-        
-        OnParentTransformReverse = (Parent, _, Rect) => {
-            WLElementTransform T = Parent.Self.Transform;
-            
-            return ApplyTransformReverse(Local.Rect, Rect, Anchor, T.Anchor, PixelOffset, T.PixelOffset, Offset, T.Offset, Scale, T.Scale, Padding, T.Padding, Margin, T.Margin, MinSize, T.MinSize, MaxSize, T.MaxSize);
-        };
-        
-        OnSceneTransformReverse = (Scene, _, Rect) => {
-            WLElementTransform Transform = _.Self.Transform;
-            WLWindow Window = (WLWindow)Scene.Data!;
-            
-            return Rect;
-        };
+public class WLElementTransform : WorldTransformAlgorithm<WLElement>
+{
+    public WLElementTransform(WLElement self) : base(self) { }
+
+    public Vector2I Anchor      = new(0, 0);
+    public Vector2I PixelOffset = new(0, 0);
+    public Vector2D Offset      = new(0, 0);
+    public Vector2D Scale       = new(1, 1);
+
+    public Vector4I Margin;
+    public Vector4I Padding;
+
+    public Vector2UI MinSize;
+    public Vector2UI MaxSize = new(uint.MaxValue, uint.MaxValue);
+
+    public void Recalculate(bool localToWorld)
+    {
+        if (!localToWorld) return;
+
+        var parent = Self.Node.Parent?.Self.Transform.World.Rect
+                     ?? new Rect2I(0, 0, 0, 0);
+
+        var local = Local.Rect;
+
+        // ---------------- size pipeline ----------------
+        uint w = Clamp(local.W, MinSize.W, MaxSize.W);
+        uint h = Clamp(local.H, MinSize.H, MaxSize.H);
+
+        w += (uint)(Padding.X + Padding.Z + Margin.X + Margin.Z);
+        h += (uint)(Padding.Y + Padding.W + Margin.Y + Margin.W);
+
+        w = (uint)(w * Scale.X);
+        h = (uint)(h * Scale.Y);
+
+        // ---------------- position pipeline ----------------
+
+        int cx = parent.X + (int)parent.W / 2;
+        int cy = parent.Y + (int)parent.H / 2;
+
+        int ox = (int)(parent.W * Offset.X);
+        int oy = (int)(parent.H * Offset.Y);
+
+        int x = cx + ox + PixelOffset.X - (int)(w / 2);
+        int y = cy + oy + PixelOffset.Y - (int)(h / 2);
+
+        World.Rect = new Rect2I(x, y, w, h);
+
+        base.Recalculate(true);
     }
-    
-    // ----------------------------------------------------------------------
-    
-    /// <summary>
-    /// Центр расчёта
-    /// </summary>
-    public Vector2I Anchor{
-        get => __Anchor;
-        set{
-            if(__Anchor == value){ return; }
-            __Anchor = value;
-            Recalculate(true);
-        }
-    }
-    private Vector2I __Anchor = Vector2I.LeftTop;
-    
-    /// <summary>
-    /// Относительная позиция по пикселям
-    /// </summary>
-    public Vector2I PixelOffset{
-        get => __PixelOffset;
-        set{
-            if(__PixelOffset == value){ return; }
-            __PixelOffset = value;
-            Recalculate(true);
-        }
-    }
-    private Vector2I __PixelOffset = Vector2I.Zero;
-    
-    /// <summary>
-    /// Относительная позиция по размеру
-    /// </summary>
-    public Vector2D Offset{
-        get => __Offset;
-        set{
-            if(__Offset == value){ return; }
-            __Offset = value;
-            Recalculate(true);
-        }
-    }
-    private Vector2D __Offset = Vector2D.Zero;
-    
-    /// <summary>
-    /// Относительный размер по размеру
-    /// </summary>
-    public Vector2D Scale{
-        get => __Scale;
-        set{
-            if(__Scale == value){ return; }
-            __Scale = value;
-            Recalculate(true);
-        }
-    }
-    private Vector2D __Scale = Vector2D.One;
 
-    /// <summary>
-    /// Внутренний отступ элемента
-    /// </summary>
-    public Vector4I Padding{
-        get => __Padding;
-        set{
-            if(__Padding == value){ return; }
-            __Padding = value;
-            Recalculate(true);
-        }
-    }
-    private Vector4I __Padding = Vector4I.Zero;
-    
-    /// <summary>
-    /// Внешний отступ элемента
-    /// </summary>
-    public Vector4I Margin{
-        get => __Margin;
-        set{
-            if(__Margin == value){ return; }
-            __Margin = value;
-            Recalculate(true);
-        }
-    }
-    private Vector4I __Margin = Vector4I.Zero;
-    
-    /// <summary>
-    /// Минимальный размер
-    /// </summary>
-    public Vector2UI MinSize{
-        get => __MinSize;
-        set{
-            if(__MinSize == value){ return; }
-            __MinSize = value;
-            Recalculate(true);
-        }
-    }
-    private Vector2UI __MinSize = Vector2UI.Zero;
-
-    /// <summary>
-    /// Максимальный размер
-    /// </summary>
-    public Vector2UI MaxSize{
-        get => __MaxSize;
-        set{
-            if(__MaxSize == value){ return; }
-            __MaxSize = value;
-            Recalculate(true);
-        }
-    }
-    private Vector2UI __MaxSize = Vector2UI.Max;
-    
-    // ----------------------------------------------------------------------
-    
-    public static Rect2I ApplyTransform(Rect2I A, Rect2I B, Vector2I AAnchor, Vector2I BAnchor, Vector2I APixelOffset, Vector2I BPixelOffset, Vector2D AOffset, Vector2D BOffset, Vector2D AScale, Vector2D BScale, Vector4I APadding, Vector4I BPadding, Vector4I AMargin, Vector4I BMargin, Vector2UI AMinSize, Vector2UI BMinSize, Vector2UI AMaxSize, Vector2UI BMaxSize){
-        uint W = (uint)WL.Math.RoundD(A.W * AScale.X / BScale.X) + (uint)(AMargin.L + AMargin.R);
-        uint H = (uint)WL.Math.RoundD(A.H * AScale.Y / BScale.Y) + (uint)(AMargin.T + AMargin.B);
-
-        W = WL.Math.ClampUI(W, AMinSize.X, AMaxSize.X);
-        H = WL.Math.ClampUI(H, AMinSize.Y, AMaxSize.Y);
-
-        int AOX = (int)Math.Round((AAnchor.X + 1) * 0.5 * W);
-        int AOY = (int)Math.Round((AAnchor.Y + 1) * 0.5 * H);
-
-        int BOX = (int)Math.Round((BAnchor.X + 1) * 0.5 * B.W);
-        int BOY = (int)Math.Round((BAnchor.Y + 1) * 0.5 * B.H);
-
-        int X = B.X + BOX - AOX + (int)WL.Math.RoundD(B.W * (AOffset.X + BOffset.X)) + APixelOffset.X - BPixelOffset.X;
-
-        int Y = B.Y + BOY - AOY + (int)WL.Math.RoundD(B.H * (AOffset.Y + BOffset.Y)) + APixelOffset.Y - BPixelOffset.Y;
-
-        return new Rect2I(X, Y, W, H);
-    }
-    
-    public static Rect2I ApplyTransformReverse(Rect2I A, Rect2I B, Vector2I AAnchor, Vector2I BAnchor, Vector2I APixelOffset, Vector2I BPixelOffset, Vector2D AOffset, Vector2D BOffset, Vector2D AScale, Vector2D BScale, Vector4I APadding, Vector4I BPadding, Vector4I AMargin, Vector4I BMargin, Vector2UI AMinSize, Vector2UI BMinSize, Vector2UI AMaxSize, Vector2UI BMaxSize){
-        uint W = (uint)WL.Math.RoundD(A.W * BScale.X / AScale.X) - (uint)(AMargin.L + AMargin.R);
-        uint H = (uint)WL.Math.RoundD(A.H * BScale.Y / AScale.Y) - (uint)(AMargin.T + AMargin.B);
-
-        W = WL.Math.ClampUI(W, AMinSize.X, AMaxSize.X);
-        H = WL.Math.ClampUI(H, AMinSize.Y, AMaxSize.Y);
-
-        int AOX = (int)Math.Round((AAnchor.X + 1) * 0.5 * W);
-        int AOY = (int)Math.Round((AAnchor.Y + 1) * 0.5 * H);
-
-        int BOX = (int)Math.Round((BAnchor.X + 1) * 0.5 * B.W);
-        int BOY = (int)Math.Round((BAnchor.Y + 1) * 0.5 * B.H);
-
-        int X = A.X - (B.X + BOX - AOX + (int)WL.Math.RoundD(B.W * (AOffset.X + BOffset.X)) + APixelOffset.X - BPixelOffset.X);
-
-        int Y = A.Y - (B.Y + BOY - AOY + (int)WL.Math.RoundD(B.H * (AOffset.Y + BOffset.Y)) + APixelOffset.Y - BPixelOffset.Y);
-
-        return new Rect2I(X, Y, W, H);
-    }
+    private static uint Clamp(uint v, uint min, uint max)
+        => v < min ? min : v > max ? max : v;
 }

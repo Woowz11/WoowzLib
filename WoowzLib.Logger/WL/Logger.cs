@@ -16,11 +16,11 @@ public static class Logger{
             
             StatusInfo.Clear();
             StatusInfo[(byte)MessageStatus.Default ] = new StatusInfo{ Symbol = 'I', Color = ANSI.Code.White  , Color_Second = ANSI.Code.GrayB   };
-            StatusInfo[(byte)MessageStatus.Warning ] = new StatusInfo{ Symbol = 'W', Color = ANSI.Code.Yellow , Color_Second = ANSI.Code.YellowB };
+            StatusInfo[(byte)MessageStatus.Warning ] = new StatusInfo{ Symbol = 'W', Color = ANSI.Code.YellowB, Color_Second = ANSI.Code.Yellow  };
             StatusInfo[(byte)MessageStatus.Error   ] = new StatusInfo{ Symbol = 'E', Color = ANSI.Code.Red    , Color_Second = ANSI.Code.RedB    };
             StatusInfo[(byte)MessageStatus.Fatal   ] = new StatusInfo{ Symbol = 'F', Color = ANSI.Code.Magenta, Color_Second = ANSI.Code.MagentaB};
             StatusInfo[(byte)MessageStatus.Debug   ] = new StatusInfo{ Symbol = 'D', Color = ANSI.Code.Green  , Color_Second = ANSI.Code.GreenB  };
-            StatusInfo[(byte)MessageStatus.External] = new StatusInfo{ Symbol = '?', Color = ANSI.Code.Cyan   , Color_Second = ANSI.Code.CyanB   };
+            StatusInfo[(byte)MessageStatus.External] = new StatusInfo{ Symbol = '?', Color = ANSI.Code.CyanB  , Color_Second = ANSI.Code.Cyan    };
 
             bool Eval = false;
             byte OldStatus = 0;

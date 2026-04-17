@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.334, внутри класса "Rect.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.336, внутри класса "Rect.cs" */
 using WLO.Vector;
 using System.Runtime.CompilerServices;
 namespace WLO.Rect;

@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.329, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.335, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
@@ -59,6 +59,7 @@ public struct Vector4I : IEquatable<Vector4I>{
 	public static readonly Vector4I AxisZ = new Vector4I(0, 0, 1, 0);
 	public static readonly Vector4I AxisW = new Vector4I(0, 0, 0, 1);
 	public static readonly Vector4I Double = new Vector4I(2, 2, 2, 2);
+	public static readonly Vector4I Center = new Vector4I(0, 0, 0, 0);
 	
 	// ----------------------------------------------------------------------
 	

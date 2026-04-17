@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.334, внутри класса "Color.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.336, внутри класса "Color.cs" */
 using WLO.Attribute;
 using System.Runtime.CompilerServices;
 namespace WLO.Color;

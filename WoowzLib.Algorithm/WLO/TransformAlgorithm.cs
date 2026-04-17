@@ -4,383 +4,264 @@ using WLO.Vector;
 
 namespace WLO;
 
-public class TransformAlgorithm{
-    public TransformAlgorithm(int X = 0, int Y = 0, uint W = 100, uint H = 100){ this.X = X; this.Y = Y; this.W = W; this.H = H; }
-    public TransformAlgorithm(Vector2I Position, Vector2UI Size) : this(Position.X, Position.Y, Size.W, Size.H){}
-    public TransformAlgorithm(Rect2I Rect) : this(Rect.X, Rect.Y, Rect.W, Rect.H){}
-    
-    /// <summary>
-    /// Позиция по X
-    /// </summary>
-    public int X{
-        get => __X;
-        set{
-            try{
-                if(!CallAnyway && __X == value){ return; }
-                __X = value;
+// =========================================================
+// TRANSFORM
+// =========================================================
 
-                __InvokeOnPosition("Произошла ошибка при вызове ивента OnPosition у [" + this + "]!\nПозиция по X: " + value);
-
-                __InvokeOnRect("Произошла ошибка при вызове ивента OnRect у [" + this + "]!\nПозиция по X: " + value);
-                
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении позиции по X у [" + this + "]!\nПозиция по X: " + value, e);
-            }
-        }
-    }
-    private int __X;
-    
-    /// <summary>
-    /// Позиция по Y
-    /// </summary>
-    public int Y{
-        get => __Y;
-        set{
-            try{
-                if(!CallAnyway && __Y == value){ return; }
-                __Y = value;
-                
-                __InvokeOnPosition("Произошла ошибка при вызове ивента OnPosition у [" + this + "]!\nПозиция по Y: " + value);
-                
-                __InvokeOnRect("Произошла ошибка при вызове ивента OnRect у [" + this + "]!\nПозиция по Y: " + value);
-                
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении позиции по Y у [" + this + "]!\nПозиция по Y: " + value, e);
-            }
-        }
-    }
-    private int __Y;
-    
-    /// <summary>
-    /// Ширина
-    /// </summary>
-    public uint W{
-        get => __W;
-        set{
-            try{
-                if(!CallAnyway && __W == value){ return; }
-                __W = value;
-                
-                __InvokeOnSize("Произошла ошибка при вызове ивента OnSize у [" + this + "]!\nШирина: " + value);
-                
-                __InvokeOnRect("Произошла ошибка при вызове ивента OnRect у [" + this + "]!\nШирина: " + value);
-                
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении ширины у [" + this + "]!\nШирина: " + value, e);
-            }
-        }
-    }
-    private uint __W;
-    
-    /// <summary>
-    /// Высота
-    /// </summary>
-    public uint H{
-        get => __H;
-        set{
-            try{
-                if(!CallAnyway && __H == value){ return; }
-                __H = value;
-                
-                __InvokeOnSize("Произошла ошибка при вызове ивента OnSize у [" + this + "]!\nВысота: " + value);
-                
-                __InvokeOnRect("Произошла ошибка при вызове ивента OnRect у [" + this + "]!\nВысота: " + value);
-                
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении высоты у [" + this + "]!\nВысота: " + value, e);
-            }
-        }
-    }
-    private uint __H;
-    
-    /// <summary>
-    /// Позиция
-    /// </summary>
-    public Vector2I Position{
-        get => new Vector2I(X, Y);
-        set{
-            try{
-                if(!CallAnyway && __X == value.X && __Y == value.Y){ return; }
-                __X = value.X;
-                __Y = value.Y;
-                
-                __InvokeOnPosition("Произошла ошибка при вызове ивента OnPosition у [" + this + "]!\nПозиция: " + value);
-                
-                __InvokeOnRect("Произошла ошибка при вызове ивента OnRect у [" + this + "]!\nПозиция: " + value);
-                
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении позиции у [" + this + "]!\nПозиция: " + value, e);
-            }
-        }
-    }
-    
-    /// <summary>
-    /// Размер
-    /// </summary>
-    public Vector2UI Size{
-        get => new Vector2UI(W, H);
-        set{
-            try{
-                if(!CallAnyway && __W == value.W && __H == value.H){ return; }
-                __W = value.W;
-                __H = value.H;
-                
-                __InvokeOnSize("Произошла ошибка при вызове ивента OnSize у [" + this + "]!\nРазмер: " + value);
-                
-                __InvokeOnRect("Произошла ошибка при вызове ивента OnRect у [" + this + "]!\nРазмер: " + value);
-                
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении размера у [" + this + "]!\nРазмер: " + value, e);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Позиция и размер
-    /// </summary>
-    public Rect2I Rect{
-        get => new Rect2I(X, Y, W, H);
-        set{
-            try{
-                if(!CallAnyway && __X == value.X && __Y == value.Y && __W == value.W && __H == value.H){ return; }
-                __X = value.X;
-                __Y = value.Y;
-                __W = value.W;
-                __H = value.H;
-                
-                __InvokeOnPosition("Произошла ошибка при вызове ивента OnPosition у [" + this + "]!\nПозиция и размер: " + value);
-                
-                __InvokeOnSize("Произошла ошибка при вызове ивента OnSize у [" + this + "]!\nПозиция и размер: " + value);
-                
-                __InvokeOnRect("Произошла ошибка при вызове ивента OnRect у [" + this + "]!\nПозиция и размер: " + value);
-                
-            }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении позиции и размера у [" + this + "]!\nПозиция и размер: " + value, e);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Если true, то ивенты вызываются в любом случае, даже если значения совпадают
-    /// </summary>
+public class TransformAlgorithm
+{
     public bool CallAnyway = false;
-    
-    // ----------------------------------------------------------------------
 
-    /// <summary>
-    /// Вызывается при изменении позиции (Трансформ, Новая позиция) => (Изменённая позиция)
-    /// </summary>
+    private int __X;
+    private int __Y;
+    private uint __W = 100;
+    private uint __H = 100;
+
+    private bool _applying;
+    private bool _external;
+
+    public TransformAlgorithm() { }
+
+    public TransformAlgorithm(int x, int y, uint w, uint h)
+    {
+        __X = x;
+        __Y = y;
+        __W = w;
+        __H = h;
+    }
+
+    // ===================== PROPERTIES =====================
+
+    public int X
+    {
+        get => __X;
+        set => Set(Apply(new Rect2I(value, __Y, __W, __H)));
+    }
+
+    public int Y
+    {
+        get => __Y;
+        set => Set(Apply(new Rect2I(__X, value, __W, __H)));
+    }
+
+    public uint W
+    {
+        get => __W;
+        set => Set(Apply(new Rect2I(__X, __Y, value, __H)));
+    }
+
+    public uint H
+    {
+        get => __H;
+        set => Set(Apply(new Rect2I(__X, __Y, __W, value)));
+    }
+
+    public Vector2I Position
+    {
+        get => new(__X, __Y);
+        set => Set(Apply(new Rect2I(value.X, value.Y, __W, __H)));
+    }
+
+    public Vector2UI Size
+    {
+        get => new(__W, __H);
+        set => Set(Apply(new Rect2I(__X, __Y, value.W, value.H)));
+    }
+
+    public Rect2I Rect
+    {
+        get => new(__X, __Y, __W, __H);
+        set => Set(Apply(value));
+    }
+
+    // ===================== EVENTS =====================
+
     public event Func<TransformAlgorithm, Vector2I, Vector2I>? OnPosition;
-    
-    /// <summary>
-    /// Вызывается при изменении размера (Трансформ, Новый размер) => (Изменённый размер)
-    /// </summary>
     public event Func<TransformAlgorithm, Vector2UI, Vector2UI>? OnSize;
-    
-    /// <summary>
-    /// Вызывается при изменении позиции и размера (Трансформ, Новая позиция и размер) => (Изменённая позиция и размер)
-    /// </summary>
     public event Func<TransformAlgorithm, Rect2I, Rect2I>? OnRect;
-    
-    // ----------------------------------------------------------------------
 
-    private void __InvokeOnPosition(string Exception){
-        try{
-            if(OnPosition != null){
-                foreach(Delegate D in OnPosition.GetInvocationList()){
-                    Func<TransformAlgorithm, Vector2I, Vector2I> F = (Func<TransformAlgorithm, Vector2I, Vector2I>)D;
-                    Vector2I Position__ = F(this, Position);
-                    __X = Position__.X;
-                    __Y = Position__.Y;
-                }
-            }   
-        }catch(Exception e){
-            Logger.Error(Exception, e);
-        }
-    }
-    
-    private void __InvokeOnSize(string Exception){
-        try{
-            if(OnSize != null){
-                foreach(Delegate D in OnSize.GetInvocationList()){
-                    Func<TransformAlgorithm, Vector2UI, Vector2UI> F = (Func<TransformAlgorithm, Vector2UI, Vector2UI>)D;
-                    Vector2UI Size__ = F(this, Size);
-                    __W = Size__.W;
-                    __H = Size__.H;
-                }
-            }   
-        }catch(Exception e){
-            Logger.Error(Exception, e);
-        }
-    }
-    
-    private void __InvokeOnRect(string Exception){
-        try{
-            if(OnRect != null){
-                foreach(Delegate D in OnRect.GetInvocationList()){
-                    Func<TransformAlgorithm, Rect2I, Rect2I> F = (Func<TransformAlgorithm, Rect2I, Rect2I>)D;
-                    Rect2I Rect__ = F(this, Rect);
-                    __X = Rect__.X;
-                    __Y = Rect__.Y;
-                    __W = Rect__.W;
-                    __H = Rect__.H;
-                }
-            }   
-        }catch(Exception e){
-            Logger.Error(Exception, e);
-        }
-    }
-    
-    // ----------------------------------------------------------------------
+    // ===================== APPLY PIPELINE =====================
 
-    public override string ToString() => "TransformAlg.(" + ToShortString() + ")";
-    
-    public string ToShortString() => Rect.ToShortString() + ", " + CallAnyway;
-    
-    public string ToVeryShortString() => Rect.ToShortString();
+    private Rect2I Apply(Rect2I input)
+    {
+        if (_applying)
+            return input;
+
+        _applying = true;
+
+        try
+        {
+            var r = input;
+
+            // POSITION STAGE
+            if (OnPosition != null)
+            {
+                foreach (Func<TransformAlgorithm, Vector2I, Vector2I> fn in OnPosition.GetInvocationList())
+                {
+                    var p = fn(this, new Vector2I(r.X, r.Y));
+                    r = new Rect2I(p.X, p.Y, r.W, r.H);
+                }
+            }
+
+            // SIZE STAGE
+            if (OnSize != null)
+            {
+                foreach (Func<TransformAlgorithm, Vector2UI, Vector2UI> fn in OnSize.GetInvocationList())
+                {
+                    var s = fn(this, new Vector2UI(r.W, r.H));
+                    r = new Rect2I(r.X, r.Y, s.W, s.H);
+                }
+            }
+
+            // FINAL RECT OVERRIDE STAGE
+            if (OnRect != null)
+            {
+                foreach (Func<TransformAlgorithm, Rect2I, Rect2I> fn in OnRect.GetInvocationList())
+                {
+                    r = fn(this, r);
+                }
+            }
+
+            return r;
+        }
+        finally
+        {
+            _applying = false;
+        }
+    }
+
+    // ===================== COMMIT =====================
+
+    private void Set(Rect2I r)
+    {
+        bool changed =
+            __X != r.X || __Y != r.Y ||
+            __W != r.W || __H != r.H;
+
+        bool force = CallAnyway;
+
+        if (!changed && !force)
+            return;
+
+        __X = r.X;
+        __Y = r.Y;
+        __W = r.W;
+        __H = r.H;
+
+        OnPosition?.Invoke(this, new Vector2I(__X, __Y));
+        OnSize?.Invoke(this, new Vector2UI(__W, __H));
+        OnRect?.Invoke(this, new Rect2I(__X, __Y, __W, __H));
+    }
 }
 
-public interface ITransform{
-    public void __UpdateTransform(object? Data = null){}
+// =========================================================
+// INTERFACE
+// =========================================================
+
+public interface ITransform
+{
+    void __UpdateTransform(object? Data = null);
 }
+
+// =========================================================
+// WORLD TRANSFORM
+// =========================================================
 
 [WoowzLibHint(Information.WorkInProgress | Information.Testing)]
-public class WorldTransformAlgorithm<T> where T : SceneObject<T>, ITransform{
-    public WorldTransformAlgorithm(T Self){
-        this.Self = Self;
-
-        bool Sync = false;
-        
-        Local.OnRect += (Transform, Rect) => {
-            if(Sync){ return Rect; }
-            
-            Rect2I Result = LocalToWorld(Rect);
-            
-            Sync = true; World.Rect = Result; Sync = false;
-
-            __UpdateChildren(Self.Node, true);
-            
-            return Result;
-        };
-
-        World.OnRect += (Transform, Rect) => {
-            if(Sync){ return Rect; }
-
-            Rect2I Result = WorldToLocal(Rect);
-            
-            Sync = true; Local.Rect = Result; Sync = false;
-
-            __UpdateChildren(Self.Node, false);
-            
-            return Result;
-        };
-
-        // я думаю тут нужна отписка......
-        
-        Self.Node.OnSceneChangeAfter += (Node, Old, New) => {
-            __UpdateChildren(Node, true);
-        };
-
-        Self.Node.OnParentChangeAfter += (Node, Old, New) => {
-            __UpdateChildren(Node, true);
-        };
-    }
-
+public class WorldTransformAlgorithm<T>
+    where T : SceneObject<T>, ITransform
+{
     public readonly T Self;
 
-    /// <summary>
-    /// Локальная трансформация, явялется основной
-    /// </summary>
-    public readonly TransformAlgorithm Local = new TransformAlgorithm();
-    
-    /// <summary>
-    /// Мировая трансформация, только счёт
-    /// </summary>
-    public readonly TransformAlgorithm World = new TransformAlgorithm();
+    public readonly TransformAlgorithm Local = new();
+    public readonly TransformAlgorithm World = new();
 
-    /// <summary>
-    /// Если true, то ивенты вызываются в любом случае, даже если значения совпадают
-    /// </summary>
-    public bool CallAnyway{
+    private bool _syncing;
+
+    public Func<SceneNode<T>, WorldTransformAlgorithm<T>, Rect2I, Rect2I>? OnParentTransform;
+    public Func<SceneNode<T>, WorldTransformAlgorithm<T>, Rect2I, Rect2I>? OnParentTransformReverse;
+
+    public WorldTransformAlgorithm(T self)
+    {
+        Self = self;
+
+        Local.OnRect += (_, __) =>
+        {
+            SyncWorld();
+            return __;
+        };
+
+        Self.Node.OnSceneChangeAfter += (_, _, _) => SyncWorld();
+        Self.Node.OnParentChangeAfter += (_, _, _) => SyncWorld();
+    }
+
+    // ===================== CALL ANYWAY =====================
+
+    public bool CallAnyway
+    {
         get => Local.CallAnyway;
-        set{
+        set
+        {
             Local.CallAnyway = value;
             World.CallAnyway = value;
         }
     }
-    
-    // ----------------------------------------------------------------------
 
-    /// <summary>
-    /// Вызывает изменения относительно сцены
-    /// </summary>
-    public Func<SceneAlgorithm<T>, WorldTransformAlgorithm<T>, Rect2I, Rect2I>? OnSceneTransform;
-    
-    /// <summary>
-    /// Возвращает изменения относительно сцены
-    /// </summary>
-    public Func<SceneAlgorithm<T>, WorldTransformAlgorithm<T>, Rect2I, Rect2I>? OnSceneTransformReverse;
+    // ===================== SYNC =====================
 
-    /// <summary>
-    /// Вызывает изменения относительно родителя
-    /// </summary>
-    public Func<SceneNode<T>, WorldTransformAlgorithm<T>, Rect2I, Rect2I>? OnParentTransform;
-    
-    /// <summary>
-    /// Возвращает изменения относительно родителя
-    /// </summary>
-    public Func<SceneNode<T>, WorldTransformAlgorithm<T>, Rect2I, Rect2I>? OnParentTransformReverse;
-    
-    // ----------------------------------------------------------------------
+    private void SyncWorld()
+    {
+        if (_syncing)
+            return;
 
-    private Rect2I LocalToWorld(Rect2I Rect){
-        Rect = Self.Node.Parents().Aggregate(Rect, (Current, Parent) => OnParentTransform?.Invoke(Parent, this, Current) ?? Current);
-        
-        if(!Self.Node.InMemory){
-            Rect = OnSceneTransform?.Invoke(Self.Node.Scene!, this, Rect) ?? Rect;
-        }
+        _syncing = true;
 
-        return Rect;
+        var r = Local.Rect;
+        r = LocalToWorld(r);
+
+        World.Rect = r;
+
+        UpdateChildren(Self.Node);
+
+        _syncing = false;
     }
 
-    private Rect2I WorldToLocal(Rect2I Rect){
-        if(!Self.Node.InMemory){
-            Rect = OnSceneTransformReverse?.Invoke(Self.Node.Scene!, this, Rect) ?? Rect;
-        }
-        
-        Rect = Self.Node.Parents().Reverse().Aggregate(Rect, (Current, Parent) => OnParentTransformReverse?.Invoke(Parent, this, Current) ?? Current);
+    public void Recalculate(bool localToWorld)
+    {
+        if (localToWorld)
+            World.Rect = LocalToWorld(Local.Rect);
+        else
+            Local.Rect = WorldToLocal(World.Rect);
 
-        return Rect;
-    }
-    
-    /// <summary>
-    /// Обновляет Local/World
-    /// </summary>
-    /// <param name="LocalToWorld">Обновить World?</param>
-    public void Recalculate(bool LocalToWorld){
-        Logger.Info(this + " RECALCULATE");
-        
-        if(LocalToWorld){
-            World.Rect = this.LocalToWorld(Local.Rect);
-        }else{
-            Local.Rect = this.WorldToLocal(World.Rect);
-        }
-        
-        __UpdateChildren(Self.Node, LocalToWorld);
+        UpdateChildren(Self.Node);
     }
 
-    private void __UpdateChildren(SceneNode<T> Node, bool LocalToWorld){
-        foreach(SceneNode<T> Child in Node.Level0){
-            Child.Self.__UpdateTransform(LocalToWorld);
-            __UpdateChildren(Child, LocalToWorld);
+    // ===================== TRANSFORMS =====================
+
+    private Rect2I LocalToWorld(Rect2I rect)
+    {
+        rect = Self.Node.Parents().Aggregate(rect,
+            (cur, p) => OnParentTransform?.Invoke(p, this, cur) ?? cur);
+
+        return rect;
+    }
+
+    private Rect2I WorldToLocal(Rect2I rect)
+    {
+        rect = Self.Node.Parents().Reverse().Aggregate(rect,
+            (cur, p) => OnParentTransformReverse?.Invoke(p, this, cur) ?? cur);
+
+        return rect;
+    }
+
+    // ===================== CHILDREN =====================
+
+    private void UpdateChildren(SceneNode<T> node)
+    {
+        foreach (var child in node.Level0)
+        {
+            child.Self.__UpdateTransform(true);
+            UpdateChildren(child);
         }
     }
-    
-    // ----------------------------------------------------------------------
-
-    public override string ToString() => "WorldTransformAlg.(" + ToShortString() + ")";
-    
-    public string ToShortString() => Local.Rect.ToShortString() + ", " + Local.CallAnyway;
-    
-    public string ToVeryShortString() => Local.Rect.ToShortString();
 }

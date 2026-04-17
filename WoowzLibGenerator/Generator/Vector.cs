@@ -46,6 +46,8 @@ public static class Vector{
         new Info_VectorConst{ Name = "AxisW", Values = ['0', '0', '0', '1'] },
         new Info_VectorConst{ Name = "Double", Values = ['2', '2'], Other = '2' },
         new Info_VectorConst{ Name = "Quarter", Values = ['3', '3'], Other = '3' },
+        
+        new Info_VectorConst{ Name = "Center", Values = ['0', '0'] }
     ];
     
     public struct Info_Vector{
