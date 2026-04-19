@@ -101,7 +101,7 @@ public static partial class String{
 
             return SB.ToString();
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при замене символов с левых на правых!\nОбратно: " + Reverse + "\nСимволы: " + CharSet + "\nСтрока:\n" + S, e);
+            throw new Exception($"Произошла ошибка при замене символов с левых на правых!\nОбратно: {Reverse}\nСимволы: {CharSet}\nСтрока:\n{S}", e);
         }
     }
 
@@ -124,7 +124,7 @@ public static partial class String{
                 foreach(DictionaryEntry Entry in D){
                     string Key   = ToTableString(Entry.Key  , Flat, Indent + 1);
                     string Value = ToTableString(Entry.Value, Flat, Indent + 1);
-                    SB.Append(Flat ? Key + ": " + Value + "," : Tab + "\t" + Key + ": " + Value + ",\n");
+                    SB.Append(Flat ? $"{Key}: {Value}," : Tab + $"\t{Key}: {Value},\n");
                 }
                 if(SB.Length > 0 && SB[^1] == ',' || SB[^1] == '\n'){ SB.Length--; }
                 SB.Append(Flat ? "}" : Tab + "}");
@@ -134,7 +134,7 @@ public static partial class String{
             if(Object is IEnumerable E and not string){
                 List<object?> List = E.Cast<object?>().ToList();
                 StringBuilder SB = new StringBuilder();
-                SB.Append("<" + List.Count + ">[");
+                SB.Append($"<{List.Count}>[");
                 for(int i = 0; i < List.Count; i++){
                     SB.Append(ToTableString(List[i], true, 0));
                     if(i < List.Count - 1) SB.Append(", ");
@@ -145,7 +145,7 @@ public static partial class String{
 
             return ToBeautifulString(Object);
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при превращении таблицы в строку!\nТаблица: " + ToString(Object) + "\nПлоская?: " + Flat + "\nТабуляция: " + Indent, e);
+            throw new Exception($"Произошла ошибка при превращении таблицы в строку!\nТаблица: {ToString(Object)}\nПлоская?: {Flat}\nТабуляция: {Indent}", e);
         }
     }
     
@@ -259,7 +259,7 @@ public static partial class String{
     /// </summary>
     /// <param name="Value">Число</param>
     /// <param name="Places">Кол-во знаков после запятой</param>
-    public static string LimitF(double Value, int Places){ if(Places < 0){ Places = 0; } return Value.ToString("F" + Places, CultureInfo.InvariantCulture); }
+    public static string LimitF(double Value, int Places){ if(Places < 0){ Places = 0; } return Value.ToString($"F{Places}", CultureInfo.InvariantCulture); }
 
     /// <summary>
     /// Ограничивает число указанным кол-во знаков после запятой

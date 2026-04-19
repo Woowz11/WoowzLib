@@ -11,7 +11,7 @@ public static partial class Explorer{
             try{
                 return !WL.String.Path.IsCorrect(Path) ? throw new Exception("Указан неверный путь!") : global::System.IO.File.Exists(Path);
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при проверке, файл ли путь [\"" + Path + "\"]!", e);
+                throw new Exception($"Произошла ошибка при проверке, файл ли путь [\"{Path}\"]!", e);
             }
         }
 
@@ -30,7 +30,7 @@ public static partial class Explorer{
                 WLO.File Result = new WLO.File(Path);
                 return Result.IsFile ? Result : null;
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при получении файла [\"" + Path + "\"]!", e);
+                throw new Exception($"Произошла ошибка при получении файла [\"{Path}\"]!", e);
             }
         }
 
@@ -41,7 +41,7 @@ public static partial class Explorer{
             try{
                 return IsFile(Path) ? null : new WLO.File(Path, Content);
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при создании файла [\"" + Path + "\"]!\nСтартовое содержимое:\n" + Content, e);
+                throw new Exception($"Произошла ошибка при создании файла [\"{Path}\"]!\nСтартовое содержимое:\n{Content}", e);
             }
         }
         
@@ -52,7 +52,7 @@ public static partial class Explorer{
             try{
                 return new WLO.File(Path, IsFile(Path) ? null : Content);
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при получении или создании файла [\"" + Path + "\"]!\nСтартовое содержимое:\n" + Content, e);
+                throw new Exception($"Произошла ошибка при получении или создании файла [\"{Path}\"]!\nСтартовое содержимое:\n{Content}", e);
             }
         }
         
@@ -67,7 +67,7 @@ public static partial class Explorer{
                 
                 FileSystem.DeleteFile(Path, UIOption.OnlyErrorDialogs, ToRecycleBin ? RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently);
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при удалении файла [\"" + Path + "\"]!\nВ корзину?: " + ToRecycleBin, e);
+                throw new Exception($"Произошла ошибка при удалении файла [\"{Path}\"]!\nВ корзину?: {ToRecycleBin}", e);
             }
         }
     }

@@ -27,7 +27,7 @@ public static partial class System{
                 
                 return false;
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при ограничивании потока через DeltaTime!\nЦель: " + TargetDeltaTime, e);
+                throw new Exception($"Произошла ошибка при ограничивании потока через DeltaTime!\nЦелевой DeltaTime: {TargetDeltaTime}", e);
             }
         }
 

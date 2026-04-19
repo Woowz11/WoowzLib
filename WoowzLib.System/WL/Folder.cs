@@ -11,7 +11,7 @@ public static partial class Explorer{
             try{
                 return !WL.String.Path.IsCorrect(Path) ? throw new Exception("Указан неверный путь!") : Directory.Exists(Path);
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при проверке, папка ли путь [\"" + Path + "\"]!", e);
+                throw new Exception($"Произошла ошибка при проверке, папка ли путь [\"{Path}\"]!", e);
             }
         }
         
@@ -30,18 +30,18 @@ public static partial class Explorer{
                 WLO.File Result = new WLO.File(Path, null, true);
                 return Result.IsFolder ? Result : null;
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при получении папки [\"" + Path + "\"]!", e);
+                throw new Exception($"Произошла ошибка при получении папки [\"{Path}\"]!", e);
             }
         }
         
         /// <summary>
         /// Создаёт папку (если уже существует, ничего не сделает)
         /// </summary>
-        public static WLO.File? Create(string Path, string Content = ""){
+        public static WLO.File? Create(string Path){
             try{
                 return IsFolder(Path) ? null : new WLO.File(Path, "", true);
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при создании папки [\"" + Path + "\"]!\nСтартовое содержимое:\n" + Content, e);
+                throw new Exception($"Произошла ошибка при создании папки [\"{Path}\"]!", e);
             }
         }
         
@@ -52,7 +52,7 @@ public static partial class Explorer{
             try{
                 return new WLO.File(Path, IsFolder(Path) ? null : "", true);
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при получении или создании папки [\"" + Path + "\"]!", e);
+                throw new Exception($"Произошла ошибка при получении или создании папки [\"{Path}\"]!", e);
             }
         }
         
@@ -65,7 +65,7 @@ public static partial class Explorer{
             try{
                 return !IsFolder(Path) ? throw new Exception("Указан неверный путь!") : Directory.GetFiles(Path);
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при получении файлов внутри папки [\"" + Path + "\"]!", e);
+                throw new Exception($"Произошла ошибка при получении файлов внутри папки [\"{Path}\"]!", e);
             }
         }
 
@@ -76,7 +76,7 @@ public static partial class Explorer{
             try{
                 return !IsFolder(Path) ? throw new Exception("Указан неверный путь!") : Directory.GetDirectories(Path);
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при получении папок внутри папки [\"" + Path + "\"]!", e);
+                throw new Exception($"Произошла ошибка при получении папок внутри папки [\"{Path}\"]!", e);
             }
         }
         
@@ -91,7 +91,7 @@ public static partial class Explorer{
                 
                 FileSystem.DeleteDirectory(Path, UIOption.OnlyErrorDialogs, ToRecycleBin ? RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently);
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при удалении папки [\"" + Path + "\"]!\nВ корзину?: " + ToRecycleBin, e);
+                throw new Exception($"Произошла ошибка при удалении папки [\"{Path}\"]!\nВ корзину?: {ToRecycleBin}", e);
             }
         }
         
@@ -105,7 +105,7 @@ public static partial class Explorer{
                 foreach(string File   in Files  (Path)){ WL.Explorer.File  .Delete(File  , ToRecycleBin); }
                 foreach(string Folder in Folders(Path)){ WL.Explorer.Folder.Delete(Folder, ToRecycleBin); }
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при очистке содержимого папки [\"" + Path + "\"]!\nВ корзину?: " + ToRecycleBin, e);
+                throw new Exception($"Произошла ошибка при очистке содержимого папки [\"{Path}\"]!\nВ корзину?: {ToRecycleBin}", e);
             }
         }
     }

@@ -20,7 +20,7 @@ public class WindowClass{
             
             __Register(Instance ?? WL.System.Instance);
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при создании класса окна!", e);
+            throw new Exception($"Произошла ошибка при создании класса окна!\nНазвание: \"{Name}\"\nИвенты: {WL.String.ToString(Event)}\nСуществующий Instance?: {WL.String.ToString(Instance)}", e);
         }
     }
     
@@ -106,9 +106,9 @@ public class WindowClass{
             };
             
             Atom = Native.Raw.Windows.RegisterClassEx(ref Class);
-            if(Atom == 0){ throw new Exception("Произошла ошибка в RegisterClassEx!\nОшибка: " + WL.System.LastOSError()); }
+            if(Atom == 0){ throw new Exception($"Произошла ошибка в RegisterClassEx!\nОшибка: {WL.System.LastOSError()}"); }
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при регистрации класса [" + this + "] окна!\nДескриптор: " + Instance, e);
+            throw new Exception($"Произошла ошибка при регистрации класса [{this}] окна!\nДескриптор: {Instance}", e);
         }
     }
 
@@ -131,13 +131,13 @@ public class WindowClass{
                     Result = Event(Window, Message, WP, LP);
                 }
                 catch(Exception e){
-                    Logger.Error("Произошла ошибка при вызове событий у класса окна [" + this + "]!", e);
+                    Logger.Error($"Произошла ошибка при вызове событий у класса окна [{this}]!", e);
                 }
 
                 if(Result.HasValue){ return Result.Value; }
             }
         }catch(Exception e){
-            Logger.Error("Произошла ошибка при обновлении событий у класса окна [" + this + "]!", e);
+            Logger.Error($"Произошла ошибка при обновлении событий у класса окна [{this}]!", e);
         }
         
         return Native.Raw.Windows.DefWindowProc(Handle, Message, WP, LP);
@@ -146,7 +146,7 @@ public class WindowClass{
     
     // ----------------------------------------------------------------------
     
-    public override string ToString() => "WindowClass(\"" + Name + "\", " + Atom + ")";
+    public override string ToString() => $"WindowClass(\"{Name}\", {Atom})";
 
     public override bool Equals(object? Object){
         if(Object is not WindowClass Other){ return false; }

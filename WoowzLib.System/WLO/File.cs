@@ -45,7 +45,7 @@ public class File{
             }
         }
         catch(Exception e){
-            throw new Exception("Произошла ошибка при получении файла [" + this + "]!\nПуть: \"" + Path + "\"\nСтартовое содержимое:\n" + WL.String.ToString(StartContent), e);
+            throw new Exception($"Произошла ошибка при получении файла [{this}]!\nПуть: \"{Path}\"\nСтартовое содержимое:\n{WL.String.ToString(StartContent)}", e);
         }
     }
     
@@ -95,7 +95,7 @@ public class File{
             try{
                 return !IsFile ? throw new Exception("Файл не найден!") : System.IO.File.ReadAllText(AbsolutePath);
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при чтении текстового содержимого файла [" + this + "]!", e);
+                throw new Exception($"Произошла ошибка при чтении текстового содержимого файла [{this}]!", e);
             }
         }
         set{
@@ -103,7 +103,7 @@ public class File{
                 if(!IsFile){ throw new Exception("Файл не найден!"); }
                 System.IO.File.WriteAllText(AbsolutePath, value);
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при установке текстового содержимого файла [" + this + "]!\nНовое содержимое:\n" + value, e);
+                throw new Exception($"Произошла ошибка при установке текстового содержимого файла [{this}]!\nНовое содержимое:\n{value}", e);
             }
         }
     }
@@ -116,7 +116,7 @@ public class File{
             try{
                 return !IsFile ? throw new Exception("Файл не найден!") : System.IO.File.ReadAllBytes(AbsolutePath);
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при чтении бинарного содержимого файла [" + this + "]!", e);
+                throw new Exception($"Произошла ошибка при чтении бинарного содержимого файла [{this}]!", e);
             }
         }
         set{
@@ -124,7 +124,7 @@ public class File{
                 if(!IsFile){ throw new Exception("Файл не найден!"); }
                 System.IO.File.WriteAllBytes(AbsolutePath, value);
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при установке бинарного содержимого файла [" + this + "]!\nНовое содержимое:\n" + value, e);
+                throw new Exception($"Произошла ошибка при установке бинарного содержимого файла [{this}]!\nНовое содержимое:\n{value}", e);
             }
         }
     }
@@ -143,7 +143,7 @@ public class File{
 
             return this;
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при создании файла [" + this + "]!", e);
+            throw new Exception($"Произошла ошибка при создании файла [{this}]!", e);
         }
     }
     
@@ -158,7 +158,7 @@ public class File{
 
             return this;
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при создании папки [" + this + "]!", e);
+            throw new Exception($"Произошла ошибка при создании папки [{this}]!", e);
         }
     }
 
@@ -173,7 +173,7 @@ public class File{
                 default: throw new Exception("Нечего удалять!");
             }
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при удалении файла [" + this + "]!\nВ корзину?: " + ToRecycleBin, e);
+            throw new Exception($"Произошла ошибка при удалении файла [{this}]!\nВ корзину?: {ToRecycleBin}", e);
         }
     }
 
@@ -188,7 +188,7 @@ public class File{
 
             return this;
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при добавлении текста в текстовое содержимое файла [" + this + "]!\nДобавляемое:\n" + Text, e);
+            throw new Exception($"Произошла ошибка при добавлении текста в текстовое содержимое файла [{this}]!\nДобавляемое:\n{Text}", e);
         }
     }
     

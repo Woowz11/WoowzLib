@@ -18,7 +18,7 @@ public class Window : SceneObject<Window>{
                     
                     Window.__Destroy();
                 }catch(Exception e){
-                    Logger.Error("Произошла ошибка при очистке оставшихся окон! Окно: " + Window, e);
+                    Logger.Error($"Произошла ошибка при очистке оставшихся окон! Окно: {Window}", e);
                 }
             }
             
@@ -81,7 +81,7 @@ public class Window : SceneObject<Window>{
 
             __CreateWindow(ClassName, Config);
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при создании окна!\nКласс: " + Class + "\nКонфиг: " + WL.__Base.Other.ToString(Config), e);
+            throw new Exception($"Произошла ошибка при создании окна!\nКласс: {Class}\nКонфиг: {WL.__Base.Other.ToString(Config)}", e);
         }
     }
     
@@ -94,7 +94,7 @@ public class Window : SceneObject<Window>{
 
             __CreateWindow(ClassName, Config);
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при создании окна!\nЗагруженный класс: " + ExistingClass + "\nКонфиг: " + WL.__Base.Other.ToString(Config), e);
+            throw new Exception($"Произошла ошибка при создании окна!\nЗагруженный класс: {ExistingClass}\nКонфиг: {WL.__Base.Other.ToString(Config)}", e);
         }
     }
 
@@ -107,7 +107,7 @@ public class Window : SceneObject<Window>{
 
             Native.Raw.Windows.DestroyWindow(Handle);
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при уничтожении окна [" + ToShortString() + "]!", e);
+            throw new Exception($"Произошла ошибка при уничтожении окна [{ToShortString()}]!", e);
         }
     }
 
@@ -160,7 +160,7 @@ public class Window : SceneObject<Window>{
             
             return AllWindow ? Native.Raw.Windows.GetWindowDC(Handle) : Native.Raw.Windows.GetDC(Handle);
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при получении/возвращении HDC у окна [" + this + "]!\nВернуть: " + WL.String.ToString(Release) + "\nВсё окно: " + AllWindow, e);
+            throw new Exception($"Произошла ошибка при получении/возвращении HDC у окна [{this}]!\nВернуть: {WL.String.ToString(Release)}\nВсё окно: {AllWindow}", e);
         }
     }
     
@@ -187,7 +187,7 @@ public class Window : SceneObject<Window>{
                     
                     return Length > 0 ? SB.ToString() : string.Empty;
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при получении заголовка окна [" + ToShortString() + "]!", e);
+                    throw new Exception($"Произошла ошибка при получении заголовка окна [{ToShortString()}]!", e);
                 }
             }
             set{
@@ -199,12 +199,12 @@ public class Window : SceneObject<Window>{
                     try{
                         OnTitle?.Invoke(this, value);
                     }catch(Exception e){
-                        Logger.Error("Произошла ошибка внутри ивента OnTitle у окна [" + ToShortString() + "]!\nЗаголовок: " + value, e);
+                        Logger.Error($"Произошла ошибка внутри ивента OnTitle у окна [{ToShortString()}]!\nЗаголовок: \"{value}\"", e);
                     }
                     
                     if(!Native.Raw.Windows.SetWindowTextW(Handle, value)){ throw new Exception("Произошла ошибка в SetWindowTextW!\nОшибка: " + WL.System.LastOSError()); }
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при установке заголовка окну [" + ToShortString() + "]!\nЗаголовок: \"" + value + "\"", e);
+                    throw new Exception($"Произошла ошибка при установке заголовка окну [{ToShortString()}]!\nЗаголовок: \"{value}\"", e);
                 }
             }
         }
@@ -221,7 +221,7 @@ public class Window : SceneObject<Window>{
             try{
                 OnPosition?.Invoke(this, Position, ClientPosition);
             }catch(Exception e){
-                Logger.Error("Произошла ошибка внутри ивента OnPosition у окна [" + ToShortString() + "]!\nПозиция: " + Position, e);
+                Logger.Error($"Произошла ошибка внутри ивента OnPosition у окна [{ToShortString()}]!\nПозиция: {Position}", e);
             }
         }
     
@@ -235,11 +235,11 @@ public class Window : SceneObject<Window>{
                     try{
                         CheckAlive();
 
-                        if(!Native.Raw.Windows.GetWindowRect(Handle, out Native.Raw.Windows.RECT Rect)){ throw new Exception("Произошла ошибка в GetWindowRect!\nОшибка: " + WL.System.LastOSError()); }
+                        if(!Native.Raw.Windows.GetWindowRect(Handle, out Native.Raw.Windows.RECT Rect)){ throw new Exception($"Произошла ошибка в GetWindowRect!\nОшибка: {WL.System.LastOSError()}"); }
 
                         return new Vector2I(Rect.left, Rect.top);
                     }catch(Exception e){
-                        throw new Exception("Произошла ошибка при получении позиции окна [" + ToShortString() + "]!", e);
+                        throw new Exception($"Произошла ошибка при получении позиции окна [{ToShortString()}]!", e);
                     }
                 }
                 set{
@@ -252,7 +252,7 @@ public class Window : SceneObject<Window>{
                         
                         __OnPosition(value);
                     }catch(Exception e){
-                        throw new Exception("Произошла ошибка при установке позиции окна [" + ToShortString() + "]!\nПозиция: " + value.ToPositionString(), e);
+                        throw new Exception($"Произошла ошибка при установке позиции окна [{ToShortString()}]!\nПозиция: {value.ToPositionString()}", e);
                     }
                 }
             }
@@ -272,7 +272,7 @@ public class Window : SceneObject<Window>{
 
                         return ClientToScreen(Vector2I.Zero);
                     }catch(Exception e){
-                        throw new Exception("Произошла ошибка при получении клиентской позиции окна [" + ToShortString() + "]!", e);
+                        throw new Exception($"Произошла ошибка при получении клиентской позиции окна [{ToShortString()}]!", e);
                     }
                 }
                 set{
@@ -289,7 +289,7 @@ public class Window : SceneObject<Window>{
                         
                         __OnPosition(__Position);
                     }catch(Exception e){
-                        throw new Exception("Произошла ошибка при установке клиентской позиции окна [" + ToShortString() + "]!\nПозиция: " + value.ToPositionString(), e);
+                        throw new Exception($"Произошла ошибка при установке клиентской позиции окна [{ToShortString()}]!\nПозиция: {value.ToPositionString()}", e);
                     }
                 }
             }
@@ -308,7 +308,7 @@ public class Window : SceneObject<Window>{
             try{
                 OnSize?.Invoke(this, Size, ClientSize);
             }catch(Exception e){
-                Logger.Error("Произошла ошибка внутри ивента OnSize у окна [" + ToShortString() + "]!\nРазмер: " + Size, e);
+                Logger.Error($"Произошла ошибка внутри ивента OnSize у окна [{ToShortString()}]!\nРазмер: {Size}", e);
             }
         }
 
@@ -322,11 +322,11 @@ public class Window : SceneObject<Window>{
                     try{
                         CheckAlive();
                         
-                        if(!Native.Raw.Windows.GetWindowRect(Handle, out Native.Raw.Windows.RECT Rect)){ throw new Exception("Произошла ошибка в GetWindowRect!\nОшибка: " + WL.System.LastOSError()); }
+                        if(!Native.Raw.Windows.GetWindowRect(Handle, out Native.Raw.Windows.RECT Rect)){ throw new Exception("$Произошла ошибка в GetWindowRect!\nОшибка: {WL.System.LastOSError()}"); }
 
                         return new Vector2UI((uint)Rect.width, (uint)Rect.height);
                     }catch(Exception e){
-                        throw new Exception("Произошла ошибка при получении размера окна [" + ToShortString() + "]!", e);
+                        throw new Exception($"Произошла ошибка при получении размера окна [{ToShortString()}]!", e);
                     }
                 }
                 set{
@@ -339,7 +339,7 @@ public class Window : SceneObject<Window>{
                         
                         __OnSize(value);
                     }catch(Exception e){
-                        throw new Exception("Произошла ошибка при установке размера окна [" + ToShortString() + "]!\nРазмер: " + value.ToSizeString(), e);
+                        throw new Exception($"Произошла ошибка при установке размера окна [{ToShortString()}]!\nРазмер: {value.ToSizeString()}", e);
                     }
                 }
             }
@@ -356,11 +356,11 @@ public class Window : SceneObject<Window>{
                     try{
                         CheckAlive();
                         
-                        if(!Native.Raw.Windows.GetClientRect(Handle, out Native.Raw.Windows.RECT Rect)){ throw new Exception("Произошла ошибка в GetClientRect!\nОшибка:" + WL.System.LastOSError()); }
+                        if(!Native.Raw.Windows.GetClientRect(Handle, out Native.Raw.Windows.RECT Rect)){ throw new Exception($"Произошла ошибка в GetClientRect!\nОшибка: {WL.System.LastOSError()}"); }
                         
                         return new Vector2UI((uint)(Rect.width), (uint)(Rect.height));
                     }catch(Exception e){
-                        throw new Exception("Произошла ошибка при получении клиентского размера окна [" + ToShortString() + "]!", e);
+                        throw new Exception($"Произошла ошибка при получении клиентского размера окна [{ToShortString()}]!", e);
                     }
                 }
                 set{
@@ -371,11 +371,11 @@ public class Window : SceneObject<Window>{
 
                         Native.Raw.Windows.RECT Rect = new Native.Raw.Windows.RECT(0, 0, (int)value.W, (int)value.H);
 
-                        if(!Native.Raw.Windows.AdjustWindowRectEx(ref Rect, Style, false, 0)){ throw new Exception("Произошла ошибка в AdjustWindowRectEx!\nОшибка: " + WL.System.LastOSError()); }
+                        if(!Native.Raw.Windows.AdjustWindowRectEx(ref Rect, Style, false, 0)){ throw new Exception($"Произошла ошибка в AdjustWindowRectEx!\nОшибка: {WL.System.LastOSError()}"); }
 
                         Size = new Vector2UI((uint)Rect.width, (uint)Rect.height);
                     }catch(Exception e){
-                        throw new Exception("Произошла ошибка при установке клиентского размера окна [" + ToShortString() + "]!\nРазмер: " + value.ToSizeString(), e);
+                        throw new Exception($"Произошла ошибка при установке клиентского размера окна [{ToShortString()}]!\nРазмер: {value.ToSizeString()}", e);
                     }
                 }
             }
@@ -401,7 +401,7 @@ public class Window : SceneObject<Window>{
 
                     return (Style & Native.Raw.Windows.WS_VISIBLE) != 0;
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при получении видимости окна [" + ToShortString() + "]!", e);
+                    throw new Exception($"Произошла ошибка при получении видимости окна [{ToShortString()}]!", e);
                 }
             }
             set{
@@ -415,10 +415,10 @@ public class Window : SceneObject<Window>{
                     try{
                         OnVisible?.Invoke(this, value);
                     }catch(Exception e){
-                        Logger.Error("Произошла ошибка внутри ивента OnVisible у окна [" + ToShortString() + "]!\nВидимость: " + value, e);
+                        Logger.Error($"Произошла ошибка внутри ивента OnVisible у окна [{ToShortString()}]!\nВидимость: {value}", e);
                     }
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при установке видимости окну [" + ToShortString() + "]!\nВидимость: " + value, e);
+                    throw new Exception($"Произошла ошибка при установке видимости окну [{ToShortString()}]!\nВидимость: {value}", e);
                 }
             }
         }
@@ -437,7 +437,7 @@ public class Window : SceneObject<Window>{
 
                     return (uint)Native.Raw.Windows.GetWindowLong(Handle, Native.Raw.Windows.GWL_STYLE);
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при получении стиля окна [" + ToShortString() + "]!", e);
+                    throw new Exception($"Произошла ошибка при получении стиля окна [{ToShortString()}]!", e);
                 }
             }
             set{
@@ -455,7 +455,7 @@ public class Window : SceneObject<Window>{
 
                     Native.Raw.Windows.SetWindowPos(Handle, IntPtr.Zero, 0, 0, 0, 0, Native.Raw.Windows.SWP_NOMOVE | Native.Raw.Windows.SWP_NOSIZE | Native.Raw.Windows.SWP_NOZORDER | Native.Raw.Windows.SWP_FRAMECHANGED);
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при установке стиля окну [" + ToShortString() + "]!\nСтиль: " + value, e);
+                    throw new Exception($"Произошла ошибка при установке стиля окну [{ToShortString()}]!\nСтиль: {value}", e);
                 }
             }
         }
@@ -470,7 +470,7 @@ public class Window : SceneObject<Window>{
 
                     return (uint)Native.Raw.Windows.GetWindowLong(Handle, Native.Raw.Windows.GWL_EXSTYLE);
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при получении дополнительного стиля окна [" + ToShortString() + "]!", e);
+                    throw new Exception($"Произошла ошибка при получении дополнительного стиля окна [{ToShortString()}]!", e);
                 }
             }
             set{
@@ -487,7 +487,7 @@ public class Window : SceneObject<Window>{
 
                     Native.Raw.Windows.SetWindowPos(Handle, IntPtr.Zero, 0, 0, 0, 0, Native.Raw.Windows.SWP_NOMOVE | Native.Raw.Windows.SWP_NOSIZE | Native.Raw.Windows.SWP_NOZORDER | Native.Raw.Windows.SWP_FRAMECHANGED);
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при установке дополнительного стиля окну [" + ToShortString() + "]!\nСтиль: " + value, e);
+                    throw new Exception($"Произошла ошибка при установке дополнительного стиля окну [{ToShortString()}]!\nСтиль: {value}", e);
                 }
             }
         }
@@ -504,13 +504,13 @@ public class Window : SceneObject<Window>{
 
                 if(!HasStyleEx(Native.Raw.Windows.WS_EX_LAYERED)){ return 255; }
 
-                if(!Native.Raw.Windows.GetLayeredWindowAttributes(Handle, out uint ColorKey, out byte Alpha__, out uint Flags)){ throw new Exception("Произошла ошибка в GetLayeredWindowAttributes при получении прозрачности у окна!\nОшибка: " + WL.System.LastOSError()); }
+                if(!Native.Raw.Windows.GetLayeredWindowAttributes(Handle, out uint ColorKey, out byte Alpha__, out uint Flags)){ throw new Exception($"Произошла ошибка в GetLayeredWindowAttributes при получении прозрачности у окна!\nОшибка: {WL.System.LastOSError()}"); }
 
                 if((Flags & Native.Raw.Windows.LWA_ALPHA) == 0){ return 255; }
 
                 return Alpha__;
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при получении прозрачности у окна [" + this + "]!", e);
+                throw new Exception($"Произошла ошибка при получении прозрачности у окна [{this}]!", e);
             }
         }
         set{
@@ -521,9 +521,9 @@ public class Window : SceneObject<Window>{
 
                 AddStyleEx(Native.Raw.Windows.WS_EX_LAYERED);
 
-                if(!Native.Raw.Windows.SetLayeredWindowAttributes(Handle, 0, value, Native.Raw.Windows.LWA_ALPHA)){ throw new Exception("Произошла ошибка в SetLayeredWindowAttributes при установке прозрачности окну!\nОшибка: " + WL.System.LastOSError()); }
+                if(!Native.Raw.Windows.SetLayeredWindowAttributes(Handle, 0, value, Native.Raw.Windows.LWA_ALPHA)){ throw new Exception($"Произошла ошибка в SetLayeredWindowAttributes при установке прозрачности окну!\nОшибка: {WL.System.LastOSError()}"); }
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при изменении прозрачности у окна [" + this + "]!\nПрозрачность: " + value, e);
+                throw new Exception($"Произошла ошибка при изменении прозрачности у окна [{this}]!\nПрозрачность: {value}", e);
             }
         }
     }
@@ -542,9 +542,9 @@ public class Window : SceneObject<Window>{
         try{
             Native.Raw.Windows.POINT Point = new Native.Raw.Windows.POINT(Client.X, Client.Y);
 
-            return !Native.Raw.Windows.ClientToScreen(Handle, ref Point) ? throw new Exception("Произошла ошибка в ClientToScreen!\nОшибка: " + WL.System.LastOSError()) : new Vector2I(Point.X, Point.Y);
+            return !Native.Raw.Windows.ClientToScreen(Handle, ref Point) ? throw new Exception($"Произошла ошибка в ClientToScreen!\nОшибка: {WL.System.LastOSError()}") : new Vector2I(Point.X, Point.Y);
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при конвертации Client -> Screen координат у окна [" + this + "]!\nClient координаты: " + Client, e);
+            throw new Exception($"Произошла ошибка при конвертации Client -> Screen координат у окна [{this}]!\nClient координаты: {Client}", e);
         }
     }
 
@@ -555,9 +555,9 @@ public class Window : SceneObject<Window>{
         try{
             Native.Raw.Windows.POINT Point = new Native.Raw.Windows.POINT(Screen.X, Screen.Y);
 
-            return !Native.Raw.Windows.ClientToScreen(Handle, ref Point) ? throw new Exception("Произошла ошибка в ScreenToClient!\nОшибка: " + WL.System.LastOSError()) : new Vector2I(Point.X, Point.Y);
+            return !Native.Raw.Windows.ClientToScreen(Handle, ref Point) ? throw new Exception($"Произошла ошибка в ScreenToClient!\nОшибка: {WL.System.LastOSError()}") : new Vector2I(Point.X, Point.Y);
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при конвертации Screen -> Client координат у окна [" + this + "]!\nScreen координаты: " + Screen, e);
+            throw new Exception($"Произошла ошибка при конвертации Screen -> Client координат у окна [{this}]!\nScreen координаты: {Screen}", e);
         }
     }
 
@@ -607,13 +607,13 @@ public class Window : SceneObject<Window>{
             try{
                 OnDestroy?.Invoke(this);
             }catch(Exception e){
-                Logger.Error("Произошла ошибка в ивенте OnDestroy при уничтожении окна [" + this + "]!", e);
+                Logger.Error($"Произошла ошибка в ивенте OnDestroy при уничтожении окна [{this}]!", e);
             }
             
             try{
                 OnGlobalDestroy?.Invoke(this);
             }catch(Exception e){
-                Logger.Error("Произошла ошибка в ивенте OnGlobalDestroy при уничтожении окна [" + this + "]!", e);
+                Logger.Error($"Произошла ошибка в ивенте OnGlobalDestroy при уничтожении окна [{this}]!", e);
             }
             Windows.Remove(ID);
 
@@ -627,7 +627,7 @@ public class Window : SceneObject<Window>{
             
             Handle = IntPtr.Zero;
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при вызове уничтожения окна [" + this + "]!", e);
+            throw new Exception($"Произошла ошибка при вызове уничтожения окна [{this}]!", e);
         }
     }
 
@@ -636,7 +636,7 @@ public class Window : SceneObject<Window>{
     /// </summary>
     private void __UpdateWindowPosition(Vector2I Position){
         if(!Native.Raw.Windows.SetWindowPos(Handle, IntPtr.Zero, Position.X, Position.Y, 0, 0, Native.Raw.Windows.SWP_NOZORDER | Native.Raw.Windows.SWP_NOACTIVATE | Native.Raw.Windows.SWP_NOSIZE)){
-            throw new Exception("Произошла ошибка в SetWindowPos, внутри __UpdateWindowPosition!\nОшибка: " + WL.System.LastOSError() + "\nПозиция: " + Position);
+            throw new Exception($"Произошла ошибка в SetWindowPos, внутри __UpdateWindowPosition!\nОшибка: {WL.System.LastOSError()}\nПозиция: {Position}");
         }
     }
 
@@ -645,7 +645,7 @@ public class Window : SceneObject<Window>{
     /// </summary>
     private void __UpdateWindowSize(Vector2UI Size){
         if(!Native.Raw.Windows.SetWindowPos(Handle, IntPtr.Zero, 0, 0, (int)Size.W, (int)Size.H, Native.Raw.Windows.SWP_NOZORDER | Native.Raw.Windows.SWP_NOACTIVATE | Native.Raw.Windows.SWP_NOMOVE)){
-            throw new Exception("Произошла ошибка в SetWindowPos, внутри __UpdateWindowSize!\nОшибка: " + WL.System.LastOSError() + "\nРазмер: " + Size);
+            throw new Exception($"Произошла ошибка в SetWindowPos, внутри __UpdateWindowSize!\nОшибка: {WL.System.LastOSError()}\nРазмер: {Size}");
         }
     }
 
@@ -674,9 +674,9 @@ public class Window : SceneObject<Window>{
         if(Handle == IntPtr.Zero){
             int OSError = WL.System.LastOSError();
             if(OSError == Native.Raw.Windows.ERROR_CLASS_DOES_NOT_EXIST){
-                throw new Exception("Не найден оконный класс \"" + Class + "\"!");
+                throw new Exception($"Не найден оконный класс \"{Class}\"!");
             }else{
-                throw new Exception("Произошла ошибка в CreateWindowExW!\nОшибка: " + OSError);
+                throw new Exception($"Произошла ошибка в CreateWindowExW!\nОшибка: {OSError}");
             }
         }
 
@@ -689,7 +689,7 @@ public class Window : SceneObject<Window>{
         try{
             OnGlobalCreate?.Invoke(this);
         }catch(Exception e){
-            Logger.Error("Произошла ошибка в ивенте OnCreate при создании окна [" + this + "]!", e);
+            Logger.Error($"Произошла ошибка в ивенте OnCreate при создании окна [{this}]!", e);
         }
     }
     

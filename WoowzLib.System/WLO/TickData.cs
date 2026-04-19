@@ -50,5 +50,5 @@ public struct TickData{
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double FPSToDeltaTime(double FPS) => FPS > 0 ? 1 / FPS : 0;
 
-    public override string ToString() => "TickData(" + WL.String.LimitF(FPS, 1) + " (" + WL.String.LimitF(DeltaTime, 5) + "), " + WL.String.LimitF(Start, 2) + " - " + WL.String.LimitF(End, 2) + " = " + WL.String.LimitF(Delta, 2) + ", " + TickCount + " Tick)";
+    public override string ToString() => $"TickData({WL.String.LimitF(FPS, 1)} ({WL.String.LimitF(DeltaTime, 5)}), {WL.String.LimitF(Start, 2)} - {WL.String.LimitF(End, 2)} = {WL.String.LimitF(Delta, 2)}, {TickCount} Tick)";
 }

@@ -12,7 +12,7 @@ namespace WL{
         public static int LastOSError() => Marshal.GetLastWin32Error();
         
         /// <summary>
-        /// Дескриптор текущего исполняемого модуля
+        /// Дескриптор текущего исполняемого модуля (приложения)
         /// </summary>
         public static readonly IntPtr Instance;
     }

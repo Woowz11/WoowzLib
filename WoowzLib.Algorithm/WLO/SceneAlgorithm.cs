@@ -70,7 +70,7 @@ public class SceneAlgorithm<T> where T : SceneObject<T>{
     /// Есть объект на сцене? (CacheMode влияет)
     /// </summary>
     public bool ContainsDescendant(SceneNode<T> node){
-        if(!UseSceneCache){ Logger.Warn("Вызван \"ContainsDescendant\" у [" + this + "], лучше установить другой CacheMode, потому-что каждый раз при вызове происходит пересборка Childrens!"); }
+        if(!UseSceneCache){ Logger.Warn($"Вызван \"ContainsDescendant\" у [{this}], лучше установить другой CacheMode, потому-что каждый раз при вызове происходит пересборка Childrens!"); }
         return Childrens.Contains(node);
     }
 
@@ -103,7 +103,7 @@ public class SceneAlgorithm<T> where T : SceneObject<T>{
                     }
                 }
             }catch(Exception e){
-                Logger.Error("Произошла ошибка при вызове ивента OnBeforeAdd у SceneAlgorithm [" + this + "]!\nОбъект: " + Node, e);
+                Logger.Error($"Произошла ошибка при вызове ивента OnBeforeAdd у SceneAlgorithm [{this}]!\nОбъект: {Node}", e);
             }
 
             __Level0.Add(Node);
@@ -119,12 +119,12 @@ public class SceneAlgorithm<T> where T : SceneObject<T>{
                     }
                 }
             }catch(Exception e){
-                Logger.Error("Произошла ошибка при вызове ивента OnAfterAdd у SceneAlgorithm [" + this + "]!\nОбъект: " + Node, e);
+                Logger.Error($"Произошла ошибка при вызове ивента OnAfterAdd у SceneAlgorithm [{this}]!\nОбъект: {Node}", e);
             }
 
             return Node;
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при добавлении объекта сцене [" + this + "]!\nОбъект: " + Node, e);
+            throw new Exception($"Произошла ошибка при добавлении объекта сцене [{this}]!\nОбъект: {Node}", e);
         }
     }
 
@@ -140,7 +140,7 @@ public class SceneAlgorithm<T> where T : SceneObject<T>{
             try{
                 if(OnBeforeRemove != null && OnBeforeRemove.GetInvocationList().Cast<Func<SceneAlgorithm<T>, SceneNode<T>, bool>>().Any(Func => !Func(this, Node))){ return; }
             }catch(Exception e){
-                Logger.Error("Ошибка OnBeforeRemove у SceneAlgorithm [" + this + "]!\nОбъект: " + Node, e);
+                Logger.Error($"Ошибка OnBeforeRemove у SceneAlgorithm [{this}]!\nОбъект: {Node}", e);
             }
             
             __Level0.Remove(Node);
@@ -152,10 +152,10 @@ public class SceneAlgorithm<T> where T : SceneObject<T>{
             try{
                 OnAfterRemove?.GetInvocationList().Cast<Action<SceneAlgorithm<T>, SceneNode<T>>>().ToList().ForEach(A => A(this, Node));
             }catch(Exception e){
-                Logger.Error("Ошибка OnAfterRemove у SceneAlgorithm [" + this + "]!\nОбъект: " + Node, e);
+                Logger.Error($"Ошибка OnAfterRemove у SceneAlgorithm [{this}]!\nОбъект: {Node}", e);
             }
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при удалении объекта со сцены [" + this + "]!\nОбъект: " + Node, e);
+            throw new Exception($"Произошла ошибка при удалении объекта со сцены [{this}]!\nОбъект: {Node}", e);
         }
     }
 
@@ -278,7 +278,7 @@ public class SceneNode<T> where T : SceneObject<T>{
             try{
                 if(OnSceneChangeBefore != null && OnSceneChangeBefore.GetInvocationList().Cast<Func<SceneNode<T>, SceneAlgorithm<T>?, SceneAlgorithm<T>?, bool>>().Any(Func => !Func(this, __Scene, value))){ return; }
             }catch(Exception e){
-                Logger.Error("Произошла ошибка при вызове ивента OnSceneChangeBefore у Node [" + this + "]!\nНовая сцена: " + WL.__Base.Other.ToString(value), e);
+                Logger.Error($"Произошла ошибка при вызове ивента OnSceneChangeBefore у Node [{this}]!\nНовая сцена: {WL.__Base.Other.ToString(value)}", e);
             }
 
             SceneAlgorithm<T>? OldScene = __Scene;
@@ -304,7 +304,7 @@ public class SceneNode<T> where T : SceneObject<T>{
             try{
                 OnSceneChangeAfter?.GetInvocationList().Cast<Action<SceneNode<T>, SceneAlgorithm<T>?, SceneAlgorithm<T>?>>().ToList().ForEach(A => A(this, OldScene, value));
             }catch(Exception e){
-                Logger.Error("Произошла ошибка при вызове ивента OnSceneChangeAfter у Node [" + this + "]!\nНовая сцена: " + WL.__Base.Other.ToString(value), e);
+                Logger.Error($"Произошла ошибка при вызове ивента OnSceneChangeAfter у Node [{this}]!\nНовая сцена: {WL.__Base.Other.ToString(value)}", e);
             }
         }
     }
@@ -326,7 +326,7 @@ public class SceneNode<T> where T : SceneObject<T>{
             try{
                 if(OnParentChangeBefore != null && OnParentChangeBefore.GetInvocationList().Cast<Func<SceneNode<T>, SceneNode<T>?, SceneNode<T>?, bool>>().Any(Func => !Func(this, __Parent, value))){ return; }
             }catch(Exception e){
-                Logger.Error("Произошла ошибка при вызове ивента OnParentChangeBefore у Node [" + this + "]!\nНовый родитель: " + WL.__Base.Other.ToString(value), e);
+                Logger.Error($"Произошла ошибка при вызове ивента OnParentChangeBefore у Node [{this}]!\nНовый родитель: {WL.__Base.Other.ToString(value)}", e);
             }
 
             SceneNode<T>? OldParent = __Parent;
@@ -366,7 +366,7 @@ public class SceneNode<T> where T : SceneObject<T>{
             try{
                 OnParentChangeAfter?.GetInvocationList().Cast<Action<SceneNode<T>, SceneNode<T>?, SceneNode<T>?>>().ToList().ForEach(A => A(this, OldParent, value));
             }catch(Exception e){
-                Logger.Error("Произошла ошибка при вызове ивента OnParentChangeAfter у Node [" + this + "]!\nНовый родитель: " + WL.__Base.Other.ToString(value), e);
+                Logger.Error($"Произошла ошибка при вызове ивента OnParentChangeAfter у Node [{this}]!\nНовый родитель: {WL.__Base.Other.ToString(value)}", e);
             }
         }
     }
@@ -402,7 +402,7 @@ public class SceneNode<T> where T : SceneObject<T>{
     /// Есть объект на сцене? (CacheMode влияет)
     /// </summary>
     public bool ContainsDescendant(SceneNode<T> node){
-        if(!UseSceneCache){ Logger.Warn("Вызван \"ContainsDescendant\" у [" + this + "], лучше установить другой CacheMode, потому-что каждый раз при вызове происходит пересборка Childrens!"); }
+        if(!UseSceneCache){ Logger.Warn($"Вызван \"ContainsDescendant\" у [{this}], лучше установить другой CacheMode, потому-что каждый раз при вызове происходит пересборка Childrens!"); }
         return Childrens.Contains(node);
     }
     
@@ -422,7 +422,7 @@ public class SceneNode<T> where T : SceneObject<T>{
             Node.Parent = this;
             return Node;
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при добавлении объекта объекту [" + this + "]!\nОбъект: " + Node, e);
+            throw new Exception($"Произошла ошибка при добавлении объекта объекту [{this}]!\nОбъект: {Node}", e);
         }
     }
 
@@ -436,7 +436,7 @@ public class SceneNode<T> where T : SceneObject<T>{
             
             Node.Parent = null;
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при удалении объекта с объекта [" + this + "]!\nОбъект: " + Node, e);
+            throw new Exception($"Произошла ошибка при удалении объекта с объекта [{this}]!\nОбъект: {Node}", e);
         }
     }
 
@@ -448,7 +448,7 @@ public class SceneNode<T> where T : SceneObject<T>{
             if(IsReadOnly){ throw new Exception("Нельзя изменять!"); }
             foreach(SceneNode<T> Node in __Level0.ToList()){ Remove(Node); }
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при удалении всех объектов у объекта [" + this + "]!", e);
+            throw new Exception($"Произошла ошибка при удалении всех объектов у объекта [{this}]!", e);
         }
     }
     

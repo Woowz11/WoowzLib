@@ -135,7 +135,7 @@ namespace WLO{
         
         // ----------------------------------------------------------------------
         
-        public override string ToString() => "BrushContour(" + Color + ", " + Width + ", " + Type + ")";
+        public override string ToString() => $"BrushContour({Color}, {Width}px, {Type})";
 	
         public bool Equals(BrushContour Other) => __Color == Other.__Color && Width == Other.Width && Type == Other.Type;
         public override bool Equals(object? Object) => Object is BrushContour Other && Equals(Other);
@@ -165,7 +165,7 @@ namespace WLO{
         
         // ----------------------------------------------------------------------
         
-        public override string ToString() => "BrushFill(" + Color + ", " + Type + ")";
+        public override string ToString() => $"BrushFill({Color}, {Type})";
 	
         public bool Equals(BrushFill Other) => __Color == Other.__Color && Type == Other.Type;
         public override bool Equals(object? Object) => Object is BrushContour Other && Equals(Other);
@@ -198,9 +198,9 @@ namespace WL{
             /// <param name="HDC">Временный HDC</param>
             public static void DestroyHDC(IntPtr HDC){
                 try{
-                    if(!WL.Native.Raw.Windows.DeleteDC(HDC)){ throw new Exception("Произошла ошибка в DeleteObject!\nОшибка: " + WL.System.LastOSError()); }
+                    if(!WL.Native.Raw.Windows.DeleteDC(HDC)){ throw new Exception($"Произошла ошибка в DeleteObject!\nОшибка: {WL.System.LastOSError()}"); }
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при уничтожении Draw HDC [" + HDC + "]!", e);
+                    throw new Exception($"Произошла ошибка при уничтожении Draw HDC [{HDC}]!", e);
                 }
             }
             
@@ -223,10 +223,10 @@ namespace WL{
             public static void CopyHDC(IntPtr To, IntPtr From, Vector2UI Size, Vector2I ToPosition = default, Vector2I FromPosition = default, CopyType Type = CopyType.FullCopy){
                 try{
                     if(!WL.Native.Raw.Windows.BitBlt(To, ToPosition.X, ToPosition.Y, (int)Size.W, (int)Size.H, From, FromPosition.X, FromPosition.Y, (uint)Type)){
-                        throw new Exception("Произошла ошибка в BitBlt!\nОшибка: " + WL.System.LastOSError());
+                        throw new Exception($"Произошла ошибка в BitBlt!\nОшибка: {WL.System.LastOSError()}");
                     }
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при копировании пикселей из одного HDC в другой HDC!\nВ: " + To + "\nИз: " + From + "\nРазмер: " + Size + "\n\"В\" позиция: " + ToPosition + "\n\"Из\" позиция: " + FromPosition + "\nТип копирования: " + Type, e);
+                    throw new Exception($"Произошла ошибка при копировании пикселей из одного HDC в другой HDC!\nВ: {To}\nИз: {From}\nРазмер: {Size}\n\"В\" позиция: {ToPosition}\n\"Из\" позиция: {FromPosition}\nТип копирования: {Type}", e);
                 }
             }
             
@@ -254,9 +254,9 @@ namespace WL{
             /// <param name="Bitmap">Изображение</param>
             public static void DestroyBitmap(IntPtr Bitmap){
                 try{
-                    if(!WL.Native.Raw.Windows.DeleteObject(Bitmap)){ throw new Exception("Произошла ошибка в DeleteObject!"); }
+                    if(!WL.Native.Raw.Windows.DeleteObject(Bitmap)){ throw new Exception($"Произошла ошибка в DeleteObject!\nОшибка: {WL.System.LastOSError()}"); }
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при уничтожении Draw изображения [" + Bitmap + "]!", e);
+                    throw new Exception($"Произошла ошибка при уничтожении Draw изображения [{Bitmap}]!", e);
                 }
             }
 
@@ -284,7 +284,7 @@ namespace WL{
 
                     return __CurrentBrushContour.Value.Brush;
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при создании контурной кисти в Draw!\nИнформация: " + Info + "\nHDC: " + WL.String.ToString(HDC), e);
+                    throw new Exception($"Произошла ошибка при создании контурной кисти в Draw!\nИнформация: {Info}\nHDC: {WL.String.ToString(HDC)}", e);
                 }
             }
             private static (BrushContour Info, IntPtr Brush)?  __CurrentBrushContour;
@@ -312,7 +312,7 @@ namespace WL{
 
                     return __CurrentBrushFill.Value.Brush;
                 }catch(Exception e){
-                    throw new Exception("Произошла ошибка при создании заполняющей кисти в Draw!\nИнформация: " + Info + "\nHDC: " + WL.String.ToString(HDC), e);
+                    throw new Exception($"Произошла ошибка при создании заполняющей кисти в Draw!\nИнформация: {Info}\nHDC: {WL.String.ToString(HDC)}", e);
                 }
             }
             private static (BrushFill Info, IntPtr Brush)? __CurrentBrushFill;
@@ -374,7 +374,10 @@ namespace WL{
             /// </summary>
             /// <param name="HDC">Куда рисовать?</param>
             /// <param name="Position">Позиция</param>
-            public static void Pixel(IntPtr HDC, Vector2I Position, IBrush Brush) => WL.Native.Raw.Windows.SetPixel(HDC, Position.X, Position.Y, Brush.__Color);
+            public static void Pixel(IntPtr HDC, Vector2I Position, IBrush Brush){
+                int Result = WL.Native.Raw.Windows.SetPixel(HDC, Position.X, Position.Y, Brush.__Color);
+                if(Result != 0){ throw new Exception($"Произошла ошибка в SetPixel!\nHDC: {HDC}\nПозиция: {Position}\nКисть: {Brush}\nОшибка: ${Result}"); }
+            }
 
             /// <summary>
             /// Рисует полигон

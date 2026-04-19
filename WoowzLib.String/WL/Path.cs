@@ -3,7 +3,7 @@
 public static partial class String{
     public static class Path{
         static Path(){
-            InvalidPathChars = System.IO.Path.GetInvalidPathChars();
+            InvalidPathChars = System.IO.Path.GetInvalidPathChars    ();
             InvalidNameChars = System.IO.Path.GetInvalidFileNameChars();
         }
 

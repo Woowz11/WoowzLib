@@ -25,7 +25,7 @@ public class WLWindow{
         try{
             Config ??= new Constructor();
             
-            WindowClass Class = new WindowClass("WLWindow_Class_" + __TotalClasses, __Events); __TotalClasses++;
+            WindowClass Class = new WindowClass($"WLWindow_Class_{__TotalClasses}", __Events); __TotalClasses++;
 
             __Title = Config.Title;
             
@@ -38,12 +38,12 @@ public class WLWindow{
             try{
                 OnGlobalCreate?.Invoke(this);
             }catch(Exception e){
-                Logger.Error("Произошла ошибка в ивенте OnGlobalCreate в WL окне [" + this + "]!", e);
+                Logger.Error($"Произошла ошибка в ивенте OnGlobalCreate в WL окне [{this}]!", e);
             }
 
             Scene = new SceneAlgorithm<WLElement.WLElement>(this, SceneCacheMode.SceneOnly);
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при создании WL окна [" + this + "]!", e);
+            throw new Exception($"Произошла ошибка при создании WL окна [{this}]!", e);
         }
     }
     
@@ -324,13 +324,14 @@ public class WLWindow{
             
             Original.Destroy();   
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при попытке уничтожить WL окно [" + this + "]!", e);
+            throw new Exception($"Произошла ошибка при попытке уничтожить WL окно [{this}]!", e);
         }
     }
 
     /// <summary>
     /// Рендерит окно
     /// </summary>
+    [WoowzLibHint(Information.WorkInProgress)]
     public void Render(){
         IntPtr? HDC__ = null;
 
@@ -410,13 +411,13 @@ public class WLWindow{
             try{
                 OnDestroy?.Invoke(this);   
             }catch(Exception e){
-                Logger.Error("Произошла ошибка в ивенте OnDestroy в WL окне [" + this + "]!", e);
+                Logger.Error($"Произошла ошибка в ивенте OnDestroy в WL окне [{this}]!", e);
             }
             
             try{
                 OnGlobalDestroy?.Invoke(this);
             }catch(Exception e){
-                Logger.Error("Произошла ошибка в ивенте OnGlobalDestroy в WL окне [" + this + "]!", e);
+                Logger.Error($"Произошла ошибка в ивенте OnGlobalDestroy в WL окне [{this}]!", e);
             }
             
             __DestroyDoubleBuffer();
@@ -425,7 +426,7 @@ public class WLWindow{
             
             __Windows.Remove(this);
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при уничтожении WL окна [" + this + "]!", e);
+            throw new Exception($"Произошла ошибка при уничтожении WL окна [{this}]!", e);
         }
     }
     
@@ -446,7 +447,7 @@ public class WLWindow{
                     try{
                         Destroy = OnClose?.Invoke(this) ?? true;
                     }catch(Exception e){
-                        Logger.Error("Произошла ошибка в ивенте OnClose в WL окне [" + this + "]!", e);
+                        Logger.Error($"Произошла ошибка в ивенте OnClose в WL окне [{this}]!", e);
                         Destroy = false;
                     }
                     
@@ -510,7 +511,7 @@ public class WLWindow{
                             }
                         }
                     }catch(Exception e){
-                        Logger.Error("Произошла ошибка при вызове ивента OnPosition у WL окна [" + this + "] внутри WINDOWPOSCHANGED!", e);
+                        Logger.Error($"Произошла ошибка при вызове ивента OnPosition у WL окна [{this}] внутри WINDOWPOSCHANGED!", e);
                     }
                     
                     if(Changed){ WL.System.Memory.SetStruct(LP, WindowPos); return IntPtr.Zero; } break;
@@ -518,7 +519,7 @@ public class WLWindow{
             }
             
         }catch(Exception e){
-            Logger.Error("Произошла ошибка при обновлении WL окна [" + this + "]!", e);
+            Logger.Error($"Произошла ошибка при обновлении WL окна [{this}]!", e);
         }
         return null;
     }
@@ -537,7 +538,7 @@ public class WLWindow{
 
             WL.System.Draw.SelectBitmap(__DoubleBufferHDC, __DoubleBufferBitmap);
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при обновлении двойного буфера у WL окна [" + this + "]!", e);
+            throw new Exception($"Произошла ошибка при обновлении двойного буфера у WL окна [{this}]!", e);
         }
     }
 
@@ -549,7 +550,7 @@ public class WLWindow{
             if(__DoubleBufferBitmap != IntPtr.Zero){ WL.System.Draw.DestroyBitmap(__DoubleBufferBitmap); __DoubleBufferBitmap = IntPtr.Zero; }
             if(__DoubleBufferHDC    != IntPtr.Zero){ WL.System.Draw.DestroyHDC   (__DoubleBufferHDC   ); __DoubleBufferHDC    = IntPtr.Zero; }
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при уничтожении двойного буфера у WL окна [" + this + "]!", e);
+            throw new Exception($"Произошла ошибка при уничтожении двойного буфера у WL окна [{this}]!", e);
         }
     }
     
@@ -570,7 +571,7 @@ public class WLWindow{
                 __Render(Element);
             }
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при рендере элементов WL окна [" + this + "]!", e);
+            throw new Exception($"Произошла ошибка при рендере элементов WL окна [{this}]!", e);
         }
     }
     
