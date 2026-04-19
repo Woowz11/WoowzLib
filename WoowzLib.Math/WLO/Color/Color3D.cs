@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.306, внутри класса "Color.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.341, внутри класса "Color.cs" */
 using WLO.Attribute;
 using System.Runtime.CompilerServices;
 namespace WLO.Color;
@@ -17,7 +17,7 @@ public struct Color3D : IEquatable<Color3D>{
 		get => __R;
 		set{
 			if(value is < 0 or > 1){
-				throw new Exception("Цвет R выходит за пределы [0, 1] у Color3D!");
+				throw new Exception($"Цвет R выходит за пределы [0, 1] у [{this}]!\nЗначение: {value}");
 			}
 			__R = value;
 		}
@@ -27,7 +27,7 @@ public struct Color3D : IEquatable<Color3D>{
 		get => __G;
 		set{
 			if(value is < 0 or > 1){
-				throw new Exception("Цвет G выходит за пределы [0, 1] у Color3D!");
+				throw new Exception($"Цвет G выходит за пределы [0, 1] у [{this}]!\nЗначение: {value}");
 			}
 			__G = value;
 		}
@@ -37,7 +37,7 @@ public struct Color3D : IEquatable<Color3D>{
 		get => __B;
 		set{
 			if(value is < 0 or > 1){
-				throw new Exception("Цвет B выходит за пределы [0, 1] у Color3D!");
+				throw new Exception($"Цвет B выходит за пределы [0, 1] у [{this}]!\nЗначение: {value}");
 			}
 			__B = value;
 		}
@@ -72,8 +72,11 @@ public struct Color3D : IEquatable<Color3D>{
 	
 	// ----------------------------------------------------------------------
 	
-	public override string ToString() => "Color3D(" + ToShortString() + ")";
-	public string ToShortString() => R + ", " + G + ", " + B;
+	
+	// ----------------------------------------------------------------------
+	
+	public override string ToString() => $"Color3D({ToShortString()})";
+	public string ToShortString() => $"{R}, {G}, {B}";
 	
 	public bool Equals(Color3D Other) => R == Other.R && G == Other.G && B == Other.B;
 	public override bool Equals(object? Object) => Object is Color3D Other && Equals(Other);

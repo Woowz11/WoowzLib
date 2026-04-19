@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.306, внутри класса "Color.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.341, внутри класса "Color.cs" */
 using WLO.Attribute;
 using System.Runtime.CompilerServices;
 namespace WLO.Color;
@@ -79,8 +79,11 @@ public struct Color4B : IEquatable<Color4B>{
 	
 	// ----------------------------------------------------------------------
 	
-	public override string ToString() => "Color4B(" + ToShortString() + ")";
-	public string ToShortString() => R + ", " + G + ", " + B + ", " + A;
+	
+	// ----------------------------------------------------------------------
+	
+	public override string ToString() => $"Color4B({ToShortString()})";
+	public string ToShortString() => $"{R}, {G}, {B}, {A}";
 	
 	public bool Equals(Color4B Other) => R == Other.R && G == Other.G && B == Other.B && A == Other.A;
 	public override bool Equals(object? Object) => Object is Color4B Other && Equals(Other);

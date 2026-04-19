@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.336, внутри класса "Color.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.341, внутри класса "Color.cs" */
 using WLO.Attribute;
 using System.Runtime.CompilerServices;
 namespace WLO.Color;
@@ -18,7 +18,7 @@ public struct Color4F : IEquatable<Color4F>{
 		get => __R;
 		set{
 			if(value is < 0 or > 1){
-				throw new Exception("Цвет R выходит за пределы [0, 1] у Color4F!");
+				throw new Exception($"Цвет R выходит за пределы [0, 1] у [{this}]!\nЗначение: {value}");
 			}
 			__R = value;
 		}
@@ -28,7 +28,7 @@ public struct Color4F : IEquatable<Color4F>{
 		get => __G;
 		set{
 			if(value is < 0 or > 1){
-				throw new Exception("Цвет G выходит за пределы [0, 1] у Color4F!");
+				throw new Exception($"Цвет G выходит за пределы [0, 1] у [{this}]!\nЗначение: {value}");
 			}
 			__G = value;
 		}
@@ -38,7 +38,7 @@ public struct Color4F : IEquatable<Color4F>{
 		get => __B;
 		set{
 			if(value is < 0 or > 1){
-				throw new Exception("Цвет B выходит за пределы [0, 1] у Color4F!");
+				throw new Exception($"Цвет B выходит за пределы [0, 1] у [{this}]!\nЗначение: {value}");
 			}
 			__B = value;
 		}
@@ -48,7 +48,7 @@ public struct Color4F : IEquatable<Color4F>{
 		get => __A;
 		set{
 			if(value is < 0 or > 1){
-				throw new Exception("Цвет A выходит за пределы [0, 1] у Color4F!");
+				throw new Exception($"Цвет A выходит за пределы [0, 1] у [{this}]!\nЗначение: {value}");
 			}
 			__A = value;
 		}
@@ -87,8 +87,8 @@ public struct Color4F : IEquatable<Color4F>{
 	
 	// ----------------------------------------------------------------------
 	
-	public override string ToString() => "Color4F(" + ToShortString() + ")";
-	public string ToShortString() => R + ", " + G + ", " + B + ", " + A;
+	public override string ToString() => $"Color4F({ToShortString()})";
+	public string ToShortString() => $"{R}, {G}, {B}, {A}";
 	
 	public bool Equals(Color4F Other) => R == Other.R && G == Other.G && B == Other.B && A == Other.A;
 	public override bool Equals(object? Object) => Object is Color4F Other && Equals(Other);

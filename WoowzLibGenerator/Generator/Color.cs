@@ -199,7 +199,7 @@ public static class Color{
         Result += Other.Generate_Line();
 
         void Generate_Values(){
-            Result += RFEA(I.SupportFraction ? "private " + I.Primitive + " __@; public " + I.Primitive + " @{ get => __@; set{ if(value is < 0 or > 1){ throw new Exception(\"Цвет @ выходит за пределы [0, 1] у " + I.Name + "!\"); } __@ = value; } }" : "public " + I.Primitive + " @;");
+            Result += RFEA(I.SupportFraction ? "private " + I.Primitive + " __@; public " + I.Primitive + " @{ get => __@; set{ if(value is < 0 or > 1){ throw new Exception($\"Цвет @ выходит за пределы [0, 1] у [{this}]!\\nЗначение: {value}\"); } __@ = value; } }" : "public " + I.Primitive + " @;");
 
             if(I.Type == Info.ValueType.Byte){
                 Result += Other.Generate_NextLine();
@@ -266,8 +266,8 @@ public static class Color{
         Result += Other.Generate_Line();
         
         void Generate_Other(){
-            Result += "public override string ToString() => \"" + I.Name + "(\" + ToShortString() + \")" + "\";";
-            Result += "public string ToShortString() => " + RFEA("@", " + \", \" + ") + ";";
+            Result += "public override string ToString() => $\"" + I.Name + "({ToShortString()})" + "\";";
+            Result += "public string ToShortString() => $\"{" + RFEA("@", "}, {") + "}\";";
 
             Result += Other.Generate_NextLine();
             

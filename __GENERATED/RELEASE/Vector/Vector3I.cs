@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.336, внутри класса "Vector.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.341, внутри класса "Vector.cs" */
 using System.Runtime.CompilerServices;
 /* ReSharper disable NonReadonlyMemberInGetHashCode */
 namespace WLO.Vector;
@@ -97,10 +97,10 @@ public struct Vector3I : IEquatable<Vector3I>{
 	
 	// ----------------------------------------------------------------------
 	
-	public override string ToString() => "Vector3I(" + ToShortString() + ")";
-	public string ToShortString() => X + ", " + Y + ", " + Z;
-	public string ToPositionString() => X + ":" + Y + ":" + Z;
-	public string ToSizeString() => W + "x" + H + "x" + D;
+	public override string ToString() => $"Vector3I({ToShortString()})";
+	public string ToShortString() => $"{X}, {Y}, {Z}";
+	public string ToPositionString() => $"{X}:{Y}:{Z}";
+	public string ToSizeString() => $"{W}x{H}x{D}";
 	
 	public bool Equals(Vector3I Other) => X == Other.X && Y == Other.Y && Z == Other.Z;
 	public override bool Equals(object? Object) => Object is Vector3I Other && Equals(Other);

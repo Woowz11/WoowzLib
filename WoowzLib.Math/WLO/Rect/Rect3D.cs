@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.264, внутри класса "Rect.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.341, внутри класса "Rect.cs" */
 using WLO.Vector;
 using System.Runtime.CompilerServices;
 namespace WLO.Rect;
@@ -30,7 +30,7 @@ public struct Rect3D : IEquatable<Rect3D>{
 		get => __W;
 		set{
 			if(value < 0){
-				throw new Exception("Значение W не может быть < 0 в " + this + "!");
+				throw new Exception($"Значение W не может быть < 0 у [{this}]!\nЗначение: {value}");
 			}
 			__W = value;
 		}
@@ -40,7 +40,7 @@ public struct Rect3D : IEquatable<Rect3D>{
 		get => __H;
 		set{
 			if(value < 0){
-				throw new Exception("Значение H не может быть < 0 в " + this + "!");
+				throw new Exception($"Значение H не может быть < 0 у [{this}]!\nЗначение: {value}");
 			}
 			__H = value;
 		}
@@ -50,7 +50,7 @@ public struct Rect3D : IEquatable<Rect3D>{
 		get => __D;
 		set{
 			if(value < 0){
-				throw new Exception("Значение D не может быть < 0 в " + this + "!");
+				throw new Exception($"Значение D не может быть < 0 у [{this}]!\nЗначение: {value}");
 			}
 			__D = value;
 		}
@@ -118,8 +118,8 @@ public struct Rect3D : IEquatable<Rect3D>{
 	
 	// ----------------------------------------------------------------------
 	
-	public override string ToString() => "Rect3D(" + ToShortString() + ")";
-	public string ToShortString() => Position.ToPositionString() + ", " + Size.ToSizeString();
+	public override string ToString() => $"Rect3D({ToShortString()})";
+	public string ToShortString() => $"{Position.ToPositionString()}, {Size.ToSizeString()}";
 	
 	public bool Equals(Rect3D Other) => X == Other.X && Y == Other.Y && Z == Other.Z && W == Other.W && H == Other.H && D == Other.D;
 	public override bool Equals(object? Object) => Object is Rect3D Other && Equals(Other);

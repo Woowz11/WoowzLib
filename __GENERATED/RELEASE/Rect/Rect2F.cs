@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.336, внутри класса "Rect.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.341, внутри класса "Rect.cs" */
 using WLO.Vector;
 using System.Runtime.CompilerServices;
 namespace WLO.Rect;
@@ -27,7 +27,7 @@ public struct Rect2F : IEquatable<Rect2F>{
 		get => __W;
 		set{
 			if(value < 0){
-				throw new Exception("Значение W не может быть < 0 в " + this + "!");
+				throw new Exception($"Значение W не может быть < 0 у [{this}]!\nЗначение: {value}");
 			}
 			__W = value;
 		}
@@ -37,7 +37,7 @@ public struct Rect2F : IEquatable<Rect2F>{
 		get => __H;
 		set{
 			if(value < 0){
-				throw new Exception("Значение H не может быть < 0 в " + this + "!");
+				throw new Exception($"Значение H не может быть < 0 у [{this}]!\nЗначение: {value}");
 			}
 			__H = value;
 		}
@@ -89,8 +89,8 @@ public struct Rect2F : IEquatable<Rect2F>{
 	
 	// ----------------------------------------------------------------------
 	
-	public override string ToString() => "Rect2F(" + ToShortString() + ")";
-	public string ToShortString() => Position.ToPositionString() + ", " + Size.ToSizeString();
+	public override string ToString() => $"Rect2F({ToShortString()})";
+	public string ToShortString() => $"{Position.ToPositionString()}, {Size.ToSizeString()}";
 	
 	public bool Equals(Rect2F Other) => X == Other.X && Y == Other.Y && W == Other.W && H == Other.H;
 	public override bool Equals(object? Object) => Object is Rect2F Other && Equals(Other);

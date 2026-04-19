@@ -146,7 +146,7 @@ public static class Rect{
         
         void Generate_Values(){
             Result += RFEA(true , "public # @;");
-            Result += RFEA(false, I.SupportFraction ? "private # __@; public # @{ get => __@; set{ if(value < 0){ throw new Exception(\"Значение @ не может быть < 0 в \" + this + \"!\"); } __@ = value; } }" : "public # @;");
+            Result += RFEA(false, I.SupportFraction ? "private # __@; public # @{ get => __@; set{ if(value < 0){ throw new Exception($\"Значение @ не может быть < 0 у [{this}]!\\nЗначение: {value}\"); } __@ = value; } }" : "public # @;");
 
             Result += Other.Generate_NextLine();
 
@@ -178,8 +178,8 @@ public static class Rect{
         Result += Other.Generate_Line();
 
         void Generate_Other(){
-            Result += "public override string ToString() => \"" + I.Name + "(\" + ToShortString() + \")" + "\";";
-            Result += "public string ToShortString() => Position.ToPositionString() + \", \" + Size.ToSizeString();";
+            Result += "public override string ToString() => $\"" + I.Name + "({ToShortString()})" + "\";";
+            Result += "public string ToShortString() => $\"{Position.ToPositionString()}, {Size.ToSizeString()}\";";
             
             Result += Other.Generate_NextLine();
             

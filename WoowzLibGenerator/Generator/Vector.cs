@@ -318,12 +318,12 @@ public static class Vector{
         Result += Other.Generate_Line();
 
         void Generate_Other(){
-            Result += "public override string ToString() => \"" + I.Name + "(\" + ToShortString() + \")" + "\";";
-            Result += "public string ToShortString() => " + RFEA("@", " + \", \" + ") + ";";
+            Result += "public override string ToString() => $\"" + I.Name + "({ToShortString()})" + "\";";
+            Result += "public string ToShortString() => $\"{" + RFEA("@", "}, {") + "}\";";
             
             if(I.SupportSizes){
-                Result += "public string ToPositionString() => " + RFEA("@", " + \":\" + ") + ";";
-                Result += "public string ToSizeString() => " + RFEA("@", " + \"x\" + ", I.Sizes) + ";";
+                Result += "public string ToPositionString() => $\"{" + RFEA("@", "}:{") + "}\";";
+                Result += "public string ToSizeString() => $\"{" + RFEA("@", "}x{", I.Sizes) + "}\";";
             }
 
             Result += Other.Generate_NextLine();

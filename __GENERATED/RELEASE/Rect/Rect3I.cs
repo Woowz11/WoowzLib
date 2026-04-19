@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.336, внутри класса "Rect.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.341, внутри класса "Rect.cs" */
 using WLO.Vector;
 using System.Runtime.CompilerServices;
 namespace WLO.Rect;
@@ -91,8 +91,8 @@ public struct Rect3I : IEquatable<Rect3I>{
 	
 	// ----------------------------------------------------------------------
 	
-	public override string ToString() => "Rect3I(" + ToShortString() + ")";
-	public string ToShortString() => Position.ToPositionString() + ", " + Size.ToSizeString();
+	public override string ToString() => $"Rect3I({ToShortString()})";
+	public string ToShortString() => $"{Position.ToPositionString()}, {Size.ToSizeString()}";
 	
 	public bool Equals(Rect3I Other) => X == Other.X && Y == Other.Y && Z == Other.Z && W == Other.W && H == Other.H && D == Other.D;
 	public override bool Equals(object? Object) => Object is Rect3I Other && Equals(Other);
