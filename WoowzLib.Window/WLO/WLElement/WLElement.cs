@@ -57,6 +57,6 @@ public abstract class WLElement : SceneObject<WLElement>/*, ITransform*/{
 }
 
 [WoowzLibHint(Information.WorkInProgress)]
-public class WLElementTransform : WorldTransformAlgorithm<WLElement> {
+public class WLElementTransform /*: WorldTransformAlgorithm<WLElement> */{
    
 }

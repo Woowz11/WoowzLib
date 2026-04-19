@@ -7,7 +7,7 @@
         <Configurations>Release</Configurations>
         <Platforms>AnyCPU</Platforms>
         
-        <Version>0.0.0.467</Version>
+        <Version>0.0.0.471</Version>
     </PropertyGroup>
 
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

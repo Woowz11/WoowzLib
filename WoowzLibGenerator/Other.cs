@@ -94,6 +94,8 @@ public static class Other{
             char CP = Get(i - 1);
             char CN = Get(i + 1);
 
+            if(C == '·'){ C = ' '; }
+            
             if(!InString && !InComment){
                 string __Substring = Code.Substring(i);
 

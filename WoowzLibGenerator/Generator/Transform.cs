@@ -4,7 +4,7 @@ namespace WoowzLibGenerator.Generator;
 
 public static class Transform{
     
-    public static readonly Info.ValueType[] Info_Transform_Types   = [Info.ValueType.Int , Info.ValueType.Float, Info.ValueType.Double];
+    public static readonly Info.ValueType[] Info_Transform_Types = [Info.ValueType.Int , Info.ValueType.Float, Info.ValueType.Double];
     
     public struct Info_Transform{
         public Info.ValueType Type;
@@ -13,6 +13,7 @@ public static class Transform{
         public string         Primitive;
         public bool           SupportFraction;
         public string         TypeSymbol;
+        public string         Vector;
     }
     
     // ----------------------------------------------------------------------
@@ -36,7 +37,7 @@ public static class Transform{
 
                 string TypeSymbol = Info.ValueType_Name(VT);
                 
-                for(int i = 2; i <= 4; i++){
+                for(int i = 2; i <= 3; i++){ // не хочу пока-что 4D, мб в будущем добавлю
                     string Name = "Transform" + i + TypeSymbol;
                     
                     CreateTransform(new Info_Transform{
@@ -46,6 +47,7 @@ public static class Transform{
                         Primitive = Primitive,
                         SupportFraction = SupportFraction,
                         TypeSymbol = TypeSymbol,
+                        Vector = "Vector" + i + TypeSymbol
                     });
                 } 
             }
@@ -72,6 +74,8 @@ public static class Transform{
             
             Result += "}";
             
+            Result = Other.Generate_Using("WLO.Vector") + Result;
+            
             Result = Other.Generate_GeneratorComment("Transform") + Result;
             
             File FileR = WL.Explorer.File.GetOrCreate(WL.String.Path.Add(OutFolder     , I.Name + ".cs"));
@@ -86,6 +90,30 @@ public static class Transform{
     }
 
     public static void TransformContent(Info_Transform I){
-      
+        void Generate_Constructors(){
+            
+        }
+        Generate_Constructors();
+        
+        Result += Other.Generate_Line();
+
+        void Generate_Values(){
+            Result += $"public readonly ReactiveProperty<{I.Vector}> Position = new ReactiveProperty<{I.Vector}>();";
+            Result += $"public readonly ReactiveProperty<{I.Vector}> Size = new ReactiveProperty<{I.Vector}>();";
+        }
+        Generate_Values();
+
+        Result += Other.Generate_Line();
+
+        void Generate_Settings(){
+            Result += "public TransformType Type = TransformType.All;";
+
+            Result += Other.Generate_NextLine();
+
+            Result += "public bool SupportPosition => (Type & TransformType.Position) != 0;";
+            Result += "public bool SupportSize···· => (Type & TransformType.Size····) != 0;";
+            Result += "public bool SupportRotation => (Type & TransformType.Rotation) != 0;";
+        }
+        Generate_Settings();
     }
 }
