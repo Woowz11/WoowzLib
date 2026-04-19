@@ -39,6 +39,8 @@ public class Run{
         
         Tests.Generate(WL.String.Path.Add(ForResult, "Tests"), WL.String.Path.Add(ForDebug, "Tests"));
         
+        Transform.Generate(WL.String.Path.Add(ForResult, "Transform"), WL.String.Path.Add(ForDebug, "Transform"));
+        
         Logger.Info("Конец генерации!");
     }
 }
