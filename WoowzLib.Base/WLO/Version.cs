@@ -55,7 +55,7 @@ public readonly struct Version{
     /// <summary>
     /// Загрузка версии по строке
     /// </summary>
-    /// <param name="Version">Строка формата "0.0.0.0", или "612.27.3", и т.д</param>
+    /// <param name="Version">Строка формата "0.0.0.0", или "612.27.3", и т.д (удаляет всё после символа '+')</param>
     public static (int Major, int Minor, int Patch, int Build) Parse(string Version){
         try{
             // Убирает всё после '+'
@@ -72,7 +72,7 @@ public readonly struct Version{
 
             return (Major, Minor, Patch, Build);
         }catch(Exception e){
-            throw new Exception("Не получилось получить версию из строки [\"" + Version + "\"]!", e);
+            throw new Exception($"Не получилось получить версию из строки [\"{Version}\"]!", e);
         }
     }
     
@@ -87,13 +87,11 @@ public readonly struct Version{
 
             return Attribute?.InformationalVersion ?? "0.0.0.0";
         }catch(Exception e){
-            throw new Exception("Не получилось получить версию из Assembly [" + WL.__Base.Other.ToString(Assembly) + "]!", e);
+            throw new Exception($"Не получилось получить версию из Assembly [{WL.__Base.Other.ToString(Assembly)}]!", e);
         }
     }
     
     // ----------------------------------------------------------------------
 
-    public override string ToString(){
-        return $"{Major}.{Minor}.{Patch}.{Build}";
-    }
+    public override string ToString() => $"{Major}.{Minor}.{Patch}.{Build}";
 }

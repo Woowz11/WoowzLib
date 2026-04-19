@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace WLO;
+﻿namespace WLO;
 
 public readonly struct ProjectMetadata{
     /// <summary>
@@ -11,9 +9,9 @@ public readonly struct ProjectMetadata{
     /// <param name="Author">Автор</param>
     /// <param name="License">Лицензия</param>
     public ProjectMetadata(string? Name = null, Version? Version = null, string? Author = null, string? License = null){
-        this.Name = Name ?? "Unknown Project";
+        this.Name    = Name    ?? "Unknown Project";
         this.Version = Version ?? new Version();
-        this.Author = Author ?? "Anonymous";
+        this.Author  = Author  ?? "Anonymous";
         this.License = License ?? "MIT";
     }
     
@@ -39,7 +37,5 @@ public readonly struct ProjectMetadata{
     
     // ----------------------------------------------------------------------
 
-    public override string ToString(){
-        return "ProjectInfo[Name: \"" + Name + "\", Version: " + Version + ", Author: \"" + Author + "\", License: \"" + License + "\"]";
-    }
+    public override string ToString() => $"ProjectInfo(Name: \"{Name}\", Version: {Version}, Author: \"{Author}\", License: \"{License}\")";
 }

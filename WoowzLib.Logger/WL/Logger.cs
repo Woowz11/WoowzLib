@@ -56,7 +56,7 @@ public static class Logger{
                 return SB.ToString();
             };
         }catch(Exception e){
-            throw new Exception("Произошла ошибка при установке нового Logger!\nНастройки: " + WL.__Base.Other.ToString(Settings), e);
+            throw new Exception($"Произошла ошибка при установке нового Logger!\nНастройки: {WL.__Base.Other.ToString(Settings)}", e);
         }
     }
 

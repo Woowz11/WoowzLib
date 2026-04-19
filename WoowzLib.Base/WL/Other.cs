@@ -40,5 +40,10 @@ public static partial class __Base{
 
             return SB.ToString();
         }
+
+        /// <summary>
+        /// Очень чётко сравнивает объекты
+        /// </summary>
+        public static bool EqualsNice<T>(T A, T B) => EqualityComparer<T>.Default.Equals(A, B);
     }
 }

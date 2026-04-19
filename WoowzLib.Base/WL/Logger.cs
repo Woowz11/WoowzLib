@@ -75,7 +75,7 @@ namespace WL{
                     
                     Initialized = false;
                 }catch(Exception e){
-                    global::Logger.Error("Произошла ошибка при остановке Logger!", e);
+                    global::Logger.Error($"Произошла ошибка при остановке Logger!\nПричина закрытия: {CloseReason}", e);
                 }
             }
             
@@ -103,7 +103,7 @@ namespace WL{
                     if(Result != null){ OriginalPrint(Result); }
                 }
                 catch(Exception e){
-                    throw new Exception("Произошла ошибка при отправке сообщения!\nСтатус: " + Status + "\nСообщение:\n" + Message, e);
+                    throw new Exception($"Произошла ошибка при отправке сообщения!\nСтатус: {Status}\nСообщение:\n{Message}", e);
                 }
             }
 
@@ -179,7 +179,7 @@ namespace WL{
                             WL.__Base.Logger.Print((byte)MessageStatus.External, null, Line);
                         }
                     }catch(Exception e){
-                        throw new Exception("Произошла ошибка при обработке сообщения в консоли!\nСообщение:\n" + Message, e);
+                        throw new Exception($"Произошла ошибка при обработке сообщения в консоли!\nСообщение:\n{Message}", e);
                     }
                 }
             }

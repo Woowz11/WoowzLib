@@ -29,7 +29,7 @@ public static class Core{
                 WL.__Base.Terminated      = false;
                 WL.__Base.ProjectMetadata = Project;
             }catch(Exception e){
-                throw new Exception("Произошла ошибка при установке информации!\nПроект: " + WL.__Base.Other.ToString(value.Project) + "\nЯдро: " + WL.__Base.Other.ToString(value.Engine), e);
+                throw new Exception($"Произошла ошибка при установке информации!\nПроект: {WL.__Base.Other.ToString(value.Project)}\nЯдро: {WL.__Base.Other.ToString(value.Engine)}", e);
             }
         }
     }

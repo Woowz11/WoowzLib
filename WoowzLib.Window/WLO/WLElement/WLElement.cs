@@ -6,8 +6,8 @@ using WLO.Vector;
 
 namespace WLO.WLElement;
 
-public abstract class WLElement : SceneObject<WLElement>, ITransform{
-    protected WLElement(){ Name = DefaultName(); Transform = new WLElementTransform(this); }
+public abstract class WLElement : SceneObject<WLElement>/*, ITransform*/{
+    protected WLElement(){ Name = DefaultName(); Transform = new WLElementTransform(/*this*/); }
 
     /// <summary>
     /// Название элемента
@@ -40,7 +40,7 @@ public abstract class WLElement : SceneObject<WLElement>, ITransform{
             Render(Window, HDC);   
         }catch(Exception e){
             Logger.Error("Произошла ошибка при рендере элемента [" + this + "] у WL окна [" + Window + "]!\nHDC: " + HDC, e);
-            WL.System.Draw.Fill(HDC, Transform.World.Rect, new BrushFill(Color4B.Magenta));
+            //WL.System.Draw.Fill(HDC, Transform.World.Rect, new BrushFill(Color4B.Magenta));
         }
     }
 
@@ -57,56 +57,6 @@ public abstract class WLElement : SceneObject<WLElement>, ITransform{
 }
 
 [WoowzLibHint(Information.WorkInProgress)]
-public class WLElementTransform : WorldTransformAlgorithm<WLElement>
-{
-    public WLElementTransform(WLElement self) : base(self) { }
-
-    public Vector2I Anchor      = new(0, 0);
-    public Vector2I PixelOffset = new(0, 0);
-    public Vector2D Offset      = new(0, 0);
-    public Vector2D Scale       = new(1, 1);
-
-    public Vector4I Margin;
-    public Vector4I Padding;
-
-    public Vector2UI MinSize;
-    public Vector2UI MaxSize = new(uint.MaxValue, uint.MaxValue);
-
-    public void Recalculate(bool localToWorld)
-    {
-        if (!localToWorld) return;
-
-        var parent = Self.Node.Parent?.Self.Transform.World.Rect
-                     ?? new Rect2I(0, 0, 0, 0);
-
-        var local = Local.Rect;
-
-        // ---------------- size pipeline ----------------
-        uint w = Clamp(local.W, MinSize.W, MaxSize.W);
-        uint h = Clamp(local.H, MinSize.H, MaxSize.H);
-
-        w += (uint)(Padding.X + Padding.Z + Margin.X + Margin.Z);
-        h += (uint)(Padding.Y + Padding.W + Margin.Y + Margin.W);
-
-        w = (uint)(w * Scale.X);
-        h = (uint)(h * Scale.Y);
-
-        // ---------------- position pipeline ----------------
-
-        int cx = parent.X + (int)parent.W / 2;
-        int cy = parent.Y + (int)parent.H / 2;
-
-        int ox = (int)(parent.W * Offset.X);
-        int oy = (int)(parent.H * Offset.Y);
-
-        int x = cx + ox + PixelOffset.X - (int)(w / 2);
-        int y = cy + oy + PixelOffset.Y - (int)(h / 2);
-
-        World.Rect = new Rect2I(x, y, w, h);
-
-        base.Recalculate(true);
-    }
-
-    private static uint Clamp(uint v, uint min, uint max)
-        => v < min ? min : v > max ? max : v;
+public class WLElementTransform : WorldTransformAlgorithm<WLElement> {
+   
 }

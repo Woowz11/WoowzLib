@@ -35,9 +35,9 @@ public static class Logger{
     /// Собственное сообщение
     /// </summary>
     /// <param name="Message">Сообщение</param>
-    public static void Custom(byte Status, object? ExtraInfo, params object[] Message){ WL.__Base.Logger.Print(
+    public static void Custom(byte Status, object? ExtraInfo, params object[] Message) => WL.__Base.Logger.Print(
         Status,
         ExtraInfo,
         WL.__Base.Other.JoinString(Message)
-    ); }
+    );
 }

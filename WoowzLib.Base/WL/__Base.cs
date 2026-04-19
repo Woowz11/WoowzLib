@@ -52,7 +52,7 @@ namespace WL{
             
             CurrentOS = DetectOS();
 
-            if(CurrentOS != OS.Windows){ throw new Exception("WoowzLib работает только на Windows операционной системе! А сейчас: " + CurrentOS); }
+            if(CurrentOS != OS.Windows){ throw new Exception($"WoowzLib работает только на Windows OS! А сейчас: {CurrentOS}"); }
             
             void __Terminate(CloseReason CloseReason){
                 if(!Terminated && !TerminateHooked){
@@ -75,7 +75,7 @@ namespace WL{
         /// <summary>
         /// Информация об ядре
         /// </summary>
-        public static ProjectMetadata EngineMetadata = new ProjectMetadata("WoowzLib",new Version(Assembly.GetCallingAssembly()), "Woowz11", "CC BY SA 4.0");
+        public static ProjectMetadata EngineMetadata = new ProjectMetadata("WoowzLib", new Version(Assembly.GetCallingAssembly()), "Woowz11", "CC BY SA 4.0");
 
         // ----------------------------------------------------------------------
         
@@ -96,7 +96,7 @@ namespace WL{
                         try{
                             ((Action<CloseReason>)OnTerminate__[i])(Reason);
                         }catch(Exception e){
-                            global::Logger.Error("Произошла ошибка в ивенте OnTerminate!\nИндекс: " + i, e);
+                            global::Logger.Error($"Произошла ошибка в ивенте OnTerminate!\nИндекс: {i}", e);
                         }
                     }
                 }
@@ -129,7 +129,7 @@ namespace WL{
         /// Связывает Terminate автоматически с выходом из приложения
         /// </summary>
         public static void HookTerminate(){
-            if(TerminateHooked){ throw new Exception("Нельзя привязать Terminate больше одного раза!"); } TerminateHooked = true;
+            if(TerminateHooked){ throw new Exception("Нельзя привязать Terminate в WoowzLib больше одного раза!"); } TerminateHooked = true;
 
             OnClose += Terminate;
         }
@@ -197,7 +197,7 @@ namespace WL{
         public static event Action<CloseReason>? OnClose{
             add{
                 if(value == null){ return; }
-                if(__OnCloseHooks.ContainsKey(value)){ throw new Exception("Такой OnClose Hook уже есть при добавлении!"); }
+                if(__OnCloseHooks.ContainsKey(value)){ throw new Exception("Такой OnClose Hook уже есть при добавлении в WoowzLib!"); }
 
                 __OnCloseHook Hook = new __OnCloseHook(value);
 
@@ -209,7 +209,7 @@ namespace WL{
             }
             remove{
                 if(value == null){ return; }
-                if(!__OnCloseHooks.TryGetValue(value, out __OnCloseHook Hook)){ throw new Exception("Такой OnClose Hook не найден при удалении!"); }
+                if(!__OnCloseHooks.TryGetValue(value, out __OnCloseHook Hook)){ throw new Exception("Такой OnClose Hook не найден при удалении в WoowzLib!"); }
                 
                 OnExit   -= Hook.Exit  ;
                 OnCrash  -= Hook.Crash ;

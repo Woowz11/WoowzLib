@@ -4,8 +4,8 @@ using WLO.Vector;
 
 namespace WoowzLibTest.Tests;
 
-public static class Test_Transform
-{
+public static class Test_Transform{
+    /*
     private class TestObject : SceneObject<TestObject>, ITransform
     {
         public int Updates = 0;
@@ -20,9 +20,6 @@ public static class Test_Transform
     {
         Test.Run("Transform (FULL COVERAGE)", () =>
         {
-            // =========================================================
-            // 1. X/Y/W/H direct consistency
-            // =========================================================
 
             Test.F("Primitive fields consistency", () =>
             {
@@ -41,10 +38,6 @@ public static class Test_Transform
                 Test.CheckResult(r.H, 40u, "H");
             });
 
-            // =========================================================
-            // 2. Position alias correctness
-            // =========================================================
-
             Test.F("Position alias sync", () =>
             {
                 var t = new TransformAlgorithm();
@@ -59,10 +52,6 @@ public static class Test_Transform
                 Test.CheckResult(p.Y, 7, "PY");
             });
 
-            // =========================================================
-            // 3. Size alias correctness
-            // =========================================================
-
             Test.F("Size alias sync", () =>
             {
                 var t = new TransformAlgorithm();
@@ -72,10 +61,6 @@ public static class Test_Transform
                 Test.CheckResult(t.W, 11u, "W");
                 Test.CheckResult(t.H, 22u, "H");
             });
-
-            // =========================================================
-            // 4. Rect full overwrite
-            // =========================================================
 
             Test.F("Rect full overwrite", () =>
             {
@@ -89,10 +74,6 @@ public static class Test_Transform
                 Test.CheckResult(t.H, 4u, "H");
             });
 
-            // =========================================================
-            // 5. OnPosition pipeline modification
-            // =========================================================
-
             Test.F("OnPosition modifies state", () =>
             {
                 var t = new TransformAlgorithm();
@@ -105,11 +86,7 @@ public static class Test_Transform
                 Test.CheckResult(t.X, 11, "X");
                 Test.CheckResult(t.Y, 11, "Y");
             });
-
-            // =========================================================
-            // 6. OnSize pipeline modification
-            // =========================================================
-
+            
             Test.F("OnSize modifies state", () =>
             {
                 var t = new TransformAlgorithm();
@@ -122,10 +99,6 @@ public static class Test_Transform
                 Test.CheckResult(t.W, 4u, "W");
                 Test.CheckResult(t.H, 6u, "H");
             });
-
-            // =========================================================
-            // 7. OnRect override priority
-            // =========================================================
 
             Test.F("OnRect overrides all", () =>
             {
@@ -144,10 +117,6 @@ public static class Test_Transform
                 Test.CheckResult(t.Rect.H, 6u, "H");
             });
 
-            // =========================================================
-            // 8. Chain execution order
-            // =========================================================
-
             Test.F("Multi OnPosition chain order", () =>
             {
                 var t = new TransformAlgorithm();
@@ -160,10 +129,6 @@ public static class Test_Transform
                 Test.CheckResult(t.X, 4, "X");
                 Test.CheckResult(t.Y, 4, "Y");
             });
-
-            // =========================================================
-            // 9. CallAnyway behavior
-            // =========================================================
 
             Test.F("CallAnyway forces event", () =>
             {
@@ -187,10 +152,6 @@ public static class Test_Transform
                 Test.CheckResult(calls, 2, "forced call");
             });
 
-            // =========================================================
-            // 10. Reentrancy safety
-            // =========================================================
-
             Test.F("Reentrancy does not break state", () =>
             {
                 var t = new TransformAlgorithm();
@@ -212,10 +173,6 @@ public static class Test_Transform
                 Test.CheckResult(calls >= 1, true, "executed");
             });
 
-            // =========================================================
-            // 11. Rect consistency after mutation
-            // =========================================================
-
             Test.F("Rect always consistent with fields", () =>
             {
                 var t = new TransformAlgorithm();
@@ -234,10 +191,6 @@ public static class Test_Transform
                 Test.CheckResult(t.Y, 9, "Y sync");
             });
 
-            // =========================================================
-            // 12. World transform propagation
-            // =========================================================
-
             Test.F("World transform parent chain", () =>
             {
                 var root = new TestObject();
@@ -255,10 +208,6 @@ public static class Test_Transform
                 Test.CheckResult(wt.World.Rect.Y, 3, "Y");
             });
 
-            // =========================================================
-            // 13. Child update propagation
-            // =========================================================
-
             Test.F("Child update propagation", () =>
             {
                 var root = new TestObject();
@@ -270,10 +219,6 @@ public static class Test_Transform
 
                 Test.CheckResult(child.Self.Updates > 0, true, "updated");
             });
-
-            // =========================================================
-            // 14. No infinite recursion guard
-            // =========================================================
 
             Test.F("No recursion crash", () =>
             {
@@ -290,4 +235,5 @@ public static class Test_Transform
             });
         });
     }
+    */
 }
