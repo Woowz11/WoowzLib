@@ -1,12 +1,56 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.347, внутри класса "Transform.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.355, внутри класса "Transform.cs" */
+using WLO.Attribute;
 using WLO.Vector;
 namespace WLO.Transform;
-public class Transform3I{
+public class Transform3I : Metadata{
+	public Transform3I(string Name = "?", object? Parent = null) : base(Name, Parent){
+		Position = new ReactiveProperty<Vector3I>("Позиция", this);
+		Size = new ReactiveProperty<Vector3I>("Размер", this, Vector3I.One);
+		Rotation = new ReactiveProperty<bool>("Поворот", this, false);
+		Position.OnApply += (_, V) => {
+			if(!SupportPosition){
+				throw new Exception("Не поддерживает позицию!");
+			}
+			return V;
+		}
+		Position.OnGet += (_, V) => {
+			if(!SupportPosition){
+				throw new Exception("Не поддерживает позицию!");
+			}
+			return V;
+		}
+		Size.OnApply += (_, V) => {
+			if(!SupportSize){
+				throw new Exception("Не поддерживает размер!");
+			}
+			return V;
+		}
+		Size.OnGet += (_, V) => {
+			if(!SupportSize){
+				throw new Exception("Не поддерживает размер!");
+			}
+			return V;
+		}
+		Rotation.OnApply += (_, V) => {
+			if(!SupportRotation){
+				throw new Exception("Не поддерживает поворот!");
+			}
+			return V;
+		}
+		Rotation.OnGet += (_, V) => {
+			if(!SupportRotation){
+				throw new Exception("Не поддерживает поворот!");
+			}
+			return V;
+		}
+	}
 	
 	// ----------------------------------------------------------------------
 	
-	public readonly ReactiveProperty<Vector3I> Position = new ReactiveProperty<Vector3I>();
-	public readonly ReactiveProperty<Vector3I> Size = new ReactiveProperty<Vector3I>();
+	public readonly ReactiveProperty<Vector3I> Position;
+	public readonly ReactiveProperty<Vector3I> Size;
+	[WoowzLibHint(Information.WorkInProgress)]
+	public readonly ReactiveProperty<bool> Rotation;
 	
 	// ----------------------------------------------------------------------
 	

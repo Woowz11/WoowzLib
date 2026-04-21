@@ -1,4 +1,5 @@
-﻿using File = WLO.File;
+﻿using WLO.Attribute;
+using File = WLO.File;
 
 namespace WoowzLibGenerator.Generator;
 
@@ -67,7 +68,7 @@ public static class Transform{
             
             Result += Other.Generate_Namespace("WLO.Transform");
             
-            Result += Other.Generate_PublicClass(I.Name);
+            Result += Other.Generate_PublicClass(I.Name, "Metadata");
             Result += "{";
 
             TransformContent(I);
@@ -75,6 +76,7 @@ public static class Transform{
             Result += "}";
             
             Result = Other.Generate_Using("WLO.Vector") + Result;
+            Result = Other.Generate_Using("WLO.Attribute") + Result;
             
             Result = Other.Generate_GeneratorComment("Transform") + Result;
             
@@ -91,15 +93,40 @@ public static class Transform{
 
     public static void TransformContent(Info_Transform I){
         void Generate_Constructors(){
+            Result += "public " + I.Name + "(string Name = \"?\", object? Parent = null) : base(Name, Parent){";
+
+            void Generate_ConstructorValue(string Name, string BeautifulName, string Type, string? Default = null){
+                Result += $"{Name} = new ReactiveProperty<{Type}>(\"{BeautifulName}\", this{(Default == null ? "" : $", {Default}")});";
+            }
             
+            Generate_ConstructorValue("Position", "Позиция", I.Vector);
+            Generate_ConstructorValue("Size"    , "Размер" , I.Vector, I.Vector + ".One");
+            Generate_ConstructorValue("Rotation", "Поворот", "bool", "false");
+
+            void Generate_ConstructorEvents(string Name, string ErrorName){
+                void F(string Event){
+                    Result += $$"""{{Name}}.{{Event}} += (_, V) => { if(!Support{{Name}}){ throw new Exception("Не поддерживает {{ErrorName}}!"); } return V; }""";
+                }
+                
+                F("OnApply");
+                F("OnGet");
+            }
+            
+            Generate_ConstructorEvents("Position", "позицию");
+            Generate_ConstructorEvents("Size", "размер");
+            Generate_ConstructorEvents("Rotation", "поворот");
+            
+            Result += "}";
         }
         Generate_Constructors();
         
         Result += Other.Generate_Line();
 
         void Generate_Values(){
-            Result += $"public readonly ReactiveProperty<{I.Vector}> Position = new ReactiveProperty<{I.Vector}>();";
-            Result += $"public readonly ReactiveProperty<{I.Vector}> Size = new ReactiveProperty<{I.Vector}>();";
+            Result += $"public readonly ReactiveProperty<{I.Vector}> Position;";
+            Result += $"public readonly ReactiveProperty<{I.Vector}> Size;";
+            Result += Other.Generate_WLTag(Information.WorkInProgress);
+            Result += $"public readonly ReactiveProperty<bool> Rotation;";
         }
         Generate_Values();
 
