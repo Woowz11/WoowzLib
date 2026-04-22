@@ -29,26 +29,26 @@ public readonly struct Version{
     /// Получает версию из текущего проекта
     /// </summary>
     public Version() : this(AssemblyVersion(null)){}
-    
+
     /// <summary>
     /// Глобальное обновление API
     /// </summary>
-    public int Major{ get; }
-    
+    public readonly int Major;
+
     /// <summary>
     /// Нововведения
     /// </summary>
-    public int Minor{ get; }
-    
+    public readonly int Minor;
+
     /// <summary>
     /// Баг-фиксы
     /// </summary>
-    public int Patch{ get; }
-    
+    public readonly int Patch;
+
     /// <summary>
     /// Кол-во сборок
     /// </summary>
-    public int Build{ get; }
+    public readonly int Build;
     
     // ----------------------------------------------------------------------
 
