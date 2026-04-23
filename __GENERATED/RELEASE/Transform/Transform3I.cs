@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.1.376, внутри класса "Transform.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.1.382, внутри класса "Transform.cs" */
 using WLO.Attribute;
 using WLO.Vector;
 namespace WLO.Transform;

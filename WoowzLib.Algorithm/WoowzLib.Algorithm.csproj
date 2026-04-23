@@ -7,7 +7,7 @@
         <Configurations>Release</Configurations>
         <Platforms>AnyCPU</Platforms>
 
-        <Version>0.0.1.167</Version>
+        <Version>0.0.1.174</Version>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,6 +19,7 @@
 
     <ItemGroup>
       <Folder Include="WLO\Transform\" />
+      <Folder Include="WLO\WorldTransform\" />
     </ItemGroup>
 
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

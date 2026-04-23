@@ -38,6 +38,8 @@ public class Run{
         Color .Generate(WL.String.Path.Add(ForResult, "Color" ), WL.String.Path.Add(ForDebug, "Color" ));
         
         Transform.Generate(WL.String.Path.Add(ForResult, "Transform"), WL.String.Path.Add(ForDebug, "Transform"));
+        WorldTransform.Generate(WL.String.Path.Add(ForResult, "WorldTransform"), WL.String.Path.Add(ForDebug, "WorldTransform"));
+
         
         Tests.Generate(WL.String.Path.Add(ForResult, "Tests"), WL.String.Path.Add(ForDebug, "Tests"));
         
