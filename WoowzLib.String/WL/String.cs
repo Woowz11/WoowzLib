@@ -220,6 +220,24 @@ public static partial class String{
     // ----------------------------------------------------------------------
 
     /// <summary>
+    /// Объединяет части в строку с помощью сепаратора (если получит null, не добавит в строку)
+    /// </summary>
+    /// <param name="Separator"></param>
+    /// <param name="Parts"></param>
+    /// <returns></returns>
+    public static string Join(string Separator, params string?[] Parts){
+        if(Parts.Length == 0){ return Empty; }
+
+        List<string> Filtered = new List<string>(Parts.Length);
+        
+        Filtered.AddRange(from Part in Parts where !IsEmpty(Part) select Part!);
+
+        return Filtered.Count == 0 ? Empty : string.Join(Separator, Filtered);
+    }
+    
+    // ----------------------------------------------------------------------
+    
+    /// <summary>
     /// Строка содержит символ?
     /// </summary>
     /// <param name="S"></param>

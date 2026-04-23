@@ -95,7 +95,7 @@ public static class Test{
         Test_String   .Run();
         Test_Explorer .Run();
         Test_Scene    .Run();
-        //Test_Transform.Run();
+        Test_Transform.Run();
         Test_Window   .Run();
         Test_WLWindow .Run();
 

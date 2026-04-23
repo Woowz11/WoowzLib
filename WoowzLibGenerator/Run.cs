@@ -37,9 +37,9 @@ public class Run{
         Rect  .Generate(WL.String.Path.Add(ForResult, "Rect"  ), WL.String.Path.Add(ForDebug, "Rect"  ));
         Color .Generate(WL.String.Path.Add(ForResult, "Color" ), WL.String.Path.Add(ForDebug, "Color" ));
         
-        Tests.Generate(WL.String.Path.Add(ForResult, "Tests"), WL.String.Path.Add(ForDebug, "Tests"));
-        
         Transform.Generate(WL.String.Path.Add(ForResult, "Transform"), WL.String.Path.Add(ForDebug, "Transform"));
+        
+        Tests.Generate(WL.String.Path.Add(ForResult, "Tests"), WL.String.Path.Add(ForDebug, "Tests"));
         
         Logger.Info("Конец генерации!");
     }

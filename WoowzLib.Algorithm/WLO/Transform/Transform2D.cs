@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.1.376, внутри класса "Transform.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.365, внутри класса "Transform.cs" */
 using WLO.Attribute;
 using WLO.Vector;
 namespace WLO.Transform;
@@ -61,7 +61,7 @@ public class Transform2D : Metadata{
 	[WoowzLibHint(Information.WorkInProgress)]
 	public readonly ReactiveProperty<bool> Rotation;
 	
-	private bool __Dirty;
+	private bool __Dirty = false;
 	
 	// ----------------------------------------------------------------------
 	
@@ -96,7 +96,7 @@ public class Transform2D : Metadata{
 	// ----------------------------------------------------------------------
 	
 	public override string ToString() => $"Transform2D({ToShortString()})";
-	public string ToShortString() => !SupportPosition && !SupportSize && !SupportRotation ? "Не поддерживает ничего" : WL.String.Join(", ", SupportPosition ? Position.Value.ToPositionString() : null, SupportSize ? Size.Value.ToSizeString() : null, SupportRotation ? Rotation.Value.ToString() : null);
+	public string ToShortString() => (!SupportPosition && !SupportSize && !SupportRotation ? "Не поддерживает ничего" : WL.String.Join(", ", SupportPosition ? Position.Value.ToPositionString() : null, SupportSize ? Size.Value.ToSizeString() : null, SupportRotation ? Rotation.Value.ToString() : null));
 	
 	public bool Equals(Transform2D Other){
 		if(ReferenceEquals(this, Other)){

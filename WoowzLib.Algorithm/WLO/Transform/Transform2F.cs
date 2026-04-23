@@ -1,17 +1,17 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.1.376, внутри класса "Transform.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.0.365, внутри класса "Transform.cs" */
 using WLO.Attribute;
 using WLO.Vector;
 namespace WLO.Transform;
-public class Transform2D : Metadata{
-	public Transform2D(string Name = "?", object? Parent = null) : base(Name, Parent){
-		Position = new ReactiveProperty<Vector2D>("Позиция", this);
-		Size = new ReactiveProperty<Vector2D>("Размер", this, Vector2D.One);
+public class Transform2F : Metadata{
+	public Transform2F(string Name = "?", object? Parent = null) : base(Name, Parent){
+		Position = new ReactiveProperty<Vector2F>("Позиция", this);
+		Size = new ReactiveProperty<Vector2F>("Размер", this, Vector2F.One);
 		Rotation = new ReactiveProperty<bool>("Поворот", this, false);
 		Position.OnApply += (_, V) => {
 			if(!SupportPosition){
 				throw new Exception("Не поддерживает позицию!");
 			}
-			return Cancellable<Vector2D>.Continue(V);
+			return Cancellable<Vector2F>.Continue(V);
 		};
 		Position.OnGet += (V) => {
 			if(!SupportPosition){
@@ -26,7 +26,7 @@ public class Transform2D : Metadata{
 			if(!SupportSize){
 				throw new Exception("Не поддерживает размер!");
 			}
-			return Cancellable<Vector2D>.Continue(V);
+			return Cancellable<Vector2F>.Continue(V);
 		};
 		Size.OnGet += (V) => {
 			if(!SupportSize){
@@ -56,12 +56,12 @@ public class Transform2D : Metadata{
 	
 	// ----------------------------------------------------------------------
 	
-	public readonly ReactiveProperty<Vector2D> Position;
-	public readonly ReactiveProperty<Vector2D> Size;
+	public readonly ReactiveProperty<Vector2F> Position;
+	public readonly ReactiveProperty<Vector2F> Size;
 	[WoowzLibHint(Information.WorkInProgress)]
 	public readonly ReactiveProperty<bool> Rotation;
 	
-	private bool __Dirty;
+	private bool __Dirty = false;
 	
 	// ----------------------------------------------------------------------
 	
@@ -73,7 +73,7 @@ public class Transform2D : Metadata{
 	
 	// ----------------------------------------------------------------------
 	
-	public event Action<Vector2D?, Vector2D?, bool?>? OnChanged;
+	public event Action<Vector2F?, Vector2F?, bool?>? OnChanged;
 	
 	// ----------------------------------------------------------------------
 	
@@ -95,10 +95,10 @@ public class Transform2D : Metadata{
 	
 	// ----------------------------------------------------------------------
 	
-	public override string ToString() => $"Transform2D({ToShortString()})";
-	public string ToShortString() => !SupportPosition && !SupportSize && !SupportRotation ? "Не поддерживает ничего" : WL.String.Join(", ", SupportPosition ? Position.Value.ToPositionString() : null, SupportSize ? Size.Value.ToSizeString() : null, SupportRotation ? Rotation.Value.ToString() : null);
+	public override string ToString() => $"Transform2F({ToShortString()})";
+	public string ToShortString() => (!SupportPosition && !SupportSize && !SupportRotation ? "Не поддерживает ничего" : WL.String.Join(", ", SupportPosition ? Position.Value.ToPositionString() : null, SupportSize ? Size.Value.ToSizeString() : null, SupportRotation ? Rotation.Value.ToString() : null));
 	
-	public bool Equals(Transform2D Other){
+	public bool Equals(Transform2F Other){
 		if(ReferenceEquals(this, Other)){
 			return true;
 		}
@@ -116,7 +116,7 @@ public class Transform2D : Metadata{
 		}
 		return true;
 	}
-	public override bool Equals(object? Object) => Object is Transform2D Other && Equals(Other);
+	public override bool Equals(object? Object) => Object is Transform2F Other && Equals(Other);
 	
 	public override int GetHashCode(){
 		HashCode Hash = new HashCode();
