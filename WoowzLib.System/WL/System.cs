@@ -3,7 +3,7 @@
 namespace WL{
     public static partial class System{
         static System(){
-            Instance = WL.Native.Raw.Windows.GetModuleHandle(null);
+            Instance = WL.System.Native.Raw.Windows.GetModuleHandle(null);
         }
         
         /// <summary>

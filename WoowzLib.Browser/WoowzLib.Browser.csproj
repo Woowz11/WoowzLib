@@ -7,7 +7,7 @@
         <Configurations>Release</Configurations>
         <Platforms>AnyCPU</Platforms>
 
-        <Version>0.0.1.11</Version>
+        <Version>0.0.1.14</Version>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,10 +17,6 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3965-prerelease" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="WLO\" />
     </ItemGroup>
 
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

@@ -3,7 +3,7 @@
 public static partial class System{
     public static class Time{
         static Time(){
-            WL.Native.Raw.Windows.QueryPerformanceFrequency(out Frequency);
+            WL.System.Native.Raw.Windows.QueryPerformanceFrequency(out Frequency);
         }
         private static readonly long Frequency;
 
@@ -12,7 +12,7 @@ public static partial class System{
         /// </summary>
         public static double HighLifeS{
             get{
-                WL.Native.Raw.Windows.QueryPerformanceCounter(out long Count);
+                WL.System.Native.Raw.Windows.QueryPerformanceCounter(out long Count);
                 return (double)Count / Frequency;
             }
         }

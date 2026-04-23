@@ -81,7 +81,7 @@ public class WindowClass{
     /// <param name="ClassName">Название класса</param>
     /// <param name="Instance">Область, где искать</param>
     /// <param name="Class">Если нашёл класс, возвращает его</param>
-    public static bool Exists(string ClassName, IntPtr Instance, out Native.Raw.Windows.WNDCLASS Class) => Native.Raw.Windows.GetClassInfo(Instance, ClassName, out Class);
+    public static bool Exists(string ClassName, IntPtr Instance, out WL.System.Native.Raw.Windows.WNDCLASS Class) => WL.System.Native.Raw.Windows.GetClassInfo(Instance, ClassName, out Class);
     
     // ----------------------------------------------------------------------
 
@@ -90,9 +90,9 @@ public class WindowClass{
     /// </summary>
     private void __Register(IntPtr Instance){
         try{
-            if(Exists(Name, Instance, out Native.Raw.Windows.WNDCLASS _)){ throw new Exception("Такой класс уже зарегистрирован!"); }
+            if(Exists(Name, Instance, out WL.System.Native.Raw.Windows.WNDCLASS _)){ throw new Exception("Такой класс уже зарегистрирован!"); }
             
-            Native.Raw.Windows.WNDCLASSEX Class = new Native.Raw.Windows.WNDCLASSEX(Name){
+            WL.System.Native.Raw.Windows.WNDCLASSEX Class = new WL.System.Native.Raw.Windows.WNDCLASSEX(Name){
                 style         = 0,
                 cbClsExtra    = 0,
                 cbWndExtra    = 0,
@@ -105,7 +105,7 @@ public class WindowClass{
                 hInstance     = Instance
             };
             
-            Atom = Native.Raw.Windows.RegisterClassEx(ref Class);
+            Atom = WL.System.Native.Raw.Windows.RegisterClassEx(ref Class);
             if(Atom == 0){ throw new Exception($"Произошла ошибка в RegisterClassEx!\nОшибка: {WL.System.LastOSError()}"); }
         }catch(Exception e){
             throw new Exception($"Произошла ошибка при регистрации класса [{this}] окна!\nДескриптор: {Instance}", e);
@@ -140,9 +140,9 @@ public class WindowClass{
             Logger.Error($"Произошла ошибка при обновлении событий у класса окна [{this}]!", e);
         }
         
-        return Native.Raw.Windows.DefWindowProc(Handle, Message, WP, LP);
+        return WL.System.Native.Raw.Windows.DefWindowProc(Handle, Message, WP, LP);
     }
-    private readonly Native.Raw.Windows.WndProcDelegate __WndProcDelegate;
+    private readonly WL.System.Native.Raw.Windows.WndProcDelegate __WndProcDelegate;
     
     // ----------------------------------------------------------------------
     

@@ -438,10 +438,10 @@ public class WLWindow{
 
             switch(Message){
                 // Вызывается перед уничтожением
-                case Native.Raw.Windows.WM_DESTROY: { __Destroy(); break; }
+                case WL.System.Native.Raw.Windows.WM_DESTROY: { __Destroy(); break; }
 
                 // Вызывается при закрытии окна
-                case Native.Raw.Windows.WM_CLOSE: {
+                case WL.System.Native.Raw.Windows.WM_CLOSE: {
                     bool Destroy;
                     
                     try{
@@ -456,34 +456,34 @@ public class WLWindow{
                 }
                 
                 // Рисование внутри окна
-                case Native.Raw.Windows.WM_PAINT: { break; }
+                case WL.System.Native.Raw.Windows.WM_PAINT: { break; }
 
                 // Очистка окна
-                case Native.Raw.Windows.WM_ERASEBKGND: { return 1; }
+                case WL.System.Native.Raw.Windows.WM_ERASEBKGND: { return 1; }
                 
                 // Обработка элементов у окна
-                case Native.Raw.Windows.WM_COMMAND: { return IntPtr.Zero; }
+                case WL.System.Native.Raw.Windows.WM_COMMAND: { return IntPtr.Zero; }
                 
                 // Обновляет курсор
-                case Native.Raw.Windows.WM_SETCURSOR: {
+                case WL.System.Native.Raw.Windows.WM_SETCURSOR: {
                     int Hit = WL.System.Native.LoWord(LP);
-                    if(Hit == Native.Raw.Windows.HTCLIENT){
-                        Native.Raw.Windows.SetCursor(Native.Raw.Windows.CURSOR_Arrow);
+                    if(Hit == WL.System.Native.Raw.Windows.HTCLIENT){
+                        WL.System.Native.Raw.Windows.SetCursor(WL.System.Native.Raw.Windows.CURSOR_Arrow);
                     }
                     
                     break;
                 }
 
                 // Изменился заголовок окна
-                case Native.Raw.Windows.WM_SETTEXT: {
+                case WL.System.Native.Raw.Windows.WM_SETTEXT: {
                     __Title = WL.System.Memory.LoadString(LP) ?? string.Empty;
                     
                     break;
                 }
 
                 // Перед изменением позиции и размера окна
-                case Native.Raw.Windows.WM_WINDOWPOSCHANGING: {
-                    Native.Raw.Windows.WINDOWPOS WindowPos = WL.System.Memory.LoadStruct<Native.Raw.Windows.WINDOWPOS>(LP);
+                case WL.System.Native.Raw.Windows.WM_WINDOWPOSCHANGING: {
+                    WL.System.Native.Raw.Windows.WINDOWPOS WindowPos = WL.System.Memory.LoadStruct<WL.System.Native.Raw.Windows.WINDOWPOS>(LP);
                     bool Changed = false;
 
                     __X = WindowPos.x;
