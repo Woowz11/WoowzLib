@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using WLO;
 using WLO.Attribute;
 
@@ -238,14 +240,6 @@ public static partial class String{
     // ----------------------------------------------------------------------
     
     /// <summary>
-    /// Строка содержит символ?
-    /// </summary>
-    /// <param name="S"></param>
-    /// <param name="C"></param>
-    /// <returns></returns>
-    public static bool Contains(string S, char C) => S.Contains(C);
-
-    /// <summary>
     /// Строка начинается на указанную?
     /// </summary>
     public static bool AtLeft(string S, string Target) => S.StartsWith(Target);
@@ -264,6 +258,42 @@ public static partial class String{
     public static bool AtRight(string S, char Target) => S.EndsWith(Target);
 
     /// <summary>
+    /// Строка начинается и заканчивается на указанную?
+    /// </summary>
+    public static bool AtLeftAndRight(string S, string Target) => AtLeft(S, Target) && AtRight(S, Target);
+    
+    /// <summary>
+    /// Строка начинается и заканчивается на указанную?
+    /// </summary>
+    public static bool AtLeftAndRight(string S, char Target) => AtLeft(S, Target) && AtRight(S, Target);
+    
+    // ----------------------------------------------------------------------
+
+    /// <summary>
+    /// Строка содержит цель?
+    /// </summary>
+    public static bool Contains(string S, string Target) => S.Contains(Target);
+    
+    /// <summary>
+    /// Строка содержит цель?
+    /// </summary>
+    public static bool Contains(string S, char Target) => S.Contains(Target);
+    
+    /// <summary>
+    /// Строка содержит цели?
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Contains(string S, params string[] Target){ foreach(string Target__ in Target){ if(Contains(S, Target__)){ return true; } } return false; }
+    
+    /// <summary>
+    /// Строка содержит цели?
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Contains(string S, params char[] Target){ foreach(char Target__ in Target){ if(Contains(S, Target__)){ return true; } } return false; }
+    
+    // ----------------------------------------------------------------------
+    
+    /// <summary>
     /// Разъединяет строку
     /// </summary>
     public static string[] Split(string S, char Splitter) => S.Split(Splitter);
@@ -272,11 +302,14 @@ public static partial class String{
     /// </summary>
     public static string[] Split(string S, params char[] Splitters) => S.Split(Splitters, StringSplitOptions.None);
     
+    // ----------------------------------------------------------------------
+    
     /// <summary>
     /// Ограничивает число указанным кол-во знаков после запятой
     /// </summary>
     /// <param name="Value">Число</param>
     /// <param name="Places">Кол-во знаков после запятой</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string LimitF(double Value, int Places){ if(Places < 0){ Places = 0; } return Value.ToString($"F{Places}", CultureInfo.InvariantCulture); }
 
     /// <summary>
@@ -285,4 +318,38 @@ public static partial class String{
     /// <param name="Value">Число</param>
     /// <param name="Places">Кол-во знаков после запятой</param>
     public static string LimitF(float Value, int Places) => LimitF((double)Value, Places);
+
+    // ----------------------------------------------------------------------
+    
+    /// <summary>
+    /// Обрезает строку (нужно указывать область, которая останется)
+    /// </summary>
+    /// <param name="Start">Начало</param>
+    /// <param name="Length">Длина</param>
+    public static string Sub(string S, int Start, int Length) => S.Substring(Start, Length);
+    
+    /// <summary>
+    /// Обрезает строку (нужно указывать область, которая останется) (начинается с нуля)
+    /// </summary>
+    /// <param name="Length">Длина</param>
+    public static string Sub(string S, int Length) => S[Length..];
+
+    // ----------------------------------------------------------------------
+    
+    /// <summary>
+    /// Возвращает индекс первой попавшейся цели
+    /// </summary>
+    public static int IndexOf(string S, string Target) => S.IndexOf(Target, StringComparison.Ordinal);
+    
+    /// <summary>
+    /// Возвращает индекс первой попавшейся цели
+    /// </summary>
+    public static int IndexOf(string S, char Target) => S.IndexOf(Target);
+    
+    // ----------------------------------------------------------------------
+    
+    /// <summary>
+    /// Заменяет в строке символы типа "\\n" -> "\n", "\\'" -> "\'", "\\\\" -> "\\"
+    /// </summary>
+    public static string Unescape(string S) => Regex.Unescape(S);
 }

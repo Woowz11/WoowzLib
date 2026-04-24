@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.1.382, внутри класса "WorldTransform.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.1.386, внутри класса "WorldTransform.cs" */
 namespace WLO.Transform;
 public class WorldTransform2I : Metadata{
 	public WorldTransform2I(SceneNode<ITransform<WorldTransform2I>> Node, string Name = "?", object? Parent = null) : base(Name, Parent){

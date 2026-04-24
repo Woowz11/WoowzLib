@@ -1,8 +1,8 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.1.378, внутри класса "Transform.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.1.386, внутри класса "Transform.cs" */
 using WLO.Attribute;
 using WLO.Vector;
 namespace WLO.Transform;
-public class Transform2F : Metadata{
+public class Transform2F : MetadataParenting<object>{
 	public Transform2F(string Name = "?", object? Parent = null) : base(Name, Parent){
 		Position = new ReactiveProperty<Vector2F>("Позиция", this);
 		Size = new ReactiveProperty<Vector2F>("Размер", this, Vector2F.One);

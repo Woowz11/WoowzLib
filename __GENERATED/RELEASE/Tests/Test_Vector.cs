@@ -1,4 +1,4 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.1.382, внутри класса "Tests.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.1.386, внутри класса "Tests.cs" */
 using WLO.Vector;
 namespace WoowzLibTest.Tests;
 public static class Test_Vector{

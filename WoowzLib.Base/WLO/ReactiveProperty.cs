@@ -3,7 +3,7 @@
 /// <summary>
 /// Поле на которое можно привязать ивент
 /// </summary>
-public class ReactiveProperty<T> : Metadata{
+public class ReactiveProperty<T> : MetadataParenting<object>{
     public ReactiveProperty(string Name = "?", object? Parent = null, T Initial = default!) : base(Name, Parent){ __Value = Initial; }
     
     /// <summary>

@@ -78,7 +78,7 @@ public static class Transform{
             
             Result += Other.Generate_Namespace("WLO.Transform");
             
-            Result += Other.Generate_PublicClass(I.Name, "Metadata");
+            Result += Other.Generate_PublicClass(I.Name, "MetadataParenting<object>");
             Result += "{";
 
             TransformContent(I);

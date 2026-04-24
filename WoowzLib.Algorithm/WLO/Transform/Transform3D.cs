@@ -1,8 +1,8 @@
-/* Сгенерировано с помощью WoowzLibGenerator 0.0.1.378, внутри класса "Transform.cs" */
+/* Сгенерировано с помощью WoowzLibGenerator 0.0.1.386, внутри класса "Transform.cs" */
 using WLO.Attribute;
 using WLO.Vector;
 namespace WLO.Transform;
-public class Transform3D : Metadata{
+public class Transform3D : MetadataParenting<object>{
 	public Transform3D(string Name = "?", object? Parent = null) : base(Name, Parent){
 		Position = new ReactiveProperty<Vector3D>("Позиция", this);
 		Size = new ReactiveProperty<Vector3D>("Размер", this, Vector3D.One);
