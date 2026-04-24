@@ -1,95 +1,77 @@
-﻿using System.Drawing;
-using Microsoft.Web.WebView2.Core;
-using WLO.Vector;
-
-namespace WoowzLib.Browser.WLO;
-
-public class Browser{
-    private Browser(CoreWebView2Environment Environment, CoreWebView2Controller Controller){
-        __Environment = Environment;
-        __Controller = Controller;
-
-        __Core = __Controller.CoreWebView2;
-
-        Bounds = new Vector2UI(800, 600);
-        
-        GoTo("https://woowz11.github.io/woowzsite/quare.html");
-    }
-
-    public static async Task<Browser> CreateAsync(IntPtr HWND){
-        try{
-            CoreWebView2Environment? Environment = await CoreWebView2Environment.CreateAsync();
-            CoreWebView2Controller Controller = await Environment.CreateCoreWebView2ControllerAsync(HWND);
-            
-            return new Browser(Environment, Controller);
-        }catch(Exception e){
-            throw new Exception($"Произошла ошибка при создании браузера!", e);
-        }
-    }
-    
-    // ----------------------------------------------------------------------
-    
-    private Vector2UI __Bounds;
-    public Vector2UI Bounds{
-        get => __Bounds;
-        set{
-            if(__Bounds == value){ return; } __Bounds = value;
-
-            __Controller.Bounds = new Rectangle(0, 0, (int)value.W, (int)value.H);
-        }
-    }
-
-    public void GoTo(string URL) => __Core.Navigate(URL);
-    
-    // ----------------------------------------------------------------------
-    
-    private CoreWebView2Environment __Environment;
-
-    private CoreWebView2Controller __Controller;
-
-    private CoreWebView2 __Core;
-}
-
-/*
+﻿using System;
 using System.Drawing;
 using Microsoft.Web.WebView2.Core;
+using WLO;
 using WLO.Vector;
 
-namespace WoowzLib.Browser.WLO;
+namespace WoowzLib.Browser.WLO
+{
+    public class Browser : Metadata
+    {
+        private CoreWebView2Environment __Environment;
+        private CoreWebView2Controller __Controller;
+        private CoreWebView2 __Core;
+        private Vector2UI __Bounds;
 
-public class Browser{
-    private Browser(){
-        try{
-            Task<CoreWebView2Environment>? TaskEnvironment = CoreWebView2Environment.CreateAsync();
-            TaskEnvironment.Wait();
-            __Environment = TaskEnvironment.Result;
-        }catch(Exception e){
-            throw new Exception($"Произошла ошибка при создании браузера [{this}]!", e);
+        // Конструктор – ничего асинхронного, просто подготовка
+        public Browser(string Name = "?", object? Parent = null) : base(Name, Parent) { }
+
+        // Синхронный метод, который не блокирует поток (обрабатывает сообщения внутри)
+        public void ConnectToWindow(IntPtr HWND)
+        {
+            if (__Controller != null) return;
+
+            // 1. Создаём окружение синхронно (с обработкой сообщений)
+            if (__Environment == null)
+                __Environment = WaitForTask(CoreWebView2Environment.CreateAsync());
+
+            // 2. Создаём контроллер синхронно (с обработкой сообщений)
+            __Controller = WaitForTask(__Environment.CreateCoreWebView2ControllerAsync(HWND));
+            __Core = __Controller.CoreWebView2;
+
+            // 3. Применяем установленные ранее bounds
+            if (__Bounds.W > 0 && __Bounds.H > 0)
+            {
+                __Controller.Bounds = new Rectangle(0, 0, (int)__Bounds.W, (int)__Bounds.H);
+                __Controller.NotifyParentWindowPositionChanged();
+            }
+        }
+
+        // Вспомогательный метод: ожидает завершения Task, не блокируя поток,
+        // а обрабатывая сообщения Windows через ваш существующий WLWindow.UpdateWindows()
+        private T WaitForTask<T>(Task<T> task)
+        {
+            var awaiter = task.GetAwaiter();
+            while (!awaiter.IsCompleted)
+            {
+                // Обрабатываем все накопившиеся сообщения (ваш внешний message pump)
+                Window.UpdateWindows();   // или Window.UpdateWindows() – как у вас названо
+                // Небольшая пауза, чтобы не грузить CPU (можно убрать или оставить 1 мс)
+                System.Threading.Thread.Sleep(1);
+            }
+            return task.Result;
+        }
+
+        public Vector2UI Bounds
+        {
+            get => __Bounds;
+            set
+            {
+                __Bounds = value;
+                if (__Controller != null)
+                {
+                    var rect = new Rectangle(0, 0, (int)value.W, (int)value.H);
+                    __Controller.Bounds = rect;
+                    __Controller.NotifyParentWindowPositionChanged();
+                }
+            }
+        }
+
+        public void GoTo(string URL)
+        {
+            if (__Core == null)
+                throw new InvalidOperationException("Browser not connected to a window.");
+            __Core.Navigate(URL);
         }
     }
-
-    public Task<CoreWebView2Controller> ConnectToWindow(IntPtr HWND) => __Environment.CreateCoreWebView2ControllerAsync(HWND);
-    
-    // ----------------------------------------------------------------------
-    
-    private Vector2UI __Bounds;
-    public Vector2UI Bounds{
-        get => __Bounds;
-        set{
-            if(__Bounds == value){ return; } __Bounds = value;
-
-            __Controller.Bounds = new Rectangle(0, 0, (int)value.W, (int)value.H);
-        }
-    }
-
-    public void GoTo(string URL) => __Core.Navigate(URL);
-    
-    // ----------------------------------------------------------------------
-    
-    private CoreWebView2Environment __Environment;
-
-    private CoreWebView2Controller __Controller;
-
-    private CoreWebView2 __Core;
 }
-*/
